@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Harmony Haven</string>
+    <string name="show_password">Show Password</string>
+    <string name="hide_password">Hide Password</string>
+    <string name="password">Password</string>
+    <string name="email">E-Mail</string>
+</resources>
