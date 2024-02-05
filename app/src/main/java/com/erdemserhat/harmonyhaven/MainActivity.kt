@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.erdemserhat.harmonyhaven.ui.app.MyApp
 import com.erdemserhat.harmonyhaven.ui.login.LoginScreen
 import com.erdemserhat.harmonyhaven.ui.register.RegisterScreen
 import com.erdemserhat.harmonyhaven.ui.theme.HarmonyHavenTheme
@@ -27,43 +28,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
-                    //LoginScreen()
                     MyApp()
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    HarmonyHavenTheme {
-        Greeting("Android")
-    }
-}
-
-@Composable
-fun MyApp() {
-    val navController = rememberNavController()
-
-    NavHost(navController = navController, startDestination = "login_screen") {
-        composable("login_screen") {
-            //Login Screen
-            LoginScreen(navController = navController)
-        }
-        composable("register_screen") {
-            //Register Screen
-            RegisterScreen(navController=navController)
         }
     }
 }

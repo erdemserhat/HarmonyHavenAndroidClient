@@ -4,4 +4,19 @@
     <string name="hide_password">Hide Password</string>
     <string name="password">Password</string>
     <string name="email">E-Mail</string>
+    <string name="login_greeting_text">Harmony Haven Awaits You! Sign Up and Start Exploring. Join Now for Free and Enjoy All the Wonders of Our World!</string>
+    <string name="remember_me">Remember me</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="sign_in_via_google">Sign in via Google</string>
+    <string name="e_mail">E-mail</string>
+    <string name="sign_up">Sign-Up</string>
+    <string name="harmony_haven">Harmony Haven</string>
+    <string name="login_register_greeting_text">Harmony Haven Awaits You! Sign Up and Start Exploring. Join Now for Free and Enjoy All the Wonders of Our World!</string>
+    <string name="name">Name</string>
+    <string name="surname">Surname</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="terms_use">I accept the terms of use</string>
+    <string name="already_have_an_account">Already Have an Account?</string>
+    <string name="sign_in">Sign-In</string>
+    <string name="send_e_mail">Send E-mail</string>
 </resources>

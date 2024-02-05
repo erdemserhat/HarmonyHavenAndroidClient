@@ -1,11 +1,7 @@
 package com.erdemserhat.harmonyhaven.ui.login
 
-import android.widget.Space
+import android.text.style.BackgroundColorSpan
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,27 +13,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,47 +34,34 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Green
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
+import com.erdemserhat.harmonyhaven.ui.navigation.Screens
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
 import com.erdemserhat.harmonyhaven.util.customFontFamilyJunge
 
 @Composable
-fun LoginScreen(navController:NavController) {
-    Box(
-
-    ) {
-        // Background
-        Image(
-            painter = painterResource(id = R.drawable._fear),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds
-        )
-
-
+fun LoginScreenContent(navController: NavController) {
+    //Content of Screen
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
 
-
-        //horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
 
 
@@ -95,28 +70,19 @@ fun LoginScreen(navController:NavController) {
             Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.group1_6),
-                contentDescription = null,
-                Modifier.padding(top = 30.dp)
-
-            )
-            Text(
-                text = "Harmony Haven",
-                fontSize = 40.sp,
-                fontFamily = customFontFamilyJunge
-
-            )
-
-            Text(
-                text = "Harmony Haven Awaits You! Sign Up and Start Exploring. Join Now for Free and Enjoy All the Wonders of Our World!",
+            HarmonyHavenGreetingLogo(
                 modifier = Modifier
-                    .padding(10.dp),
-                fontSize = 14.sp
-
-
+                    .padding(top = 30.dp)
+            )
+            HarmonyHavenGreetingTitle(
+                modifier = Modifier
+                    .padding(top = 5.dp)
             )
 
+            HarmonyHavenGreetingText(
+                modifier = Modifier
+                    .padding(10.dp)
+            )
 
         }
 
@@ -130,17 +96,17 @@ fun LoginScreen(navController:NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
-                InputText(label = "E-mail")
-                InputPasswordText(label = "Password")
+                InputText(placeholderText = stringResource(R.string.e_mail))
+                InputPasswordText(label = stringResource(id = R.string.password))
             }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                RememberCheckBox("Remember me")
+                RememberCheckBox(stringResource(R.string.remember_me))
                 Spacer(modifier = Modifier.size(60.dp))
-                TextButton("Forgot Password")
+                TextButton(stringResource(R.string.forgot_password), onClick = {navController.navigate(Screens.PasswordReset)})
             }
             Spacer(modifier = Modifier.size(20.dp))
 
@@ -149,9 +115,12 @@ fun LoginScreen(navController:NavController) {
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LoginRegisterButtonEmail("Sign in")
+                HarmonyHavenGreetingButton(stringResource(id = R.string.sign_in))
                 Spacer(modifier = Modifier.size(10.dp))
-                ButtonWithIcon(R.drawable.google,"Sign in via Google")
+                ButtonWithIcon(
+                    R.drawable.google_sign_in_icon,
+                    stringResource(R.string.sign_in_via_google)
+                )
 
 
                 Spacer(modifier = Modifier.size(10.dp))
@@ -161,9 +130,9 @@ fun LoginScreen(navController:NavController) {
                 ) {
                     Text(text = "Don't Have Account?")
                     TextButton(
-                        onClick = {navController.navigate("register_screen")}
-                        ){
-                        Text("Sign-Up", color = Color(0xff436850))
+                        onClick = { navController.navigate(Screens.Register) }
+                    ) {
+                        Text(stringResource(R.string.sign_up), color = harmonyHavenGreen)
                     }
                 }
 
@@ -171,24 +140,37 @@ fun LoginScreen(navController:NavController) {
         }
 
 
-
-
     }
 
 }
+
+@Composable
+fun LoginScreen(navController: NavController) {
+    ScreenWithBackground(
+        content = { LoginScreenContent(navController = navController) },
+        backgroundImageId = R.drawable.login_register_background
+    )
+
 }
 
 @Preview
 @Composable
 fun LoginScreenPreview() {
     val navController = rememberNavController()
-    LoginScreen(navController =navController)
+    LoginScreen(navController = navController)
 
 }
+/////////////////////////////// Reusable Composable Components ////////////////////////////////////
 
 
+//////////////////////////////////////// Component ////////////////////////////////////////////////
+/**
+ * Creates an input text field.
+ *
+ * @param label The label for the input text field.
+ */
 @Composable
-fun InputText(label: String) {
+fun InputText(placeholderText: String) {
     var text by rememberSaveable {
         mutableStateOf("")
 
@@ -198,7 +180,7 @@ fun InputText(label: String) {
             .size(width = 370.dp, height = 60.dp),
         value = text,
         onValueChange = { text = it },
-        label = { Text(text = label) },
+        label = { Text(text = placeholderText) },
         shape = RoundedCornerShape(10.dp),
         colors = TextFieldDefaults.colors(
             unfocusedContainerColor = Color.White,
@@ -208,12 +190,17 @@ fun InputText(label: String) {
 
         ),
         singleLine = true
-        )
-
-
-
+    )
 }
+////////////////////////////// At the End Of Component //////////////////////////////////////
 
+
+///////////////////////////////////// Component /////////////////////////////////////////////
+/**
+ * creates an password text field.
+ *
+ * @param label placeholder text for password field
+ */
 @Composable
 fun InputPasswordText(label: String) {
     var password by rememberSaveable {
@@ -225,9 +212,9 @@ fun InputPasswordText(label: String) {
     }
 
     val visibilityIcon = if (passwordHidden) {
-        painterResource(id = R.drawable.visibility_fill0_wght400_grad0_opsz24)
+        painterResource(id = R.drawable.visibility_eye_icon)
     } else {
-        painterResource(id = R.drawable.visibility_off_fill0_wght400_grad0_opsz24)
+        painterResource(id = R.drawable.visibility_off_eye_icon)
     }
 
     OutlinedTextField(
@@ -258,9 +245,12 @@ fun InputPasswordText(label: String) {
         }
     )
 }
+////////////////////////////// At the End Of Component //////////////////////////////////////
 
+
+///////////////////////////////////// Component /////////////////////////////////////////////
 @Composable
-fun RememberCheckBox(text:String) {
+fun RememberCheckBox(text: String) {
     var checkedState by rememberSaveable {
         mutableStateOf(false)
     }
@@ -272,8 +262,8 @@ fun RememberCheckBox(text:String) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
-            colors =CheckboxDefaults.colors(
-                checkedColor = Color(0xff436850),
+            colors = CheckboxDefaults.colors(
+                checkedColor = harmonyHavenGreen,
             ),
             checked = checkedState,
             onCheckedChange = { checkedState = !checkedState },
@@ -282,18 +272,24 @@ fun RememberCheckBox(text:String) {
 
     }
 }
+////////////////////////////// At the End Of Component //////////////////////////////////////
 
+
+///////////////////////////////////// Component /////////////////////////////////////////////
 @Composable
-fun TextButton(buttonText:String) {
+fun TextButton(buttonText: String, onClick:()->Unit={}) {
 
-    TextButton(onClick = {  }) {
-        Text(text = buttonText, color = Color(0xff436850))
+    TextButton(onClick = onClick) {
+        Text(text = buttonText, color = harmonyHavenGreen)
     }
 
 }
+////////////////////////////// At the End Of Component //////////////////////////////////////
 
+
+///////////////////////////////////// Component /////////////////////////////////////////////
 @Composable
-fun ButtonWithIcon(painterId:Int,buttonText: String) {
+fun ButtonWithIcon(painterId: Int, buttonText: String) {
     OutlinedButton(
         modifier = Modifier
             .size(width = 195.dp, height = 40.dp),
@@ -301,7 +297,7 @@ fun ButtonWithIcon(painterId:Int,buttonText: String) {
         contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
         shape = RoundedCornerShape(topStart = 10.dp, bottomEnd = 20.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xffD9D9D9),
+            containerColor = harmonyHavenWhite,
         )
     ) {
         Icon(
@@ -317,16 +313,20 @@ fun ButtonWithIcon(painterId:Int,buttonText: String) {
 
 
 }
+////////////////////////////// At the End Of Component //////////////////////////////////////
+
+
+///////////////////////////////////// Component /////////////////////////////////////////////
 @Composable
-fun LoginRegisterButtonEmail(buttonText:String){
+fun HarmonyHavenGreetingButton(buttonText: String) {
 
     Button(
         onClick = { /*TODO*/ },
         shape = RoundedCornerShape(topStart = 10.dp, bottomEnd = 20.dp),
         modifier = Modifier
-            .size(width = 200.dp,40.dp),
+            .size(width = 200.dp, 40.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xff436850)
+            containerColor = harmonyHavenGreen
         )
 
 
@@ -336,4 +336,56 @@ fun LoginRegisterButtonEmail(buttonText:String){
     }
 
 }
+////////////////////////////// At the End Of Component //////////////////////////////////////
 
+@Composable
+fun ScreenWithBackground(content: @Composable () -> Unit, backgroundImageId: Int) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        // Arka plan Ekran Resmi
+        Image(
+            painter = painterResource(backgroundImageId),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
+        )
+
+        content()
+    }
+}
+
+@Composable
+fun HarmonyHavenGreetingLogo(modifier: Modifier) {
+    Image(
+        painter = painterResource(id = R.drawable.harmony_haven_icon),
+        contentDescription = null,
+        modifier = modifier
+
+    )
+}
+
+@Composable
+fun HarmonyHavenGreetingTitle(modifier: Modifier) {
+    Text(
+        text = stringResource(R.string.harmony_haven),
+        fontSize = 40.sp,
+        fontFamily = customFontFamilyJunge,
+        modifier = modifier
+
+    )
+}
+
+@Composable
+fun HarmonyHavenGreetingText(modifier: Modifier) {
+    Text(
+        text = stringResource(R.string.login_greeting_text),
+        modifier = Modifier,
+        fontSize = 14.sp,
+        textAlign = TextAlign.Center
+
+
+    )
+
+}

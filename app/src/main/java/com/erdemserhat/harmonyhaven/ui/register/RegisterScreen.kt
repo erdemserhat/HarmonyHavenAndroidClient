@@ -1,6 +1,5 @@
 package com.erdemserhat.harmonyhaven.ui.register
 
-import android.graphics.ColorFilter
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,8 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -25,10 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,130 +33,124 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.ui.login.ButtonWithIcon
+import com.erdemserhat.harmonyhaven.ui.login.HarmonyHavenGreetingButton
 import com.erdemserhat.harmonyhaven.ui.login.InputPasswordText
 import com.erdemserhat.harmonyhaven.ui.login.InputText
-import com.erdemserhat.harmonyhaven.ui.login.LoginRegisterButtonEmail
-import com.erdemserhat.harmonyhaven.ui.login.LoginScreen
 import com.erdemserhat.harmonyhaven.ui.login.RememberCheckBox
-import com.erdemserhat.harmonyhaven.ui.login.TextButton
+import com.erdemserhat.harmonyhaven.ui.login.ScreenWithBackground
+import com.erdemserhat.harmonyhaven.ui.navigation.Screens
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.util.customFontFamilyJunge
 
 @Composable
-fun RegisterScreen(navController: NavController) {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+fun RegisterScreenContent(navController: NavController) {
 
-        // Background
-        Image(
-            painter = painterResource(id = R.drawable._fear),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds
-        )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
 
 
+        //horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween,
+
+
+        ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+            Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.harmony_haven_icon),
+                contentDescription = null,
+                Modifier.padding(top = 30.dp)
 
+            )
+            Text(
+                text = "Harmony Haven",
+                fontSize = 40.sp,
+                fontFamily = customFontFamilyJunge
 
-            //horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
+            )
 
-
-            ) {
-            Column(
-                Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.group1_6),
-                    contentDescription = null,
-                    Modifier.padding(top = 30.dp)
-
-                )
-                Text(
-                    text = "Harmony Haven",
-                    fontSize = 40.sp,
-                    fontFamily = customFontFamilyJunge
-
-                )
-
-                Text(
-                    text = "Harmony Haven Awaits You! Sign Up and Start Exploring. Join Now for Free and Enjoy All the Wonders of Our World!",
-                    modifier = Modifier
-                        .padding(10.dp),
-                    fontSize = 14.sp
-
-
-                )
-
-
-            }
-
-            Column(
+            Text(
+                text = stringResource(R.string.login_register_greeting_text),
                 modifier = Modifier
-                    .padding(bottom = 40.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-
-                ) {
-                    InputText(label = "Name")
-                    InputText(label = "Surname")
-                    InputText(label = "E-Mail")
-                    InputPasswordText(label = "Password")
-                    InputPasswordText(label = "Confirm Password")
-                    Spacer(modifier = Modifier.size(20.dp))
-                    GenderSection()
-
-                }
+                    .padding(10.dp),
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center
 
 
-                Spacer(modifier = Modifier.size(20.dp))
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    LoginRegisterButtonEmail("Sign up")
-                    Spacer(modifier = Modifier.size(10.dp))
-                    ButtonWithIcon(R.drawable.google,"Sign in via Google")
-                    Spacer(modifier = Modifier.size(10.dp))
-                    RememberCheckBox("I accept the terms of use")
-
-
-
-
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(text = "Already Have an Account?")
-                    TextButton(
-                        onClick = {navController.navigate("login_screen")}
-                    ){
-                        Text("Sign-In", color = Color(0xff436850))
-                    }
-                }
-            }
-
-
-
-
+            )
 
 
         }
 
+        Column(
+            modifier = Modifier
+                .padding(bottom = 40.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+
+            ) {
+                InputText(placeholderText = stringResource(R.string.name))
+                InputText(placeholderText = stringResource(R.string.surname))
+                InputText(placeholderText = stringResource(id = R.string.e_mail))
+                InputPasswordText(label = stringResource(id = R.string.password))
+                InputPasswordText(label = stringResource(R.string.confirm_password))
+                Spacer(modifier = Modifier.size(20.dp))
+                GenderSection()
+
+            }
+
+
+            Spacer(modifier = Modifier.size(20.dp))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                HarmonyHavenGreetingButton(stringResource(id = R.string.sign_up))
+                Spacer(modifier = Modifier.size(10.dp))
+                ButtonWithIcon(
+                    R.drawable.google_sign_in_icon,
+                    stringResource(id = R.string.sign_in_via_google)
+                )
+                Spacer(modifier = Modifier.size(10.dp))
+                RememberCheckBox(stringResource(R.string.terms_use))
+
+
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(text = stringResource(R.string.already_have_an_account))
+                TextButton(
+                    onClick = { navController.navigate(Screens.Login) }
+                ) {
+                    Text(stringResource(R.string.sign_in), color = harmonyHavenGreen)
+                }
+            }
+        }
+
+
     }
+
+}
+
+@Composable
+fun RegisterScreen(navController: NavController) {
+    ScreenWithBackground(
+        content = { RegisterScreenContent(navController)},
+        backgroundImageId = R.drawable.login_register_background)
+
 }
 
 @Preview
@@ -168,7 +159,7 @@ fun RegisterScreenPreview() {
     val navController = rememberNavController()
 
     RegisterScreen(navController)
-    
+
 }
 
 @Preview(showBackground = true)
@@ -215,7 +206,8 @@ fun GenderIcon(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val colorFilter = if (isSelected) androidx.compose.ui.graphics.ColorFilter.tint(color = Color(0xff436850)) else null
+    val colorFilter =
+        if (isSelected) androidx.compose.ui.graphics.ColorFilter.tint(color = harmonyHavenGreen) else null
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -234,9 +226,9 @@ fun GenderIcon(
 
 }
 
-enum class Gender(val iconResId: Int,) {
-    Male(R.drawable.male_icon,),
-    Female(R.drawable.female_icon,),
-    Other(R.drawable.fiber_manual_record_fill0_wght400_grad0_opsz24),
+enum class Gender(val iconResId: Int) {
+    Male(R.drawable.gender_male_icon),
+    Female(R.drawable.gender_female_icon),
+    Other(R.drawable.gender_other_icon),
     None(0)
 }
