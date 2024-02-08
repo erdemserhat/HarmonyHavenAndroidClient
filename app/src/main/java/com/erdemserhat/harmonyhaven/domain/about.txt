@@ -1,0 +1,5 @@
+The domain folder encapsulates the core business logic of the application
+and is typically used in Clean Architecture or similar architectural patterns.
+It can be viewed as a layer that encompasses the fundamental functionality and business processes of
+the application. This structure enhances modularity,
+increases re-usability of code, and facilitates the development and maintenance of the application.

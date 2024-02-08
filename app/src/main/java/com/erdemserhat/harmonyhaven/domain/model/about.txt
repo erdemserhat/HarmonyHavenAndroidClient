@@ -1,0 +1,3 @@
+Domain models define the fundamental data structures for the business logic of the application.
+These models represent the core data of the application and are used in implementing the business logic.
+For example, objects such as a user, a product, or an order are considered domain models.

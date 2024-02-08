@@ -1,9 +1,9 @@
-package com.erdemserhat.harmonyhaven.ui.register
+package com.erdemserhat.harmonyhaven.presentation.register
+
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -32,13 +31,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.ui.login.ButtonWithIcon
-import com.erdemserhat.harmonyhaven.ui.login.HarmonyHavenGreetingButton
-import com.erdemserhat.harmonyhaven.ui.login.InputPasswordText
-import com.erdemserhat.harmonyhaven.ui.login.InputText
-import com.erdemserhat.harmonyhaven.ui.login.RememberCheckBox
-import com.erdemserhat.harmonyhaven.ui.login.ScreenWithBackground
-import com.erdemserhat.harmonyhaven.ui.navigation.Screens
+import com.erdemserhat.harmonyhaven.domain.model.Gender
+import com.erdemserhat.harmonyhaven.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.appcomponents.ButtonWithIcon
+import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingButton
+import com.erdemserhat.harmonyhaven.presentation.appcomponents.InputPasswordText
+import com.erdemserhat.harmonyhaven.presentation.appcomponents.InputText
+import com.erdemserhat.harmonyhaven.presentation.appcomponents.RememberCheckBox
+import com.erdemserhat.harmonyhaven.presentation.appcomponents.ScreenWithBackground
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.util.customFontFamilyJunge
 
@@ -133,7 +133,7 @@ fun RegisterScreenContent(navController: NavController) {
             ) {
                 Text(text = stringResource(R.string.already_have_an_account))
                 TextButton(
-                    onClick = { navController.navigate(Screens.Login) }
+                    onClick = { navController.navigate(Screen.Login.route) }
                 ) {
                     Text(stringResource(R.string.sign_in), color = harmonyHavenGreen)
                 }
@@ -226,9 +226,3 @@ fun GenderIcon(
 
 }
 
-enum class Gender(val iconResId: Int) {
-    Male(R.drawable.gender_male_icon),
-    Female(R.drawable.gender_female_icon),
-    Other(R.drawable.gender_other_icon),
-    None(0)
-}

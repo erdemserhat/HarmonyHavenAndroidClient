@@ -19,4 +19,7 @@
     <string name="already_have_an_account">Already Have an Account?</string>
     <string name="sign_in">Sign-In</string>
     <string name="send_e_mail">Send E-mail</string>
+    <string name="don_t_have_account">Don\'t Have Account?</string>
+    <string name="app_logo">App Logo</string>
+    <string name="finish">Finish</string>
 </resources>
