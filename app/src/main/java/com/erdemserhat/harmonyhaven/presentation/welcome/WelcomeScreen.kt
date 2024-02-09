@@ -175,7 +175,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage) {
             fontWeight = FontWeight.Light,
             textAlign = TextAlign.Justify,
             modifier = Modifier
-                .padding(10.dp)
+                .padding(25.dp)
         )
 
 

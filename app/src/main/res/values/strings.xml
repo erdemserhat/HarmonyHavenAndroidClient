@@ -22,4 +22,7 @@
     <string name="don_t_have_account">Don\'t Have Account?</string>
     <string name="app_logo">App Logo</string>
     <string name="finish">Finish</string>
+    <string name="daily_greeting_text">Success is not final, failure is not fatal: It is the courage to continue that counts.</string>
+    <string name="example_most_read_title">Embracing Life\'s Nuances</string>
+    <string name="example_most_read_article">Life is a journey filled with intricacies, where each moment presents us with new experiences. Along this path, we encounter a tapestry of joys and...</string>
 </resources>

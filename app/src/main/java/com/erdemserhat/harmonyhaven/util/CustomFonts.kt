@@ -14,3 +14,8 @@ val customFontKumbhSans = FontFamily(
     Font(R.font.kumbh_sans_medium,FontWeight.Medium),
     Font(R.font.kumbh_sans_light,FontWeight.Light)
 )
+
+val customFontInter = FontFamily(
+    Font(R.font.inter_bold,FontWeight.Bold),
+    Font(R.font.inter_regular,FontWeight.Medium)
+)

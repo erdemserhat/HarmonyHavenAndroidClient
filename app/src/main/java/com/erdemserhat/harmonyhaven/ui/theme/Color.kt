@@ -17,6 +17,8 @@ val harmonyHavenDarkGreenColor = Color(0xff12372A)
 
 val harmonyHavenGradientGreen = Color(0xff92E3A9)
 val harmonyHavenGradientWhite=Color(0xffFFFFFF)
+val harmonyHavenComponentWhite = Color(0xffE5F5F5)
+val harmonyHavenTitleTextColor = Color(0xff605757)
 
 
 val ColorScheme.textColor

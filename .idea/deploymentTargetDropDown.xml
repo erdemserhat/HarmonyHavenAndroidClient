@@ -12,15 +12,6 @@
         <State />
       </entry>
       <entry key="HomeScreenPreview (1)">
-        <State />
-      </entry>
-      <entry key="LoginScreenPreview">
-        <State />
-      </entry>
-      <entry key="RegisterScreenPreview">
-        <State />
-      </entry>
-      <entry key="app">
         <State>
           <runningDeviceTargetSelectedWithDropDown>
             <Target>
@@ -33,7 +24,17 @@
               </deviceKey>
             </Target>
           </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-02-08T22:50:24.371073200Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-02-09T19:33:47.487017500Z" />
+        </State>
+      </entry>
+      <entry key="LoginScreenPreview">
+        <State />
+      </entry>
+      <entry key="MostReadContentPreview">
+        <State />
+      </entry>
+      <entry key="app">
+        <State>
           <runningDeviceTargetsSelectedWithDialog>
             <Target>
               <type value="RUNNING_DEVICE_TARGET" />
