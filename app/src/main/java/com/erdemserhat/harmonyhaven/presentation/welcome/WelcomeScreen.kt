@@ -1,21 +1,18 @@
 package com.erdemserhat.harmonyhaven.presentation.welcome
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerDefaults
-import androidx.compose.foundation.pager.PagerSnapDistance
+import androidx.compose.foundation.pager.PagerDefaults.flingBehavior
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -24,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -40,23 +36,26 @@ import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.OnBoardingPage
 import com.erdemserhat.harmonyhaven.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingButton
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientWhite
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
-import com.erdemserhat.harmonyhaven.ui.theme.textColor
+import com.erdemserhat.harmonyhaven.util.ClickableHorizontalPagerIndicator
 import com.erdemserhat.harmonyhaven.util.Constants
 import com.erdemserhat.harmonyhaven.util.customFontKumbhSans
+import com.google.accompanist.pager.ExperimentalPagerApi
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class, DelicateCoroutinesApi::class)
 @Composable
 fun WelcomeScreen(navHostController: NavHostController) {
     // Display 3 items
-    val pagerState = rememberPagerState(pageCount = {
+    val pagerState: PagerState = rememberPagerState(pageCount = {
         Constants.ON_BOARDING_SCREEN
     })
+
 
     val pages = listOf(
         OnBoardingPage.First,
@@ -67,7 +66,6 @@ fun WelcomeScreen(navHostController: NavHostController) {
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
             .background(
                 Brush.verticalGradient(
                     listOf(
@@ -80,10 +78,14 @@ fun WelcomeScreen(navHostController: NavHostController) {
     ) {
         HorizontalPager(
             modifier = Modifier
-                .fillMaxSize()
                 .weight(10f),
-            state = pagerState,
-            verticalAlignment = Alignment.Top
+                    state = pagerState,
+            verticalAlignment = Alignment.Top,
+            flingBehavior = flingBehavior(state = pagerState),
+            userScrollEnabled = true,
+
+
+
         ) { page ->
 
 
@@ -91,35 +93,26 @@ fun WelcomeScreen(navHostController: NavHostController) {
 
         }
 
-        Row(
-            Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .weight(1f)
-                .align(Alignment.CenterHorizontally)
-                .padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
+        //HorizontalPagerIndicator dots
+        ClickableHorizontalPagerIndicator(
+            pagerState = pagerState,
+            activeColor = MaterialTheme.colorScheme.primary,
+            inactiveColor = Color.Gray,
+            indicatorWidth = 16.dp,
+            indicatorShape = CircleShape,
+            spacing = 8.dp,
+            pageCount = 3,
+            modifier = Modifier
+                .weight(1f),
 
-            repeat(pagerState.pageCount) { iteration ->
-                val color = if (pagerState.currentPage == iteration) harmonyHavenDarkGreenColor else harmonyHavenGradientWhite
-                Box(
-                    modifier = Modifier
-                        .padding(2.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                        .size(16.dp)
-                )
-            }
+            )
 
-        }
+
 
         FinishButton(
             pagerState = pagerState,
-            onClick = {navHostController.navigate(Screen.Login.route)},
-            modifier = Modifier
-
-                .padding(25.dp)
+            onClick = { navHostController.navigate(Screen.Login.route) },
+            modifier = Modifier.weight(2f)
 
         )
 
@@ -146,7 +139,7 @@ fun WelcomePreview() {
 @Composable
 fun PagerScreen(onBoardingPage: OnBoardingPage) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -185,18 +178,20 @@ fun PagerScreen(onBoardingPage: OnBoardingPage) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FinishButton(
-    pagerState:PagerState,
-    onClick:()->Unit={},
+    pagerState: PagerState,
+    onClick: () -> Unit = {},
     modifier: Modifier
 ) {
     AnimatedVisibility(
-        visible = pagerState.currentPage==2) {
+        visible = pagerState.currentPage == 2
+    ) {
         HarmonyHavenGreetingButton(
             buttonText = stringResource(R.string.finish),
-            onClick=onClick,
+            onClick = onClick,
             modifier = modifier
 
         )
     }
 
 }
+

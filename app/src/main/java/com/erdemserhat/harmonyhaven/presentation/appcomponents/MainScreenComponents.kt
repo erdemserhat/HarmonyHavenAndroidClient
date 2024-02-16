@@ -1,7 +1,9 @@
 package com.erdemserhat.harmonyhaven.presentation.appcomponents
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
@@ -26,6 +28,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.navigation.Screen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenBottomAppBarContainerColor
@@ -64,7 +67,10 @@ fun HarmonyHavenNavigationBar(navController: NavController,selectedItem:MutableI
     )
 
     NavigationBar(
-        containerColor = harmonyHavenBottomAppBarContainerColor
+        containerColor = harmonyHavenBottomAppBarContainerColor,
+        modifier = Modifier
+            .fillMaxWidth()
+            .size(width = 0.dp, height = 50.dp),
     ) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
@@ -79,7 +85,7 @@ fun HarmonyHavenNavigationBar(navController: NavController,selectedItem:MutableI
                 onClick = {
                     selectedItem.value = index
                 },
-                label = { Text(text = item.title) },
+                //label = { Text(text = item.title) },
                 icon = {
 
                     BadgedBox(

@@ -2,6 +2,7 @@ package com.erdemserhat.harmonyhaven.presentation.home
 
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,9 +18,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -45,6 +50,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -66,14 +73,19 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
+import com.erdemserhat.harmonyhaven.domain.model.MostReadArticleModel
+import com.erdemserhat.harmonyhaven.domain.model.OnBoardingPage
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingButton
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingTitle
+import com.erdemserhat.harmonyhaven.presentation.welcome.PagerScreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenTitleTextColor
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
+import com.erdemserhat.harmonyhaven.util.Constants
 import com.erdemserhat.harmonyhaven.util.customFontFamilyJunge
 import com.erdemserhat.harmonyhaven.util.customFontInter
 
@@ -94,13 +106,12 @@ fun HomeScreen(navController: NavController) {
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
 
-    ) {
+        ) {
         GreetingHarmonyHavenComponent()
         //HarmonyHavenSearchBarPrototype1()
         HarmonyHavenSearchBarPrototype2(modifier = Modifier.padding(bottom = 20.dp))
-        MostReadHorizontalList()
+        MostReadHorizontalPager()
         ContentColumn(Modifier.padding(top = 25.dp))
-        
 
 
     }
@@ -285,7 +296,7 @@ fun MostReadContentPreview() {
 
 
 @Composable
-fun MostReadContent() {
+fun MostReadArticle(article:MostReadArticleModel) {
     Box(
         modifier = Modifier
             .size(width = 350.dp, height = 200.dp)
@@ -296,7 +307,7 @@ fun MostReadContent() {
 
             ) {
             Text(
-                text = stringResource(id = R.string.example_most_read_title),
+                text = article.title,
                 fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                 fontWeight = FontWeight.Bold,
                 fontFamily = customFontInter,
@@ -311,14 +322,14 @@ fun MostReadContent() {
                 Modifier.size(width = 360.dp, height = 110.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.article_image),
+                    painter = painterResource(id = article.image),
                     contentDescription = null,
                     Modifier
                         .size(120.dp)
                         .padding(start = 10.dp, end = 10.dp)
                 )
                 Text(
-                    text = stringResource(R.string.example_most_read_article),
+                    text = article.description,
                     fontFamily = customFontInter,
                     fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                     maxLines = 4,
@@ -381,14 +392,14 @@ fun MostReadHorizontalList() {
             Modifier.padding(start = 16.dp)
         ) {
             items(10) {
-                MostReadContent()
+                //MostReadArticle()
                 Spacer(modifier = Modifier.width(16.dp))
 
             }
         }
 
     }
-    
+
 }
 
 @Composable
@@ -402,7 +413,7 @@ fun Content() {
                 indication = rememberRipple(bounded = true, radius = 75.dp)
             ) { /* Tıklama işlemi */ },
         contentAlignment = Alignment.Center
-    ){
+    ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -411,7 +422,7 @@ fun Content() {
                 contentDescription = null,
                 Modifier.size(100.dp)
 
-                )
+            )
             Text(
                 modifier = Modifier
                     .padding(10.dp),
@@ -440,13 +451,12 @@ fun ContentRow() {
 
     }
 
-    
+
 }
 
 
-
 @Composable
-fun ContentColumn(modifier: Modifier=Modifier) {
+fun ContentColumn(modifier: Modifier = Modifier) {
     Column(
         modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(25.dp)
@@ -461,12 +471,105 @@ fun ContentColumn(modifier: Modifier=Modifier) {
             fontSize = MaterialTheme.typography.titleMedium.fontSize
 
         )
-        repeat(10){
+        repeat(10) {
             ContentRow()
         }
 
     }
 
-    
+
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun MostReadHorizontalPager() {
+    val pagerState = rememberPagerState(pageCount = {
+        4//list size
+    })
+
+    val pages = listOf(
+        MostReadArticleModel(
+            "Embracing Life's Nuances",
+            "Life is a journey filled with intricacies, where each moment presents us with new experiences. Along this path, we encounter a tapestry of joys and...",
+            R.drawable.article_image//static data
+        ),
+        MostReadArticleModel(
+            "Number2",
+            "2Life is a journey filled with intricacies, where each moment presents us with new experiences. Along this path, we encounter a tapestry of joys and...",
+            R.drawable.onboarding_screen_image_1//static data
+        ),
+        MostReadArticleModel(
+            "Embracing Life's Nuances",
+            "Life is a journey filled with intricacies, where each moment presents us with new experiences. Along this path, we encounter a tapestry of joys and...",
+            R.drawable.onboarding_screen_image_3//static data
+        ),
+        MostReadArticleModel(
+            "Embracing Life's Nuances",
+            "Life is a journey filled with intricacies, where each moment presents us with new experiences. Along this path, we encounter a tapestry of joys and...",
+            R.drawable.google_icon//static data
+        )
+    )
+
+
+
+    Column(     
+
+    ) {
+        Text(
+            text = "Recent Articles",
+            modifier = Modifier
+                .padding(start = 16.dp, bottom = 16.dp),
+            fontFamily = customFontInter,
+            fontWeight = FontWeight.Bold,
+            color = harmonyHavenTitleTextColor,
+            fontSize = MaterialTheme.typography.titleMedium.fontSize
+
+        )
+        Column(
+            modifier = Modifier
+                .size(width = 380.dp, height = 230.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            HorizontalPager(
+                modifier = Modifier
+                    .size(width = 360.dp, height = 210.dp),
+                state = pagerState,
+                verticalAlignment = Alignment.Top,
+            ) { page ->
+
+                MostReadArticle(pages[page])
+
+
+            }
+
+            Row(
+
+                horizontalArrangement = Arrangement.Center
+            ) {
+
+                repeat(pagerState.pageCount) { iteration ->
+                    val color =
+                        if (pagerState.currentPage == iteration) harmonyHavenDarkGreenColor else harmonyHavenGradientWhite
+                    Box(
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .clip(CircleShape)
+                            .background(color)
+                            .size(16.dp)
+                    )
+                }
+
+            }
+
+
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ExPrev() {
+    MostReadHorizontalPager()
     
 }
