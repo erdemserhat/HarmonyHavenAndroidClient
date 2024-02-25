@@ -3,7 +3,6 @@
     <string name="show_password">Show Password</string>
     <string name="hide_password">Hide Password</string>
     <string name="password">Password</string>
-    <string name="email">E-Mail</string>
     <string name="login_greeting_text">Harmony Haven Awaits You! Sign Up and Start Exploring. Join Now for Free and Enjoy All the Wonders of Our World!</string>
     <string name="remember_me">Remember me</string>
     <string name="forgot_password">Forgot Password</string>
@@ -23,6 +22,4 @@
     <string name="app_logo">App Logo</string>
     <string name="finish">Finish</string>
     <string name="daily_greeting_text">Success is not final, failure is not fatal: It is the courage to continue that counts.</string>
-    <string name="example_most_read_title">Embracing Life\'s Nuances</string>
-    <string name="example_most_read_article">Life is a journey filled with intricacies, where each moment presents us with new experiences. Along this path, we encounter a tapestry of joys and...</string>
 </resources>

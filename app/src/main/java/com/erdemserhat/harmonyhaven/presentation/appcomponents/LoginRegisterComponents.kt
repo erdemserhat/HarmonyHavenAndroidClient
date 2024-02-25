@@ -267,7 +267,7 @@ fun HarmonyHavenGreetingTitle(modifier: Modifier) {
 fun HarmonyHavenGreetingText(modifier: Modifier) {
     Text(
         text = stringResource(R.string.login_greeting_text),
-        modifier = Modifier,
+        modifier = modifier,
         fontSize = 14.sp,
         textAlign = TextAlign.Center
 

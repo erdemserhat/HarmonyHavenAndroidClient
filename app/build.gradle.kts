@@ -1,6 +1,10 @@
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    //kotlin("kapt")
+    //id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -30,11 +34,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -48,6 +52,10 @@ android {
         }
     }
 }
+kotlin {
+    jvmToolchain(17)
+}
+
 
 dependencies {
 
@@ -76,6 +84,22 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-pager:0.24.7-alpha")
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.24.7-alpha")
 
+    //Dependency injection with Hilt
+    //implementation("com.google.dagger:hilt-android:2.44")
+    //ksp("com.google.dagger:hilt-android-compiler:2.44")
 
+    //room database
+
+    val room_version = "2.6.1"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+
+    // To use Kotlin annotation processing tool (kapt)
+    //ksp("androidx.room:room-compiler:$room_version")
+    // To use Kotlin Symbol Processing (KSP)
+    //ksp("androidx.room:room-compiler:$room_version")
 
 }
+// Allow references to generated code
+

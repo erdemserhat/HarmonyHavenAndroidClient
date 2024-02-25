@@ -13,6 +13,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -22,20 +26,21 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.navigation.Screen
-import com.erdemserhat.harmonyhaven.presentation.appcomponents.ButtonWithIcon
-import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingButton
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingLogo
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingText
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingTitle
-import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenTextButton
-import com.erdemserhat.harmonyhaven.presentation.appcomponents.InputPasswordText
-import com.erdemserhat.harmonyhaven.presentation.appcomponents.InputText
-import com.erdemserhat.harmonyhaven.presentation.appcomponents.RememberCheckBox
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.ScreenWithBackground
+import com.erdemserhat.harmonyhaven.presentation.login.components.LoginScreenEmailTextField
+import com.erdemserhat.harmonyhaven.presentation.login.components.LoginScreenForgotPasswordTextButton
+import com.erdemserhat.harmonyhaven.presentation.login.components.LoginScreenGoogleSignInButton
+import com.erdemserhat.harmonyhaven.presentation.login.components.LoginScreenLoginButton
+import com.erdemserhat.harmonyhaven.presentation.login.components.LoginScreenPasswordTextField
+import com.erdemserhat.harmonyhaven.presentation.login.components.LoginScreenRememberCredentialsCheckbox
+import com.erdemserhat.harmonyhaven.presentation.login.components.LoginScreenWarningText
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 
 @Composable
-fun LoginScreenContent(navController: NavController) {
+fun LoginScreenContent(navController: NavController, viewModel: LoginViewModel) {
     //Content of Screen
     Column(
         modifier = Modifier
@@ -46,6 +51,14 @@ fun LoginScreenContent(navController: NavController) {
 
 
         ) {
+        var email by rememberSaveable {
+            mutableStateOf("")
+        }
+
+        var password by rememberSaveable {
+            mutableStateOf("")
+        }
+
         Column(
             Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -61,8 +74,9 @@ fun LoginScreenContent(navController: NavController) {
 
             HarmonyHavenGreetingText(
                 modifier = Modifier
-                    .padding(10.dp)
+                    .padding(20.dp)
             )
+
 
         }
 
@@ -76,18 +90,34 @@ fun LoginScreenContent(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
-                InputText(placeholderText = stringResource(R.string.e_mail))
-                InputPasswordText(label = stringResource(id = R.string.password))
+
+                LoginScreenEmailTextField(
+                    email = email,
+                    onValueChanged = {
+                        email = it
+                    }
+
+                )
+                LoginScreenPasswordTextField(
+                    onValueChanged = {
+                        password = it
+
+                    },
+                    password = password
+                )
             }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                RememberCheckBox(stringResource(R.string.remember_me))
+                LoginScreenRememberCredentialsCheckbox(loginViewModel = viewModel)
                 Spacer(modifier = Modifier.size(60.dp))
-                HarmonyHavenTextButton(stringResource(R.string.forgot_password), onClick = {navController.navigate(Screen.PasswordReset.route)})
+                LoginScreenForgotPasswordTextButton(navController)
             }
+            Spacer(modifier = Modifier.size(20.dp))
+            LoginScreenWarningText(loginViewModel = viewModel)
+
             Spacer(modifier = Modifier.size(20.dp))
 
             Column(
@@ -95,12 +125,22 @@ fun LoginScreenContent(navController: NavController) {
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                HarmonyHavenGreetingButton(stringResource(id = R.string.sign_in),{navController.navigate(Screen.Dashboard.route)})
+                LoginScreenLoginButton(
+                    modifier = Modifier,
+                    onClick = {
+                        viewModel.onLoginClicked(email, password)
+                        if(viewModel.state.value.canNavigateToDashBoard){
+                            navController.navigate(Screen.Home.route)
+                        }
+
+                    },
+                    canNavigateToDashboard = false,
+                    navController = navController,
+
+
+                    )
                 Spacer(modifier = Modifier.size(10.dp))
-                ButtonWithIcon(
-                    R.drawable.google_sign_in_icon,
-                    stringResource(R.string.sign_in_via_google)
-                )
+                LoginScreenGoogleSignInButton(Modifier, viewModel, navController)
 
 
                 Spacer(modifier = Modifier.size(10.dp))
@@ -125,9 +165,13 @@ fun LoginScreenContent(navController: NavController) {
 }
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(
+    navController: NavController,
+    viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+
+) {
     ScreenWithBackground(
-        content = { LoginScreenContent(navController = navController) },
+        content = { LoginScreenContent(navController = navController, viewModel = viewModel) },
         backgroundImageId = R.drawable.login_register_background
     )
 
