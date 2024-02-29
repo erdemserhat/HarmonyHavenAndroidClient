@@ -1,8 +1,11 @@
 
 plugins {
+
+    id("com.google.dagger.hilt.android")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
+    //id("com.google.devtools.ksp")
+    kotlin("kapt")
 
    // id ("dagger.hilt.android.plugin")
     //id ("kotlin-android-extensions")
@@ -95,23 +98,19 @@ dependencies {
     implementation("androidx.paging:paging-common-android:3.3.0-alpha03") // AndroidX Paging library to extend RecyclerViews with paging capabilities.
 
     //Room Database
+    //2.5.0 is compatible with ksp
 
-    //Note 2.5.0 compatible version of ksp
-    val room_version = "2.5.0"
+    val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
-    ksp("androidx.room:room-compiler:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
 
-    //Dagger/Hilt
-    //implementation ("com.google.dagger:dagger:2.50")
 
-    //val hilt_version = "2.48"
-
-    //implementation ("com.google.dagger:hilt-android:$hilt_version")
-    //ksp ("com.google.dagger:hilt-android-compiler:$hilt_version")
-   // val dagger_version = "2.50"
-   // implementation ("com.google.dagger:dagger:$dagger_version")
-    //ksp ("com.google.dagger:dagger-compiler:$dagger_version")
+    //Dagger-Hilt
+    //2.48 is compatible with ksp
+    
+    implementation("com.google.dagger:hilt-android:2.50")
+    kapt("com.google.dagger:hilt-android-compiler:2.50")
 
 
 
@@ -121,8 +120,11 @@ dependencies {
 
 
 
+}
 
-
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }
 
 
