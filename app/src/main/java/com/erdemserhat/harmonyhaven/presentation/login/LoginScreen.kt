@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -65,7 +66,7 @@ fun LoginScreenContent(navController: NavController, viewModel: LoginViewModel) 
         ) {
             HarmonyHavenGreetingLogo(
                 modifier = Modifier
-                    .padding(top = 30.dp)
+                    .padding(top = 35.dp)
             )
             HarmonyHavenGreetingTitle(
                 modifier = Modifier
@@ -157,6 +158,7 @@ fun LoginScreenContent(navController: NavController, viewModel: LoginViewModel) 
                 }
 
             }
+
         }
 
 
