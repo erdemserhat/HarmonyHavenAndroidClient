@@ -1,6 +1,7 @@
 package com.erdemserhat.harmonyhaven
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -10,6 +11,8 @@ import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.example.Engine
 import com.erdemserhat.harmonyhaven.example.ExampleViewModel
 import com.erdemserhat.harmonyhaven.navigation.SetupNavGraph
+import com.erdemserhat.model.user.LoginModel
+import com.erdemserhat.network.retrofit.UserApi
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -26,6 +29,11 @@ class MainActivity  : ComponentActivity() {
         super.onCreate(savedInstanceState)
         //use your dependencies here
         viewModel.A()
+        viewModel.postUser()
+
+
+
+
         setContent {
 
                 navController = rememberNavController()

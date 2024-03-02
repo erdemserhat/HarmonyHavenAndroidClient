@@ -68,7 +68,8 @@ dependencies {
     //Android Core Dependencies
 
     implementation("androidx.appcompat:appcompat:1.6.1") // AndroidX AppCompat library to make new Android features available on older Android versions.
-    implementation("androidx.core:core-ktx:1.12.0") // AndroidX Core KTX provides various utility functions for the Android platform.
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation(project(":core:model")) // AndroidX Core KTX provides various utility functions for the Android platform.
 
     //Test Dependencies
 
@@ -111,6 +112,8 @@ dependencies {
     
     implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-android-compiler:2.50")
+
+    implementation(project(":core:network"))
 
 
 
