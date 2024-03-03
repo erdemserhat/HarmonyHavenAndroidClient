@@ -19,7 +19,7 @@ private val retrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create())
     .build()
 
-interface UserApiService {
+interface UserApiService1 {
     @GET("user")//>photos is endpoint name
     suspend fun getUser():List<UserLogin> //-> kotlinx.serialization with retrofit will handle the process4
 
@@ -28,8 +28,8 @@ interface UserApiService {
 }
 
 object UserApi {
-    val retrofitService : UserApiService by lazy {
-        retrofit.create(UserApiService::class.java)
+    val retrofitService : UserApiService1 by lazy {
+        retrofit.create(UserApiService1::class.java)
 
     }
 }
