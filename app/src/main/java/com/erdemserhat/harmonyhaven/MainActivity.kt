@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.example.Engine
 import com.erdemserhat.harmonyhaven.example.ExampleViewModel
 import com.erdemserhat.harmonyhaven.navigation.SetupNavGraph
+import com.erdemserhat.harmonyhaven.presentation.login.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -19,15 +20,16 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity  : ComponentActivity() {
     private lateinit var navController: NavHostController
-    val viewModel :ExampleViewModel by viewModels()
+    //val viewModel :ExampleViewModel by viewModels()
+   // val loginViewModel:LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //you have to use your dependency after the
         // super.onCreate() function
         super.onCreate(savedInstanceState)
         //use your dependencies here
-        viewModel.A()
-        viewModel.postUser()
+       // viewModel.A()
+       // viewModel.postUser()
 
 
 

@@ -33,7 +33,6 @@ fun LoginScreenLoginButton(
     Button(
         onClick = {
            onClick()
-
         },
         shape = RoundedCornerShape(topStart = 10.dp, bottomEnd = 20.dp),
         modifier = modifier
