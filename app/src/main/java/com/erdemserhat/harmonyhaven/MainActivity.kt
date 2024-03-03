@@ -11,8 +11,6 @@ import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.example.Engine
 import com.erdemserhat.harmonyhaven.example.ExampleViewModel
 import com.erdemserhat.harmonyhaven.navigation.SetupNavGraph
-import com.erdemserhat.model.user.LoginModel
-import com.erdemserhat.network.retrofit.UserApi
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

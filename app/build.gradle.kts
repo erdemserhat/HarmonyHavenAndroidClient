@@ -69,7 +69,6 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:1.6.1") // AndroidX AppCompat library to make new Android features available on older Android versions.
     implementation("androidx.core:core-ktx:1.12.0")
-    implementation(project(":core:model")) // AndroidX Core KTX provides various utility functions for the Android platform.
 
     //Test Dependencies
 
@@ -113,7 +112,17 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-android-compiler:2.50")
 
-    implementation(project(":core:network"))
+
+    //Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // Retrofit with Kotlin serialization Converter
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+
+    // Kotlin serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
 
 
