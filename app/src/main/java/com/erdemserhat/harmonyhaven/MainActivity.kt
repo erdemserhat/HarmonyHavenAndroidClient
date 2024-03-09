@@ -21,7 +21,7 @@ import javax.inject.Inject
 class MainActivity  : ComponentActivity() {
     private lateinit var navController: NavHostController
     //val viewModel :ExampleViewModel by viewModels()
-   // val loginViewModel:LoginViewModel by viewModels()
+    //val loginViewModel:LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //you have to use your dependency after the
@@ -30,6 +30,7 @@ class MainActivity  : ComponentActivity() {
         //use your dependencies here
        // viewModel.A()
        // viewModel.postUser()
+        //viewModel.registerUser()
 
 
 

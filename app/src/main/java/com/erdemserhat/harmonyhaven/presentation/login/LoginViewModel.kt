@@ -11,8 +11,9 @@ import com.erdemserhat.harmonyhaven.presentation.login.state.LoginState
 import com.erdemserhat.harmonyhaven.presentation.login.util.LoginValidationError
 import com.erdemserhat.harmonyhaven.presentation.login.util.validateLoginFormant
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,17 +24,13 @@ class LoginViewModel @Inject constructor(val userApiService: UserApiService) : V
     var state = mutableStateOf(LoginState())
         private set
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun onLoginClicked(email: String, password: String) {
         //input validation
         val validationResult = validateLoginFormant(email, password)
         if (validationResult == LoginValidationError.NoError) {
             //controlling the validated inputs
-            val user =  loginUser(email, password)
-            if(user!=null){
-                state.value = state.value.copy(canNavigateToDashBoard = true)
-            }else{
-                state.value = state.value.copy(canNavigateToDashBoard = false)
-            }
+            loginUser(email,password)
 
 
         }
@@ -53,7 +50,12 @@ class LoginViewModel @Inject constructor(val userApiService: UserApiService) : V
 
                 if (response.await().isSuccessful) {
                     user = response.await().body()
-                    user?.email?.let { Log.d("erdem3451", it) }
+                    user?.email?.let {
+                        Log.d("erdem3451", it)
+                        state.value = state.value.copy(canNavigateToDashBoard = true)
+
+                    }
+
                 } else {
                     user = null
                     Log.d("erdem3451", "user null")
