@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -27,7 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingLogo
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingText
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingTitle

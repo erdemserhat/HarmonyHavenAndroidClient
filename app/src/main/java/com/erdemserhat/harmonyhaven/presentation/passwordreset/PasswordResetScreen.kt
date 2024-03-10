@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingButton
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingLogo
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.InputText
