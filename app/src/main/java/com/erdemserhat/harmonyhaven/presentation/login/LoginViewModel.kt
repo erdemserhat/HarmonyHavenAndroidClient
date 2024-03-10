@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.domain.model.User
 import com.erdemserhat.harmonyhaven.domain.model.UserLogin
-import com.erdemserhat.harmonyhaven.network.UserApiService
+import com.erdemserhat.harmonyhaven.data.network.UserApiService
 import com.erdemserhat.harmonyhaven.presentation.login.state.LoginState
 import com.erdemserhat.harmonyhaven.presentation.login.util.LoginValidationError
 import com.erdemserhat.harmonyhaven.presentation.login.util.validateLoginFormant

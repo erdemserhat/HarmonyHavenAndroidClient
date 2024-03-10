@@ -34,7 +34,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.OnBoardingPage
-import com.erdemserhat.harmonyhaven.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingButton
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
