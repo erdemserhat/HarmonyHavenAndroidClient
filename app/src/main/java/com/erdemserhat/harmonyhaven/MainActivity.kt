@@ -15,7 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity  : ComponentActivity() {
     private lateinit var navController: NavHostController
-    //val viewModel: ExampleViewModel by viewModels()
+    val viewModel: ExampleViewModel by viewModels()
     //val loginViewModel:LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,8 +24,10 @@ class MainActivity  : ComponentActivity() {
         super.onCreate(savedInstanceState)
         //use your dependencies here
         // viewModel.fdsfA()
-       // viewModel.loginUser()
+       //viewModel.loginUser()
         //viewModel.registerUser()
+        //viewModel.updateUser()
+        viewModel.deleteUser()
 
 
 
