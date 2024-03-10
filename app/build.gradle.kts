@@ -15,6 +15,8 @@ android {
     namespace = "com.erdemserhat.harmonyhaven"
     compileSdk = 34
 
+
+
     defaultConfig {
         applicationId = "com.erdemserhat.harmonyhaven"
         minSdk = 24
@@ -37,6 +39,8 @@ android {
             )
         }
     }
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -55,6 +59,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
 
 
 }

@@ -1,26 +1,21 @@
 package com.erdemserhat.harmonyhaven
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.erdemserhat.harmonyhaven.example.Engine
 import com.erdemserhat.harmonyhaven.example.ExampleViewModel
-import com.erdemserhat.harmonyhaven.navigation.SetupNavGraph
-import com.erdemserhat.harmonyhaven.presentation.login.LoginViewModel
+import com.erdemserhat.harmonyhaven.presentation.navigation.SetupNavGraph
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @OptIn(ExperimentalFoundationApi::class)
-
 @AndroidEntryPoint
 class MainActivity  : ComponentActivity() {
     private lateinit var navController: NavHostController
-    //val viewModel :ExampleViewModel by viewModels()
+    val viewModel: ExampleViewModel by viewModels()
     //val loginViewModel:LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,18 +23,20 @@ class MainActivity  : ComponentActivity() {
         // super.onCreate() function
         super.onCreate(savedInstanceState)
         //use your dependencies here
-       // viewModel.A()
-       // viewModel.postUser()
+        // viewModel.fdsfA()
+       //viewModel.loginUser()
         //viewModel.registerUser()
+        //viewModel.updateUser()
+        viewModel.deleteUser()
 
 
 
 
         setContent {
 
-                navController = rememberNavController()
-                SetupNavGraph(navController = navController)
-            }
+            navController = rememberNavController()
+            SetupNavGraph(navController = navController)
         }
+    }
 
 }

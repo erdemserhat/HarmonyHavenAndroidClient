@@ -32,7 +32,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.Gender
-import com.erdemserhat.harmonyhaven.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.ButtonWithIcon
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingButton
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.InputPasswordText
