@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.navigation
+package com.erdemserhat.harmonyhaven.presentation.navigation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
@@ -50,7 +50,7 @@ fun SetupNavGraph(navController:NavHostController) {
 
         }
         
-        composable(route=Screen.Dashboard.route){
+        composable(route= Screen.Dashboard.route){
             DashboardScreen(navHostController = navController)
         }
 
