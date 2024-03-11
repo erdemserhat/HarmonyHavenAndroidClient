@@ -12,7 +12,7 @@ fun LoginScreenWarningText(
     loginViewModel: LoginViewModel
 ) {
     Text(
-        text = loginViewModel.state.value.loginWarning,
+        text = loginViewModel.state2.value.loginWarning,
         textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()

@@ -1,6 +1,7 @@
 package com.erdemserhat.harmonyhaven
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -15,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity  : ComponentActivity() {
     private lateinit var navController: NavHostController
-    val viewModel: ExampleViewModel by viewModels()
+    private val viewModel: ExampleViewModel by viewModels()
     //val loginViewModel:LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +28,17 @@ class MainActivity  : ComponentActivity() {
        //viewModel.loginUser()
         //viewModel.registerUser()
         //viewModel.updateUser()
-        viewModel.deleteUser()
+        //viewModel.deleteUser(),
+        /**
+        try {
+            viewModel.sendMail()
+        }catch (
+            ex:Exception
+        ){
+            Log.d("erdem3451",ex.message.toString())
+        }
+        */
+
 
 
 

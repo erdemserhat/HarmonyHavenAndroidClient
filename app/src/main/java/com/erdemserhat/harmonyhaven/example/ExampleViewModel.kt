@@ -12,6 +12,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.system.measureTimeMillis
@@ -70,6 +72,7 @@ class ExampleViewModel @Inject constructor(
 
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun updateUser() {
        val userlogin = UserLogin(
            email = "me.serhaterdem@gmail.com",
@@ -121,5 +124,29 @@ class ExampleViewModel @Inject constructor(
         }
 
     }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun sendMail(){
+        val email = "me.serhaterdem@gmail.com"
+        try {
+            GlobalScope.launch(Dispatchers.IO) {
+
+                val consumedTime = measureTimeMillis {
+                    val response = userUseCases.resetPasswordUser.sendMail(email).collect{
+                        Log.d("erdem3451","Result->"+it.result.toString())
+                        Log.d("erdem3451","Result Message->"+it.message.toString())
+                    }
+
+                }
+                Log.d("erdem3451", "Consumed Time->$consumedTime")
+            }
+
+        }catch (e:Exception){
+            Log.d("erdem3451","Error Message->${e.message.toString()}")
+        }
+
+    }
+
+
 
 }
