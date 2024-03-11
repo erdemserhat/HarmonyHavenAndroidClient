@@ -22,10 +22,10 @@ interface UserApiService {
     suspend fun updateUser(@Body userUpdateModel: UserUpdateModel):Response<RequestResult>
     @PATCH("user/delete")
     suspend fun deleteUser(@Body userLogin: UserLogin):Response<RequestResult>
-    @POST("/user/reset-password/auth")
-    suspend fun sendPasswordResetMail(@Body resetPasswordRequest: ResetPasswordRequest):Response<Message>
+    @POST("user/reset-password/auth")
+    suspend fun sendPasswordResetMail(@Body resetPasswordRequest: ResetPasswordRequest):Response<RequestResult>
 
     @PATCH("/user/resetpassword/confirm")
-    suspend fun resetPassword(@Body passwordResetModel: PasswordResetModel):Response<Message>
+    suspend fun resetPassword(@Body passwordResetModel: PasswordResetModel):Response<RequestResult>
 
 }
