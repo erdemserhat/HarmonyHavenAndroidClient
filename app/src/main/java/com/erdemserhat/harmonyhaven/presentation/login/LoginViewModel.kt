@@ -15,11 +15,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    val userUseCases: UserUseCases) : ViewModel() {
-    var state = mutableStateOf(LoginState())
-        private set
+    private val userUseCases: UserUseCases) : ViewModel() {
 
-    var state2 = mutableStateOf(LoginState2())
+    var loginState = mutableStateOf(LoginState())
         private set
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -27,9 +25,9 @@ class LoginViewModel @Inject constructor(
 
         GlobalScope.launch(Dispatchers.IO) {
             val response = userUseCases.loginUser(UserLogin(email, password)).collect {
-                state2.value = state2.value.copy(isLoading = it.isLoading)
-                state2.value = state2.value.copy(canNavigateToDashBoard = it.result)
-                state2.value = state2.value.copy(loginWarning = it.message)
+                loginState.value = loginState.value.copy(isLoading = it.isLoading)
+                loginState.value = loginState.value.copy(canNavigateToDashBoard = it.result)
+                loginState.value = loginState.value.copy(loginWarning = it.message)
 
             }
 
