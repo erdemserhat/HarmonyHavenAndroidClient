@@ -1,24 +1,16 @@
 package com.erdemserhat.harmonyhaven.presentation.login
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.domain.model.User
 import com.erdemserhat.harmonyhaven.domain.model.UserLogin
-import com.erdemserhat.harmonyhaven.data.network.UserApiService
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
-import com.erdemserhat.harmonyhaven.presentation.login.state.LoginState
-import com.erdemserhat.harmonyhaven.presentation.login.util.LoginValidationError
-import com.erdemserhat.harmonyhaven.presentation.login.util.validateLoginFormant
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.system.measureTimeMillis
 
 
 @HiltViewModel
@@ -27,29 +19,46 @@ class LoginViewModel @Inject constructor(
     var state = mutableStateOf(LoginState())
         private set
 
+    var state2 = mutableStateOf(LoginState2())
+        private set
+
     @OptIn(DelicateCoroutinesApi::class)
     fun onLoginClicked(email: String, password: String) {
 
+        GlobalScope.launch(Dispatchers.IO) {
+            val response = userUseCases.loginUser(UserLogin(email, password)).collect {
+                state2.value = state2.value.copy(isLoading = it.isLoading)
+                state2.value = state2.value.copy(canNavigateToDashBoard = it.result)
+                state2.value = state2.value.copy(loginWarning = it.message)
+
+            }
+
+
+        }
+
+
+        /**
         val mockUserModel = UserLogin(email, password)
 
         GlobalScope.launch(Dispatchers.IO) {
-            val elapsedTime = measureTimeMillis {
-                val result = userUseCases.loginUser(mockUserModel)
-                Log.d("erdem3451", result.toString())
-            }
-            Log.d("erdem3451", "Process Finished, Consumed Time: $elapsedTime ms")
+        val elapsedTime = measureTimeMillis {
+        val result = userUseCases.loginUser(mockUserModel)
+        Log.d("erdem3451", result.toString())
+        }
+        Log.d("erdem3451", "Process Finished, Consumed Time: $elapsedTime ms")
         }
 
 
 
 
 
-        /**
+
+
         //input validation
         val validationResult = validateLoginFormant(email, password)
         if (validationResult == LoginValidationError.NoError) {
-            //controlling the validated inputs
-            loginUser(email, password)
+        //controlling the validated inputs
+        loginUser(email, password)
 
 
         }
@@ -58,7 +67,7 @@ class LoginViewModel @Inject constructor(
         state.value = state.value.copy(loginWarning = validationResult.errorMessage)
 
 
-        */
+         */
     }
 
     private fun loginUser(email: String, password: String): User? {

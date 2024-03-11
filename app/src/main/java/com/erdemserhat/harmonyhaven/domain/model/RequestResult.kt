@@ -1,6 +1,6 @@
 package com.erdemserhat.harmonyhaven.domain.model
 
-data class RequestResult(
+open class RequestResult(
     val result:Boolean,
     val message:String
 )

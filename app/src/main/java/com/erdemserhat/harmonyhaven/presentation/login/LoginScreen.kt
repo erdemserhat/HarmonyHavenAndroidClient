@@ -39,7 +39,14 @@ import com.erdemserhat.harmonyhaven.presentation.login.components.LoginScreenPas
 import com.erdemserhat.harmonyhaven.presentation.login.components.LoginScreenRememberCredentialsCheckbox
 import com.erdemserhat.harmonyhaven.presentation.login.components.LoginScreenWarningText
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun LoginScreenContent(navController: NavController, viewModel: LoginViewModel) {
     //Content of Screen
@@ -129,10 +136,17 @@ fun LoginScreenContent(navController: NavController, viewModel: LoginViewModel) 
                 LoginScreenLoginButton(
                     modifier = Modifier,
                     onClick = {
-                        viewModel.onLoginClicked(email, password)
-                        if(viewModel.state.value.canNavigateToDashBoard){
-                            navController.navigate(Screen.Dashboard.route)
+                        GlobalScope.launch {
+                            viewModel.onLoginClicked(email, password)
+
+                            withContext(Dispatchers.Main){
+                                if(viewModel.state2.value.canNavigateToDashBoard){
+                                    navController.navigate(Screen.Dashboard.route)
+                                }
+                            }
+
                         }
+
 
                     },
                     canNavigateToDashboard = false,
