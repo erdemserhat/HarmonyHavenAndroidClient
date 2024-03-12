@@ -40,9 +40,11 @@ fun SetupNavGraph(navController:NavHostController) {
         }
 
         composable(route = Screen.Register.route){
+            //RegisterScreen(navController = navController)
             RegisterScreen(navController = navController)
 
         }
+
 
         composable(route = Screen.PasswordReset.route){
             PasswordResetScreen(navController = navController)
