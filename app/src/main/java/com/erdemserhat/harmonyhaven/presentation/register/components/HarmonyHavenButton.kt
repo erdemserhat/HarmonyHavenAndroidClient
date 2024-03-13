@@ -14,7 +14,8 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 fun HarmonyHavenButton(
     buttonText: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isEnabled:Boolean
 
 ) {
 
@@ -25,7 +26,8 @@ fun HarmonyHavenButton(
             .size(width = 200.dp, 40.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = harmonyHavenGreen
-        )
+        ),
+        enabled = isEnabled
 
 
     ) {

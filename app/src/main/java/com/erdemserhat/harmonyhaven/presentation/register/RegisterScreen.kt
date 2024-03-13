@@ -36,6 +36,7 @@ import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.Gender
 import com.erdemserhat.harmonyhaven.domain.model.RegisterFormModel
+import com.erdemserhat.harmonyhaven.presentation.login.components.LoginScreenWarningText
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.register.components.AcceptanceOfTermsOfUse
 import com.erdemserhat.harmonyhaven.presentation.register.components.GenderSection
@@ -63,7 +64,7 @@ fun RegisterScreenContent(
     onSignUpClicked: () -> Unit,
     onSignUpViaGoogleClicked: () -> Unit,
     isTermsOfUserAccepted: Boolean,
-    onTermsOfUseAcceptanceStatusChanged: (Boolean) -> Unit,
+    onTermsOfConditionsAcceptanceStatusChanged: (Boolean) -> Unit,
     onSignInClicked: () -> Unit,
     warningText: String,
     isLoading: Boolean,
@@ -75,6 +76,10 @@ fun RegisterScreenContent(
 
     if (shouldNavigateTo) {
         onShouldNavigateTo()
+    }
+
+    var isButtonsEnabled by rememberSaveable {
+        mutableStateOf(false)
     }
 
 
@@ -172,6 +177,15 @@ fun RegisterScreenContent(
                     )
                     Spacer(modifier = Modifier.size(10.dp))
 
+
+                    if(isTermsOfUserAccepted){
+                        isButtonsEnabled = true
+
+                    }else{
+                        isButtonsEnabled = false
+
+                    }
+
                     Text(
                         text = warningText,
                         textAlign = TextAlign.Center,
@@ -180,6 +194,8 @@ fun RegisterScreenContent(
 
 
                     )
+
+                    
 
 
                     Spacer(modifier = Modifier.size(20.dp))
@@ -212,7 +228,8 @@ fun RegisterScreenContent(
                             HarmonyHavenButton(
                                 buttonText = stringResource(id = R.string.sign_up),
                                 onClick = onSignUpClicked,
-                                modifier = Modifier
+                                modifier = Modifier,
+                                isEnabled = isButtonsEnabled
 
 
                             )
@@ -221,14 +238,15 @@ fun RegisterScreenContent(
                             HarmonyHavenButtonWithIcon(
                                 onClick = onSignUpViaGoogleClicked,
                                 painterId = R.drawable.google_sign_in_icon,
-                                buttonText = stringResource(id = R.string.sign_in_via_google)
+                                buttonText = stringResource(id = R.string.sign_in_via_google),
+                                isEnabled = isButtonsEnabled
 
                             )
                             Spacer(modifier = Modifier.size(10.dp))
 
                             AcceptanceOfTermsOfUse(
                                 stringResource(R.string.terms_use),
-                                onCheckedStateChanged = onTermsOfUseAcceptanceStatusChanged,
+                                onCheckedStateChanged = onTermsOfConditionsAcceptanceStatusChanged,
                                 checkedState = isTermsOfUserAccepted
 
                             )
@@ -291,9 +309,10 @@ fun RegisterScreen(
         mutableStateOf(Gender.None)
     }
 
-    var isTermsOfUserAccepted by rememberSaveable {
+    var isTermsOfConditionsAccepted by rememberSaveable {
         mutableStateOf(false)
     }
+
 
     RegisterScreenContent(
         name = name,
@@ -301,6 +320,7 @@ fun RegisterScreen(
         surname = surname,
         onSurnameValueChanged = { surname = it },
         email = email,
+
         onEmailValueChanged = { email = it },
         password = password,
         onPasswordValueChanged = { password = it },
@@ -309,22 +329,26 @@ fun RegisterScreen(
         gender = gender,
         onGenderValueChanged = { gender = it },
         onSignUpClicked = {
-            registerViewModel.onRegisterClicked(
-                RegisterFormModel(
-                    name = name,
-                    surname = surname,
-                    email = email,
-                    password = password,
-                    confirmPassword = passwordConfirm,
-                    gender = gender
+            if (isTermsOfConditionsAccepted){
+                registerViewModel.onRegisterClicked(
+                    RegisterFormModel(
+                        name = name,
+                        surname = surname,
+                        email = email,
+                        password = password,
+                        confirmPassword = passwordConfirm,
+                        gender = gender
+                    )
                 )
-            )
+            }
+
+
         },
         onSignUpViaGoogleClicked = {},
-        isTermsOfUserAccepted = isTermsOfUserAccepted,
-        onTermsOfUseAcceptanceStatusChanged = { isTermsOfUserAccepted = !isTermsOfUserAccepted },
+        isTermsOfUserAccepted = isTermsOfConditionsAccepted,
+        onTermsOfConditionsAcceptanceStatusChanged = { isTermsOfConditionsAccepted = !isTermsOfConditionsAccepted },
         onSignInClicked = { navController.navigate(Screen.Login.route) },
-        warningText = registerViewModel.registerState.value.loginWarning,
+        warningText = registerViewModel.registerState.value.registerWarning,
         isLoading = registerViewModel.registerState.value.isLoading,
         shouldNavigateTo = registerViewModel.registerState.value.canNavigateTo,
         onShouldNavigateTo = { navController.navigate(Screen.Dashboard.route) }
@@ -353,7 +377,7 @@ fun RegisterScreenPreviewDev() {
         onSignUpClicked = {},
         onSignUpViaGoogleClicked = {},
         isTermsOfUserAccepted = true,
-        onTermsOfUseAcceptanceStatusChanged = {},
+        onTermsOfConditionsAcceptanceStatusChanged = {},
         onSignInClicked = {},
         warningText = "Loading....",
         isLoading = false,

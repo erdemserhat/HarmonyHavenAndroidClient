@@ -33,7 +33,7 @@ class RegisterViewModel @Inject constructor(
                 validateRegisterForm(formModel)
             }catch (e:Exception){
                 _registerState.value = _registerState.value.copy(
-                    loginWarning = e.message.toString()
+                    registerWarning = e.message.toString()
 
                 )
 
@@ -44,7 +44,7 @@ class RegisterViewModel @Inject constructor(
             userUseCases.registerUser(formModel.toUser()).collect{
                 _registerState.value = _registerState.value.copy(
                     canNavigateTo = it.result,
-                    loginWarning = it.message,
+                    registerWarning = it.message,
                     isLoading = it.isLoading
                 )
             }

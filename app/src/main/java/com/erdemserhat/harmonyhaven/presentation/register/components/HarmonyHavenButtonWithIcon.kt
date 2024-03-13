@@ -18,7 +18,8 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
 fun HarmonyHavenButtonWithIcon(
     painterId: Int,
     buttonText: String,
-    onClick:()->Unit
+    onClick:()->Unit,
+    isEnabled:Boolean
 
 ) {
     OutlinedButton(
@@ -29,7 +30,8 @@ fun HarmonyHavenButtonWithIcon(
         shape = RoundedCornerShape(topStart = 10.dp, bottomEnd = 20.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = harmonyHavenWhite,
-        )
+        ),
+        enabled = isEnabled
     ) {
         Icon(
             painterResource(id = painterId),
