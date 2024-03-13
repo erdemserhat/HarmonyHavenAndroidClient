@@ -23,9 +23,17 @@ interface UserApiService {
     @PATCH("user/delete")
     suspend fun deleteUser(@Body userLogin: UserLogin):Response<RequestResult>
     @POST("user/reset-password/auth")
+
+    // TODO: Update endpoint points based on your server side
+    // TODO: Update your models (data transfer)
+
     suspend fun sendPasswordResetMail(@Body resetPasswordRequest: ResetPasswordRequest):Response<RequestResult>
+
+    // TODO: Update endpoint points based on your server side
 
     @PATCH("/user/resetpassword/confirm")
     suspend fun resetPassword(@Body passwordResetModel: PasswordResetModel):Response<RequestResult>
+
+
 
 }

@@ -10,6 +10,9 @@ sealed class Screen(val route:String) {
     object Home: Screen("home_screen")
     object Welcome: Screen("welcome_screen")
     object Dashboard: Screen("dashboard_screen")
+    object Mail:Screen("forgot_password_mail_screen")
+
+    object ResetPassword:Screen("forgot_password_code_screen")
 
 
 

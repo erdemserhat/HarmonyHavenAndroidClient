@@ -43,6 +43,7 @@ import com.erdemserhat.harmonyhaven.presentation.register.components.GenderSecti
 import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenButton
 import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenButtonWithIcon
 import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenPasswordTextField
+import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenProgressIndicator
 import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenTextField
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.util.customFontFamilyJunge
@@ -210,12 +211,7 @@ fun RegisterScreenContent(
                     Spacer(modifier = Modifier.size(20.dp))
 
                     if (isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .width(32.dp),
-                            color = harmonyHavenGreen,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                        )
+                        HarmonyHavenProgressIndicator()
 
                     } else {
 
