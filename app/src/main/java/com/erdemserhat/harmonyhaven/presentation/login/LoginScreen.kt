@@ -108,7 +108,7 @@ fun LoginScreenContent(
 
 
         //Screen Content
-        Column(
+            Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),

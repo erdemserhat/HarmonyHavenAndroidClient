@@ -10,5 +10,5 @@ data class User(
     val password:String,
     val gender:String,
     val profilePhotoPath:String="",
-    val id:Int
+    val id:Int=0
 )
