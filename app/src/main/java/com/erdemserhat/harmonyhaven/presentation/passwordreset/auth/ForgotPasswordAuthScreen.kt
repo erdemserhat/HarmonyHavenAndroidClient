@@ -1,7 +1,7 @@
-package com.erdemserhat.harmonyhaven.presentation.passwordreset.mail
+package com.erdemserhat.harmonyhaven.presentation.passwordreset.auth
 
+import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,39 +22,50 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingLogo
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
-import com.erdemserhat.harmonyhaven.presentation.passwordreset.auth.ForgotPasswordAuthScreenContent
-import com.erdemserhat.harmonyhaven.presentation.passwordreset.auth.ForgotPasswordAuthViewModel
+import com.erdemserhat.harmonyhaven.presentation.passwordreset.mail.ArrowBackButtonDev
 import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenButton
 import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenProgressIndicator
 import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenTextField
 
+@Preview
+@Composable
+fun ForgotPasswordAuthScreenPreview() {
+    ForgotPasswordAuthScreenContent(
+        code = "",
+        onCodeValueChanged = {},
+        onArrowBackButtonClicked = {},
+        isLoading = false,
+        warningText = "",
+        onSendCodeClicked = {},
+        shouldNavigateTo = false,
+        onShouldNavigateTo = {}
+
+        )
+}
 
 @Composable
-fun ForgotPasswordMailScreenContent(
-    email: String,
-    onEmailValueChanged: (String) -> Unit,
+fun ForgotPasswordAuthScreenContent(
+    code: String,
+    onCodeValueChanged: (String) -> Unit,
     onArrowBackButtonClicked: () -> Unit,
     isLoading: Boolean,
     warningText: String,
-    onSendMailClicked: () -> Unit,
-    shouldNavigateTo:Boolean,
-    onShouldNavigateTo:()->Unit
+    onSendCodeClicked: () -> Unit,
+    shouldNavigateTo: Boolean,
+    onShouldNavigateTo: () -> Unit
 
 ) {
-
-    if (shouldNavigateTo)
-    {
+    if (shouldNavigateTo) {
         onShouldNavigateTo()
+
     }
 
     //screen content
@@ -83,10 +94,7 @@ fun ForgotPasswordMailScreenContent(
                 onClick = onArrowBackButtonClicked
             )
 
-            if (shouldNavigateTo){
 
-
-            }
 
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -98,14 +106,16 @@ fun ForgotPasswordMailScreenContent(
                     modifier = Modifier
                 )
                 Spacer(modifier = Modifier.size(35.dp))
+
                 HarmonyHavenTextField(
-                    text = email,
-                    onValueChanged = onEmailValueChanged,
-                    placeHolderText = stringResource(R.string.e_mail),
+                    text = code,
+                    onValueChanged = onCodeValueChanged,
+                    placeHolderText = "6-Digit Code",
                     isEnabled = !isLoading
 
-
                 )
+
+
                 Spacer(modifier = Modifier.size(20.dp))
                 Text(
                     text = warningText,
@@ -116,111 +126,31 @@ fun ForgotPasswordMailScreenContent(
 
                 )
 
-
-
                 if (isLoading) {
                     Spacer(modifier = Modifier.size(20.dp))
                     HarmonyHavenProgressIndicator()
                 } else {
                     Spacer(modifier = Modifier.size(20.dp))
                     HarmonyHavenButton(
-                        buttonText = stringResource(R.string.e_mail),
-                        onClick = onSendMailClicked,
+                        buttonText = "Confirm",
+                        onClick = onSendCodeClicked,
                         modifier = Modifier,
                         isEnabled = !isLoading
 
                     )
                 }
 
+
             }
+
 
         }
 
-
     }
 
 
 }
 
-@Preview
-@Composable
-fun ForgotPasswordMailScreenPreview() {
-    var navController: NavController = rememberNavController()
-    ForgotPasswordMailScreenContent(
-        email = "",
-        onEmailValueChanged = {},
-        onArrowBackButtonClicked = { /*TODO*/ },
-        isLoading = true,
-        warningText = "Loading...",
-        onSendMailClicked = {},
-        shouldNavigateTo = false,
-        onShouldNavigateTo = {}
-    )
-
-}
-
-@Composable
-fun ArrowBackButtonDev(modifier: Modifier, onClick: () -> Unit) {
-    Image(
-        painter = painterResource(id = R.drawable.arrow_back),
-        contentDescription = null,
-        modifier = modifier
-            .size(32.dp)
-            .clickable { onClick() }
-    )
-
-}
-
-@Composable
-fun ForgotPasswordMailScreen(
-    navController: NavController,
-    mailViewModel: ForgotPasswordMailViewModel = hiltViewModel(),
-    authViewModel: ForgotPasswordAuthViewModel = hiltViewModel()
 
 
-) {
-    var email by rememberSaveable {
-        mutableStateOf("me.serhaterdem@gmail.com")
-    }
 
-    var code by rememberSaveable {
-        mutableStateOf("")
-    }
-
-    var password by rememberSaveable {
-        mutableStateOf("")
-    }
-
-    var confirmPassword by rememberSaveable {
-        mutableStateOf("")
-    }
-
-    if (mailViewModel.mailState.value.canNavigateTo)
-        ForgotPasswordAuthScreenContent(
-            code = code,
-            onCodeValueChanged = { code = it },
-            onArrowBackButtonClicked = { navController.navigate(Screen.Mail.route) },
-            isLoading = authViewModel.authModel.value.isLoading,
-            warningText = authViewModel.authModel.value.authWarning,
-            onSendCodeClicked = { authViewModel.authRequest(email,code) },
-            shouldNavigateTo = authViewModel.authModel.value.canNavigateTo,
-            onShouldNavigateTo = {})
-    else {
-        ForgotPasswordMailScreenContent(
-            email = email,
-            onEmailValueChanged = { email = it },
-            onArrowBackButtonClicked = { navController.navigate(Screen.Login.route) },
-            isLoading = mailViewModel.mailState.value.isLoading,
-            warningText = mailViewModel.mailState.value.mailWarning,
-            onSendMailClicked = { mailViewModel.sendMail(email) },
-            shouldNavigateTo = mailViewModel.mailState.value.canNavigateTo,
-            onShouldNavigateTo = { }
-
-
-        )
-
-
-    }
-
-
-}

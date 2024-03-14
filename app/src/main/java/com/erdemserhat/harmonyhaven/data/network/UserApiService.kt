@@ -1,11 +1,12 @@
 package com.erdemserhat.harmonyhaven.data.network
 
-import com.erdemserhat.harmonyhaven.domain.model.Message
+import com.erdemserhat.harmonyhaven.domain.model.ForgotPasswordAuthClientModel
+import com.erdemserhat.harmonyhaven.domain.model.ForgotPasswordMailerClientModel
+import com.erdemserhat.harmonyhaven.domain.model.ForgotPasswordResetClientModel
 import com.erdemserhat.harmonyhaven.domain.model.User
 import com.erdemserhat.harmonyhaven.domain.model.UserLogin
-import com.erdemserhat.harmonyhaven.domain.model.PasswordResetModel
 import com.erdemserhat.harmonyhaven.domain.model.RequestResult
-import com.erdemserhat.harmonyhaven.domain.model.ResetPasswordRequest
+import com.erdemserhat.harmonyhaven.domain.model.RequestResultUUID
 import com.erdemserhat.harmonyhaven.domain.model.UserUpdateModel
 import retrofit2.Response
 import retrofit2.http.Body
@@ -19,20 +20,33 @@ interface UserApiService {
     @POST("/user/register")
     suspend fun register(@Body user:User):Response<RequestResult>
     @PATCH("user/update")
+
+
     suspend fun updateUser(@Body userUpdateModel: UserUpdateModel):Response<RequestResult>
     @PATCH("user/delete")
     suspend fun deleteUser(@Body userLogin: UserLogin):Response<RequestResult>
-    @POST("user/reset-password/auth")
 
-    // TODO: Update endpoint points based on your server side
-    // TODO: Update your models (data transfer)
+    /**
+     * This endpoints sends mail in order to reset password based on user's request
+     */
 
-    suspend fun sendPasswordResetMail(@Body resetPasswordRequest: ResetPasswordRequest):Response<RequestResult>
+    @POST("user/forgot-password/mailer") ///-------->Server side endpoint name (Mailer)
+    suspend fun requestResetPasswordMail(@Body mailerModel: ForgotPasswordMailerClientModel):Response<RequestResult>
 
-    // TODO: Update endpoint points based on your server side
+    /**
+     * This endpoint refers the uuid generation based on the mailer request
+     */
 
-    @PATCH("/user/resetpassword/confirm")
-    suspend fun resetPassword(@Body passwordResetModel: PasswordResetModel):Response<RequestResult>
+    @PATCH("user/forgot-password/auth") ///-------->Server side endpoint name (Auth)
+    suspend fun requestResetPasswordAuth(@Body authModel:ForgotPasswordAuthClientModel):Response<RequestResultUUID>
+
+    /**
+     * This endpoint is the last step of password reset progress
+     */
+
+    @PATCH
+    suspend fun requestPasswordReset(@Body resetModel:ForgotPasswordResetClientModel):Response<RequestResult>
+
 
 
 
