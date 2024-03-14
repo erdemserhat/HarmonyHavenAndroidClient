@@ -276,7 +276,7 @@ fun LoginScreen(
         onLoginButtonClicked = { viewModel.onLoginClicked(email, password) },
         onLoginViaGoogleClicked = {},
         onSignUpClicked = { navController.navigate(Screen.Register.route) },
-        onForgotPasswordClicked = { navController.navigate(Screen.PasswordReset.route) },
+        onForgotPasswordClicked = { navController.navigate(Screen.ForgotPasswordMail.route) },
         onRememberCredentialsStateChanged = {
             isCheckedRememberCredentials = !isCheckedRememberCredentials
         },

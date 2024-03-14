@@ -5,6 +5,7 @@ import com.erdemserhat.harmonyhaven.domain.usecase.users.DeleteUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.LoginUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.RegisterUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.ResetPasswordUser
+import com.erdemserhat.harmonyhaven.domain.usecase.users.ResetPasswordUserDev
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UpdateUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
 import com.erdemserhat.harmonyhaven.util.Constants.BASE_URL
@@ -63,7 +64,7 @@ object NetworkModule {
             registerUser = RegisterUser(userApiService),
             updateUser = UpdateUser(userApiService),
             deleteUSer = DeleteUser(userApiService),
-            resetPasswordUser = ResetPasswordUser(userApiService)
+            resetPasswordUser = ResetPasswordUserDev(userApiService)
         )
 
 
