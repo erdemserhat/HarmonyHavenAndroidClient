@@ -31,9 +31,54 @@ import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingLogo
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.passwordreset.mail.ArrowBackButtonDev
+import com.erdemserhat.harmonyhaven.presentation.passwordreset.reset.ForgotPasswordResetScreenContent
 import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenButton
 import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenProgressIndicator
 import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenTextField
+
+
+@Composable
+fun ForgotPasswordAuthScreen(
+    email:String,
+    navController: NavController,
+    authViewModel:ForgotPasswordAuthViewModel = hiltViewModel()
+) {
+    var code by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var password by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var confirmPassword by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    if(authViewModel.authModel.value.canNavigateTo){
+        Log.d("erdem3451",authViewModel.authModel.value.uuid)
+        ForgotPasswordResetScreenContent(authViewModel.authModel.value.uuid,navController)
+    }else{
+        ForgotPasswordAuthScreenContent(
+            code = code,
+            onCodeValueChanged = { code = it },
+            onArrowBackButtonClicked = { navController.navigate(Screen.Mail.route) },
+            isLoading = authViewModel.authModel.value.isLoading,
+            warningText = authViewModel.authModel.value.authWarning,
+            onSendCodeClicked = { authViewModel.authRequest(email,code) },
+            shouldNavigateTo = authViewModel.authModel.value.canNavigateTo,
+            onShouldNavigateTo = {})
+
+    }
+
+
+
+
+
+}
+
+
+
 
 @Preview
 @Composable

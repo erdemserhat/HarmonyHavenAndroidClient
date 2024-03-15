@@ -1,5 +1,8 @@
-package com.erdemserhat.harmonyhaven.presentation.register.components
+package com.erdemserhat.harmonyhaven.presentation.passwordreset.reset
 
+import android.widget.Space
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -22,21 +25,60 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.erdemserhat.harmonyhaven.R
+import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenPasswordTextField
 
+@Composable
+fun ResetPasswordTextFields(
+    placeHolder1:String,
+    isPasswordVisible: Boolean = true,
+    password:String,
+    onPasswordValueChanged:(String)->Unit,
+    onVisibilityIconClicked:()->Unit,
+    confirmPassword:String,
+    onConfirmPasswordValueChanged:(String)->Unit,
+    placeHolder2:String
+) {
+
+    Column{
+        HarmonyHavenPasswordTextField(
+            placeHolder1,
+            password,
+            onPasswordValueChanged,
+            shouldExistVisibilityIcon = true,
+            isPasswordVisible,
+            onPasswordHiddenButtonClicked = onVisibilityIconClicked
+        )
+        Spacer(modifier = Modifier.size(10.dp))
+
+        HarmonyHavenPasswordTextField(
+            placeHolder2,
+            confirmPassword,
+            onConfirmPasswordValueChanged,
+            shouldExistVisibilityIcon = false,
+            isPasswordVisible,
+            onPasswordHiddenButtonClicked = {  }
+        )
+
+    }
+
+
+
+
+
+}
 @Composable
 fun HarmonyHavenPasswordTextField(
     placeHolderText: String,
     password:String,
     onValueChanged:(String)->Unit,
-    shouldExistVisibilityIcon:Boolean = true
+    shouldExistVisibilityIcon:Boolean = true,
+    isPasswordHidden:Boolean=true,
+    onPasswordHiddenButtonClicked:()->Unit
 
 ) {
 
-    var passwordHidden by rememberSaveable {
-        mutableStateOf(true)
-    }
 
-    val visibilityIcon = if (passwordHidden) {
+    val visibilityIcon = if (isPasswordHidden) {
         painterResource(id = R.drawable.visibility_eye_icon)
     } else {
         painterResource(id = R.drawable.visibility_off_eye_icon)
@@ -57,13 +99,13 @@ fun HarmonyHavenPasswordTextField(
         singleLine = true,
         label = { Text(text = placeHolderText) },
         visualTransformation =
-        if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
+        if (isPasswordHidden) PasswordVisualTransformation() else VisualTransformation.None,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         trailingIcon = {
             if(shouldExistVisibilityIcon){
-                IconButton(onClick = { passwordHidden = !passwordHidden }) {
+                IconButton(onClick = onPasswordHiddenButtonClicked) {
                     val description =
-                        if (passwordHidden) stringResource(id = R.string.show_password) else stringResource(
+                        if (isPasswordHidden) stringResource(id = R.string.show_password) else stringResource(
                             id = R.string.hide_password
                         )
                     Icon(painter = visibilityIcon, contentDescription = description)
