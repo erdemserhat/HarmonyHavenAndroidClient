@@ -44,7 +44,7 @@ interface UserApiService {
      * This endpoint is the last step of password reset progress
      */
 
-    @PATCH
+    @PATCH("user/forgot-password/reset-password")
     suspend fun requestPasswordReset(@Body resetModel:ForgotPasswordResetClientModel):Response<RequestResult>
 
 

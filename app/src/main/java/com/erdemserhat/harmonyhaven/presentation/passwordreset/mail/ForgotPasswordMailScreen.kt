@@ -32,8 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingLogo
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
-import com.erdemserhat.harmonyhaven.presentation.passwordreset.auth.ForgotPasswordAuthScreenContent
-import com.erdemserhat.harmonyhaven.presentation.passwordreset.auth.ForgotPasswordAuthViewModel
+import com.erdemserhat.harmonyhaven.presentation.passwordreset.auth.ForgotPasswordAuthScreen
 import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenButton
 import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenProgressIndicator
 import com.erdemserhat.harmonyhaven.presentation.register.components.HarmonyHavenTextField
@@ -175,37 +174,16 @@ fun ArrowBackButtonDev(modifier: Modifier, onClick: () -> Unit) {
 fun ForgotPasswordMailScreen(
     navController: NavController,
     mailViewModel: ForgotPasswordMailViewModel = hiltViewModel(),
-    authViewModel: ForgotPasswordAuthViewModel = hiltViewModel()
 
-
-) {
+    ) {
     var email by rememberSaveable {
         mutableStateOf("me.serhaterdem@gmail.com")
     }
 
-    var code by rememberSaveable {
-        mutableStateOf("")
-    }
+    if (mailViewModel.mailState.value.canNavigateTo) {
 
-    var password by rememberSaveable {
-        mutableStateOf("")
-    }
-
-    var confirmPassword by rememberSaveable {
-        mutableStateOf("")
-    }
-
-    if (mailViewModel.mailState.value.canNavigateTo)
-        ForgotPasswordAuthScreenContent(
-            code = code,
-            onCodeValueChanged = { code = it },
-            onArrowBackButtonClicked = { navController.navigate(Screen.Mail.route) },
-            isLoading = authViewModel.authModel.value.isLoading,
-            warningText = authViewModel.authModel.value.authWarning,
-            onSendCodeClicked = { authViewModel.authRequest(email,code) },
-            shouldNavigateTo = authViewModel.authModel.value.canNavigateTo,
-            onShouldNavigateTo = {})
-    else {
+        ForgotPasswordAuthScreen(email, navController)
+    } else {
         ForgotPasswordMailScreenContent(
             email = email,
             onEmailValueChanged = { email = it },

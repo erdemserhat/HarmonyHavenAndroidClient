@@ -7,18 +7,18 @@
       </entry>
       <entry key="app">
         <State>
-          <targetSelectedWithDropDown>
+          <runningDeviceTargetSelectedWithDropDown>
             <Target>
-              <type value="QUICK_BOOT_TARGET" />
+              <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
                 <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\Serhat\.android\avd\Copy_of_Pixel_2_API_34.avd" />
+                  <type value="SERIAL_NUMBER" />
+                  <value value="ws55vwzhs8u4hmge" />
                 </Key>
               </deviceKey>
             </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-03-14T06:20:07.587434400Z" />
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-03-15T07:25:41.021231Z" />
         </State>
       </entry>
       <entry key="myapplication">
