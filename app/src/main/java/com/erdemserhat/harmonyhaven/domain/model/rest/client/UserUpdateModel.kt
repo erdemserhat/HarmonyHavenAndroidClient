@@ -1,5 +1,6 @@
-package com.erdemserhat.harmonyhaven.domain.model
+package com.erdemserhat.harmonyhaven.domain.model.rest.client
 
+import com.erdemserhat.harmonyhaven.domain.model.rest.User
 import kotlinx.serialization.Serializable
 
 @Serializable

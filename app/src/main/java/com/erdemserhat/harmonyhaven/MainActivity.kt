@@ -38,6 +38,9 @@ class MainActivity  : ComponentActivity() {
             Log.d("erdem3451",ex.message.toString())
         }
         */
+        Log.d("erdem3451","12121")
+
+        viewModel.getCategories()
 
 
 

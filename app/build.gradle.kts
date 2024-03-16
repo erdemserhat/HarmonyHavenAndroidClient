@@ -133,6 +133,12 @@ dependencies {
     //Consturcts hiltviewmodels()
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
+    //for image loading
+
+
+    //coil
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
 
 
 

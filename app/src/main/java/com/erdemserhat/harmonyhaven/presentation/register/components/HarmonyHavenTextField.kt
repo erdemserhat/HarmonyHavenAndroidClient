@@ -14,7 +14,8 @@ import androidx.compose.ui.unit.dp
 fun HarmonyHavenTextField(
     text: String,
     onValueChanged: (String) -> Unit,
-    placeHolderText: String
+    placeHolderText: String,
+    isEnabled:Boolean = true
 ) {
 
     OutlinedTextField(
@@ -31,6 +32,7 @@ fun HarmonyHavenTextField(
             focusedLabelColor = Color.Black
 
         ),
-        singleLine = true
+        singleLine = true,
+        enabled = isEnabled
     )
 }
