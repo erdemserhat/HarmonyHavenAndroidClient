@@ -1,7 +1,6 @@
 package com.erdemserhat.harmonyhaven.presentation.home
 
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,7 +9,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,8 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -28,7 +24,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.ripple.rememberRipple
@@ -39,9 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,41 +44,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.MostReadArticleModel
-import com.erdemserhat.harmonyhaven.domain.model.OnBoardingPage
-import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingButton
-import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenGreetingTitle
-import com.erdemserhat.harmonyhaven.presentation.welcome.PagerScreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenTitleTextColor
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
-import com.erdemserhat.harmonyhaven.util.Constants
 import com.erdemserhat.harmonyhaven.util.customFontFamilyJunge
 import com.erdemserhat.harmonyhaven.util.customFontInter
 
@@ -148,6 +130,8 @@ fun GreetingHarmonyHavenComponent() {
                 modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                ExampleImage()
+
 
                 Image(
                     painter = painterResource(id = R.drawable.harmony_haven_icon),
@@ -296,7 +280,7 @@ fun MostReadContentPreview() {
 
 
 @Composable
-fun MostReadArticle(article:MostReadArticleModel) {
+fun MostReadArticle(article: MostReadArticleModel) {
     Box(
         modifier = Modifier
             .size(width = 350.dp, height = 200.dp)
@@ -513,7 +497,7 @@ fun MostReadHorizontalPager() {
 
 
 
-    Column(     
+    Column(
 
     ) {
         Text(
@@ -571,5 +555,24 @@ fun MostReadHorizontalPager() {
 @Composable
 fun ExPrev() {
     MostReadHorizontalPager()
-    
+
 }
+
+
+@Composable
+fun ExampleImage() {
+
+    AsyncImage(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data("https://projemya.com/harmonyhaven/category/self-improvement.jpg")
+            .crossfade(true)
+            .build(),
+        contentScale = ContentScale.Fit,
+        contentDescription = null,
+
+
+    )
+
+}
+
+

@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.erdemserhat.harmonyhaven.domain.model.Gender
+import com.erdemserhat.harmonyhaven.domain.model.ui.Gender
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 
 
@@ -34,9 +34,9 @@ fun GenderSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            GenderIconDev(gender = Gender.Female, isSelected = gender==Gender.Female, onClick = onGenderSelected)
-            GenderIconDev(gender = Gender.Male, isSelected = gender==Gender.Male, onClick = onGenderSelected)
-            GenderIconDev(gender = Gender.Other, isSelected = gender==Gender.Other, onClick = onGenderSelected)
+            GenderIconDev(gender = Gender.Female, isSelected = gender== Gender.Female, onClick = onGenderSelected)
+            GenderIconDev(gender = Gender.Male, isSelected = gender== Gender.Male, onClick = onGenderSelected)
+            GenderIconDev(gender = Gender.Other, isSelected = gender== Gender.Other, onClick = onGenderSelected)
 
 
         }

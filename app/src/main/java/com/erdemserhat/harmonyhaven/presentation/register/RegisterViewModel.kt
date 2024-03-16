@@ -5,13 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.domain.model.RegisterFormModel
-import com.erdemserhat.harmonyhaven.domain.model.User
 import com.erdemserhat.harmonyhaven.domain.model.toUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
 import com.erdemserhat.harmonyhaven.domain.validation.validateRegisterForm
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

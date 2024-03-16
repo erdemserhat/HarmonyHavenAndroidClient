@@ -1,7 +1,6 @@
 package com.erdemserhat.harmonyhaven.domain.validation
 
 import com.erdemserhat.harmonyhaven.domain.model.RegisterFormModel
-import com.erdemserhat.harmonyhaven.domain.model.User
 
 
 fun validateRegisterForm(form: RegisterFormModel){
@@ -19,7 +18,7 @@ fun validateRegisterForm(form: RegisterFormModel){
         throw IllegalArgumentException("Password must not contain personal information")
     }
 }
-private fun isEmailValid(email: String): Boolean {
+fun isEmailValid(email: String): Boolean {
     val emailRegex = Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")
     return emailRegex.matches(email)
 }

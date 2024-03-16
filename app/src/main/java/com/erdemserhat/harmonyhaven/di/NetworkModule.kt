@@ -1,10 +1,11 @@
 package com.erdemserhat.harmonyhaven.di
 
+import com.erdemserhat.harmonyhaven.data.network.CategoryApiService
 import com.erdemserhat.harmonyhaven.data.network.UserApiService
 import com.erdemserhat.harmonyhaven.domain.usecase.users.DeleteUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.LoginUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.RegisterUser
-import com.erdemserhat.harmonyhaven.domain.usecase.users.ResetPasswordUser
+import com.erdemserhat.harmonyhaven.domain.usecase.users.ResetPasswordUserDev
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UpdateUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
 import com.erdemserhat.harmonyhaven.util.Constants.BASE_URL
@@ -57,13 +58,22 @@ object NetworkModule {
 
     @Provides
     @Singleton
+
+    fun provideCategoryApiService(retrofit: Retrofit): CategoryApiService {
+        return retrofit.create(CategoryApiService::class.java)
+    }
+
+
+
+    @Provides
+    @Singleton
     fun provideUserUseCases(userApiService: UserApiService):UserUseCases{
         return UserUseCases(
             loginUser = LoginUser(userApiService),
             registerUser = RegisterUser(userApiService),
             updateUser = UpdateUser(userApiService),
             deleteUSer = DeleteUser(userApiService),
-            resetPasswordUser = ResetPasswordUser(userApiService)
+            resetPasswordUser = ResetPasswordUserDev(userApiService)
         )
 
 
