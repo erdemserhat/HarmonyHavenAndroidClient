@@ -1,7 +1,6 @@
 package com.erdemserhat.harmonyhaven.domain.validation
 
 import com.erdemserhat.harmonyhaven.domain.model.RegisterFormModel
-import com.erdemserhat.harmonyhaven.domain.model.User
 
 
 fun validateRegisterForm(form: RegisterFormModel){

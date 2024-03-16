@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.domain.model
+package com.erdemserhat.harmonyhaven.domain.model.ui
 
 import com.erdemserhat.harmonyhaven.R
 
