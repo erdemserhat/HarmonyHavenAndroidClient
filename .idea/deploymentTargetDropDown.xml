@@ -5,21 +5,11 @@
       <entry key="LoginScreenPreview">
         <State />
       </entry>
+      <entry key="RegisterScreenPreviewDev">
+        <State />
+      </entry>
       <entry key="app">
-        <State>
-          <runningDeviceTargetSelectedWithDropDown>
-            <Target>
-              <type value="RUNNING_DEVICE_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="SERIAL_NUMBER" />
-                  <value value="ws55vwzhs8u4hmge" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-03-15T07:25:41.021231Z" />
-        </State>
+        <State />
       </entry>
       <entry key="myapplication">
         <State />

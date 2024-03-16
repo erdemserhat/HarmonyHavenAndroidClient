@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.di
 
+import com.erdemserhat.harmonyhaven.data.network.CategoryApiService
 import com.erdemserhat.harmonyhaven.data.network.UserApiService
 import com.erdemserhat.harmonyhaven.domain.usecase.users.DeleteUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.LoginUser
@@ -54,6 +55,15 @@ object NetworkModule {
     fun provideUserApiService(retrofit: Retrofit): UserApiService {
         return retrofit.create(UserApiService::class.java)
     }
+
+    @Provides
+    @Singleton
+
+    fun provideCategoryApiService(retrofit: Retrofit): CategoryApiService {
+        return retrofit.create(CategoryApiService::class.java)
+    }
+
+
 
     @Provides
     @Singleton

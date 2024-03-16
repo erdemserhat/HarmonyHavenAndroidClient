@@ -72,7 +72,8 @@ fun ForgotPasswordResetScreenContent(
             setPasswordVisible = setPasswordVisible,
             confirmPassword = confirmPassword,
             setConfirmPassword = setConfirmPassword,
-            onResetPasswordClicked = {viewModel.resetPassword(password,uuid)}
+            onResetPasswordClicked = {viewModel.resetPassword(password,uuid)},
+            onArrowBackButtonClicked = {navController.navigate(Screen.Login.route)}
         )
     }
 }
@@ -96,7 +97,8 @@ private fun ColumnContent(
     setPasswordVisible: (Boolean) -> Unit,
     confirmPassword: String,
     setConfirmPassword: (String) -> Unit,
-    onResetPasswordClicked:()->Unit
+    onResetPasswordClicked:()->Unit,
+    onArrowBackButtonClicked:()->Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -110,7 +112,9 @@ private fun ColumnContent(
 
         ArrowBackButtonDev(modifier = Modifier
             .align(Alignment.Start)
-            .padding(10.dp)) { }
+            .padding(10.dp)) {
+            onArrowBackButtonClicked()
+        }
 
         // Logo
         HarmonyHavenGreetingLogo(modifier = Modifier)

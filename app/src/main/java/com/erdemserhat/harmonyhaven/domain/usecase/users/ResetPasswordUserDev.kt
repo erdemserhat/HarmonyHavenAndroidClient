@@ -1,11 +1,11 @@
 package com.erdemserhat.harmonyhaven.domain.usecase.users
 
 import com.erdemserhat.harmonyhaven.data.network.UserApiService
-import com.erdemserhat.harmonyhaven.domain.model.ForgotPasswordAuthClientModel
-import com.erdemserhat.harmonyhaven.domain.model.ForgotPasswordMailerClientModel
-import com.erdemserhat.harmonyhaven.domain.model.ForgotPasswordResetClientModel
-import com.erdemserhat.harmonyhaven.domain.model.RequestResultClient
-import com.erdemserhat.harmonyhaven.domain.model.RequestResultUUID
+import com.erdemserhat.harmonyhaven.domain.model.rest.client.ForgotPasswordAuthClientModel
+import com.erdemserhat.harmonyhaven.domain.model.rest.client.ForgotPasswordMailerClientModel
+import com.erdemserhat.harmonyhaven.domain.model.rest.client.ForgotPasswordResetClientModel
+import com.erdemserhat.harmonyhaven.domain.model.rest.client.RequestResultClient
+import com.erdemserhat.harmonyhaven.domain.model.rest.server.RequestResultUUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
