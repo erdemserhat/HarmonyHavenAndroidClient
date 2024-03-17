@@ -73,7 +73,9 @@ import com.erdemserhat.harmonyhaven.util.customFontInter
 
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+) {
     Column(
         modifier = Modifier
             .background(
@@ -93,7 +95,7 @@ fun HomeScreen(navController: NavController) {
         //HarmonyHavenSearchBarPrototype1()
         HarmonyHavenSearchBarPrototype2(modifier = Modifier.padding(bottom = 20.dp))
         MostReadHorizontalPager()
-        ContentColumn(Modifier.padding(top = 25.dp))
+        ContentSection()
 
 
     }
@@ -130,8 +132,6 @@ fun GreetingHarmonyHavenComponent() {
                 modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                ExampleImage()
-
 
                 Image(
                     painter = painterResource(id = R.drawable.harmony_haven_icon),
@@ -557,22 +557,4 @@ fun ExPrev() {
     MostReadHorizontalPager()
 
 }
-
-
-@Composable
-fun ExampleImage() {
-
-    AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data("https://projemya.com/harmonyhaven/category/self-improvement.jpg")
-            .crossfade(true)
-            .build(),
-        contentScale = ContentScale.Fit,
-        contentDescription = null,
-
-
-    )
-
-}
-
 

@@ -16,6 +16,8 @@ sealed class Screen(val route:String) {
 
     object ResetPassword:Screen("forgot_password_code_screen")
 
+    object HomeDev:Screen("home_screen_dev")
+
 
 
 }

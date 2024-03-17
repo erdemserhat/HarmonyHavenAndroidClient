@@ -7,6 +7,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.erdemserhat.harmonyhaven.presentation.dashboard.DashboardScreen
+import com.erdemserhat.harmonyhaven.presentation.home.HomeScreen
+import com.erdemserhat.harmonyhaven.presentation.home.HomeViewModel
 import com.erdemserhat.harmonyhaven.presentation.login.LoginScreen
 import com.erdemserhat.harmonyhaven.presentation.passwordreset.mail.ForgotPasswordMailScreen
 import com.erdemserhat.harmonyhaven.presentation.register.RegisterScreen
@@ -56,8 +58,12 @@ fun SetupNavGraph(navController:NavHostController) {
             //ForgotPasswordResetScreen(navController = navController)
         }
         
-        composable(route= Screen.Dashboard.route){
-            DashboardScreen(navHostController = navController)
+        //composable(route= Screen.Dashboard.route){
+            //DashboardScreen(navHostController = navController)
+        //}
+
+        composable(route = Screen.Dashboard.route){
+            DashboardScreen(navController)
         }
 
         composable(route = Screen.Home.route){
