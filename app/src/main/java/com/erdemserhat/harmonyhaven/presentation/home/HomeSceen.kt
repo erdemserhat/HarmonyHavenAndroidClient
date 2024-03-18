@@ -62,6 +62,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.MostReadArticleModel
+import com.erdemserhat.harmonyhaven.presentation.home.components.ContentGridShimmy
+import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
@@ -94,14 +96,18 @@ fun HomeScreen(
         GreetingHarmonyHavenComponent()
         //HarmonyHavenSearchBarPrototype1()
         HarmonyHavenSearchBarPrototype2(modifier = Modifier.padding(bottom = 20.dp))
-        MostReadHorizontalPager()
-        ContentSection()
-
+        MostReadHorizontalPager(navController)
+        //ContentSection()
+        ContentGridShimmy()
 
     }
 
-
 }
+
+
+
+
+
 
 
 @Preview(showBackground = true)
@@ -280,7 +286,7 @@ fun MostReadContentPreview() {
 
 
 @Composable
-fun MostReadArticle(article: MostReadArticleModel) {
+fun MostReadArticle(article: MostReadArticleModel, onReadButtonClicked:()->Unit) {
     Box(
         modifier = Modifier
             .size(width = 350.dp, height = 200.dp)
@@ -328,7 +334,7 @@ fun MostReadArticle(article: MostReadArticleModel) {
         }
 
         Button(
-            onClick = { /*TODO*/ },
+            onClick = onReadButtonClicked,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 10.dp, end = 10.dp)
@@ -467,7 +473,7 @@ fun ContentColumn(modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MostReadHorizontalPager() {
+fun MostReadHorizontalPager(navController: NavController) {
     val pagerState = rememberPagerState(pageCount = {
         4//list size
     })
@@ -522,7 +528,7 @@ fun MostReadHorizontalPager() {
                 verticalAlignment = Alignment.Top,
             ) { page ->
 
-                MostReadArticle(pages[page])
+                MostReadArticle(pages[page]) { navController.navigate(Screen.Article.route) }
 
 
             }
@@ -550,11 +556,3 @@ fun MostReadHorizontalPager() {
         }
     }
 }
-
-@Preview
-@Composable
-fun ExPrev() {
-    MostReadHorizontalPager()
-
-}
-
