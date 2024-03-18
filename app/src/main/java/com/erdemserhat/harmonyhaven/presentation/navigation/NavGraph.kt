@@ -6,6 +6,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.erdemserhat.harmonyhaven.presentation.article.ArticleContent
+import com.erdemserhat.harmonyhaven.presentation.article.ArticleScreen
+import com.erdemserhat.harmonyhaven.presentation.article.exArticle
 import com.erdemserhat.harmonyhaven.presentation.dashboard.DashboardScreen
 import com.erdemserhat.harmonyhaven.presentation.home.HomeScreen
 import com.erdemserhat.harmonyhaven.presentation.home.HomeViewModel
@@ -75,6 +78,11 @@ fun SetupNavGraph(navController:NavHostController) {
         }
 
         composable(route = Screen.Profile.route){
+
+        }
+
+        composable(route = Screen.Article.route){
+            ArticleScreen(exArticle)
 
         }
 

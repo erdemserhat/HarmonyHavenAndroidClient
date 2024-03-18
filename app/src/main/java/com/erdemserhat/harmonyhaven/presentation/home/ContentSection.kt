@@ -84,7 +84,7 @@ fun Content(
     Box(
         modifier = Modifier
             .size(width = 150.dp, height = 150.dp)
-            .background(harmonyHavenComponentWhite, shape = RoundedCornerShape(25.dp))
+            .background(shimmerBrush(targetValue = 1300f, showShimmer = showShimmer.value), shape = RoundedCornerShape(25.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true, radius = 75.dp)
@@ -98,10 +98,9 @@ fun Content(
                 model = category.imagePath,
                 contentDescription = null,
                 modifier = Modifier
-                    .background(shimmerBrush(targetValue = 1300f, showShimmer = showShimmer.value))
                     .size(100.dp),
                 onSuccess = { showShimmer.value = false },
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Fit
             )
             Text(
                 modifier = Modifier
