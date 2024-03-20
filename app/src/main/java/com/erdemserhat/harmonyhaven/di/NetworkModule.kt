@@ -3,6 +3,7 @@ package com.erdemserhat.harmonyhaven.di
 import com.erdemserhat.harmonyhaven.data.network.CategoryApiService
 import com.erdemserhat.harmonyhaven.data.network.UserApiService
 import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
+import com.erdemserhat.harmonyhaven.domain.usecase.article.Articles
 import com.erdemserhat.harmonyhaven.domain.usecase.article.Categories
 import com.erdemserhat.harmonyhaven.domain.usecase.users.DeleteUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.LoginUser
@@ -85,8 +86,11 @@ object NetworkModule {
     @Singleton
     fun provideArticleUseCases(categoryApiService: CategoryApiService):ArticleUseCases{
         return ArticleUseCases(
-            Categories(categoryApiService)
+            Categories(categoryApiService),
+            Articles(categoryApiService)
         )
     }
+
+
 
 }
