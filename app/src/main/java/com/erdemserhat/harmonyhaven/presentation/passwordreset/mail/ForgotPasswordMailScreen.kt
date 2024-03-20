@@ -177,7 +177,7 @@ fun ForgotPasswordMailScreen(
 
     ) {
     var email by rememberSaveable {
-        mutableStateOf("me.serhaterdem@gmail.com")
+        mutableStateOf("")
     }
 
     if (mailViewModel.mailState.value.canNavigateTo) {
