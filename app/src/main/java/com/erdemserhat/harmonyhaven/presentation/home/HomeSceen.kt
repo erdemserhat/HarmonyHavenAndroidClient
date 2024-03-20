@@ -97,8 +97,8 @@ fun HomeScreen(
         //HarmonyHavenSearchBarPrototype1()
         HarmonyHavenSearchBarPrototype2(modifier = Modifier.padding(bottom = 20.dp))
         MostReadHorizontalPager(navController)
-        //ContentSection()
-        ContentGridShimmy()
+        ContentSection()
+        //ContentGridShimmy()
 
     }
 

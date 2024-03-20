@@ -24,7 +24,7 @@ import kotlinx.coroutines.delay
 fun SetupNavGraph(navController:NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Dashboard.route){
+        startDestination = Screen.Login.route){
 
         composable(route = Screen.Splash.route){
             SplashScreen(navController = navController)
