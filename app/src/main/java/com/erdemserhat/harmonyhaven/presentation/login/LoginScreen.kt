@@ -258,11 +258,11 @@ fun LoginScreen(
 
 ) {
     var email by rememberSaveable {
-        mutableStateOf("sametberkant@example.com")
+        mutableStateOf("")
     }
 
     var password by rememberSaveable {
-        mutableStateOf("berkant3434.aAEE")
+        mutableStateOf("")
     }
 
 

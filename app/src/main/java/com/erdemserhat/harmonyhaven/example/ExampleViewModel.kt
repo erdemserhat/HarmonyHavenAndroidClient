@@ -24,11 +24,7 @@ class ExampleViewModel @Inject constructor(
     private val categoryApiService: CategoryApiService
 ) : ViewModel() {
 
-    fun getCategories(){
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.d("erdem3451", categoryApiService.getAllCategories().toString())
-        }
-    }
+
 
 
 
