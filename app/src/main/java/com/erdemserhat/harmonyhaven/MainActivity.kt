@@ -9,6 +9,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.example.ExampleViewModel
+import com.erdemserhat.harmonyhaven.presentation.home.HomeViewModel
 import com.erdemserhat.harmonyhaven.presentation.navigation.SetupNavGraph
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -16,7 +17,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity  : ComponentActivity() {
     private lateinit var navController: NavHostController
-    private val viewModel: ExampleViewModel by viewModels()
+    //private val viewModel: ExampleViewModel by viewModels()
+    //private val homeViewModel:HomeViewModel by viewModels()
     //val loginViewModel:LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,26 +26,8 @@ class MainActivity  : ComponentActivity() {
         // super.onCreate() function
         super.onCreate(savedInstanceState)
         //use your dependencies here
-        // viewModel.fdsfA()
-       //viewModel.loginUser()
-        //viewModel.registerUser()
-        //viewModel.updateUser()
-        //viewModel.deleteUser(),
-        /**
-        try {
-            viewModel.sendMail()
-        }catch (
-            ex:Exception
-        ){
-            Log.d("erdem3451",ex.message.toString())
-        }
-        */
-        Log.d("erdem3451","12121")
 
-        viewModel.getCategories()
-
-
-
+        //homeViewModel.prepareCategories()
 
 
         setContent {

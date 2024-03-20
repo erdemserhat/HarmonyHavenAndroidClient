@@ -6,7 +6,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.erdemserhat.harmonyhaven.presentation.article.ArticleContent
+import com.erdemserhat.harmonyhaven.presentation.article.ArticleScreen
+import com.erdemserhat.harmonyhaven.presentation.article.exArticle
 import com.erdemserhat.harmonyhaven.presentation.dashboard.DashboardScreen
+import com.erdemserhat.harmonyhaven.presentation.home.HomeScreen
+import com.erdemserhat.harmonyhaven.presentation.home.HomeViewModel
 import com.erdemserhat.harmonyhaven.presentation.login.LoginScreen
 import com.erdemserhat.harmonyhaven.presentation.passwordreset.mail.ForgotPasswordMailScreen
 import com.erdemserhat.harmonyhaven.presentation.register.RegisterScreen
@@ -19,7 +24,7 @@ import kotlinx.coroutines.delay
 fun SetupNavGraph(navController:NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Dashboard.route){
+        startDestination = Screen.Login.route){
 
         composable(route = Screen.Splash.route){
             SplashScreen(navController = navController)
@@ -56,8 +61,12 @@ fun SetupNavGraph(navController:NavHostController) {
             //ForgotPasswordResetScreen(navController = navController)
         }
         
-        composable(route= Screen.Dashboard.route){
-            DashboardScreen(navHostController = navController)
+        //composable(route= Screen.Dashboard.route){
+            //DashboardScreen(navHostController = navController)
+        //}
+
+        composable(route = Screen.Dashboard.route){
+            DashboardScreen(navController)
         }
 
         composable(route = Screen.Home.route){
@@ -69,6 +78,11 @@ fun SetupNavGraph(navController:NavHostController) {
         }
 
         composable(route = Screen.Profile.route){
+
+        }
+
+        composable(route = Screen.Article.route){
+            ArticleScreen(exArticle)
 
         }
 

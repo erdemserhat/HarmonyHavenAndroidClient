@@ -62,7 +62,7 @@ fun ForgotPasswordAuthScreen(
         ForgotPasswordAuthScreenContent(
             code = code,
             onCodeValueChanged = { code = it },
-            onArrowBackButtonClicked = { navController.navigate(Screen.Mail.route) },
+            onArrowBackButtonClicked = { navController.navigate(Screen.Login.route) },
             isLoading = authViewModel.authModel.value.isLoading,
             warningText = authViewModel.authModel.value.authWarning,
             onSendCodeClicked = { authViewModel.authRequest(email,code) },
