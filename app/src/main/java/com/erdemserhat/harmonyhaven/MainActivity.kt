@@ -17,7 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity  : ComponentActivity() {
     private lateinit var navController: NavHostController
-    //private val viewModel: ExampleViewModel by viewModels()
+    private val viewModel: ExampleViewModel by viewModels()
     //private val homeViewModel:HomeViewModel by viewModels()
     //val loginViewModel:LoginViewModel by viewModels()
 
@@ -26,8 +26,6 @@ class MainActivity  : ComponentActivity() {
         // super.onCreate() function
         super.onCreate(savedInstanceState)
         //use your dependencies here
-
-        //homeViewModel.prepareCategories()
 
 
         setContent {
