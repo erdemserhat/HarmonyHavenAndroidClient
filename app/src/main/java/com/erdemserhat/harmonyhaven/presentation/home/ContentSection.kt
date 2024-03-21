@@ -35,6 +35,8 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenTitleTextColor
 import com.erdemserhat.harmonyhaven.util.customFontInter
 
 
+
+
 @Composable
 fun ContentSection(
     viewmodel: HomeViewModel = hiltViewModel()

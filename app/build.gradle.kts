@@ -141,6 +141,12 @@ dependencies {
 
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.4")
+
+
+
 
 
 
