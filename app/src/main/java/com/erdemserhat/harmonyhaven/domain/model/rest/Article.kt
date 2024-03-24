@@ -12,3 +12,15 @@ data class Article(
     val imagePath:String
 
 )
+
+@Serializable
+data class ArticleResponseType(
+    val id:Int,
+    val title:String,
+    val content:String,
+    val publishDate:String,
+    val category:String?,
+    val imagePath:String
+
+)
+

@@ -36,7 +36,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -45,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -56,13 +59,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.MostReadArticleModel
+import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
+import com.erdemserhat.harmonyhaven.domain.model.rest.Category
 import com.erdemserhat.harmonyhaven.presentation.home.components.ContentGridShimmy
+import com.erdemserhat.harmonyhaven.presentation.home2.CategoriesRowSection
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
@@ -77,13 +84,17 @@ import com.erdemserhat.harmonyhaven.util.customFontInter
 @Composable
 fun HomeScreen(
     navController: NavController,
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
+    var selectedCategory by remember {
+        mutableStateOf(Category(1,"","",))
+    }
     Column(
         modifier = Modifier
             .background(
                 Brush.verticalGradient(
                     listOf(
-                        harmonyHavenGradientGreen,
+                        Color.White,
                         harmonyHavenGradientWhite
                     )
                 )
@@ -93,11 +104,23 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
 
         ) {
-        GreetingHarmonyHavenComponent()
+        val homeState  by homeViewModel.homeState.collectAsState()
         //HarmonyHavenSearchBarPrototype1()
-        HarmonyHavenSearchBarPrototype2(modifier = Modifier.padding(bottom = 20.dp))
-        MostReadHorizontalPager(navController)
-        ContentSection()
+        //GreetingHarmonyHavenComponent()
+        CategoriesRowSection(
+            categoryList = homeState.categories,
+            onCategorySelected = {category ->selectedCategory = category
+                                 homeViewModel.getArticlesByCategoryId(category.id)},
+            selectedCategory = selectedCategory
+
+
+        )
+        //
+
+        //HarmonyHavenSearchBarPrototype2(modifier = Modifier.padding(bottom = 20.dp))  
+        //MostReadHorizontalPagerDev(navController,homeState.articles)
+        ArticleSection(navController, homeState.articles)
+
         //ContentGridShimmy()
 
     }
@@ -166,7 +189,7 @@ fun GreetingHarmonyHavenComponent() {
         }
 
         Text(
-            text = stringResource(R.string.daily_greeting_text),
+            text = "Quote of Day",
             textAlign = TextAlign.Center,
             color = harmonyHavenDarkGreenColor,
             modifier = Modifier.padding(top = 10.dp)
