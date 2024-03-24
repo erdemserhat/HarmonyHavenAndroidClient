@@ -44,7 +44,7 @@ class HomeViewModel @Inject constructor(
                     isCategoryReady = true,
                     categories = categoryResult,
                     isArticleReady = true,
-                    articles = recentArticlesResult
+                    recentArticles = recentArticlesResult
                 )
             } catch (e: Exception) {
                 // Hata durumunda gerekli işlemler

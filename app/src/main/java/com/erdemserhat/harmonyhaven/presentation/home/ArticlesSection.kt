@@ -66,39 +66,41 @@ fun ArticleSection(
     navController: NavController,
     articles: List<ArticleResponseType>,
 ) {
+    if (!articles.isEmpty()) {
 
 
-    Column(
-        modifier = Modifier
-
-    ) {
-        Spacer(modifier = Modifier.padding(20.dp))
-        Text(
-            text = "Recent Articles",
-            modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
-            fontFamily = customFontInter,
-            fontWeight = FontWeight.Bold,
-            color = harmonyHavenTitleTextColor,
-            fontSize = MaterialTheme.typography.titleLarge.fontSize
-
-        )
         Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+
         ) {
-            for (article in articles) {
-                Spacer(modifier = Modifier.height(10.dp))
-                ArticlePrototype(article) {
-                    val articleId = article.id
-                    navController.navigate(Screen.Article.route + "/$articleId")
+            Spacer(modifier = Modifier.padding(20.dp))
+            Text(
+                text = articles[0].category.toString(),
+                modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
+                fontFamily = customFontInter,
+                fontWeight = FontWeight.Bold,
+                color = harmonyHavenTitleTextColor,
+                fontSize = MaterialTheme.typography.titleLarge.fontSize
+
+            )
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                for (article in articles) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    ArticlePrototype(article) {
+                        val articleId = article.id
+                        navController.navigate(Screen.Article.route + "/$articleId")
+                    }
                 }
+
             }
+
 
         }
 
-
     }
-
 }
 
 
