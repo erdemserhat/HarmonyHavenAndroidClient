@@ -279,22 +279,22 @@ fun RegisterScreen(
 
 
     var name by rememberSaveable {
-        mutableStateOf("a")
+        mutableStateOf("")
     }
 
     var surname by rememberSaveable {
-        mutableStateOf("b")
+        mutableStateOf("")
     }
 
     var email by rememberSaveable {
-        mutableStateOf("editkuragma@gmail.com")
+        mutableStateOf("")
     }
     var password by rememberSaveable {
-        mutableStateOf("fdsfdAffsf.3451.")
+        mutableStateOf("")
     }
 
     var passwordConfirm by rememberSaveable {
-        mutableStateOf("fdsfdAffsf.3451.")
+        mutableStateOf("")
     }
 
     var gender by rememberSaveable {
