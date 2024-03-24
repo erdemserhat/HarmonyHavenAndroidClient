@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
 import com.erdemserhat.harmonyhaven.presentation.home.ArticlePrototype
+import com.erdemserhat.harmonyhaven.presentation.home.components.shimmerBrush
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
@@ -36,18 +37,22 @@ import kotlinx.coroutines.time.delay
 @Composable
 fun MostReadHorizontalPager(
     navController: NavController,
-    articleList:List<ArticleResponseType>
+    articleList: List<ArticleResponseType>
 ) {
-    if(articleList.isEmpty()){
-        return
-    }
+    if (articleList.isNotEmpty()) {
+
+
     val pagerState = rememberPagerState(pageCount = {
         4//list size
     })
     LaunchedEffect(Unit) {
         while (true) {
             kotlinx.coroutines.delay(5000) // Değişim aralığı, burada 5 saniye olarak belirtilmiştir. İstediğiniz süreyi ayarlayabilirsiniz.
-            pagerState.animateScrollToPage((pagerState.currentPage + 1) % pagerState.pageCount, animationSpec = TweenSpec(durationMillis = 1000))        }
+            pagerState.animateScrollToPage(
+                (pagerState.currentPage + 1) % pagerState.pageCount,
+                animationSpec = TweenSpec(durationMillis = 1000)
+            )
+        }
     }
 
 
@@ -67,19 +72,17 @@ fun MostReadHorizontalPager(
 
         )
         Column(
-            modifier = Modifier
-                .size(width = 380.dp, height = 230.dp),
+            modifier = Modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             HorizontalPager(
-                modifier = Modifier
-                    .size(width = 360.dp, height = 210.dp),
+                modifier = Modifier,
                 state = pagerState,
                 verticalAlignment = Alignment.Top,
             ) { page ->
                 val articleId = articleList[page].id
 
-                ArticlePrototype(articleList[page]) { navController.navigate(Screen.Article.route +"/$articleId") }
+                ArticlePrototype(articleList[page]) { navController.navigate(Screen.Article.route + "/$articleId") }
 
 
             }
@@ -106,4 +109,76 @@ fun MostReadHorizontalPager(
 
         }
     }
+    }else{
+        MostReadHorizontalPagerShimmy()
+    }
+
+}
+
+
+@Composable
+fun MostReadHorizontalPagerShimmy() {
+    Column(
+
+    ) {
+        Text(
+            text = "Loading Recent Articles...",
+            modifier = Modifier
+                .padding(start = 16.dp, bottom = 16.dp),
+            fontFamily = customFontInter,
+            fontWeight = FontWeight.Bold,
+            color = harmonyHavenTitleTextColor,
+            fontSize = MaterialTheme.typography.titleMedium.fontSize
+
+        )
+        Column(
+            modifier = Modifier
+                .size(width = 380.dp, height = 230.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(width = 360.dp, height = 210.dp)
+                    .background(
+                        shimmerBrush(
+                            targetValue = 1300f,
+                            showShimmer = true,
+                            gradiantVariantFirst = harmonyHavenComponentWhite,
+                            gradiantVariantSecond = harmonyHavenComponentWhite
+
+                        )
+                    )
+
+            )
+
+            Row(
+
+                horizontalArrangement = Arrangement.Center
+            ) {
+
+                repeat(4) { iteration ->
+                    Box(
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .clip(CircleShape)
+                            .background(
+                                shimmerBrush(
+                                    targetValue = 1300f,
+                                    showShimmer = true,
+                                    gradiantVariantFirst = harmonyHavenComponentWhite,
+                                    gradiantVariantSecond = harmonyHavenComponentWhite
+
+                                )
+                            )
+                            .size(16.dp)
+                    )
+                }
+
+            }
+
+
+        }
+    }
+
+
 }

@@ -77,6 +77,7 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenIndicatorColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenTitleTextColor
 import com.erdemserhat.harmonyhaven.util.customFontFamilyJunge
 import com.erdemserhat.harmonyhaven.util.customFontInter
@@ -88,7 +89,7 @@ fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     var selectedCategory by remember {
-        mutableStateOf(Category(1,"","",))
+        mutableStateOf(Category(1, "", ""))
     }
     homeViewModel.getArticlesByCategoryId(selectedCategory.id)
     Column(
@@ -97,7 +98,7 @@ fun HomeScreen(
                 Brush.verticalGradient(
                     listOf(
                         Color.White,
-                        harmonyHavenGradientWhite
+                        Color.White
                     )
                 )
             )
@@ -106,34 +107,36 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
 
         ) {
-        val homeState  by homeViewModel.homeState.collectAsState()
+        val homeState by homeViewModel.homeState.collectAsState()
         //HarmonyHavenSearchBarPrototype1()
         //GreetingHarmonyHavenComponent()
         CategoriesRowSection(
             categoryList = homeState.categories,
-            onCategorySelected = {category ->selectedCategory = category
-                                 homeViewModel.getArticlesByCategoryId(category.id)},
+            onCategorySelected = { category ->
+                selectedCategory = category
+                homeViewModel.getArticlesByCategoryId(category.id)
+            },
             selectedCategory = selectedCategory
 
 
-         )
+        )
         //
-        MostReadHorizontalPager(navController,homeState.recentArticles)
+        MostReadHorizontalPager(navController, homeState.recentArticles)
 
         //HarmonyHavenSearchBarPrototype2(modifier = Modifier.padding(bottom = 20.dp))  
         //MostReadHorizontalPagerDev(navController,homeState.articles)
-        ArticleSection(navController, homeState.articles)
+        ArticleSection(
+            navController = navController,
+            articles = homeState.articles,
+
+
+        )
 
         //ContentGridShimmy()
 
     }
 
 }
-
-
-
-
-
 
 
 @Preview(showBackground = true)
@@ -312,7 +315,7 @@ fun MostReadContentPreview() {
 
 
 @Composable
-fun MostReadArticle(article: MostReadArticleModel, onReadButtonClicked:()->Unit) {
+fun MostReadArticle(article: MostReadArticleModel, onReadButtonClicked: () -> Unit) {
     Box(
         modifier = Modifier
             .size(width = 350.dp, height = 200.dp)

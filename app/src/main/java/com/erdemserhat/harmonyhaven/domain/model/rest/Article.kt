@@ -24,3 +24,14 @@ data class ArticleResponseType(
 
 )
 
+fun Article.toArticleResponseType(categoryList:List<Category>):ArticleResponseType{
+    return ArticleResponseType(
+        id = id,
+        title = title,
+        content = content,
+        publishDate = publishDate,
+        category = categoryList.find { it.id==categoryId }?.name ?:"Null Category ID",
+        imagePath = imagePath
+    )
+}
+

@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.erdemserhat.harmonyhaven.domain.model.rest.toArticleResponseType
 import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -27,25 +28,30 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                //network reequests
+
+                //network requests
                 val categoriesDeferred = async {
                     articleUseCases.categories.invoke()
                 }
 
-                val recentArticlesDeferred = async {
-                    articleUseCases.getRecentArticles(4)
+                val allArticlesDeferred = async {
+                    articleUseCases.getAllArticles()
                 }
 
-
                 val categoryResult = categoriesDeferred.await()
-                val recentArticlesResult = recentArticlesDeferred.await() ?: listOf()
+                val allArticles = allArticlesDeferred.await()
+
+
 
                 _homeState.value = _homeState.value.copy(
                     isCategoryReady = true,
                     categories = categoryResult,
                     isArticleReady = true,
-                    recentArticles = recentArticlesResult
+                    allArticles = allArticles,
+                    recentArticles = allArticles.takeLast(4).map { it.toArticleResponseType(_homeState.value.categories) }
                 )
+
+
             } catch (e: Exception) {
                 // Hata durumunda gerekli işlemler
                 Log.e("erdem3451", "Hata oluştu: ${e.message}")
@@ -56,23 +62,21 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    fun getArticlesByCategoryId(categoryId:Int){
+    fun getArticlesByCategoryId(categoryId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val articlesWithCurrentCategory = async { articleUseCases.getArticlesByCategory(categoryId) }
-                val recentArticlesResult = articlesWithCurrentCategory.await() ?: listOf()
-                _homeState.value = _homeState.value.copy(
-                    isArticleReady = true,
-                    articles = recentArticlesResult
+                _homeState.value =  _homeState.value.copy(
+                    articles = _homeState.value.allArticles.filter { it.categoryId==categoryId }.map { it.toArticleResponseType(_homeState.value.categories) }
                 )
-                Log.d("erdem3451",_homeState.value.toString())
+                Log.d("qazq",_homeState.value.articles.toString())
 
-
-            }catch (_:Exception){
+            } catch (_: Exception) {
 
             }
 
 
         }
     }
+
+
 }
