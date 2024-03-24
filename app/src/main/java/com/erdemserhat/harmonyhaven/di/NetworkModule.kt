@@ -3,8 +3,10 @@ package com.erdemserhat.harmonyhaven.di
 import com.erdemserhat.harmonyhaven.data.network.CategoryApiService
 import com.erdemserhat.harmonyhaven.data.network.UserApiService
 import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
-import com.erdemserhat.harmonyhaven.domain.usecase.article.Articles
 import com.erdemserhat.harmonyhaven.domain.usecase.article.Categories
+import com.erdemserhat.harmonyhaven.domain.usecase.article.GetArticleById
+import com.erdemserhat.harmonyhaven.domain.usecase.article.GetArticlesByCategory
+import com.erdemserhat.harmonyhaven.domain.usecase.article.GetRecentArticles
 import com.erdemserhat.harmonyhaven.domain.usecase.users.DeleteUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.LoginUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.RegisterUser
@@ -87,7 +89,9 @@ object NetworkModule {
     fun provideArticleUseCases(categoryApiService: CategoryApiService):ArticleUseCases{
         return ArticleUseCases(
             Categories(categoryApiService),
-            Articles(categoryApiService)
+            GetArticleById(categoryApiService),
+            GetRecentArticles(categoryApiService),
+            GetArticlesByCategory(categoryApiService)
         )
     }
 

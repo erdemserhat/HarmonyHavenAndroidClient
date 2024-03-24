@@ -1,20 +1,27 @@
 package com.erdemserhat.harmonyhaven.presentation.article
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import com.erdemserhat.harmonyhaven.R
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -24,53 +31,67 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
 
-val exArticle = Article("Embracing Life's Nuances","","Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of \"de Finibus Bonorum et Malorum\" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, \"Lorem ipsum dolor sit amet..\", comes from a line in section 1.10.32.")
+data class ArticleUIModel(
+    val title: String,
+    val content: String,
+    val publishDate: String,
+    val category: String?,
+    val imagePath: String,
+    val isLoaded:Boolean
 
-@Composable
-fun ArticleScreen() {
+)
 
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ArticleScreenContentPreview() {
-    ArticleScreenContent()
-
-}
-
-
-@Composable
-fun ArticleScreenContent() {
-    ArticleScreen(exArticle)
-
-
-}
-
-
-
-// Makale modeli
-data class Article(val title: String, val imageUrl: String? = null, val content: String)
-
-// Ekran tasarımı
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun ArticleScreen(article: Article) {
-    Scaffold(
-        topBar = {
-            // Toolbar bileşeni
-            ArticleToolbar(article.title)
-        },
-        content = {
-            // Makale içeriğini gösteren bileşen
-            ArticleContent(article)
-        }
+fun ArticleScreen(
+    articleId: Int,
+    viewModel: ArticleViewModel = hiltViewModel()
+) {
+    viewModel.prepareArticle(articleId)
+
+    val articleScreenState by viewModel.articleState.collectAsState()
+
+    val articleUIModel = ArticleUIModel(
+        title = articleScreenState.articleTitle,
+        content = articleScreenState.articleContent,
+        publishDate = articleScreenState.publishDate,
+        category = articleScreenState.category,
+        imagePath = articleScreenState.imagePath,
+        isLoaded = articleScreenState.isLoaded
     )
+    ArticleScreenContent(articleUIModel)
+
+
+
 }
 
-// Geri butonu ve makale başlığı içeren Toolbar bileşeni
-// Geri butonu ve makale başlığı içeren Toolbar bileşeni
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Composable
+fun ArticleScreenContent(
+    articleUIModel: ArticleUIModel
+) {
+
+
+    Scaffold(
+        topBar = {
+            ArticleToolbar(articleUIModel.title)
+        },
+        content = {
+            ArticleContent(articleUIModel)
+        }
+    )
+
+
+}
+
+
+
+
+
 @Composable
 fun ArticleToolbar(title: String) {
     TopAppBar(
@@ -93,26 +114,24 @@ fun ArticleToolbar(title: String) {
     )
 }
 
-// Makale içeriğini gösteren bileşen
 @Composable
-fun ArticleContent(article: Article) {
+fun ArticleContent(article: ArticleUIModel) {
     Column(
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier
+            .padding(16.dp)
             .fillMaxSize()
-
+            .verticalScroll(rememberScrollState())
     ) {
-        // Makale fotoğrafı varsa
-        article.imageUrl?.let { imageUrl ->
-            Image(
-                painter = painterResource(id = R.drawable.article_image), // yer tutucu görüntü
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Fit
-            )
-        }
+
+        AsyncImage(
+            model = article.imagePath, // yer tutucu görüntü
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .clip(RoundedCornerShape(8.dp)),
+            contentScale = ContentScale.Fit
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -124,4 +143,19 @@ fun ArticleContent(article: Article) {
         )
     }
 }
+@Preview(showBackground = true)
+@Composable
+private fun ArticleScreenContentPreview() {
+    ArticleScreenContent(articleUIModel = ArticleUIModel(
+        "Example Title",
+        category = "a",
+        imagePath = "",
+        content = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+        publishDate = "",
+        isLoaded = true
+    )
+    )
+
+}
+
 
