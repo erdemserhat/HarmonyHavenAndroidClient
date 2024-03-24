@@ -20,6 +20,9 @@ interface CategoryApiService {
     @GET("articles/{id}")
     suspend fun getArticleById(@Path("id") id: Int): Response<ArticleResponseType>
 
+    @GET("articles/category/{id}")
+    suspend fun getArticlesByCategory(@Path("id") id :Int) :Response<List<ArticleResponseType>>
+
 
 
 

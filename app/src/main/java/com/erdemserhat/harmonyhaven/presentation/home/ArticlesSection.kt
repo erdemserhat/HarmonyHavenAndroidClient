@@ -8,12 +8,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -55,94 +61,49 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenTitleTextColor
 import com.erdemserhat.harmonyhaven.util.customFontInter
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MostReadHorizontalPagerDev(
+fun ArticleSection(
     navController: NavController,
     articles: List<ArticleResponseType>,
 ) {
-    if (articles.size == 4) {
-        val pagerState = rememberPagerState(pageCount = {
-            4//list size
-        })
-
-        LaunchedEffect(Unit) {
-            while (true) {
-                delay(3000) // 3 saniyelik gecikme
-                val nextPage = (pagerState.currentPage + 1) % pagerState.pageCount
-                pagerState.animateScrollToPage(
-                    page = nextPage,
-                    animationSpec = tween(1000) // Geçiş süresini 1000 milisaniyeye ayarlayın
-                )
-            }
-        }
 
 
+    Column(
+        modifier = Modifier
+
+    ) {
+        Spacer(modifier = Modifier.padding(20.dp))
+        Text(
+            text = "Recent Articles",
+            modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
+            fontFamily = customFontInter,
+            fontWeight = FontWeight.Bold,
+            color = harmonyHavenTitleTextColor,
+            fontSize = MaterialTheme.typography.titleLarge.fontSize
+
+        )
         Column(
-
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                text = "Recent Articles",
-                modifier = Modifier
-                    .padding(start = 16.dp, bottom = 16.dp),
-                fontFamily = customFontInter,
-                fontWeight = FontWeight.Bold,
-                color = harmonyHavenTitleTextColor,
-                fontSize = MaterialTheme.typography.titleMedium.fontSize
-
-            )
-            Column(
-                modifier = Modifier
-                    .size(width = 380.dp, height = 230.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                HorizontalPager(
-                    modifier = Modifier
-                        .size(width = 360.dp, height = 210.dp),
-                    state = pagerState,
-                    verticalAlignment = Alignment.Top,
-                ) { page ->
-
-
-                    MostReadArticleDev(articles[page]) {
-                        val articleId = articles[page].id
-                        navController.navigate(Screen.Article.route + "/$articleId")
-                    }
-
-
+            for (article in articles) {
+                Spacer(modifier = Modifier.height(10.dp))
+                ArticlePrototype(article) {
+                    val articleId = article.id
+                    navController.navigate(Screen.Article.route + "/$articleId")
                 }
-
-                Row(
-
-                    horizontalArrangement = Arrangement.Center
-                ) {
-
-                    repeat(pagerState.pageCount) { iteration ->
-                        val color =
-                            if (pagerState.currentPage == iteration) harmonyHavenDarkGreenColor else harmonyHavenGradientWhite
-                        Box(
-                            modifier = Modifier
-                                .padding(2.dp)
-                                .clip(CircleShape)
-                                .background(color)
-                                .size(16.dp)
-                        )
-                    }
-
-                }
-
-
             }
+
         }
+
 
     }
-
 
 }
 
 
 @Composable
-fun MostReadArticleDev(
+fun ArticlePrototype(
     article: ArticleResponseType,
     onReadButtonClicked: () -> Unit,
 
@@ -175,8 +136,7 @@ fun MostReadArticleDev(
                 fontWeight = FontWeight.Bold,
                 fontFamily = customFontInter,
                 color = harmonyHavenDarkGreenColor,
-                modifier = Modifier
-                    .padding(10.dp),
+                modifier = Modifier.padding(10.dp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -201,8 +161,7 @@ fun MostReadArticleDev(
                     fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                     maxLines = 4,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .padding(end = 10.dp, bottom = 10.dp)
+                    modifier = Modifier.padding(end = 10.dp, bottom = 10.dp)
 
 
                 )
@@ -216,7 +175,7 @@ fun MostReadArticleDev(
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 10.dp, end = 10.dp)
 
-                .size(width = 100.dp, height = 35.dp),
+                .size(width = 100.dp, height = 40.dp),
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = harmonyHavenGreen
@@ -227,10 +186,9 @@ fun MostReadArticleDev(
                 text = "Read",
                 textAlign = TextAlign.Center,
                 fontFamily = customFontInter,
-                fontSize = MaterialTheme.typography.bodySmall.fontSize,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
+                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.CenterVertically)
 
 
             )
@@ -240,8 +198,6 @@ fun MostReadArticleDev(
 
     }
 }
-
-
 
 
 

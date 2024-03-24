@@ -11,9 +11,16 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientWhite
 
 @Composable
-fun shimmerBrush(showShimmer: Boolean = true,targetValue:Float = 1000f): Brush {
+fun shimmerBrush(
+    showShimmer: Boolean = true,
+    targetValue:Float = 1000f,
+    gradiantVariantFirst: Color,
+    gradiantVariantSecond: Color
+
+): Brush {
     return if (showShimmer) {
         val shimmerColors = listOf(
             harmonyHavenGradientGreen.copy(alpha = 0.6f),
@@ -36,7 +43,7 @@ fun shimmerBrush(showShimmer: Boolean = true,targetValue:Float = 1000f): Brush {
         )
     } else {
         Brush.linearGradient(
-            colors = listOf(Color.Transparent,Color.Transparent),
+            colors = listOf(gradiantVariantFirst, gradiantVariantSecond),
             start = Offset.Zero,
             end = Offset.Zero
         )
