@@ -70,6 +70,7 @@ import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category
 import com.erdemserhat.harmonyhaven.presentation.home.components.ContentGridShimmy
 import com.erdemserhat.harmonyhaven.presentation.home2.CategoriesRowSection
+import com.erdemserhat.harmonyhaven.presentation.home2.MostReadHorizontalPager
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
@@ -89,6 +90,7 @@ fun HomeScreen(
     var selectedCategory by remember {
         mutableStateOf(Category(1,"","",))
     }
+    homeViewModel.getArticlesByCategoryId(selectedCategory.id)
     Column(
         modifier = Modifier
             .background(
@@ -114,8 +116,9 @@ fun HomeScreen(
             selectedCategory = selectedCategory
 
 
-        )
+         )
         //
+        MostReadHorizontalPager(navController,homeState.recentArticles)
 
         //HarmonyHavenSearchBarPrototype2(modifier = Modifier.padding(bottom = 20.dp))  
         //MostReadHorizontalPagerDev(navController,homeState.articles)
@@ -494,88 +497,3 @@ fun ContentColumn(modifier: Modifier = Modifier) {
 }
 
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun MostReadHorizontalPager(navController: NavController) {
-    val pagerState = rememberPagerState(pageCount = {
-        4//list size
-    })
-
-    val pages = listOf(
-        MostReadArticleModel(
-            "Embracing Life's Nuances",
-            "Life is a journey filled with intricacies, where each moment presents us with new experiences. Along this path, we encounter a tapestry of joys and...",
-            R.drawable.article_image//static data
-        ),
-        MostReadArticleModel(
-            "Number2",
-            "2Life is a journey filled with intricacies, where each moment presents us with new experiences. Along this path, we encounter a tapestry of joys and...",
-            R.drawable.onboarding_screen_image_1//static data
-        ),
-        MostReadArticleModel(
-            "Embracing Life's Nuances",
-            "Life is a journey filled with intricacies, where each moment presents us with new experiences. Along this path, we encounter a tapestry of joys and...",
-            R.drawable.onboarding_screen_image_3//static data
-        ),
-        MostReadArticleModel(
-            "Embracing Life's Nuances",
-            "Life is a journey filled with intricacies, where each moment presents us with new experiences. Along this path, we encounter a tapestry of joys and...",
-            R.drawable.google_icon//static data
-        )
-    )
-
-
-
-    Column(
-
-    ) {
-        Text(
-            text = "Recent Articles",
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 16.dp),
-            fontFamily = customFontInter,
-            fontWeight = FontWeight.Bold,
-            color = harmonyHavenTitleTextColor,
-            fontSize = MaterialTheme.typography.titleMedium.fontSize
-
-        )
-        Column(
-            modifier = Modifier
-                .size(width = 380.dp, height = 230.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            HorizontalPager(
-                modifier = Modifier
-                    .size(width = 360.dp, height = 210.dp),
-                state = pagerState,
-                verticalAlignment = Alignment.Top,
-            ) { page ->
-
-                MostReadArticle(pages[page]) { navController.navigate(Screen.Article.route) }
-
-
-            }
-
-            Row(
-
-                horizontalArrangement = Arrangement.Center
-            ) {
-
-                repeat(pagerState.pageCount) { iteration ->
-                    val color =
-                        if (pagerState.currentPage == iteration) harmonyHavenDarkGreenColor else harmonyHavenGradientWhite
-                    Box(
-                        modifier = Modifier
-                            .padding(2.dp)
-                            .clip(CircleShape)
-                            .background(color)
-                            .size(16.dp)
-                    )
-                }
-
-            }
-
-
-        }
-    }
-}

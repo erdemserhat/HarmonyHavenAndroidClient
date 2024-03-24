@@ -64,6 +64,8 @@ fun CategoriesRowSection(
     selectedCategory: Category
 ) {
     Column {
+        
+        Spacer(modifier = Modifier.height(25.dp))
         androidx.compose.material3.Text(
             text = "Categories",
             modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
