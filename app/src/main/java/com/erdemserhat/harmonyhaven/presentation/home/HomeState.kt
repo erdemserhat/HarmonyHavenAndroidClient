@@ -9,5 +9,6 @@ data class HomeState(
     var categories: List<Category> = listOf(),
     var isCategoryReady:Boolean = false,
     var articles:List<ArticleResponseType> = listOf(),
+    var recentArticles:List<ArticleResponseType> = listOf(),
     var isArticleReady:Boolean = false
 )
