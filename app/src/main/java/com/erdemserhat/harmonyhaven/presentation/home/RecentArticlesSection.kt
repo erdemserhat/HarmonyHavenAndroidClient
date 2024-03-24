@@ -154,7 +154,6 @@ fun MostReadArticleDev(
 
     Box(
         modifier = Modifier
-            .size(width = 350.dp, height = 200.dp)
             .background(
                 shimmerBrush(
                     targetValue = 1300f,
@@ -190,7 +189,7 @@ fun MostReadArticleDev(
                     modifier = Modifier
                         .size(120.dp)
                         .padding(start = 10.dp, end = 10.dp),
-                    onSuccess = { shouldShowShimmer = false },
+                    onSuccess = { shouldShowShimmer = true },
                     contentScale = ContentScale.Fit
                 )
 
