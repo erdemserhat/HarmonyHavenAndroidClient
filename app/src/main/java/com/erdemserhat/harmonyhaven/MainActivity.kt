@@ -22,10 +22,13 @@ class MainActivity  : ComponentActivity() {
     //val loginViewModel:LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         //you have to use your dependency after the
         // super.onCreate() function
         super.onCreate(savedInstanceState)
+
         //use your dependencies here
+        //viewModel.getArticlesByCategory(1)
 
 
         setContent {

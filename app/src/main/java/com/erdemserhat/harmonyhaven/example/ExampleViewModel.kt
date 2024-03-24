@@ -7,6 +7,7 @@ import com.erdemserhat.harmonyhaven.data.network.CategoryApiService
 import com.erdemserhat.harmonyhaven.domain.model.rest.User
 import com.erdemserhat.harmonyhaven.domain.model.rest.client.UserLogin
 import com.erdemserhat.harmonyhaven.domain.model.rest.client.UserUpdateModel
+import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -21,15 +22,18 @@ import kotlin.system.measureTimeMillis
 class ExampleViewModel @Inject constructor(
 
     private val userUseCases: UserUseCases,
-    private val categoryApiService: CategoryApiService
+    private val art: CategoryApiService,
+    private val articleUseCases: ArticleUseCases
 ) : ViewModel() {
+    fun getArticlesByCategory(i: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            articleUseCases.getArticlesByCategory(i)
 
 
+        }
 
 
-
-
-
+    }
 
 
 }

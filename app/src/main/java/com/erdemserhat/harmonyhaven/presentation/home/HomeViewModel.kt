@@ -51,7 +51,28 @@ class HomeViewModel @Inject constructor(
                 Log.e("erdem3451", "Hata oluştu: ${e.message}")
             }
 
-            Log.d("erdem3451", homeState.toString())
+            //Log.d("erdem3451", homeState.toString())
+        }
+    }
+
+
+    fun getArticlesByCategoryId(categoryId:Int){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val articlesWithCurrentCategory = async { articleUseCases.getArticlesByCategory(categoryId) }
+                val recentArticlesResult = articlesWithCurrentCategory.await() ?: listOf()
+                _homeState.value = _homeState.value.copy(
+                    isArticleReady = true,
+                    articles = recentArticlesResult
+                )
+                Log.d("erdem3451",_homeState.value.toString())
+
+
+            }catch (_:Exception){
+
+            }
+
+
         }
     }
 }
