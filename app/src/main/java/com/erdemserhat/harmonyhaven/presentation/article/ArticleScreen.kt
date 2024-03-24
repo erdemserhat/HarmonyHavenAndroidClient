@@ -2,6 +2,7 @@ package com.erdemserhat.harmonyhaven.presentation.article
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.TextView
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +32,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
@@ -95,7 +98,7 @@ fun ArticleScreenContent(
 @Composable
 fun ArticleToolbar(title: String) {
     TopAppBar(
-        title = { Text(title) },
+        title = { Text("Harmony Haven") },
         navigationIcon = {
             IconButton(onClick = { /* Geri gitme işlemi */ }) {
                 Icon(Icons.Filled.ArrowBack, contentDescription = "Geri")
@@ -135,12 +138,7 @@ fun ArticleContent(article: ArticleUIModel) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Makale metni
-        Text(
-            text = article.content,
-            fontSize = 16.sp,
-            textAlign = TextAlign.Justify
-        )
+        HtmlText(article.content)
     }
 }
 @Preview(showBackground = true)
@@ -156,6 +154,15 @@ private fun ArticleScreenContentPreview() {
     )
     )
 
+}
+
+@Composable
+fun HtmlText(html: String, modifier: Modifier = Modifier) {
+    AndroidView(
+        modifier = modifier,
+        factory = { context -> TextView(context) },
+        update = { it.text = HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_COMPACT) }
+    )
 }
 
 

@@ -49,6 +49,7 @@ import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category
 import com.erdemserhat.harmonyhaven.presentation.home.components.shimmerBrush
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenBottomAppBarContainerColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenTitleTextColor
@@ -63,29 +64,62 @@ fun CategoriesRowSection(
     onCategorySelected: (Category) -> Unit,
     selectedCategory: Category
 ) {
-    Column {
-        
-        Spacer(modifier = Modifier.height(25.dp))
-        androidx.compose.material3.Text(
-            text = "Categories",
-            modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
-            fontFamily = customFontInter,
-            fontWeight = FontWeight.Bold,
-            color = harmonyHavenTitleTextColor,
-            fontSize = MaterialTheme.typography.titleLarge.fontSize
+    if(categoryList.isNotEmpty()) {
+        Column {
 
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(130.dp)
-                .horizontalScroll(rememberScrollState())
-        ) {
-            for (category in categoryList) {
-                Spacer(modifier = Modifier.width(15.dp))
-                CategoriesRowSectionElement(category, onCategorySelected, selectedCategory)
+            Spacer(modifier = Modifier.height(25.dp))
+            androidx.compose.material3.Text(
+                text = "Categories",
+                modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
+                fontFamily = customFontInter,
+                fontWeight = FontWeight.Bold,
+                color = harmonyHavenTitleTextColor,
+                fontSize = MaterialTheme.typography.titleLarge.fontSize
+
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(130.dp)
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                for (category in categoryList) {
+                    Spacer(modifier = Modifier.width(15.dp))
+                    CategoriesRowSectionElement(category, onCategorySelected, selectedCategory)
+                }
             }
+
         }
+    }else{
+        Column {
+
+            Spacer(modifier = Modifier.height(25.dp))
+            androidx.compose.material3.Text(
+                text = "Categories",
+                modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
+                fontFamily = customFontInter,
+                fontWeight = FontWeight.Bold,
+                color = harmonyHavenTitleTextColor,
+                fontSize = MaterialTheme.typography.titleLarge.fontSize
+
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(130.dp)
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                repeat(10) {
+                    Spacer(modifier = Modifier.width(15.dp))
+                    CategoriesRowSectionElementShimmer()
+                }
+            }
+
+        }
+
+
+
+
 
     }
 }
@@ -94,13 +128,14 @@ fun CategoriesRowSection(
 fun CategoriesRowSectionElement(
     category: Category,
     onCategorySelected: (Category) -> Unit,
-    selectedCategory: Category
+    selectedCategory: Category,
+
 ) {
     var showShimmer = remember { mutableStateOf(true) }
 
     // Seçili kategori ile mevcut kategori arasında karşılaştırma yaparak sınır rengini belirle
     val borderColor =
-        if (category == selectedCategory) harmonyHavenDarkGreenColor else Color.Transparent
+        if (category == selectedCategory) harmonyHavenBottomAppBarContainerColor else Color.Transparent
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -146,7 +181,7 @@ fun CategoriesRowSectionElement(
                         shape = CircleShape
                     },
                 onSuccess = { showShimmer.value = false },
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Crop
             )
         }
         Text(
@@ -192,7 +227,7 @@ fun Content(
                 modifier = Modifier
                     .size(100.dp),
                 onSuccess = { showShimmer.value = false },
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Inside
             )
             Text(
                 modifier = Modifier
@@ -207,6 +242,38 @@ fun Content(
 
     }
 
+}
+
+@Composable
+fun CategoriesRowSectionElementShimmer() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+
+
+        Box(
+            modifier = Modifier
+                .size(100.dp)
+                .padding(10.dp)
+                .background(
+                    brush = shimmerBrush(
+                        targetValue = 1300f,
+                        showShimmer = true,
+                        gradiantVariantFirst = harmonyHavenComponentWhite,
+                        gradiantVariantSecond = harmonyHavenComponentWhite
+                    ),
+                    shape = CircleShape,
+
+
+                    ),
+
+            contentAlignment = Alignment.Center
+        ) {
+
+        }
+
+    }
 }
 
 

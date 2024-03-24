@@ -11,7 +11,7 @@ interface CategoryApiService {
     @GET("categories")
     suspend fun getAllCategories():List<Category>
 
-    @GET("articles")
+    @GET("/articles")
     suspend fun getAllArticles():List<Article>
 
     @GET("articles/recent/{size}")
