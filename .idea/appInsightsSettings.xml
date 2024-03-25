@@ -27,10 +27,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.erdemserhat.harmonyhaven" />
+                  <option name="mobileSdkAppId" value="1:456625388455:android:71d9b386c1d3ebe2a85482" />
+                  <option name="projectId" value="harmonyhaven-fc618" />
+                  <option name="projectNumber" value="456625388455" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

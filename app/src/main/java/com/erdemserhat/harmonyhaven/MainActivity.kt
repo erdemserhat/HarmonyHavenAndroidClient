@@ -1,11 +1,18 @@
 package com.erdemserhat.harmonyhaven
 
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.Manifest
+
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.example.ExampleViewModel
@@ -29,6 +36,8 @@ class MainActivity  : ComponentActivity() {
 
         //use your dependencies here
         //viewModel.getArticlesByCategory(1)
+        requestNotificationPermission()
+        viewModel.getToken()
 
 
         setContent {
@@ -38,4 +47,24 @@ class MainActivity  : ComponentActivity() {
         }
     }
 
+
+    private fun requestNotificationPermission() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val hasPermission = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if(!hasPermission) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    0
+                )
+            }
+        }
+    }
+
 }
+
+
