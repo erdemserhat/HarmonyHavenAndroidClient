@@ -20,6 +20,7 @@ class HarmonyHavenFirebaseMessagingService():FirebaseMessagingService() {
     lateinit var context: Context
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+        Log.d("erde11",token)
 
     }
 
