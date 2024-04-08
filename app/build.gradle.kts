@@ -1,13 +1,15 @@
 
 plugins {
-
-    id("com.google.dagger.hilt.android")
     id("com.android.application")
+    id("com.google.gms.google-services")
+    id("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.android")
     //id("com.google.devtools.ksp")
     kotlin("kapt")
 
-   // id ("dagger.hilt.android.plugin")
+
+
+    // id ("dagger.hilt.android.plugin")
     //id ("kotlin-android-extensions")
 }
 
@@ -74,6 +76,7 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:1.6.1") // AndroidX AppCompat library to make new Android features available on older Android versions.
     implementation("androidx.core:core-ktx:1.12.0")
+    implementation("com.google.firebase:firebase-messaging-ktx:23.4.1")
 
     //Test Dependencies
 
@@ -144,6 +147,18 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
     implementation ("androidx.compose.runtime:runtime-livedata:1.6.4")
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
+
+
+    // TODO: Add the dependencies for Firebase products you want to use
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation("com.google.firebase:firebase-analytics")
+
+
+    // Add the dependencies for any other desired Firebase products
+    // https://firebase.google.com/docs/android/setup#available-libraries
+
 
 
 

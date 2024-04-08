@@ -1,6 +1,13 @@
 package com.erdemserhat.harmonyhaven.presentation.home
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +22,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -81,8 +89,6 @@ fun ArticleSection(
     articles: List<ArticleResponseType>,
 ) {
     if (articles.isNotEmpty()) {
-
-
         Column(
             modifier = Modifier
 
@@ -100,19 +106,20 @@ fun ArticleSection(
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
+
             ) {
                 for (article in articles) {
                     Spacer(modifier = Modifier.height(10.dp))
-                    ArticlePrototype(article) {
-                        val articleId = article.id
-                        navController.navigate(Screen.Article.route + "/$articleId")
-                    }
-                }
+                        ArticlePrototype(article) {
+                            val articleId = article.id
+                            navController.navigate(Screen.Article.route + "/$articleId")
+                        }
 
+                }
             }
 
-
         }
+
 
     } else {
         Column(
@@ -169,8 +176,7 @@ fun ArticlePrototype(
                     showShimmer = shouldShowShimmer,
                     gradiantVariantFirst = harmonyHavenComponentWhite,
                     gradiantVariantSecond = harmonyHavenComponentWhite
-                )
-                ,
+                ),
                 shape = RoundedCornerShape(15.dp)
             )
             .border(width = 0.1.dp, color = Color.Black, shape = RoundedCornerShape(15.dp))
@@ -205,8 +211,6 @@ fun ArticlePrototype(
         }
 
 
-
-
     }
 }
 
@@ -230,8 +234,3 @@ fun ArticlePrototypeShimmy() {
             )
     )
 }
-
-
-
-
-

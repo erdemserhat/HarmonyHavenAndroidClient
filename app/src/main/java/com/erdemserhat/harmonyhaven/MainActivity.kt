@@ -1,12 +1,22 @@
 package com.erdemserhat.harmonyhaven
 
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.Manifest
+
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.erdemserhat.harmonyhaven.example.ExampleViewModel
+import com.erdemserhat.harmonyhaven.presentation.home.HomeViewModel
 import com.erdemserhat.harmonyhaven.presentation.navigation.SetupNavGraph
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -15,7 +25,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity  : ComponentActivity() {
     private lateinit var navController: NavHostController
     private val viewModel: ExampleViewModel by viewModels()
-    private val mainViewModel:MainViewModel by viewModels()
     //private val homeViewModel:HomeViewModel by viewModels()
     //val loginViewModel:LoginViewModel by viewModels()
 
@@ -27,11 +36,8 @@ class MainActivity  : ComponentActivity() {
 
         //use your dependencies here
         //viewModel.getArticlesByCategory(1)
-       // viewModel.saveJwt("serhat")
-      //  viewModel.authenticateUser()
-       // viewModel.getJwt()
-        mainViewModel.prepareJwt()
-
+        requestNotificationPermission()
+        viewModel.getToken()
 
 
         setContent {
@@ -41,4 +47,24 @@ class MainActivity  : ComponentActivity() {
         }
     }
 
+
+    private fun requestNotificationPermission() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val hasPermission = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if(!hasPermission) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    0
+                )
+            }
+        }
+    }
+
 }
+
+
