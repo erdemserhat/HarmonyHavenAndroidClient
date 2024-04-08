@@ -54,27 +54,11 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 
 @Composable
 fun LoginScreenContent(
-    onLoginButtonClicked: () -> Unit,
-    onLoginViaGoogleClicked: () -> Unit,
-    onSignUpClicked: () -> Unit,
-    onForgotPasswordClicked: () -> Unit,
-    onRememberCredentialsStateChanged: () -> Unit,
-    isCheckedRememberCredentials: Boolean,
-    email: String,
-    onEmailValueChanged: (String) -> Unit,
-    password: String,
-    onPasswordValueChanged: (String) -> Unit,
-    warningText: String,
-    canNavigateToDashBoard: Boolean,
-    onCanNavigateToDashBoard: () -> Unit,
-    isLoading:Boolean,
-
-
+    params: LoginScreenParams
 ) {
-
     //Navigation control
-    if (canNavigateToDashBoard) {
-        onCanNavigateToDashBoard()
+    if (params.canNavigateToDashBoard) {
+        params.onCanNavigateToDashBoard()
 
     }
     //val shouldOpenAlertDialog = remember { mutableStateOf(false) }
@@ -156,16 +140,18 @@ fun LoginScreenContent(
 
 
                     LoginScreenEmailTextField(
-                        email = email,
-                        onValueChanged = onEmailValueChanged
+                        email = params.email,
+                        onValueChanged = params.onEmailValueChanged,
+                        isError = params.isEmailValid
 
                     )
                     Spacer(modifier = Modifier.size(5.dp))
                     LoginScreenPasswordTextField(
-                        onValueChanged = onPasswordValueChanged,
-                        password = password,
+                        onValueChanged = params.onPasswordValueChanged,
+                        password = params.password,
                         isPasswordHidden = isPasswordHidden,
-                        onClickIcon = { isPasswordHidden = !isPasswordHidden }
+                        onClickIcon = { isPasswordHidden = !isPasswordHidden },
+                        isError = params.isPasswordValid
 
                     )
 
@@ -177,17 +163,17 @@ fun LoginScreenContent(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     LoginScreenRememberCredentialsCheckbox(
-                        isChecked = isCheckedRememberCredentials,
-                        onCheckedChange = onRememberCredentialsStateChanged
+                        isChecked = params.isCheckedRememberCredentials,
+                        onCheckedChange = params.onRememberCredentialsStateChanged
                     )
                     Spacer(modifier = Modifier.size(60.dp))
                     LoginScreenForgotPasswordTextButton(
-                        onClick = onForgotPasswordClicked
+                        onClick = params.onForgotPasswordClicked
                     )
                 }
                 Spacer(modifier = Modifier.size(20.dp))
                 LoginScreenWarningText(
-                    warningText = warningText
+                    warningText = params.warningText
 
                 )
 
@@ -199,7 +185,7 @@ fun LoginScreenContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    if(isLoading){
+                    if(params.isLoading){
                         CircularProgressIndicator(
                             modifier = Modifier.width(32.dp),
                             color = harmonyHavenGreen,
@@ -209,12 +195,12 @@ fun LoginScreenContent(
                     }else{
                         //Buttons
                         LoginScreenLoginButton(
-                            onClick = onLoginButtonClicked
+                            onClick = params.onLoginButtonClicked
                         )
 
                         Spacer(modifier = Modifier.size(10.dp))
                         LoginScreenGoogleSignInButton(
-                            onClick = onLoginViaGoogleClicked
+                            onClick = params.onLoginViaGoogleClicked
                         )
 
                     }
@@ -231,7 +217,7 @@ fun LoginScreenContent(
                     ) {
                         Text(text = stringResource(R.string.don_t_have_account))
                         TextButton(
-                            onClick = onSignUpClicked
+                            onClick = params.onSignUpClicked
                         ) {
                             Text(stringResource(R.string.sign_up), color = harmonyHavenGreen)
                         }
@@ -258,11 +244,11 @@ fun LoginScreen(
 
 ) {
     var email by rememberSaveable {
-        mutableStateOf("testuser@example.com")
+        mutableStateOf("me.serhaterdem@gmail.com")
     }
 
     var password by rememberSaveable {
-        mutableStateOf("!Harmony12345")
+        mutableStateOf("Erdem.3451..")
     }
 
 
@@ -270,9 +256,9 @@ fun LoginScreen(
         mutableStateOf(false)
     }
 
-    val shouldOpenAlertDialog = remember { mutableStateOf(false) }
+    //val shouldOpenAlertDialog = remember { mutableStateOf(false) }
 
-    LoginScreenContent(
+    val loginParams = LoginScreenParams(
         onLoginButtonClicked = { viewModel.onLoginClicked(email, password) },
         onLoginViaGoogleClicked = {},
         onSignUpClicked = { navController.navigate(Screen.Register.route) },
@@ -289,33 +275,58 @@ fun LoginScreen(
         canNavigateToDashBoard = viewModel.loginState.value.canNavigateToDashBoard,
         onCanNavigateToDashBoard = { navController.navigate(Screen.Dashboard.route) },
         isLoading = viewModel.loginState.value.isLoading,
-
-
+        isEmailValid = !viewModel.loginState.value.validationState.isEmailValid,
+        isPasswordValid = !viewModel.loginState.value.validationState.isPasswordValid
     )
+
+    LoginScreenContent(params = loginParams)
+
 
 }
 
 @Preview
 @Composable
 fun LoginScreenPreview() {
-    LoginScreenContent(
-        onLoginButtonClicked = {},
-        onLoginViaGoogleClicked = {},
-        onSignUpClicked = {},
-        onForgotPasswordClicked = {},
-        onRememberCredentialsStateChanged = {},
-        isCheckedRememberCredentials = false,
-        email = "",
-        onEmailValueChanged = {},
-        password = "",
-        onPasswordValueChanged = {},
-        warningText = "",
-        onCanNavigateToDashBoard = { },
-        canNavigateToDashBoard = false,
-        isLoading = false,
-
-
-    )
+LoginScreenContent(params = defaultLoginParams)
 
 }
+
+data class LoginScreenParams(
+    val onLoginButtonClicked: () -> Unit,
+    val onLoginViaGoogleClicked: () -> Unit,
+    val onSignUpClicked: () -> Unit,
+    val onForgotPasswordClicked: () -> Unit,
+    val onRememberCredentialsStateChanged: () -> Unit,
+    val isCheckedRememberCredentials: Boolean,
+    val email: String,
+    val onEmailValueChanged: (String) -> Unit,
+    val password: String,
+    val onPasswordValueChanged: (String) -> Unit,
+    val warningText: String,
+    val canNavigateToDashBoard: Boolean,
+    val onCanNavigateToDashBoard: () -> Unit,
+    val isLoading: Boolean,
+    val isEmailValid:Boolean = true,
+    val isPasswordValid:Boolean = true
+)
+
+val defaultLoginParams = LoginScreenParams(
+    onLoginButtonClicked = {},
+    onLoginViaGoogleClicked = {},
+    onSignUpClicked = {},
+    onForgotPasswordClicked = {},
+    onRememberCredentialsStateChanged = {},
+    isCheckedRememberCredentials = false,
+    email = "testuser@example.com",
+    onEmailValueChanged = {},
+    password = "!Harmony12345",
+    onPasswordValueChanged = {},
+    warningText = "",
+    canNavigateToDashBoard = false,
+    onCanNavigateToDashBoard = {},
+    isLoading = false,
+    isEmailValid = true,
+    isPasswordValid = true
+)
+
 
