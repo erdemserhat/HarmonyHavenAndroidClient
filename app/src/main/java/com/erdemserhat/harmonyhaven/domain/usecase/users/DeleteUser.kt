@@ -12,11 +12,14 @@ class DeleteUser @Inject constructor(
 ) {
     suspend operator fun invoke(loginUser: UserLogin): Flow<RequestResult> = flow {
         emit(RequestResult(false,"Loading..."))
+        /*
         val response = userApiService.deleteUser(loginUser)
         val result = response.body()?.result ?:false
         val message = response.body()?.message ?:"En error occurred"
 
         emit(RequestResult(result,message))
+
+         */
 
 
     }

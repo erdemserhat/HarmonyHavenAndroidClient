@@ -8,12 +8,21 @@ import com.erdemserhat.harmonyhaven.domain.model.rest.client.UserLogin
 import com.erdemserhat.harmonyhaven.domain.model.rest.server.RequestResult
 import com.erdemserhat.harmonyhaven.domain.model.rest.server.RequestResultUUID
 import com.erdemserhat.harmonyhaven.domain.model.rest.client.UserUpdateModel
+import com.erdemserhat.harmonyhaven.dto.requests.UserAuthenticationRequest
+import com.erdemserhat.harmonyhaven.dto.responses.AuthenticationResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 
 interface UserApiService {
+
+    @POST("user/authenticate")
+    suspend fun authenticateUser(@Body userAuthRequest: UserAuthenticationRequest):Response<AuthenticationResponse>
+
+   // @POST("user/")
+
+    /*
     @POST("/user/login")
     suspend fun login(@Body loginModel: UserLogin):Response<RequestResult>
     @POST("/user/register")
@@ -46,6 +55,8 @@ interface UserApiService {
     @PATCH("user/forgot-password/reset-password")
     suspend fun requestPasswordReset(@Body resetModel: ForgotPasswordResetClientModel):Response<RequestResult>
 
+
+     */
 
 
 

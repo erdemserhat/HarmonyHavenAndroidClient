@@ -9,6 +9,7 @@ class GetRecentArticles @Inject constructor(
     private val categoryApiService: CategoryApiService
 ) {
     suspend operator fun invoke(size:Int):List<ArticleResponseType>?{
+        /*
         val response = categoryApiService.getRecentArticles(size)
 
 
@@ -19,5 +20,9 @@ class GetRecentArticles @Inject constructor(
 
             return null
         }
+
+         */
+
+        return arrayListOf(ArticleResponseType())
     }
 }
