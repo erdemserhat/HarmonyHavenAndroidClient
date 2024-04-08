@@ -28,7 +28,8 @@ fun LoginScreenPasswordTextField(
     onValueChanged:(String)->Unit,
     password:String,
     isPasswordHidden:Boolean,
-    onClickIcon:()->Unit
+    onClickIcon:()->Unit,
+    isError:Boolean
 ) {
 
 
@@ -66,6 +67,7 @@ fun LoginScreenPasswordTextField(
                     )
                 Icon(painter = visibilityIcon, contentDescription = description)
             }
-        }
+        },
+        isError=isError
     )
 }

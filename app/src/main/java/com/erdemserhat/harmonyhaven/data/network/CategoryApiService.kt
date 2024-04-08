@@ -8,6 +8,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface CategoryApiService {
+    /*
     @GET("categories")
     suspend fun getAllCategories():List<Category>
 
@@ -22,6 +23,8 @@ interface CategoryApiService {
 
     @GET("articles/category/{id}")
     suspend fun getArticlesByCategory(@Path("id") id :Int) :Response<List<ArticleResponseType>>
+
+     */
 
 
 

@@ -35,6 +35,7 @@ class ResetPasswordUserDev @Inject constructor(
                 isLoading = true,
             )
         )
+        /*
 
         val response =
             userApiService.requestResetPasswordMail(ForgotPasswordMailerClientModel(email))
@@ -49,6 +50,8 @@ class ResetPasswordUserDev @Inject constructor(
             )
 
         )
+
+         */
     }
 
 
@@ -66,6 +69,7 @@ class ResetPasswordUserDev @Inject constructor(
                 )
 
             )
+            /*
 
             val serverResponse = userApiService.requestResetPasswordAuth(authModel)
 
@@ -84,6 +88,8 @@ class ResetPasswordUserDev @Inject constructor(
                 )
             )
 
+             */
+
         }
 
 
@@ -100,6 +106,7 @@ class ResetPasswordUserDev @Inject constructor(
                     isLoading = true
                 )
             )
+            /*
 
             val serverResponse = userApiService.requestPasswordReset(resetModel)
 
@@ -114,6 +121,8 @@ class ResetPasswordUserDev @Inject constructor(
                 )
 
             )
+
+             */
         }
 
 }

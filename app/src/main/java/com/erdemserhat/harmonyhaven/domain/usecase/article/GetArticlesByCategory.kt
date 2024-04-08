@@ -9,6 +9,8 @@ class GetArticlesByCategory @Inject constructor(
     private val categoryApiService: CategoryApiService
 ) {
     suspend operator fun invoke(categoryId: Int): List<ArticleResponseType>? {
+        /*
+
 
         val response = categoryApiService.getArticlesByCategory(categoryId)
 
@@ -19,5 +21,9 @@ class GetArticlesByCategory @Inject constructor(
 
             return null
         }
+
+         */
+
+        return listOf(ArticleResponseType())
     }
 }

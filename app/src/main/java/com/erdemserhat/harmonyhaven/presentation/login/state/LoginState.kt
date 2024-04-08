@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.presentation.login
+package com.erdemserhat.harmonyhaven.presentation.login.state
 
 data class LoginState(
     val isRememberSelected: Boolean = false,
@@ -7,5 +7,9 @@ data class LoginState(
     val email: String = "",
     val password: String = "",
     var loginWarning:String="",
+    var validationState: ValidationState = ValidationState()
+
+
+    //form results ::
 
 )

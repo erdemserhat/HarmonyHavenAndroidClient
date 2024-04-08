@@ -1,13 +1,20 @@
 package com.erdemserhat.harmonyhaven.di
 
+import android.app.Application
+import android.content.Context
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.erdemserhat.harmonyhaven.data.network.CategoryApiService
 import com.erdemserhat.harmonyhaven.data.network.UserApiService
+import com.erdemserhat.harmonyhaven.data.room.AppDatabase
+import com.erdemserhat.harmonyhaven.data.room.JwtTokenRepository
 import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.article.Categories
 import com.erdemserhat.harmonyhaven.domain.usecase.article.GetAllArticles
 import com.erdemserhat.harmonyhaven.domain.usecase.article.GetArticleById
 import com.erdemserhat.harmonyhaven.domain.usecase.article.GetArticlesByCategory
 import com.erdemserhat.harmonyhaven.domain.usecase.article.GetRecentArticles
+import com.erdemserhat.harmonyhaven.domain.usecase.users.AuthenticateUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.DeleteUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.LoginUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.RegisterUser
@@ -18,6 +25,7 @@ import com.erdemserhat.harmonyhaven.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -30,41 +38,14 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-
     @Provides
     @Singleton
-    fun provideHttpClient():OkHttpClient{
-        return OkHttpClient.Builder()
-            .connectTimeout(1, TimeUnit.MINUTES)
-            .readTimeout(45, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .build()
-    }
-
-
-
-    @Provides
-    @Singleton
-    fun provideRetrofit(
-        client:OkHttpClient
-    ):Retrofit{
-        return Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
-
-    @Provides
-    @Singleton
-
     fun provideUserApiService(retrofit: Retrofit): UserApiService {
         return retrofit.create(UserApiService::class.java)
     }
 
     @Provides
     @Singleton
-
     fun provideCategoryApiService(retrofit: Retrofit): CategoryApiService {
         return retrofit.create(CategoryApiService::class.java)
     }
@@ -79,7 +60,8 @@ object NetworkModule {
             registerUser = RegisterUser(userApiService),
             updateUser = UpdateUser(userApiService),
             deleteUSer = DeleteUser(userApiService),
-            resetPasswordUser = ResetPasswordUserDev(userApiService)
+            resetPasswordUser = ResetPasswordUserDev(userApiService),
+            authenticateUser = AuthenticateUser(userApiService)
         )
 
 
@@ -96,6 +78,18 @@ object NetworkModule {
             GetAllArticles(categoryApiService)
         )
     }
+
+
+
+    @Provides
+    @Singleton
+    fun provideJwtTokenRepository(
+        appDatabase: AppDatabase
+    ): JwtTokenRepository {
+        return JwtTokenRepository(appDatabase.jwtTokenDao())
+    }
+
+
 
 
 

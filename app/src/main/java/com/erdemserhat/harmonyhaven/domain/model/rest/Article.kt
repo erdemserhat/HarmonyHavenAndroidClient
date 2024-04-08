@@ -4,23 +4,23 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Article(
-    val id:Int,
-    val title:String,
-    val content:String,
-    val publishDate:String,
-    val categoryId:Int,
-    val imagePath:String
+    val id:Int=0,
+    val title:String="",
+    val content:String="",
+    val publishDate:String="",
+    val categoryId:Int=0,
+    val imagePath:String=""
 
 )
 
 @Serializable
 data class ArticleResponseType(
-    val id:Int,
-    val title:String,
-    val content:String,
-    val publishDate:String,
-    val category:String?,
-    val imagePath:String
+    val id:Int=0,
+    val title:String="",
+    val content:String="",
+    val publishDate:String="",
+    val category:String?="",
+    val imagePath:String=""
 
 )
 
