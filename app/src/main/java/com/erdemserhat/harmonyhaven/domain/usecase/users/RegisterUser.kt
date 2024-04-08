@@ -12,11 +12,15 @@ class RegisterUser @Inject constructor(
 ) {
     suspend operator fun invoke(newUser: User): Flow<RequestResultClient> = flow {
 
+
         emit(RequestResultClient(false,"Loading...",true))
+        /*
         val response = userApiService.register(newUser)
         val result = response.body()?.result ?:false
         val message = response.body()?.message ?:"En error occurred"
 
         emit(RequestResultClient(result,message,false))
+
+         */
     }
 }

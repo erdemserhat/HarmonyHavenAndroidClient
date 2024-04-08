@@ -17,7 +17,8 @@ import com.erdemserhat.harmonyhaven.R
 fun LoginScreenEmailTextField(
     placeholderText: String = stringResource(R.string.e_mail),
     email:String,
-    onValueChanged:(String)->Unit
+    onValueChanged:(String)->Unit,
+    isError:Boolean=false
 ) {
 
     OutlinedTextField(
@@ -34,6 +35,7 @@ fun LoginScreenEmailTextField(
             focusedLabelColor = Color.Black
 
         ),
-        singleLine = true
+        isError = isError
+
     )
 }

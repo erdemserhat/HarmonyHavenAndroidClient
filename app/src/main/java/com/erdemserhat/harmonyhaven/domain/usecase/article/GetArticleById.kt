@@ -10,6 +10,7 @@ class GetArticleById @Inject constructor(
     private val categoryApiService: CategoryApiService
 ) {
     suspend operator fun invoke(articleId: Int): ArticleResponseType? {
+     /*
         val response = categoryApiService.getArticleById(articleId)
 
         if(response.isSuccessful){
@@ -20,5 +21,11 @@ class GetArticleById @Inject constructor(
             return null
         }
 
+
+      */
+        return ArticleResponseType()
+
     }
+
+
 }
