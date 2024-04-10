@@ -160,6 +160,8 @@ dependencies {
     // https://firebase.google.com/docs/android/setup#available-libraries
 
 
+    implementation ("com.google.code.gson:gson:2.10.1")
+
 
 
 

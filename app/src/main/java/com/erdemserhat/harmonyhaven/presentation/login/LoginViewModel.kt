@@ -9,13 +9,18 @@ import com.erdemserhat.harmonyhaven.data.room.JwtTokenRepository
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
 import com.erdemserhat.harmonyhaven.dto.requests.UserAuthenticationRequest
 import com.erdemserhat.harmonyhaven.presentation.login.state.LoginState
-import com.erdemserhat.harmonyhaven.presentation.login.state.ValidationState
+import com.erdemserhat.harmonyhaven.presentation.login.state.LoginValidationState
 import com.erdemserhat.harmonyhaven.presentation.login.state.getValidationStateByErrorCode
+import com.google.android.gms.tasks.Task
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.ktx.messaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
@@ -72,7 +77,7 @@ class LoginViewModel @Inject constructor(
                     isLoading = false,
                     canNavigateToDashBoard = false,
                     loginWarning = errorMessage,
-                    validationState = ValidationState().getValidationStateByErrorCode(errorCode)
+                    validationState = LoginValidationState().getValidationStateByErrorCode(errorCode)
                 )
 
 
@@ -89,7 +94,7 @@ class LoginViewModel @Inject constructor(
                     isLoading = false,
                     canNavigateToDashBoard = false,
                     loginWarning = errorMessage,
-                    validationState = ValidationState().getValidationStateByErrorCode(errorCode)
+                    validationState = LoginValidationState().getValidationStateByErrorCode(errorCode)
                 )
 
                 Log.d("AuthenticationTests","Credentials Invalid")
@@ -121,10 +126,38 @@ class LoginViewModel @Inject constructor(
                 canNavigateToDashBoard = true,
                 loginWarning = "Welcome :)"
             )
+            //if login is successfully then save the fcm id
+            getToken()
+
 
 
 
         }
+    }
+
+    private fun getToken() {
+        viewModelScope.launch(Dispatchers.IO) {
+            FirebaseMessaging.getInstance().subscribeToTopic("everyone")
+                .addOnCompleteListener { task: Task<Void?> ->
+                    Log.d("erdem",task.result.toString())
+                    if (task.isSuccessful) {
+                        Log.d("spec1", "Successfully subscribed to topic")
+                    } else {
+                        Log.e("spec1", "Failed to subscribe to topic", task.exception)
+                    }
+                }
+            val localToken = Firebase.messaging.token.await()
+            //send your fcm id to server
+            Log.d("erdem1212",localToken.toString())
+            val fcmToken = localToken.toString()
+
+            val response = userUseCases.fcmEnrolment.executeRequest(fcmToken)
+
+            Log.d("fcmtestResults",response.message)
+
+
+        }
+
     }
 
 
