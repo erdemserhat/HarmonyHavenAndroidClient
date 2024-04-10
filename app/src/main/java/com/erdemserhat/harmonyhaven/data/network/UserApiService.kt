@@ -10,6 +10,7 @@ import com.erdemserhat.harmonyhaven.domain.model.rest.server.RequestResultUUID
 import com.erdemserhat.harmonyhaven.domain.model.rest.client.UserUpdateModel
 import com.erdemserhat.harmonyhaven.dto.requests.UserAuthenticationRequest
 import com.erdemserhat.harmonyhaven.dto.responses.AuthenticationResponse
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.PATCH
@@ -17,8 +18,7 @@ import retrofit2.http.POST
 
 interface UserApiService {
 
-    @POST("user/authenticate")
-    suspend fun authenticateUser(@Body userAuthRequest: UserAuthenticationRequest):Response<AuthenticationResponse>
+
 
    // @POST("user/")
 

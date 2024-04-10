@@ -7,7 +7,7 @@ data class LoginState(
     val email: String = "",
     val password: String = "",
     var loginWarning:String="",
-    var validationState: ValidationState = ValidationState()
+    var validationState: LoginValidationState = LoginValidationState()
 
 
     //form results ::
