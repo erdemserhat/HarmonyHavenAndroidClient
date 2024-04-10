@@ -15,7 +15,8 @@ fun HarmonyHavenTextField(
     text: String,
     onValueChanged: (String) -> Unit,
     placeHolderText: String,
-    isEnabled:Boolean = true
+    isEnabled:Boolean = true,
+    isError:Boolean = false
 ) {
 
     OutlinedTextField(
@@ -33,6 +34,7 @@ fun HarmonyHavenTextField(
 
         ),
         singleLine = true,
-        enabled = isEnabled
+        enabled = isEnabled,
+        isError = isError
     )
 }

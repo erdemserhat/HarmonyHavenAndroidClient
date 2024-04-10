@@ -28,7 +28,8 @@ fun HarmonyHavenPasswordTextField(
     placeHolderText: String,
     password:String,
     onValueChanged:(String)->Unit,
-    shouldExistVisibilityIcon:Boolean = true
+    shouldExistVisibilityIcon:Boolean = true,
+    isError:Boolean = false
 
 ) {
 
@@ -72,6 +73,7 @@ fun HarmonyHavenPasswordTextField(
             }
 
 
-        }
+        },
+        isError = isError
     )
 }

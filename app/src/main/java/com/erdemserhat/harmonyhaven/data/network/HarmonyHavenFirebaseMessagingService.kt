@@ -29,7 +29,8 @@ class HarmonyHavenFirebaseMessagingService():FirebaseMessagingService() {
 
         // UI thread üzerinde çalıştırmak için Handler kullanarak gösterim yapılır
         Handler(Looper.getMainLooper()).post {
-            Toast.makeText(applicationContext, "Bildirim alındı", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, message.notification.toString(), Toast.LENGTH_SHORT).show()
+
         }
 
 
