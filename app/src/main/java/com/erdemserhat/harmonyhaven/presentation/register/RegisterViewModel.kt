@@ -6,10 +6,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.domain.model.RegisterFormModel
 import com.erdemserhat.harmonyhaven.domain.model.toUser
+import com.erdemserhat.harmonyhaven.domain.model.toUserInformationSchema
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
+import com.erdemserhat.harmonyhaven.domain.validation.areStringsEqual
 import com.erdemserhat.harmonyhaven.domain.validation.validateRegisterForm
+import com.erdemserhat.harmonyhaven.dto.requests.UserInformationSchema
+import com.erdemserhat.harmonyhaven.presentation.register.state.RegisterState
+import com.erdemserhat.harmonyhaven.presentation.register.state.RegisterValidationState
+import com.erdemserhat.harmonyhaven.presentation.register.state.getValidationStateByErrorCode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,32 +28,73 @@ class RegisterViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _registerState = mutableStateOf(RegisterState()) //--->ViewModel Specific
-    val registerState : State<RegisterState> = _registerState //--->View Specific
+    val registerState: State<RegisterState> = _registerState //--->View Specific
 
-    fun onRegisterClicked(formModel: RegisterFormModel){
-
+    fun onRegisterClicked(formModel: RegisterFormModel) {
+        _registerState.value = _registerState.value.copy(
+            isLoading = true
+        )
+        if (!areStringsEqual(formModel.password, formModel.confirmPassword)) {
+            _registerState.value = _registerState.value.copy(
+                registerValidationState = RegisterValidationState(isPasswordValid = false),
+                registerWarning = "Passwords don't match",
+                isLoading = false
+            )
+            return
+        }
 
         viewModelScope.launch(Dispatchers.IO) {
+            delay(400)
+            registerUser(formModel.toUserInformationSchema())
 
-            try {
-                validateRegisterForm(formModel)
-            }catch (e:Exception){
+        }
+
+    }
+
+    private suspend fun registerUser(userInformationSchema: UserInformationSchema) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val responseDeferred =  async { userUseCases.registerUser.executeRequest(userInformationSchema) }
+            val response = responseDeferred.await()
+
+            if (response == null) {
+                //network error
                 _registerState.value = _registerState.value.copy(
-                    registerWarning = e.message.toString()
-
+                    registerWarning = "Network Error...",
+                    isLoading = false
                 )
 
                 return@launch
-
             }
 
-            userUseCases.registerUser(formModel.toUser()).collect{
+
+            if (!response.formValidationResult.isValid) {
+                //form not valid
+                val errorCode = response.formValidationResult.errorCode
                 _registerState.value = _registerState.value.copy(
-                    canNavigateTo = it.result,
-                    registerWarning = it.message,
-                    isLoading = it.isLoading
+                    registerValidationState = RegisterValidationState().getValidationStateByErrorCode(errorCode),
+                    registerWarning = response.formValidationResult.errorMessage.toString(),
+                    isLoading = false
                 )
+                return@launch
             }
+
+            if(!response.isRegistered){
+                _registerState.value = _registerState.value.copy(
+                    registerWarning = "An error occurred about your registration",
+                    isLoading = false
+                )
+                return@launch
+            }
+
+            //user's information's are valid
+            //passwords are match
+            //there is no problem in this line
+
+            _registerState.value = _registerState.value.copy(
+                canNavigateTo = true
+            )
+
+
         }
 
     }

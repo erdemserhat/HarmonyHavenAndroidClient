@@ -46,33 +46,11 @@ import com.erdemserhat.harmonyhaven.util.customFontFamilyJunge
 
 @Composable
 fun RegisterScreenContent(
-    name: String,
-    onNameValueChanged: (String) -> Unit,
-    surname: String,
-    onSurnameValueChanged: (String) -> Unit,
-    email: String,
-    onEmailValueChanged: (String) -> Unit,
-    password: String,
-    onPasswordValueChanged: (String) -> Unit,
-    passwordConfirm: String,
-    onPasswordPasswordConfirmValueChanged: (String) -> Unit,
-    gender: Gender,
-    onGenderValueChanged: (Gender) -> Unit,
-    onSignUpClicked: () -> Unit,
-    onSignUpViaGoogleClicked: () -> Unit,
-    isTermsOfUserAccepted: Boolean,
-    onTermsOfConditionsAcceptanceStatusChanged: (Boolean) -> Unit,
-    onSignInClicked: () -> Unit,
-    warningText: String,
-    isLoading: Boolean,
-    shouldNavigateTo: Boolean,
-    onShouldNavigateTo: () -> Unit
-
-
+    params: RegisterScreenParams
 ) {
 
-    if (shouldNavigateTo) {
-        onShouldNavigateTo()
+    if (params.shouldNavigateTo) {
+        params.onShouldNavigateTo()
     }
 
     var isButtonsEnabled by rememberSaveable {
@@ -144,38 +122,43 @@ fun RegisterScreenContent(
 
                 ) {
                     HarmonyHavenTextField(
-                        text = name,
-                        onValueChanged = onNameValueChanged,
-                        placeHolderText = stringResource(R.string.name)
+                        text = params.name,
+                        onValueChanged = params.onNameValueChanged,
+                        placeHolderText = stringResource(R.string.name),
+                        isError = params.isNameValid
                     )
 
                     HarmonyHavenTextField(
-                        text = surname,
-                        onValueChanged = onSurnameValueChanged,
-                        placeHolderText = stringResource(R.string.surname)
+                        text = params.surname,
+                        onValueChanged = params.onSurnameValueChanged,
+                        placeHolderText = stringResource(R.string.surname),
+                        isError = params.isSurnameValid
                     )
 
                     HarmonyHavenTextField(
-                        text = email,
-                        onValueChanged = onEmailValueChanged,
-                        placeHolderText = stringResource(R.string.e_mail)
+                        text = params.email,
+                        onValueChanged = params.onEmailValueChanged,
+                        placeHolderText = stringResource(R.string.e_mail),
+                        isError = params.isEmailValid
                     )
 
                     HarmonyHavenPasswordTextField(
                         placeHolderText = stringResource(R.string.password),
-                        password = password,
-                        onValueChanged = onPasswordValueChanged
+                        password = params.password,
+                        onValueChanged = params.onPasswordValueChanged,
+                        isError = params.isPasswordValid
                     )
 
                     HarmonyHavenPasswordTextField(
                         placeHolderText = stringResource(R.string.confirm_password),
-                        password = passwordConfirm,
-                        onValueChanged = onPasswordPasswordConfirmValueChanged
+                        password = params.passwordConfirm,
+                        onValueChanged = params.onPasswordPasswordConfirmValueChanged,
+                        isError = params.isPasswordValid
                     )
                     Spacer(modifier = Modifier.size(10.dp))
 
 
-                    if(isTermsOfUserAccepted){
+                    if(params.isTermsOfUserAccepted){
                         isButtonsEnabled = true
 
                     }else{
@@ -184,7 +167,7 @@ fun RegisterScreenContent(
                     }
 
                     Text(
-                        text = warningText,
+                        text = params.warningText,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -192,13 +175,13 @@ fun RegisterScreenContent(
 
                     )
 
-                    
+
 
 
                     Spacer(modifier = Modifier.size(20.dp))
                     GenderSection(
-                        gender = gender,
-                        onGenderSelected = onGenderValueChanged
+                        gender = params.gender,
+                        onGenderSelected = params.onGenderValueChanged
                     )
 
 
@@ -206,7 +189,7 @@ fun RegisterScreenContent(
 
                     Spacer(modifier = Modifier.size(20.dp))
 
-                    if (isLoading) {
+                    if (params.isLoading) {
                         HarmonyHavenProgressIndicator()
 
                     } else {
@@ -219,7 +202,7 @@ fun RegisterScreenContent(
                         ) {
                             HarmonyHavenButton(
                                 buttonText = stringResource(id = R.string.sign_up),
-                                onClick = onSignUpClicked,
+                                onClick = params.onSignUpClicked,
                                 modifier = Modifier,
                                 isEnabled = isButtonsEnabled
 
@@ -228,7 +211,7 @@ fun RegisterScreenContent(
                             Spacer(modifier = Modifier.size(10.dp))
 
                             HarmonyHavenButtonWithIcon(
-                                onClick = onSignUpViaGoogleClicked,
+                                onClick = params.onSignUpViaGoogleClicked,
                                 painterId = R.drawable.google_sign_in_icon,
                                 buttonText = stringResource(id = R.string.sign_in_via_google),
                                 isEnabled = isButtonsEnabled
@@ -238,8 +221,8 @@ fun RegisterScreenContent(
 
                             AcceptanceOfTermsOfUse(
                                 stringResource(R.string.terms_use),
-                                onCheckedStateChanged = onTermsOfConditionsAcceptanceStatusChanged,
-                                checkedState = isTermsOfUserAccepted
+                                onCheckedStateChanged = params.onTermsOfConditionsAcceptanceStatusChanged,
+                                checkedState = params.isTermsOfUserAccepted
 
                             )
 
@@ -253,7 +236,7 @@ fun RegisterScreenContent(
                         ) {
                             Text(text = stringResource(R.string.already_have_an_account))
                             TextButton(
-                                onClick = onSignInClicked
+                                onClick = params.onSignInClicked
                             ) {
                                 Text(stringResource(R.string.sign_in), color = harmonyHavenGreen)
                             }
@@ -270,6 +253,7 @@ fun RegisterScreenContent(
 }
 
 
+
 @Composable
 fun RegisterScreen(
     registerViewModel: RegisterViewModel = hiltViewModel(),
@@ -279,22 +263,22 @@ fun RegisterScreen(
 
 
     var name by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf("Serhat")
     }
 
     var surname by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf("Erdem")
     }
 
     var email by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf("edsdasdasd@gdsfsd.com")
     }
     var password by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf("Erddsadsaem.3451.")
     }
 
     var passwordConfirm by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf("Erddsadsaem.3451.")
     }
 
     var gender by rememberSaveable {
@@ -305,8 +289,7 @@ fun RegisterScreen(
         mutableStateOf(false)
     }
 
-
-    RegisterScreenContent(
+    val registerScreenParams = RegisterScreenParams(
         name = name,
         onNameValueChanged = { name = it },
         surname = surname,
@@ -343,9 +326,22 @@ fun RegisterScreen(
         warningText = registerViewModel.registerState.value.registerWarning,
         isLoading = registerViewModel.registerState.value.isLoading,
         shouldNavigateTo = registerViewModel.registerState.value.canNavigateTo,
-        onShouldNavigateTo = { navController.navigate(Screen.Dashboard.route) }
+        onShouldNavigateTo = { navController.navigate(Screen.Dashboard.route) },
+        isNameValid = !registerViewModel.registerState.value.registerValidationState.isNameValid,
+        isSurnameValid = !registerViewModel.registerState.value.registerValidationState.isSurnameValid,
+        isEmailValid = !registerViewModel.registerState.value.registerValidationState.isEmailValid,
+        isPasswordValid = !registerViewModel.registerState.value.registerValidationState.isPasswordValid,
 
-    )
+
+
+
+
+
+
+        )
+
+
+    RegisterScreenContent(params = registerScreenParams)
 
 
 }
@@ -353,33 +349,65 @@ fun RegisterScreen(
 @Preview
 @Composable
 fun RegisterScreenPreviewDev() {
-    RegisterScreenContent(
-        name = "",
-        onNameValueChanged = {},
-        surname = "",
-        onSurnameValueChanged = {},
-        email = "",
-        onEmailValueChanged = {},
-        password = "",
-        onPasswordValueChanged = {},
-        passwordConfirm = "",
-        onPasswordPasswordConfirmValueChanged = {},
-        gender = Gender.Male,
-        onGenderValueChanged = {},
-        onSignUpClicked = {},
-        onSignUpViaGoogleClicked = {},
-        isTermsOfUserAccepted = true,
-        onTermsOfConditionsAcceptanceStatusChanged = {},
-        onSignInClicked = {},
-        warningText = "Loading....",
-        isLoading = false,
-        shouldNavigateTo = true,
-        onShouldNavigateTo = {}
-
-    )
-
+    RegisterScreenContent(params = defaultRegisterScreenParams)
 
 }
+
+data class RegisterScreenParams(
+    val name: String,
+    val onNameValueChanged: (String) -> Unit,
+    val surname: String,
+    val onSurnameValueChanged: (String) -> Unit,
+    val email: String,
+    val onEmailValueChanged: (String) -> Unit,
+    val password: String,
+    val onPasswordValueChanged: (String) -> Unit,
+    val passwordConfirm: String,
+    val onPasswordPasswordConfirmValueChanged: (String) -> Unit,
+    val gender: Gender,
+    val onGenderValueChanged: (Gender) -> Unit,
+    val onSignUpClicked: () -> Unit,
+    val onSignUpViaGoogleClicked: () -> Unit,
+    val isTermsOfUserAccepted: Boolean,
+    val onTermsOfConditionsAcceptanceStatusChanged: (Boolean) -> Unit,
+    val onSignInClicked: () -> Unit,
+    val warningText: String,
+    val isLoading: Boolean,
+    val shouldNavigateTo: Boolean,
+    val onShouldNavigateTo: () -> Unit,
+    val isNameValid:Boolean,
+    val isSurnameValid:Boolean,
+    val isEmailValid:Boolean,
+    val isPasswordValid:Boolean
+)
+
+private val defaultRegisterScreenParams = RegisterScreenParams(
+    name = "",
+    onNameValueChanged = {},
+    surname = "",
+    onSurnameValueChanged = {},
+    email = "",
+    onEmailValueChanged = {},
+    password = "",
+    onPasswordValueChanged = {},
+    passwordConfirm = "",
+    onPasswordPasswordConfirmValueChanged = {},
+    gender = Gender.Male,
+    onGenderValueChanged = {},
+    onSignUpClicked = {},
+    onSignUpViaGoogleClicked = {},
+    isTermsOfUserAccepted = true,
+    onTermsOfConditionsAcceptanceStatusChanged = {},
+    onSignInClicked = {},
+    warningText = "Loading....",
+    isLoading = false,
+    shouldNavigateTo = true,
+    onShouldNavigateTo = {},
+    isNameValid = false,
+    isSurnameValid = false,
+    isEmailValid = false,
+    isPasswordValid = false
+)
 
 
 

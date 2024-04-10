@@ -248,7 +248,7 @@ fun LoginScreen(
     }
 
     var password by rememberSaveable {
-        mutableStateOf("Erdem.3451..")
+        mutableStateOf("Erdem.3451.")
     }
 
 

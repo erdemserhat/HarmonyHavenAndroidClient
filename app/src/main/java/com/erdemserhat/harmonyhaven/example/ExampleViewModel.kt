@@ -36,12 +36,11 @@ class ExampleViewModel @Inject constructor(
                     }
                 }
             val localToken = Firebase.messaging.token.await()
+            //send your fcm id to server
             Log.d("erdem1212",localToken.toString())
 
 
-
         }
-
 
     }
 
