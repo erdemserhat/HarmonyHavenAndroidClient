@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.data.network
+package com.erdemserhat.harmonyhaven.data.api.fcm
 
 import com.erdemserhat.harmonyhaven.dto.requests.FcmSetupRequest
 import retrofit2.Response

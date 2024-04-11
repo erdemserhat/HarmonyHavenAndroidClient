@@ -14,7 +14,7 @@
         android:usesCleartextTraffic="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/harmony_haven_icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -40,7 +40,7 @@
         </activity>
 
         <service
-            android:name=".data.network.HarmonyHavenFirebaseMessagingService"
+            android:name=".data.api.fcm.HarmonyHavenFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
