@@ -47,7 +47,8 @@ fun ForgotPasswordMailScreenContent(
     warningText: String,
     onSendMailClicked: () -> Unit,
     shouldNavigateTo:Boolean,
-    onShouldNavigateTo:()->Unit
+    onShouldNavigateTo:()->Unit,
+    isError:Boolean
 
 ) {
 
@@ -101,7 +102,8 @@ fun ForgotPasswordMailScreenContent(
                     text = email,
                     onValueChanged = onEmailValueChanged,
                     placeHolderText = stringResource(R.string.e_mail),
-                    isEnabled = !isLoading
+                    isEnabled = !isLoading,
+                    isError = isError
 
 
                 )
@@ -153,7 +155,8 @@ fun ForgotPasswordMailScreenPreview() {
         warningText = "Loading...",
         onSendMailClicked = {},
         shouldNavigateTo = false,
-        onShouldNavigateTo = {}
+        onShouldNavigateTo = {},
+        isError = true
     )
 
 }
@@ -192,7 +195,8 @@ fun ForgotPasswordMailScreen(
             warningText = mailViewModel.mailState.value.mailWarning,
             onSendMailClicked = { mailViewModel.sendMail(email) },
             shouldNavigateTo = mailViewModel.mailState.value.canNavigateTo,
-            onShouldNavigateTo = { }
+            onShouldNavigateTo = { },
+            isError = mailViewModel.mailState.value.isError
 
 
         )
