@@ -67,7 +67,11 @@ fun ForgotPasswordAuthScreen(
             warningText = authViewModel.authModel.value.authWarning,
             onSendCodeClicked = { authViewModel.authRequest(email,code) },
             shouldNavigateTo = authViewModel.authModel.value.canNavigateTo,
-            onShouldNavigateTo = {})
+            onShouldNavigateTo = {},
+            isError = authViewModel.authModel.value.isError
+
+
+        )
 
     }
 
@@ -105,7 +109,8 @@ fun ForgotPasswordAuthScreenContent(
     warningText: String,
     onSendCodeClicked: () -> Unit,
     shouldNavigateTo: Boolean,
-    onShouldNavigateTo: () -> Unit
+    onShouldNavigateTo: () -> Unit,
+    isError:Boolean=false
 
 ) {
     if (shouldNavigateTo) {
@@ -156,7 +161,8 @@ fun ForgotPasswordAuthScreenContent(
                     text = code,
                     onValueChanged = onCodeValueChanged,
                     placeHolderText = "6-Digit Code",
-                    isEnabled = !isLoading
+                    isEnabled = !isLoading,
+                    isError = isError
 
                 )
 

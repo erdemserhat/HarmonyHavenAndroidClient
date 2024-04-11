@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.domain.model.rest.client.ForgotPasswordAuthClientModel
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
+import com.erdemserhat.harmonyhaven.dto.requests.password_reset.PasswordResetAuthenticateRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,29 +22,54 @@ class ForgotPasswordAuthViewModel @Inject constructor(
     val authModel: State<ForgotPasswordAuthState> = _authModel
 
     fun authRequest(email: String, code: String) {
-        viewModelScope.launch {
-            userUseCases.resetPasswordUser.authenticateRequest(
-                ForgotPasswordAuthClientModel(
-                    code,
-                    email
+        _authModel.value = _authModel.value.copy(
+            canNavigateTo = false,
+            authWarning = "Loading...",
+            isLoading = true
+        )
+
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val response = userUseCases.authenticatePasswordResetAttempt.executeRequest(
+                PasswordResetAuthenticateRequest(
+                    email = email,
+                    code = code
                 )
-            ).collect {
+            )
+
+            if (response == null) {
                 _authModel.value = _authModel.value.copy(
-                    canNavigateTo = it.result,
-                    authWarning = it.message,
-                    isLoading = it.isLoading,
-                    uuid = it.uuid
+                    canNavigateTo = false,
+                    authWarning = "Network Error...",
+                    isLoading = false
                 )
-                Log.d("erdem3451",_authModel.value.uuid.toString())
+                return@launch
             }
+
+            if (!(response.result)) {
+                _authModel.value = _authModel.value.copy(
+                    canNavigateTo = false,
+                    authWarning = response.message,
+                    isLoading = false,
+                    isError = true
+                )
+                return@launch
+
+            }
+
+            _authModel.value = _authModel.value.copy(
+                canNavigateTo = true,
+                authWarning = response.message,
+                isLoading = false,
+                isError = false,
+                uuid = response.uuid
+            )
+
+            Log.d("erdem0001",response.message)
 
 
         }
 
 
-
-
     }
-
-
 }

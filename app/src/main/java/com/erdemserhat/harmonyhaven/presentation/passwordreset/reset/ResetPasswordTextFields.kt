@@ -36,7 +36,8 @@ fun ResetPasswordTextFields(
     onVisibilityIconClicked:()->Unit,
     confirmPassword:String,
     onConfirmPasswordValueChanged:(String)->Unit,
-    placeHolder2:String
+    placeHolder2:String,
+    isError:Boolean
 ) {
 
     Column{
@@ -46,7 +47,8 @@ fun ResetPasswordTextFields(
             onPasswordValueChanged,
             shouldExistVisibilityIcon = true,
             isPasswordVisible,
-            onPasswordHiddenButtonClicked = onVisibilityIconClicked
+            onPasswordHiddenButtonClicked = onVisibilityIconClicked,
+            isError = isError
         )
         Spacer(modifier = Modifier.size(10.dp))
 
@@ -56,7 +58,8 @@ fun ResetPasswordTextFields(
             onConfirmPasswordValueChanged,
             shouldExistVisibilityIcon = false,
             isPasswordVisible,
-            onPasswordHiddenButtonClicked = {  }
+            onPasswordHiddenButtonClicked = {  },
+            isError = isError
         )
 
     }
@@ -73,7 +76,8 @@ fun HarmonyHavenPasswordTextField(
     onValueChanged:(String)->Unit,
     shouldExistVisibilityIcon:Boolean = true,
     isPasswordHidden:Boolean=true,
-    onPasswordHiddenButtonClicked:()->Unit
+    onPasswordHiddenButtonClicked:()->Unit,
+    isError:Boolean = false
 
 ) {
 
@@ -114,6 +118,7 @@ fun HarmonyHavenPasswordTextField(
             }
 
 
-        }
+        },
+        isError = isError
     )
 }

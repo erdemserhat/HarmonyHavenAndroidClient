@@ -18,12 +18,15 @@ import com.erdemserhat.harmonyhaven.domain.usecase.article.GetAllArticles
 import com.erdemserhat.harmonyhaven.domain.usecase.article.GetArticleById
 import com.erdemserhat.harmonyhaven.domain.usecase.article.GetArticlesByCategory
 import com.erdemserhat.harmonyhaven.domain.usecase.article.GetRecentArticles
+import com.erdemserhat.harmonyhaven.domain.usecase.users.AuthenticatePasswordResetAttempt
 import com.erdemserhat.harmonyhaven.domain.usecase.users.AuthenticateUser
+import com.erdemserhat.harmonyhaven.domain.usecase.users.CompletePasswordResetAttempt
 import com.erdemserhat.harmonyhaven.domain.usecase.users.DeleteUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.FcmEnrolment
 import com.erdemserhat.harmonyhaven.domain.usecase.users.LoginUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.RegisterUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.ResetPasswordUserDev
+import com.erdemserhat.harmonyhaven.domain.usecase.users.SendPasswordResetMail
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UpdateUser
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
 import com.erdemserhat.harmonyhaven.util.Constants.BASE_URL
@@ -87,16 +90,19 @@ object NetworkModule {
         userApiService: UserApiService,
         fcmApiService: FcmApiService,
         userAuthApiService:UserAuthenticationApiService,
-        userRegistrationApiService: UserRegistrationApiService
+        userRegistrationApiService: UserRegistrationApiService,
+        passwordResetApiService: PasswordResetApiService
     ):UserUseCases{
         return UserUseCases(
             loginUser = LoginUser(userApiService),
             registerUser = RegisterUser(userRegistrationApiService),
             updateUser = UpdateUser(userApiService),
             deleteUSer = DeleteUser(userApiService),
-            resetPasswordUser = ResetPasswordUserDev(userApiService),
             authenticateUser = AuthenticateUser(userAuthApiService),
-            fcmEnrolment = FcmEnrolment(fcmApiService)
+            fcmEnrolment = FcmEnrolment(fcmApiService),
+            sendPasswordResetMail = SendPasswordResetMail(passwordResetApiService),
+            authenticatePasswordResetAttempt = AuthenticatePasswordResetAttempt(passwordResetApiService),
+            completePasswordResetAttempt = CompletePasswordResetAttempt(passwordResetApiService)
         )
 
 

@@ -8,6 +8,7 @@ import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
 import com.erdemserhat.harmonyhaven.domain.validation.isEmailValid
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,26 +22,59 @@ class ForgotPasswordMailViewModel @Inject constructor(
     val mailState: State<ForgotPasswordMailState> = _mailState
 
     fun sendMail(email: String) {
+        _mailState.value = _mailState.value.copy(
+            isLoading = true,
+            mailWarning = "Loading...."
+
+        )
         viewModelScope.launch(Dispatchers.IO) {
-            if(!isEmailValid(email)){
+            if (!isEmailValid(email)) {
                 _mailState.value = _mailState.value.copy(
                     isLoading = false,
                     mailWarning = "Invalid E-mail Format",
-                    canNavigateTo = false
+                    canNavigateTo = false,
+                    isError = true
 
                 )
                 return@launch
             }
 
 
-            userUseCases.resetPasswordUser.sendMail(email).collect {
+            val responseDeferred= async { userUseCases.sendPasswordResetMail.executeRequest(email) }
+            val response = responseDeferred.await()
+
+            if (response == null) {
                 _mailState.value = _mailState.value.copy(
-                    isLoading = it.isLoading,
-                    mailWarning = it.message,
-                    canNavigateTo = it.result
+                    isLoading = false,
+                    mailWarning = "Network Error",
+                    canNavigateTo = false,
+
+                    )
+                return@launch
+
+
+            }
+
+            if (!response.result) {
+                _mailState.value = _mailState.value.copy(
+                    isLoading = false,
+                    mailWarning = response.message,
+                    canNavigateTo = false,
+                    isError = true
 
                 )
+                return@launch
+
             }
+
+            _mailState.value = _mailState.value.copy(
+                isLoading = false,
+                mailWarning = response.message,
+                canNavigateTo = true,
+                isError = false
+
+            )
+
 
         }
 
