@@ -2,12 +2,14 @@ package com.erdemserhat.harmonyhaven.presentation.register.components
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -16,7 +18,8 @@ fun HarmonyHavenTextField(
     onValueChanged: (String) -> Unit,
     placeHolderText: String,
     isEnabled:Boolean = true,
-    isError:Boolean = false
+    isError:Boolean = false,
+    keyBoardOptions: KeyboardOptions =  KeyboardOptions.Default,
 ) {
 
     OutlinedTextField(
@@ -35,6 +38,8 @@ fun HarmonyHavenTextField(
         ),
         singleLine = true,
         enabled = isEnabled,
-        isError = isError
+        isError = isError,
+        keyboardOptions = keyBoardOptions,
+
     )
 }

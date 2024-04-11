@@ -3,7 +3,6 @@ package com.erdemserhat.harmonyhaven.example
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erdemserhat.harmonyhaven.data.network.CategoryApiService
 import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
 import com.google.android.gms.tasks.Task
@@ -21,7 +20,6 @@ import javax.inject.Inject
 class ExampleViewModel @Inject constructor(
 
     private val userUseCases: UserUseCases,
-    private val art: CategoryApiService,
     private val articleUseCases: ArticleUseCases
 ) : ViewModel() {
     fun getToken() {

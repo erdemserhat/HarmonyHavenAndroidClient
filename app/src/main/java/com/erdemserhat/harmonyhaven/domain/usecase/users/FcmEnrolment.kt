@@ -1,6 +1,6 @@
 package com.erdemserhat.harmonyhaven.domain.usecase.users
 
-import com.erdemserhat.harmonyhaven.data.network.FcmApiService
+import com.erdemserhat.harmonyhaven.data.api.fcm.FcmApiService
 import com.erdemserhat.harmonyhaven.domain.model.rest.server.RequestResult
 import com.erdemserhat.harmonyhaven.dto.requests.FcmSetupRequest
 import javax.inject.Inject

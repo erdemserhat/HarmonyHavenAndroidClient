@@ -1,8 +1,6 @@
 package com.erdemserhat.harmonyhaven.di
 
-import com.erdemserhat.harmonyhaven.data.room.JwtTokenRepository
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.erdemserhat.harmonyhaven.data.local.repository.JwtTokenRepository
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject

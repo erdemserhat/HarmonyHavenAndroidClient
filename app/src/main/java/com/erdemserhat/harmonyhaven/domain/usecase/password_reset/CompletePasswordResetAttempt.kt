@@ -1,11 +1,9 @@
-package com.erdemserhat.harmonyhaven.domain.usecase.users
+package com.erdemserhat.harmonyhaven.domain.usecase.password_reset
 
-import android.util.Log
-import com.erdemserhat.harmonyhaven.data.network.PasswordResetApiService
+import com.erdemserhat.harmonyhaven.data.api.user.PasswordResetApiService
 import com.erdemserhat.harmonyhaven.dto.requests.password_reset.PasswordResetFinalRequest
 import com.erdemserhat.harmonyhaven.dto.responses.password_reset.PasswordResetFinalResponse
 import com.google.gson.Gson
-import retrofit2.Response
 import javax.inject.Inject
 
 class CompletePasswordResetAttempt @Inject constructor(

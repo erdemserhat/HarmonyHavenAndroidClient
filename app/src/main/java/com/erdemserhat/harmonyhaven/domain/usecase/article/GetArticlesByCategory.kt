@@ -1,12 +1,9 @@
 package com.erdemserhat.harmonyhaven.domain.usecase.article
 
-import android.util.Log
-import com.erdemserhat.harmonyhaven.data.network.CategoryApiService
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
 import javax.inject.Inject
 
 class GetArticlesByCategory @Inject constructor(
-    private val categoryApiService: CategoryApiService
 ) {
     suspend operator fun invoke(categoryId: Int): List<ArticleResponseType>? {
         /*

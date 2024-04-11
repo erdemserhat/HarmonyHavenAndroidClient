@@ -3,32 +3,20 @@ package com.erdemserhat.harmonyhaven
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erdemserhat.harmonyhaven.data.network.CategoryApiService
-import com.erdemserhat.harmonyhaven.data.network.UserApiService
-import com.erdemserhat.harmonyhaven.data.room.JwtTokenRepository
-import com.erdemserhat.harmonyhaven.domain.model.rest.User
-import com.erdemserhat.harmonyhaven.domain.model.rest.client.UserLogin
-import com.erdemserhat.harmonyhaven.domain.model.rest.client.UserUpdateModel
-import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
+import com.erdemserhat.harmonyhaven.data.local.repository.JwtTokenRepository
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
 import com.erdemserhat.harmonyhaven.dto.requests.UserAuthenticationRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.system.measureTimeMillis
 
 
 @HiltViewModel
 class ExampleViewModel @Inject constructor(
 
     private val userUseCases: UserUseCases,
-    private val userApiService: UserApiService,
-    private val art: CategoryApiService,
-    private val articleUseCases: ArticleUseCases,
     private val jwtRepo: JwtTokenRepository
 ) : ViewModel() {
     fun getJwt() {

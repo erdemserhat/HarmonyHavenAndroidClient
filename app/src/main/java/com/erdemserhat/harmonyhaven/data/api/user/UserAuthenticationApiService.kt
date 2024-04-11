@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.data.network
+package com.erdemserhat.harmonyhaven.data.api.user
 
 import com.erdemserhat.harmonyhaven.dto.requests.UserAuthenticationRequest
 import com.erdemserhat.harmonyhaven.dto.responses.AuthenticationResponse
