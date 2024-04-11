@@ -1,6 +1,5 @@
-package com.erdemserhat.harmonyhaven.data.network
+package com.erdemserhat.harmonyhaven.data.api.fcm
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.os.Looper

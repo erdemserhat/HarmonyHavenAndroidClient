@@ -263,22 +263,22 @@ fun RegisterScreen(
 
 
     var name by rememberSaveable {
-        mutableStateOf("Serhat")
+        mutableStateOf("")
     }
 
     var surname by rememberSaveable {
-        mutableStateOf("Erdem")
+        mutableStateOf("")
     }
 
     var email by rememberSaveable {
-        mutableStateOf("edsdasdasd@gdsfsd.com")
+        mutableStateOf("")
     }
     var password by rememberSaveable {
-        mutableStateOf("Erddsadsaem.3451.")
+        mutableStateOf("")
     }
 
     var passwordConfirm by rememberSaveable {
-        mutableStateOf("Erddsadsaem.3451.")
+        mutableStateOf("")
     }
 
     var gender by rememberSaveable {
@@ -326,7 +326,7 @@ fun RegisterScreen(
         warningText = registerViewModel.registerState.value.registerWarning,
         isLoading = registerViewModel.registerState.value.isLoading,
         shouldNavigateTo = registerViewModel.registerState.value.canNavigateTo,
-        onShouldNavigateTo = { navController.navigate(Screen.Dashboard.route) },
+        onShouldNavigateTo = { navController.navigate(Screen.Login.route) },
         isNameValid = !registerViewModel.registerState.value.registerValidationState.isNameValid,
         isSurnameValid = !registerViewModel.registerState.value.registerValidationState.isSurnameValid,
         isEmailValid = !registerViewModel.registerState.value.registerValidationState.isEmailValid,

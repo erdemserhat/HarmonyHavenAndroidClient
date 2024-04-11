@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.data.room
+package com.erdemserhat.harmonyhaven.data.local.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

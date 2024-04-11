@@ -1,13 +1,10 @@
 package com.erdemserhat.harmonyhaven.presentation.passwordreset.reset
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erdemserhat.harmonyhaven.domain.model.rest.client.ForgotPasswordResetClientModel
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
-import com.erdemserhat.harmonyhaven.dto.requests.password_reset.PasswordResetAuthenticateRequest
 import com.erdemserhat.harmonyhaven.dto.requests.password_reset.PasswordResetFinalRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

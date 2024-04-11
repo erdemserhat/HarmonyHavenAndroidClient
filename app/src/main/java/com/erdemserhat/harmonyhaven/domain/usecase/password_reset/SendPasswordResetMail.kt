@@ -1,6 +1,6 @@
-package com.erdemserhat.harmonyhaven.domain.usecase.users
+package com.erdemserhat.harmonyhaven.domain.usecase.password_reset
 
-import com.erdemserhat.harmonyhaven.data.network.PasswordResetApiService
+import com.erdemserhat.harmonyhaven.data.api.user.PasswordResetApiService
 import com.erdemserhat.harmonyhaven.dto.requests.password_reset.PasswordResetMailerRequest
 import com.erdemserhat.harmonyhaven.dto.responses.password_reset.PasswordResetMailerResponse
 import com.google.gson.Gson

@@ -3,7 +3,7 @@ package com.erdemserhat.harmonyhaven.di
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.erdemserhat.harmonyhaven.data.room.AppDatabase
+import com.erdemserhat.harmonyhaven.data.local.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
