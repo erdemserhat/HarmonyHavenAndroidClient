@@ -72,7 +72,7 @@ fun ForgotPasswordResetScreenContent(
             setPasswordVisible = setPasswordVisible,
             confirmPassword = confirmPassword,
             setConfirmPassword = setConfirmPassword,
-            onResetPasswordClicked = {viewModel.resetPassword(password,uuid)},
+            onResetPasswordClicked = {viewModel.resetPassword(password,confirmPassword,uuid)},
             onArrowBackButtonClicked = {}
         )
     }
@@ -133,7 +133,8 @@ private fun ColumnContent(
             onVisibilityIconClicked = { setPasswordVisible(!isPasswordVisible) },
             confirmPassword = confirmPassword,
             onConfirmPasswordValueChanged = setConfirmPassword,
-            placeHolder2 = "Confirm Password"
+            placeHolder2 = "Confirm Password",
+            isError = viewModel.resetState.value.isError
         )
 
         Text(text = viewModel.resetState.value.resetWarning)
