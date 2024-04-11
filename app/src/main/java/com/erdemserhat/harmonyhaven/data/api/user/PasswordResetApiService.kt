@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.data.network
+package com.erdemserhat.harmonyhaven.data.api.user
 
 import com.erdemserhat.harmonyhaven.dto.requests.password_reset.PasswordResetAuthenticateRequest
 import com.erdemserhat.harmonyhaven.dto.requests.password_reset.PasswordResetFinalRequest

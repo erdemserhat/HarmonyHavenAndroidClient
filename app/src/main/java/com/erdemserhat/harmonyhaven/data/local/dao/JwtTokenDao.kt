@@ -1,9 +1,10 @@
-package com.erdemserhat.harmonyhaven.data.room
+package com.erdemserhat.harmonyhaven.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.erdemserhat.harmonyhaven.data.local.entities.JwtTokenEntity
 
 
 @Dao
@@ -12,6 +13,6 @@ interface JwtTokenDao {
     fun getJwtToken():String
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertJwtToken(jwtTokenEntity:JwtTokenEntity)
+    fun insertJwtToken(jwtTokenEntity: JwtTokenEntity)
 
 }

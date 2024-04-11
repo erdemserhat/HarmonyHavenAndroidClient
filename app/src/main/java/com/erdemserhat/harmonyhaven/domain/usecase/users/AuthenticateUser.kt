@@ -1,10 +1,8 @@
 package com.erdemserhat.harmonyhaven.domain.usecase.users
 
-import com.erdemserhat.harmonyhaven.data.network.UserApiService
-import com.erdemserhat.harmonyhaven.data.network.UserAuthenticationApiService
+import com.erdemserhat.harmonyhaven.data.api.user.UserAuthenticationApiService
 import com.erdemserhat.harmonyhaven.dto.requests.UserAuthenticationRequest
 import com.erdemserhat.harmonyhaven.dto.responses.AuthenticationResponse
-import com.erdemserhat.harmonyhaven.dto.responses.ValidationResult
 import javax.inject.Inject
 
 class AuthenticateUser @Inject constructor(

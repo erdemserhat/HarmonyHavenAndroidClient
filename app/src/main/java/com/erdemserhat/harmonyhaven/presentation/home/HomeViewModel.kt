@@ -28,6 +28,7 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                /*
 
                 //network requests
                 val categoriesDeferred = async {
@@ -51,6 +52,8 @@ class HomeViewModel @Inject constructor(
                     recentArticles = allArticles.takeLast(4).map { it.toArticleResponseType(_homeState.value.categories) }
                 )
 
+                 */
+
 
             } catch (e: Exception) {
                 // Hata durumunda gerekli işlemler
@@ -65,10 +68,11 @@ class HomeViewModel @Inject constructor(
     fun getArticlesByCategoryId(categoryId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _homeState.value =  _homeState.value.copy(
-                    articles = _homeState.value.allArticles.filter { it.categoryId==categoryId }.map { it.toArticleResponseType(_homeState.value.categories) }
+                _homeState.value = _homeState.value.copy(
+                    articles = _homeState.value.allArticles.filter { it.categoryId == categoryId }
+                        .map { it.toArticleResponseType(_homeState.value.categories) }
                 )
-                Log.d("qazq",_homeState.value.articles.toString())
+                Log.d("qazq", _homeState.value.articles.toString())
 
             } catch (_: Exception) {
 

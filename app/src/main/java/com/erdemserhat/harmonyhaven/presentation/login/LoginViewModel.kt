@@ -5,7 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erdemserhat.harmonyhaven.data.room.JwtTokenRepository
+import com.erdemserhat.harmonyhaven.data.local.repository.JwtTokenRepository
 import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
 import com.erdemserhat.harmonyhaven.dto.requests.UserAuthenticationRequest
 import com.erdemserhat.harmonyhaven.presentation.login.state.LoginState
@@ -27,7 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
-    private val jwtRepository:JwtTokenRepository
+    private val jwtRepository: JwtTokenRepository
 ) : ViewModel() {
 
     //Encapsulation principle
