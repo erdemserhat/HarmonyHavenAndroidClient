@@ -58,7 +58,7 @@ class LoginViewModel @Inject constructor(
             if(response==null){
                 //network error
 
-                Log.d("AuthenticationTests","Network Error")
+                Log.d("AuthenticationTests","dsd")
                 _loginState.value = _loginState.value.copy(
                     isLoading = false,
                     canNavigateToDashBoard = false,

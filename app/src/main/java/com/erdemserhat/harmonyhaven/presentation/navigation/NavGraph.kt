@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,18 +26,21 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SetupNavGraph(navController: NavHostController) {
+fun SetupNavGraph(navController: NavHostController,isFirstInstall:Boolean) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = Screen.Splash.route
     ) {
 
-        composable(route = Screen.Dashboard.route) {
+        composable(route = Screen.Splash.route) {
             SplashScreen(navController = navController)
-            // Splash ekranı tamamlandığında bekle ve ardından ana sayfaya geç
             LaunchedEffect(Unit) {
-                delay(2000) // 2 saniye bekle
-                navController.navigate(Screen.Welcome.route)
+                if (isFirstInstall) {
+                    delay(2000) // Eğer ilk yükleme ise 2 saniye bekle
+                    navController.navigate(Screen.Welcome.route)
+                } else {
+                    navController.navigate(Screen.Login.route)
+                }
             }
         }
 

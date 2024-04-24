@@ -6,6 +6,7 @@ import com.erdemserhat.harmonyhaven.data.api.user.UserAuthenticationApiService
 import com.erdemserhat.harmonyhaven.data.api.user.UserRegistrationApiService
 import com.erdemserhat.harmonyhaven.data.local.AppDatabase
 import com.erdemserhat.harmonyhaven.data.local.repository.JwtTokenRepository
+import com.erdemserhat.harmonyhaven.data.local.repository.NotificationRepository
 import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.article.Categories
 import com.erdemserhat.harmonyhaven.domain.usecase.article.GetAllArticles
@@ -63,6 +64,16 @@ object NetworkModule {
     ): JwtTokenRepository {
         return JwtTokenRepository(appDatabase.jwtTokenDao())
     }
+
+    @Provides
+    @Singleton
+    fun provideNotificationRepository(
+        appDatabase: AppDatabase
+    ): NotificationRepository {
+        return NotificationRepository(appDatabase.notificationDao())
+    }
+
+
 
 
 

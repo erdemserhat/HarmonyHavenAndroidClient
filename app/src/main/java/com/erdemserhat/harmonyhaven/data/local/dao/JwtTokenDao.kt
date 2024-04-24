@@ -10,9 +10,9 @@ import com.erdemserhat.harmonyhaven.data.local.entities.JwtTokenEntity
 @Dao
 interface JwtTokenDao {
     @Query("SELECT token FROM jwt_token WHERE id=1")
-    fun getJwtToken():String
+    suspend fun getJwtToken():String
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertJwtToken(jwtTokenEntity: JwtTokenEntity)
+    suspend fun insertJwtToken(jwtTokenEntity: JwtTokenEntity)
 
 }
