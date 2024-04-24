@@ -69,8 +69,8 @@ import com.erdemserhat.harmonyhaven.domain.model.MostReadArticleModel
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category
 import com.erdemserhat.harmonyhaven.presentation.home.components.ContentGridShimmy
-import com.erdemserhat.harmonyhaven.presentation.home2.CategoriesRowSection
-import com.erdemserhat.harmonyhaven.presentation.home2.MostReadHorizontalPager
+import com.erdemserhat.harmonyhaven.presentation.appcomponents.home2.CategoriesRowSection
+import com.erdemserhat.harmonyhaven.presentation.appcomponents.home2.MostReadHorizontalPager
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor

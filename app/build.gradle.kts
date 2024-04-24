@@ -112,6 +112,8 @@ dependencies {
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
     kapt("androidx.room:room-compiler:$room_version")
+    implementation ("androidx.room:room-ktx:$room_version") // KTX artifact ekleyin
+
 
 
     //Dagger-Hilt
@@ -161,6 +163,8 @@ dependencies {
 
 
     implementation ("com.google.code.gson:gson:2.10.1")
+
+    implementation ("com.google.android.material:material:1.4.0")
 
 
 

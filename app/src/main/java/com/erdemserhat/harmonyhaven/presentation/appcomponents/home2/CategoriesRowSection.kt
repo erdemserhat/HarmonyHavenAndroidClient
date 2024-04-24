@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.presentation.home2
+package com.erdemserhat.harmonyhaven.presentation.appcomponents.home2
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.RepeatMode
