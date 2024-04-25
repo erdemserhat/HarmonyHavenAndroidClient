@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.HarmonyHaven.MySplash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#FFFFFF</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/example_notf</item>
+        <item name="postSplashScreenTheme">@style/Theme.HarmonyHaven</item>
+
+    </style>
+
+
+</resources>
