@@ -26,23 +26,12 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SetupNavGraph(navController: NavHostController,isFirstInstall:Boolean) {
+fun SetupNavGraph(navController: NavHostController,startDestination: String) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Splash.route
+        startDestination = startDestination
     ) {
 
-        composable(route = Screen.Splash.route) {
-            SplashScreen(navController = navController)
-            LaunchedEffect(Unit) {
-                if (isFirstInstall) {
-                    delay(2000) // Eğer ilk yükleme ise 2 saniye bekle
-                    navController.navigate(Screen.Welcome.route)
-                } else {
-                    navController.navigate(Screen.Login.route)
-                }
-            }
-        }
 
         composable(route = Screen.Welcome.route) {
             WelcomeScreen(navHostController = navController)
@@ -91,11 +80,10 @@ fun SetupNavGraph(navController: NavHostController,isFirstInstall:Boolean) {
         }
 
         composable(
-            route = Screen.Article.route+"/{articleId}"
+            route = Screen.Article.route + "/{articleId}"
         ) {
-            ArticleScreen(it.arguments?.getString("articleId")?.toInt() ?:1)
+            ArticleScreen(it.arguments?.getString("articleId")?.toInt() ?: 1)
         }
-
 
 
     }

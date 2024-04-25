@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.data.local.repository.NotificationRepository
@@ -29,14 +30,19 @@ class MainActivity  : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
 
+        installSplashScreen()
         val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val isFirstLaunch = sharedPrefs.getBoolean("isFirstLaunch", true)
         setContent {
             navController = rememberNavController()
-            SetupNavGraph(navController = navController, isFirstLaunch)
+            if (isFirstLaunch){
+                SetupNavGraph(navController = navController, Screen.Welcome.route)
+                sharedPrefs.edit().putBoolean("isFirstLaunch", false).apply()
+            }
+            else
+                SetupNavGraph(navController = navController, startDestination = Screen.Login.route)
         }
 
     }
