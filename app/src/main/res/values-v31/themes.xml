@@ -4,7 +4,6 @@
     <style name="Theme.HarmonyHaven" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/black</item>
         <item name="android:windowSplashScreenBackground">@color/black</item>
-        <item name="android:windowSplashScreenBehavior">icon_preferred</item>
 
 
     </style>

@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.di
 
+import com.erdemserhat.harmonyhaven.data.api.article.ArticleApiService
 import com.erdemserhat.harmonyhaven.data.api.fcm.FcmApiService
 import com.erdemserhat.harmonyhaven.data.api.user.PasswordResetApiService
 import com.erdemserhat.harmonyhaven.data.api.user.UserAuthenticationApiService
@@ -11,7 +12,9 @@ import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.article.Categories
 import com.erdemserhat.harmonyhaven.domain.usecase.article.GetAllArticles
 import com.erdemserhat.harmonyhaven.domain.usecase.article.GetArticleById
+import com.erdemserhat.harmonyhaven.domain.usecase.article.GetArticles
 import com.erdemserhat.harmonyhaven.domain.usecase.article.GetArticlesByCategory
+import com.erdemserhat.harmonyhaven.domain.usecase.article.GetCategories
 import com.erdemserhat.harmonyhaven.domain.usecase.article.GetRecentArticles
 import com.erdemserhat.harmonyhaven.domain.usecase.password_reset.AuthenticatePasswordResetAttempt
 import com.erdemserhat.harmonyhaven.domain.usecase.users.AuthenticateUser
@@ -45,13 +48,17 @@ object NetworkModule {
     //Todo("Implement the logic")
     @Provides
     @Singleton
-    fun provideArticleUseCases():ArticleUseCases{
+    fun provideArticleUseCases(
+        articleApiService: ArticleApiService
+    ):ArticleUseCases{
         return ArticleUseCases(
             Categories(),
             GetArticleById(),
             GetRecentArticles(),
             GetArticlesByCategory(),
-            GetAllArticles()
+            GetAllArticles(),
+            GetArticles(articleApiService),
+            GetCategories(articleApiService)
         )
     }
 

@@ -5,5 +5,7 @@ data class ArticleUseCases(
     val getArticleById: GetArticleById,
     val getRecentArticles: GetRecentArticles,
     val getArticlesByCategory: GetArticlesByCategory,
-    val getAllArticles: GetAllArticles
+    val getAllArticles: GetAllArticles,
+    val getArticles: GetArticles,
+    val getCategories: GetCategories
 )

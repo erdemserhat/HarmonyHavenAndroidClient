@@ -28,39 +28,42 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                /*
-
-                //network requests
                 val categoriesDeferred = async {
-                    articleUseCases.categories.invoke()
+                    articleUseCases.getCategories.executeRequest()
                 }
 
-                val allArticlesDeferred = async {
-                    articleUseCases.getAllArticles()
+                val articlesDeferred = async {
+                    articleUseCases.getArticles.executeRequest()
                 }
 
-                val categoryResult = categoriesDeferred.await()
-                val allArticles = allArticlesDeferred.await()
+                val categories = categoriesDeferred.await()
+                val articles = articlesDeferred.await()
 
-
+                if (categories == null && articles == null) {
+                    Log.d("homepage_tests", "categories and/or articles were null")
+                    return@launch
+                }
 
                 _homeState.value = _homeState.value.copy(
+                    categories = categories!!,
+                    articles = articles!!.map { it.toArticleResponseType(categories) },
                     isCategoryReady = true,
-                    categories = categoryResult,
                     isArticleReady = true,
-                    allArticles = allArticles,
-                    recentArticles = allArticles.takeLast(4).map { it.toArticleResponseType(_homeState.value.categories) }
-                )
+                    recentArticles = articles.take(4)
+                        .map { it.toArticleResponseType(categories) },
+                    allArticles = articles
 
-                 */
+                )
+                Log.d("homepage_tests", "request operation is successful")
+                return@launch
 
 
             } catch (e: Exception) {
-                // Hata durumunda gerekli işlemler
-                Log.e("erdem3451", "Hata oluştu: ${e.message}")
+                //Handle the error process
+                Log.d("homepage_tests", "request operation is successful")
+
             }
 
-            //Log.d("erdem3451", homeState.toString())
         }
     }
 
