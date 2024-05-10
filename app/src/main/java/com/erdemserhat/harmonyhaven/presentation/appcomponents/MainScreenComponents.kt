@@ -6,10 +6,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -39,31 +43,41 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenSelectedNavigationBarIt
 ////////////////////////////Main Screen Reusable Components ///////////////////////////////////////
 
 
-
 ////////////////////////////////////////////Component////////////////////////////////////////////////
 
 
 data class NavigationBarItem(
-    val title:String,
+    val title: String,
     val selectedIcon: ImageVector,
     val unSelectedIcon: ImageVector,
-    val hasNews:Boolean,
-    val badgeCount:Int? = null,
-    val route:String
+    val hasNews: Boolean,
+    val badgeCount: Int? = null,
+    val route: String
 
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HarmonyHavenNavigationBar(navController: NavController,selectedItem:MutableIntState) {
+fun HarmonyHavenNavigationBar(navController: NavController, selectedItem: MutableIntState) {
 
     val items = listOf(
-        NavigationBarItem("Home", Icons.Filled.Home, Icons.Outlined.Home,true,null,
-            Screen.Home.route),
-        NavigationBarItem("Notification", Icons.Filled.Notifications, Icons.Outlined.Notifications,false,12,
-            Screen.Notification.route),
-        NavigationBarItem("Profile", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle,false,null,
-            Screen.Profile.route)
+        NavigationBarItem(
+            "Home", Icons.Filled.Home, Icons.Outlined.Home, true, null,
+            Screen.Home.route
+        ),
+        NavigationBarItem(
+            "Notification", Icons.Filled.Notifications, Icons.Outlined.Notifications, false, 12,
+            Screen.Notification.route
+        ),
+        NavigationBarItem(
+            "Quotes", Icons.Filled.Favorite, Icons.Outlined.FavoriteBorder, false, null,
+            Screen.Quotes.route
+        ),
+        NavigationBarItem(
+            "Profile", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle, false, null,
+            Screen.Profile.route
+        )
+
     )
 
     NavigationBar(
@@ -78,7 +92,7 @@ fun HarmonyHavenNavigationBar(navController: NavController,selectedItem:MutableI
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = harmonyHavenSelectedNavigationBarItemColor,
                     selectedTextColor = harmonyHavenSelectedNavigationBarItemColor,
-                    indicatorColor= harmonyHavenIndicatorColor,
+                    indicatorColor = harmonyHavenIndicatorColor,
                     unselectedIconColor = harmonyHavenSelectedNavigationBarItemColor
 
                 ),
@@ -90,18 +104,18 @@ fun HarmonyHavenNavigationBar(navController: NavController,selectedItem:MutableI
 
                     BadgedBox(
                         badge = {
-                            if(item.badgeCount !=null){
+                            if (item.badgeCount != null) {
                                 Badge {
                                     Text(text = item.badgeCount.toString())
 
                                 }
-                            }else if (item.hasNews){
+                            } else if (item.hasNews) {
                                 Badge()
                             }
 
                         }
                     ) {
-                        if (selectedItem.value==index)
+                        if (selectedItem.value == index)
                             Icon(imageVector = item.selectedIcon, contentDescription = item.title)
                         else
                             Icon(imageVector = item.unSelectedIcon, contentDescription = item.title)
@@ -109,10 +123,6 @@ fun HarmonyHavenNavigationBar(navController: NavController,selectedItem:MutableI
                     }
 
                 }
-
-
-
-
 
 
             )

@@ -5,11 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.domain.model.RegisterFormModel
-import com.erdemserhat.harmonyhaven.domain.model.toUser
 import com.erdemserhat.harmonyhaven.domain.model.toUserInformationSchema
-import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
+import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
 import com.erdemserhat.harmonyhaven.domain.validation.areStringsEqual
-import com.erdemserhat.harmonyhaven.domain.validation.validateRegisterForm
 import com.erdemserhat.harmonyhaven.dto.requests.UserInformationSchema
 import com.erdemserhat.harmonyhaven.presentation.register.state.RegisterState
 import com.erdemserhat.harmonyhaven.presentation.register.state.RegisterValidationState

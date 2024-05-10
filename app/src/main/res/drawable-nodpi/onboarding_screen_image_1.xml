@@ -3,7 +3,10 @@
     android:height="312dp"
     android:viewportWidth="339"
     android:viewportHeight="312">
-  <group>
+  <group
+      android:name="animationGroup"
+      android:pivotX="1750"
+      android:pivotY="1750">
     <clip-path
         android:pathData="M0,0h339v312h-339z"/>
     <path

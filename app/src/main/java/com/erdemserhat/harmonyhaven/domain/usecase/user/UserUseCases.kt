@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.domain.usecase.users
+package com.erdemserhat.harmonyhaven.domain.usecase.user
 
 import com.erdemserhat.harmonyhaven.domain.usecase.password_reset.AuthenticatePasswordResetAttempt
 import com.erdemserhat.harmonyhaven.domain.usecase.password_reset.CompletePasswordResetAttempt
@@ -10,6 +10,7 @@ data class UserUseCases(
     val fcmEnrolment: FcmEnrolment,
     val sendPasswordResetMail: SendPasswordResetMail,
     val authenticatePasswordResetAttempt: AuthenticatePasswordResetAttempt,
-    val completePasswordResetAttempt: CompletePasswordResetAttempt
+    val completePasswordResetAttempt: CompletePasswordResetAttempt,
+    val checkUserAuthenticationStatus: CheckUserAuthenticationStatus
 
 )

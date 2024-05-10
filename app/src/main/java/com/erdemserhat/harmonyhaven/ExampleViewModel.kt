@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.data.local.repository.JwtTokenRepository
-import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
+import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
 import com.erdemserhat.harmonyhaven.dto.requests.UserAuthenticationRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

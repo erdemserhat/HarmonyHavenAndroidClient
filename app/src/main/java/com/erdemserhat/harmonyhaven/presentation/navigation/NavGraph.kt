@@ -1,9 +1,12 @@
 package com.erdemserhat.harmonyhaven.presentation.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,22 +26,15 @@ import com.erdemserhat.harmonyhaven.presentation.splash.SplashScreen
 import com.erdemserhat.harmonyhaven.presentation.welcome.WelcomeScreen
 import kotlinx.coroutines.delay
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SetupNavGraph(navController: NavHostController) {
+fun SetupNavGraph(navController: NavHostController,startDestination: String) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = startDestination
     ) {
 
-        composable(route = Screen.Dashboard.route) {
-            SplashScreen(navController = navController)
-            // Splash ekranı tamamlandığında bekle ve ardından ana sayfaya geç
-            LaunchedEffect(Unit) {
-                delay(2000) // 2 saniye bekle
-                navController.navigate(Screen.Welcome.route)
-            }
-        }
 
         composable(route = Screen.Welcome.route) {
             WelcomeScreen(navHostController = navController)
@@ -87,11 +83,10 @@ fun SetupNavGraph(navController: NavHostController) {
         }
 
         composable(
-            route = Screen.Article.route+"/{articleId}"
+            route = Screen.Article.route + "/{articleId}"
         ) {
-            ArticleScreen(it.arguments?.getString("articleId")?.toInt() ?:1)
+            ArticleScreen(it.arguments?.getString("articleId")?.toInt() ?: 1)
         }
-
 
 
     }
