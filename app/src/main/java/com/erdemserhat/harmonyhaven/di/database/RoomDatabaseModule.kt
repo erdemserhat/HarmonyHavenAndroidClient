@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.di
+package com.erdemserhat.harmonyhaven.di.database
 
 import android.app.Application
 import android.content.Context
@@ -30,7 +30,9 @@ object RoomDatabaseModule {
         return Room.databaseBuilder(
             context.applicationContext, // applicationContext kullanmak için
             AppDatabase::class.java,
-            "harmony-haven-database"
-        ).build()
+            "harmony-haven-database",
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 }

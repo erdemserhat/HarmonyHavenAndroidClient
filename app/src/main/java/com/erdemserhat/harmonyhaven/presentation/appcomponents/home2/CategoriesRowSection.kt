@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.presentation.home2
+package com.erdemserhat.harmonyhaven.presentation.appcomponents.home2
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.RepeatMode
@@ -66,7 +66,6 @@ fun CategoriesRowSection(
 ) {
     if(categoryList.isNotEmpty()) {
         Column {
-
             Spacer(modifier = Modifier.height(25.dp))
             androidx.compose.material3.Text(
                 text = "Categories",

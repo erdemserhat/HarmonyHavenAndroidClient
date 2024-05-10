@@ -168,6 +168,7 @@ fun ArticlePrototype(
 
     Box(
         modifier = Modifier
+            .size(width = 350.dp, height = 200.dp)
 
             .padding(10.dp)
             .background(
@@ -196,7 +197,7 @@ fun ArticlePrototype(
                 modifier = Modifier
                     .fillMaxWidth(),
                 onSuccess = { shouldShowShimmer = false },
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Inside
             )
 
             Text(
@@ -233,4 +234,10 @@ fun ArticlePrototypeShimmy() {
                 shape = RoundedCornerShape(15.dp)
             )
     )
+}
+
+@Preview
+@Composable
+private fun example() {
+    ArticlePrototypeShimmy()
 }

@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.domain.model.rest
 
+import com.erdemserhat.harmonyhaven.data.local.entities.ArticleEntity
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -34,4 +35,12 @@ fun Article.toArticleResponseType(categoryList:List<Category>):ArticleResponseTy
         imagePath = imagePath
     )
 }
+
+
+fun Article.toArticleEntity():ArticleEntity{
+    return ArticleEntity(
+        id,title,content,publishDate,categoryId,imagePath
+    )
+}
+
 

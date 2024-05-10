@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.data.local.repository.JwtTokenRepository
-import com.erdemserhat.harmonyhaven.domain.usecase.users.UserUseCases
+import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
 import com.erdemserhat.harmonyhaven.dto.requests.UserAuthenticationRequest
 import com.erdemserhat.harmonyhaven.presentation.login.state.LoginState
 import com.erdemserhat.harmonyhaven.presentation.login.state.LoginValidationState
@@ -40,25 +40,27 @@ class LoginViewModel @Inject constructor(
             isLoading = true,
         )
 
-        authenticateUser(email,password)
+        authenticateUser(email, password)
     }
 
-    private fun authenticateUser(email:String, password:String){
+    private fun authenticateUser(email: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
             delay(400)
-            val request = async {  userUseCases.authenticateUser.executeRequest(
-                UserAuthenticationRequest(
-                email = email,
-                password = password
-            )
-            )}
-
+            val request = async {
+                userUseCases.authenticateUser.executeRequest(
+                    UserAuthenticationRequest(
+                        email = email,
+                        password = password
+                    )
+                )
+            }
+            
             val response = request.await()
 
-            if(response==null){
+            if (response == null) {
                 //network error
 
-                Log.d("AuthenticationTests","Network Error")
+                Log.d("AuthenticationTests", "dsd")
                 _loginState.value = _loginState.value.copy(
                     isLoading = false,
                     canNavigateToDashBoard = false,
@@ -68,10 +70,10 @@ class LoginViewModel @Inject constructor(
                 return@launch
             }
 
-            if(!response.formValidationResult.isValid){
+            if (!response.formValidationResult.isValid) {
                 //form not valid
                 val errorMessage = response.formValidationResult.errorMessage
-                val errorCode= response.formValidationResult.errorCode
+                val errorCode = response.formValidationResult.errorCode
 
                 _loginState.value = _loginState.value.copy(
                     isLoading = false,
@@ -81,14 +83,14 @@ class LoginViewModel @Inject constructor(
                 )
 
 
-                Log.d("AuthenticationTests","Form Invalid")
+                Log.d("AuthenticationTests", "Form Invalid")
                 return@launch
             }
 
-            if(!response.credentialsValidationResult!!.isValid){
+            if (!response.credentialsValidationResult!!.isValid) {
                 //credentials are not valid
                 val errorMessage = response.credentialsValidationResult.errorMessage
-                val errorCode= response.credentialsValidationResult.errorCode
+                val errorCode = response.credentialsValidationResult.errorCode
 
                 _loginState.value = _loginState.value.copy(
                     isLoading = false,
@@ -97,14 +99,14 @@ class LoginViewModel @Inject constructor(
                     validationState = LoginValidationState().getValidationStateByErrorCode(errorCode)
                 )
 
-                Log.d("AuthenticationTests","Credentials Invalid")
+                Log.d("AuthenticationTests", "Credentials Invalid")
 
                 return@launch
             }
 
-            if(!response.isAuthenticated){
+            if (!response.isAuthenticated) {
                 //user banned
-                Log.d("AuthenticationTests","User Banned")
+                Log.d("AuthenticationTests", "User Banned")
                 _loginState.value = _loginState.value.copy(
                     isLoading = false,
                     canNavigateToDashBoard = false,
@@ -115,10 +117,10 @@ class LoginViewModel @Inject constructor(
 
                 return@launch
             }
-            Log.d("AuthenticationTests","Everything is nice")
+            Log.d("AuthenticationTests", "Everything is nice")
 
             jwtRepository.saveJwtToken(response.jwt!!)
-            Log.d("AuthenticationTests","jwt saved as :"+jwtRepository.getJwtToken())
+            Log.d("AuthenticationTests", "jwt saved as :" + jwtRepository.getJwtToken())
             ///Redirect the user main page...
 
             _loginState.value = _loginState.value.copy(
@@ -127,8 +129,8 @@ class LoginViewModel @Inject constructor(
                 loginWarning = "Welcome :)"
             )
             //if login is successfully then save the fcm id
-            getToken()
 
+            getToken()
 
 
 
@@ -139,7 +141,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             FirebaseMessaging.getInstance().subscribeToTopic("everyone")
                 .addOnCompleteListener { task: Task<Void?> ->
-                    Log.d("erdem",task.result.toString())
+                    Log.d("erdem", task.result.toString())
                     if (task.isSuccessful) {
                         Log.d("spec1", "Successfully subscribed to topic")
                     } else {
@@ -148,12 +150,12 @@ class LoginViewModel @Inject constructor(
                 }
             val localToken = Firebase.messaging.token.await()
             //send your fcm id to server
-            Log.d("erdem1212",localToken.toString())
+            Log.d("erdem1212", localToken.toString())
             val fcmToken = localToken.toString()
 
             val response = userUseCases.fcmEnrolment.executeRequest(fcmToken)
 
-            Log.d("fcmtestResults",response.message)
+            Log.d("fcmtestResults", response.message)
 
 
         }

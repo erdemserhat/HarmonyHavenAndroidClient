@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.domain.usecase.users
+package com.erdemserhat.harmonyhaven.domain.usecase.user
 
 import com.erdemserhat.harmonyhaven.data.api.user.UserRegistrationApiService
 import com.erdemserhat.harmonyhaven.dto.requests.UserInformationSchema

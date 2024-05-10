@@ -121,112 +121,114 @@ fun LoginScreenContent(
                     modifier = Modifier
                         .padding(20.dp)
                 )
-
-
-            }
-
-
-            //Input Fields
-            Column(
-                modifier = Modifier
-                    .padding(bottom = 40.dp)
-            ) {
+                //////
+                //Input Fields
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-
+                        .padding(bottom = 40.dp)
                 ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+
+                    ) {
 
 
-                    LoginScreenEmailTextField(
-                        email = params.email,
-                        onValueChanged = params.onEmailValueChanged,
-                        isError = params.isEmailValid
+                        LoginScreenEmailTextField(
+                            email = params.email,
+                            onValueChanged = params.onEmailValueChanged,
+                            isError = params.isEmailValid
 
-                    )
-                    Spacer(modifier = Modifier.size(5.dp))
-                    LoginScreenPasswordTextField(
-                        onValueChanged = params.onPasswordValueChanged,
-                        password = params.password,
-                        isPasswordHidden = isPasswordHidden,
-                        onClickIcon = { isPasswordHidden = !isPasswordHidden },
-                        isError = params.isPasswordValid
-
-                    )
-
-                }
-
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    LoginScreenRememberCredentialsCheckbox(
-                        isChecked = params.isCheckedRememberCredentials,
-                        onCheckedChange = params.onRememberCredentialsStateChanged
-                    )
-                    Spacer(modifier = Modifier.size(60.dp))
-                    LoginScreenForgotPasswordTextButton(
-                        onClick = params.onForgotPasswordClicked
-                    )
-                }
-                Spacer(modifier = Modifier.size(20.dp))
-                LoginScreenWarningText(
-                    warningText = params.warningText
-
-                )
-
-                Spacer(modifier = Modifier.size(20.dp))
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    if(params.isLoading){
-                        CircularProgressIndicator(
-                            modifier = Modifier.width(32.dp),
-                            color = harmonyHavenGreen,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
                         )
+                        Spacer(modifier = Modifier.size(5.dp))
+                        LoginScreenPasswordTextField(
+                            onValueChanged = params.onPasswordValueChanged,
+                            password = params.password,
+                            isPasswordHidden = isPasswordHidden,
+                            onClickIcon = { isPasswordHidden = !isPasswordHidden },
+                            isError = params.isPasswordValid
 
-                    }else{
-                        //Buttons
-                        LoginScreenLoginButton(
-                            onClick = params.onLoginButtonClicked
-                        )
-
-                        Spacer(modifier = Modifier.size(10.dp))
-                        LoginScreenGoogleSignInButton(
-                            onClick = params.onLoginViaGoogleClicked
                         )
 
                     }
 
-
-
-
-
-
-                    Spacer(modifier = Modifier.size(10.dp))
 
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(text = stringResource(R.string.don_t_have_account))
-                        TextButton(
-                            onClick = params.onSignUpClicked
-                        ) {
-                            Text(stringResource(R.string.sign_up), color = harmonyHavenGreen)
-                        }
+                        LoginScreenRememberCredentialsCheckbox(
+                            isChecked = params.isCheckedRememberCredentials,
+                            onCheckedChange = params.onRememberCredentialsStateChanged
+                        )
+                        Spacer(modifier = Modifier.size(60.dp))
+                        LoginScreenForgotPasswordTextButton(
+                            onClick = params.onForgotPasswordClicked
+                        )
                     }
+                    Spacer(modifier = Modifier.size(20.dp))
+                    LoginScreenWarningText(
+                        warningText = params.warningText
 
+                    )
+
+                    Spacer(modifier = Modifier.size(20.dp))
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        if(params.isLoading){
+                            CircularProgressIndicator(
+                                modifier = Modifier.width(32.dp),
+                                color = harmonyHavenGreen,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            )
+
+                        }else{
+                            //Buttons
+                            LoginScreenLoginButton(
+                                onClick = params.onLoginButtonClicked
+                            )
+
+                            Spacer(modifier = Modifier.size(10.dp))
+                            LoginScreenGoogleSignInButton(
+                                onClick = params.onLoginViaGoogleClicked
+                            )
+
+                        }
+
+
+
+
+
+
+                        Spacer(modifier = Modifier.size(10.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = stringResource(R.string.don_t_have_account))
+                            TextButton(
+                                onClick = params.onSignUpClicked
+                            ) {
+                                Text(stringResource(R.string.sign_up), color = harmonyHavenGreen)
+                            }
+                        }
+
+
+                    }
 
                 }
 
+
             }
+
+
+
 
 
         }
@@ -244,11 +246,11 @@ fun LoginScreen(
 
 ) {
     var email by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf("me.serhaterdem@gmail.com")
     }
 
     var password by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf("Erdem.3451.")
     }
 
 
