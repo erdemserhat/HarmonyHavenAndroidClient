@@ -1,10 +1,9 @@
-package com.erdemserhat.harmonyhaven.domain.usecase.users
+package com.erdemserhat.harmonyhaven.domain.usecase.user
 
 import android.util.Log
 import com.erdemserhat.harmonyhaven.data.api.user.UserAuthenticationApiService
 import com.erdemserhat.harmonyhaven.dto.requests.UserAuthenticationRequest
 import com.erdemserhat.harmonyhaven.dto.responses.AuthenticationResponse
-import com.erdemserhat.harmonyhaven.dto.responses.RegistrationResponse
 import com.google.gson.Gson
 import javax.inject.Inject
 

@@ -19,6 +19,7 @@ sealed class Screen(val route:String) {
     object HomeDev:Screen("home_screen_dev")
     object Article : Screen("article_screen")
     object RecentArticleDev :Screen("recent_articles")
+    object Quotes:Screen("quotes_screen")
 
 
 

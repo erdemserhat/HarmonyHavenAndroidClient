@@ -83,7 +83,7 @@ class HarmonyHavenFirebaseMessagingService() : FirebaseMessagingService() {
             this,
             1,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE
         )
 
 
