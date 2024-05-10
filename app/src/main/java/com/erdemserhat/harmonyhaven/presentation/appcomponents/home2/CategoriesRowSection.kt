@@ -66,7 +66,6 @@ fun CategoriesRowSection(
 ) {
     if(categoryList.isNotEmpty()) {
         Column {
-
             Spacer(modifier = Modifier.height(25.dp))
             androidx.compose.material3.Text(
                 text = "Categories",

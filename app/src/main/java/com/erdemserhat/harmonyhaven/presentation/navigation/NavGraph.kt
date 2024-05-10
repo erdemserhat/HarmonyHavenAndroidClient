@@ -1,5 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +26,7 @@ import com.erdemserhat.harmonyhaven.presentation.splash.SplashScreen
 import com.erdemserhat.harmonyhaven.presentation.welcome.WelcomeScreen
 import kotlinx.coroutines.delay
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SetupNavGraph(navController: NavHostController,startDestination: String) {

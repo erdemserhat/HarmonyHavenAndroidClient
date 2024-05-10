@@ -1,7 +1,6 @@
-package com.erdemserhat.harmonyhaven.di
+package com.erdemserhat.harmonyhaven.di.network
 
 import com.erdemserhat.harmonyhaven.data.api.article.ArticleApiService
-import com.erdemserhat.harmonyhaven.data.api.user.UserAuthenticationApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

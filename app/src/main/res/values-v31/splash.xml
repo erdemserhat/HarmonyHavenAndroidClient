@@ -2,8 +2,8 @@
 <resources>
 
     <style name="Theme.HarmonyHaven.MySplash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#FFFFFF</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/news_avd_v02</item>
+        <item name="windowSplashScreenBackground">#92BABF</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/dsadas</item>
         <item name="postSplashScreenTheme">@style/Theme.HarmonyHaven</item>
 
 

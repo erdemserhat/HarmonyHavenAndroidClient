@@ -5,8 +5,17 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.erdemserhat.harmonyhaven.data.local.entities.toArticle
+import com.erdemserhat.harmonyhaven.data.local.entities.toCategory
+import com.erdemserhat.harmonyhaven.data.local.repository.ArticleRepository
+import com.erdemserhat.harmonyhaven.data.local.repository.CategoryRepository
+import com.erdemserhat.harmonyhaven.domain.model.rest.Article
+import com.erdemserhat.harmonyhaven.domain.model.rest.Category
+import com.erdemserhat.harmonyhaven.domain.model.rest.toArticleEntity
 import com.erdemserhat.harmonyhaven.domain.model.rest.toArticleResponseType
+import com.erdemserhat.harmonyhaven.domain.model.rest.toCategoryEntity
 import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
+import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -18,7 +27,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val articleUseCases: ArticleUseCases
+    private val articleUseCases: ArticleUseCases,
+    //private val categoryRepository: CategoryRepository,
+    //private val articleRepository: ArticleRepository,
+    private val userUseCases: UserUseCases
 
 ) : ViewModel() {
     private val _homeState = MutableStateFlow(HomeState())
@@ -28,6 +40,7 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             try {
+
                 val categoriesDeferred = async {
                     articleUseCases.getCategories.executeRequest()
                 }
@@ -36,8 +49,20 @@ class HomeViewModel @Inject constructor(
                     articleUseCases.getArticles.executeRequest()
                 }
 
+                val authStatusDeferred = async {
+                    userUseCases.checkUserAuthenticationStatus.executeRequest()
+                }
+
                 val categories = categoriesDeferred.await()
                 val articles = articlesDeferred.await()
+                val authStatus = authStatusDeferred.await()
+                Log.d("erdem121212",authStatus.toString())
+
+                if(authStatus==2){
+                    _homeState.value = _homeState.value.copy(authStatus=2)
+                    return@launch
+                }
+
 
                 if (categories == null && articles == null) {
                     Log.d("homepage_tests", "categories and/or articles were null")
@@ -46,7 +71,7 @@ class HomeViewModel @Inject constructor(
 
                 _homeState.value = _homeState.value.copy(
                     categories = categories!!,
-                    articles = articles!!.map { it.toArticleResponseType(categories) },
+                    categorizedArticles = articles!!.map { it.toArticleResponseType(categories) },
                     isCategoryReady = true,
                     isArticleReady = true,
                     recentArticles = articles.take(4)
@@ -72,10 +97,10 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _homeState.value = _homeState.value.copy(
-                    articles = _homeState.value.allArticles.filter { it.categoryId == categoryId }
+                    categorizedArticles = _homeState.value.allArticles.filter { it.categoryId == categoryId }
                         .map { it.toArticleResponseType(_homeState.value.categories) }
                 )
-                Log.d("qazq", _homeState.value.articles.toString())
+
 
             } catch (_: Exception) {
 

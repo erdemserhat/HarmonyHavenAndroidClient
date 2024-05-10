@@ -65,6 +65,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.MostReadArticleModel
+import com.erdemserhat.harmonyhaven.domain.model.rest.Article
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category
 import com.erdemserhat.harmonyhaven.presentation.home.components.ContentGridShimmy
@@ -90,63 +91,34 @@ fun HomeScreen(
     var selectedCategory by remember {
         mutableStateOf(Category(1, "", ""))
     }
+    val homeState by homeViewModel.homeState.collectAsState()
+
+    if(homeState.authStatus==2)
+          navController.navigate(Screen.Login.route)
+    
     homeViewModel.getArticlesByCategoryId(selectedCategory.id)
-    Column(
-        modifier = Modifier
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color.White,
-                        Color.White
-                    )
-                )
-            )
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
 
-        ) {
-        val homeState by homeViewModel.homeState.collectAsState()
-        //HarmonyHavenSearchBarPrototype1()
-        //GreetingHarmonyHavenComponent()
-        CategoriesRowSection(
-            categoryList = homeState.categories,
-            onCategorySelected = { category ->
-                selectedCategory = category
-                homeViewModel.getArticlesByCategoryId(category.id)
-            },
-            selectedCategory = selectedCategory
+    HomeScreenContent(
+        categories = homeState.categories,
+        onCategorySelected = {
+            selectedCategory = it
+            homeViewModel.getArticlesByCategoryId(it.id)},
+        selectedCategory =selectedCategory,
+        navController = navController,
+        recentArticles = homeState.recentArticles,
+        categorisedArticles =homeState.categorizedArticles
+    )
 
-
-        )
-        //
-        MostReadHorizontalPager(navController, homeState.recentArticles)
-
-        //HarmonyHavenSearchBarPrototype2(modifier = Modifier.padding(bottom = 20.dp))  
-        //MostReadHorizontalPagerDev(navController,homeState.articles)
-        ArticleSection(
-            navController = navController,
-            articles = homeState.articles,
-
-
-        )
-
-        //ContentGridShimmy()
-
-    }
 
 }
+
+
 
 
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    val navController = rememberNavController()
-    HomeScreen(navController = navController)
-
-
 }
-
 @Composable
 fun GreetingHarmonyHavenComponent() {
     Column(
@@ -217,7 +189,6 @@ fun HarmonyHavenSearchBarPrototype1() {
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
             .semantics {
                 isTraversalGroup = false
             },
