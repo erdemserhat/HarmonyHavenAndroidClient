@@ -79,6 +79,7 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenIndicatorColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenTitleTextColor
+import com.erdemserhat.harmonyhaven.util.AppColors
 import com.erdemserhat.harmonyhaven.util.customFontFamilyJunge
 import com.erdemserhat.harmonyhaven.util.customFontInter
 
@@ -130,6 +131,7 @@ fun GreetingHarmonyHavenComponent() {
             modifier = Modifier
                 .padding(top = 15.dp)
         ) {
+            Examplewe()
             Image(
                 painter = painterResource(id = R.drawable.basicline),
                 contentDescription = null
@@ -152,8 +154,6 @@ fun GreetingHarmonyHavenComponent() {
                     text = "HARMONY HAVEN",
                     modifier = Modifier,
                     fontFamily = customFontFamilyJunge,
-                    color = harmonyHavenDarkGreenColor
-
 
                 )
 
@@ -168,9 +168,12 @@ fun GreetingHarmonyHavenComponent() {
         Text(
             text = "Quote of Day",
             textAlign = TextAlign.Center,
-            color = harmonyHavenDarkGreenColor,
+            color = androidx.compose.material.MaterialTheme.AppColors.buttonSurfaceColor, // Doğru şekilde MaterialTheme.colors üzerinden renk alınması
+            fontFamily = androidx.compose.material.MaterialTheme.typography.body2.fontFamily, // Önceden tanımladığınız bir font ailesi
+            fontWeight = FontWeight.ExtraLight,
             modifier = Modifier.padding(top = 10.dp)
         )
+
 
 
     }
