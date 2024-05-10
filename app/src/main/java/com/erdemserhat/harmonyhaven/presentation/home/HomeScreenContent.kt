@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.home2.CategoriesRowSection
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.home2.MostReadHorizontalPager
+import com.erdemserhat.harmonyhaven.util.AppColors
 
 @Composable
 fun HomeScreenContent(
@@ -31,18 +33,16 @@ fun HomeScreenContent(
 
         modifier = Modifier
             .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color.White,
-                        Color.White
-                    )
-                )
+               color = MaterialTheme.AppColors.background
             )
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
 
         ) {
+
+
+
         //HarmonyHavenSearchBarPrototype2(Modifier)
         GreetingHarmonyHavenComponent()
         CategoriesRowSection(

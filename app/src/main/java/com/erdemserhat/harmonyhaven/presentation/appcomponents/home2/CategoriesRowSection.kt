@@ -53,6 +53,8 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenBottomAppBarContainerCo
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenTitleTextColor
+import com.erdemserhat.harmonyhaven.util.AppColors
+import com.erdemserhat.harmonyhaven.util.customFontFamilyJunge
 import com.erdemserhat.harmonyhaven.util.customFontInter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -70,7 +72,7 @@ fun CategoriesRowSection(
             androidx.compose.material3.Text(
                 text = "Categories",
                 modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
-                fontFamily = customFontInter,
+                fontFamily = customFontFamilyJunge,
                 fontWeight = FontWeight.Bold,
                 color = harmonyHavenTitleTextColor,
                 fontSize = MaterialTheme.typography.titleLarge.fontSize
@@ -96,9 +98,9 @@ fun CategoriesRowSection(
             androidx.compose.material3.Text(
                 text = "Categories",
                 modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
-                fontFamily = customFontInter,
+                fontFamily = customFontFamilyJunge,
                 fontWeight = FontWeight.Bold,
-                color = harmonyHavenTitleTextColor,
+                color = androidx.compose.material.MaterialTheme.AppColors.error,
                 fontSize = MaterialTheme.typography.titleLarge.fontSize
 
             )
@@ -232,6 +234,7 @@ fun Content(
                 modifier = Modifier
                     .padding(10.dp),
                 text = category.name,
+                color = androidx.compose.material.MaterialTheme.AppColors.error,
                 fontFamily = customFontInter,
                 fontWeight = FontWeight.Medium,
                 fontSize = MaterialTheme.typography.labelLarge.fontSize
