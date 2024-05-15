@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -37,48 +38,31 @@ import kotlinx.coroutines.time.delay
 @Composable
 fun MostReadHorizontalPager(
     navController: NavController,
-    articleList: List<ArticleResponseType>
+    articleList: List<ArticleResponseType>,
+    modifier:Modifier = Modifier
 ) {
     if (articleList.isNotEmpty()) {
 
 
-    val pagerState = rememberPagerState(pageCount = {
-        4//list size
-    })
-    LaunchedEffect(Unit) {
-        while (true) {
-            kotlinx.coroutines.delay(5000) // Değişim aralığı, burada 5 saniye olarak belirtilmiştir. İstediğiniz süreyi ayarlayabilirsiniz.
-            pagerState.animateScrollToPage(
-                (pagerState.currentPage + 1) % pagerState.pageCount,
-                animationSpec = TweenSpec(durationMillis = 1000)
-            )
+        val pagerState = rememberPagerState(pageCount = {
+            4//list size
+        })
+        LaunchedEffect(Unit) {
+            while (true) {
+                kotlinx.coroutines.delay(5000) // Değişim aralığı, burada 5 saniye olarak belirtilmiştir. İstediğiniz süreyi ayarlayabilirsiniz.
+                pagerState.animateScrollToPage(
+                    (pagerState.currentPage + 1) % pagerState.pageCount,
+                    animationSpec = TweenSpec(durationMillis = 1000)
+                )
+            }
         }
-    }
 
-
-
-
-    Column(
-
-    ) {
-        Text(
-            text = "Recent Articles",
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 16.dp),
-            fontFamily = customFontInter,
-            fontWeight = FontWeight.Bold,
-            color = harmonyHavenTitleTextColor,
-            fontSize = MaterialTheme.typography.titleMedium.fontSize
-
-        )
         Column(
-            modifier = Modifier,
+            modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             HorizontalPager(
-                modifier = Modifier,
-                state = pagerState,
-                verticalAlignment = Alignment.Top,
+                state = pagerState
             ) { page ->
                 val articleId = articleList[page].id
 
@@ -104,14 +88,12 @@ fun MostReadHorizontalPager(
                     )
                 }
 
+
             }
-
-
         }
-    }
-    }else{
-        MostReadHorizontalPagerShimmy()
-    }
+    } //else {
+        //MostReadHorizontalPagerShimmy()
+   // }
 
 }
 

@@ -148,7 +148,7 @@ dependencies {
 
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
-    implementation ("androidx.compose.runtime:runtime-livedata:1.6.4")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.6")
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
 
@@ -167,6 +167,8 @@ dependencies {
     implementation ("com.google.android.material:material:1.4.0")
 
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    implementation ("com.github.jeziellago:compose-markdown:0.5.0")
 
 
 

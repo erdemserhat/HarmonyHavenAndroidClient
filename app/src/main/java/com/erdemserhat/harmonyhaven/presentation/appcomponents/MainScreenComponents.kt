@@ -28,9 +28,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -55,40 +57,42 @@ data class NavigationBarItem(
     val route: String
 
 )
+val items = listOf(
+    NavigationBarItem(
+        "Home", Icons.Filled.Home, Icons.Outlined.Home, true, null,
+        Screen.Home.route
+    ),
+    NavigationBarItem(
+        "Notification", Icons.Filled.Notifications, Icons.Outlined.Notifications, false, 12,
+        Screen.Notification.route
+    ),
+    NavigationBarItem(
+        "Quotes", Icons.Filled.Favorite, Icons.Outlined.FavoriteBorder, false, null,
+        Screen.Quotes.route
+    ),
+    NavigationBarItem(
+        "Profile", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle, false, null,
+        Screen.Profile.route
+    )
+
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HarmonyHavenNavigationBar(navController: NavController, selectedItem: MutableIntState) {
+fun HarmonyHavenNavigationBar(navController: NavController) {
 
-    val items = listOf(
-        NavigationBarItem(
-            "Home", Icons.Filled.Home, Icons.Outlined.Home, true, null,
-            Screen.Home.route
-        ),
-        NavigationBarItem(
-            "Notification", Icons.Filled.Notifications, Icons.Outlined.Notifications, false, 12,
-            Screen.Notification.route
-        ),
-        NavigationBarItem(
-            "Quotes", Icons.Filled.Favorite, Icons.Outlined.FavoriteBorder, false, null,
-            Screen.Quotes.route
-        ),
-        NavigationBarItem(
-            "Profile", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle, false, null,
-            Screen.Profile.route
-        )
-
-    )
-
+    var selectedItem by rememberSaveable {
+        mutableIntStateOf(0)
+    }
     NavigationBar(
-        containerColor = harmonyHavenBottomAppBarContainerColor,
+        containerColor = Color.White,
         modifier = Modifier
             .fillMaxWidth()
             .size(width = 0.dp, height = 50.dp),
     ) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
-                selected = selectedItem.value == index,
+                selected = selectedItem == index,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = harmonyHavenSelectedNavigationBarItemColor,
                     selectedTextColor = harmonyHavenSelectedNavigationBarItemColor,
@@ -97,7 +101,16 @@ fun HarmonyHavenNavigationBar(navController: NavController, selectedItem: Mutabl
 
                 ),
                 onClick = {
-                    selectedItem.value = index
+                    selectedItem = index
+                    navController.navigate(item.route){
+                        // Put These line in your code.
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+
                 },
                 //label = { Text(text = item.title) },
                 icon = {
@@ -115,7 +128,7 @@ fun HarmonyHavenNavigationBar(navController: NavController, selectedItem: Mutabl
 
                         }
                     ) {
-                        if (selectedItem.value == index)
+                        if (selectedItem == index)
                             Icon(imageVector = item.selectedIcon, contentDescription = item.title)
                         else
                             Icon(imageVector = item.unSelectedIcon, contentDescription = item.title)
