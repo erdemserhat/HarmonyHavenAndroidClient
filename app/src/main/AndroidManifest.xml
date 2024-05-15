@@ -31,7 +31,9 @@
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.HarmonyHaven.MySplash"
-            android:windowSoftInputMode="adjustResize">
+           android:windowSoftInputMode="adjustResize"
+            >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

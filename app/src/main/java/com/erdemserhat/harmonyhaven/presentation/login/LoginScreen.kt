@@ -275,7 +275,7 @@ fun LoginScreen(
         onPasswordValueChanged = { password = it },
         warningText = viewModel.loginState.value.loginWarning,
         canNavigateToDashBoard = viewModel.loginState.value.canNavigateToDashBoard,
-        onCanNavigateToDashBoard = { navController.navigate(Screen.Dashboard.route) },
+        onCanNavigateToDashBoard = { navController.navigate(Screen.Home.route) },
         isLoading = viewModel.loginState.value.isLoading,
         isEmailValid = !viewModel.loginState.value.validationState.isEmailValid,
         isPasswordValid = !viewModel.loginState.value.validationState.isPasswordValid

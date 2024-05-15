@@ -5,50 +5,9 @@
       <entry key="ArticleScreenContentPreview">
         <State />
       </entry>
-      <entry key="CategoriesRowSectionPreview">
-        <State />
-      </entry>
-      <entry key="HomeScreenPreview">
-        <State />
-      </entry>
-      <entry key="CategoriesRowSectionPreview">
-        <State />
-      </entry>
-      <entry key="MostReadArticleDevPreview">
-        <State />
-      </entry>
-      <entry key="app">
-        <State>
-          <targetSelectedWithDropDown>
-            <Target>
-              <type value="QUICK_BOOT_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\erdem\.android\avd\Medium_Phone_API_VanillaIceCream.avd" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-05-06T13:55:05.566349200Z" />
-        </State>
-      </entry>
-      <entry key="example">
+      <entry key="Ep">
         <State>
           <runningDeviceTargetSelectedWithDropDown>
-            <Target>
-              <type value="RUNNING_DEVICE_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="SERIAL_NUMBER" />
-                  <value value="ws55vwzhs8u4hmge" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-04-30T15:21:41.984931700Z" />
-          <multipleDevicesSelectedInDropDown value="true" />
-          <runningDeviceTargetsSelectedWithDialog>
             <Target>
               <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
@@ -58,12 +17,28 @@
                 </Key>
               </deviceKey>
             </Target>
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-05-11T17:45:00.239727900Z" />
+        </State>
+      </entry>
+      <entry key="LoginScreenPreview">
+        <State />
+      </entry>
+      <entry key="MostReadArticleDevPreview">
+        <State />
+      </entry>
+      <entry key="SearchButtonPreview">
+        <State />
+      </entry>
+      <entry key="app">
+        <State>
+          <runningDeviceTargetsSelectedWithDialog>
             <Target>
               <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
                 <Key>
                   <type value="SERIAL_NUMBER" />
-                  <value value="ws55vwzhs8u4hmge" />
+                  <value value="R52W804XR0W" />
                 </Key>
               </deviceKey>
             </Target>

@@ -96,10 +96,21 @@ class HomeViewModel @Inject constructor(
     fun getArticlesByCategoryId(categoryId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _homeState.value = _homeState.value.copy(
-                    categorizedArticles = _homeState.value.allArticles.filter { it.categoryId == categoryId }
-                        .map { it.toArticleResponseType(_homeState.value.categories) }
-                )
+                if (categoryId==1){
+                    _homeState.value = _homeState.value.copy(
+
+                        categorizedArticles = _homeState.value.allArticles.map { it.toArticleResponseType(_homeState.value.categories) }
+                    )
+                }
+                else{
+                    _homeState.value = _homeState.value.copy(
+
+                        categorizedArticles = _homeState.value.allArticles.filter { it.categoryId == categoryId }
+                            .map { it.toArticleResponseType(_homeState.value.categories) }
+                    )
+
+                }
+
 
 
             } catch (_: Exception) {

@@ -77,12 +77,8 @@ fun QuotesContent(quote: List<Quote>) {
         modifier = Modifier
             .fillMaxSize()
             .background(
-                Brush.verticalGradient(
-                    listOf(
-                        harmonyHavenGradientGreen,
-                        harmonyHavenGradientWhite
-                    )
-                )
+
+                Color.White
             ),
         contentAlignment = Alignment.Center,
 
@@ -100,7 +96,7 @@ fun QuotesContent(quote: List<Quote>) {
 @Composable
 fun Quote(quote: Quote) {
 
-    Box(modifier = Modifier.fillMaxSize()){
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -128,21 +124,25 @@ fun Quote(quote: Quote) {
         Box(
             contentAlignment = Alignment.BottomCenter,
             modifier = Modifier.fillMaxSize()
-        ){
+        ) {
             Row(
             ) {
 
                 Image(
                     imageVector = Icons.Outlined.ThumbUp,
                     contentDescription = null,
-                    modifier = Modifier.padding(20.dp).size(32.dp)
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .size(32.dp)
                 )
 
 
                 Image(
                     imageVector = Icons.Outlined.Share,
                     contentDescription = null,
-                    modifier = Modifier.padding(20.dp).size(32.dp)
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .size(32.dp)
                 )
             }
 

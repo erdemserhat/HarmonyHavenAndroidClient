@@ -107,13 +107,13 @@ fun ArticleSection(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
 
-            ) {
+                ) {
                 for (article in articles) {
                     Spacer(modifier = Modifier.height(10.dp))
-                        ArticlePrototype(article) {
-                            val articleId = article.id
-                            navController.navigate(Screen.Article.route + "/$articleId")
-                        }
+                    ArticlePrototype(article) {
+                        val articleId = article.id
+                        navController.navigate(Screen.Article.route + "/$articleId")
+                    }
 
                 }
             }
@@ -158,10 +158,8 @@ fun ArticleSection(
 @Composable
 fun ArticlePrototype(
     article: ArticleResponseType,
-    onReadButtonClicked: () -> Unit,
-
-
-    ) {
+    onReadButtonClicked: () -> Unit
+) {
     var shouldShowShimmer by rememberSaveable {
         mutableStateOf(true)
     }
@@ -187,15 +185,12 @@ fun ArticlePrototype(
             ) { onReadButtonClicked() }
 
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-
-            ) {
             AsyncImage(
                 model = article.imagePath,
                 contentDescription = null,
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .size(120.dp)
+                    .align(Alignment.CenterStart),
                 onSuccess = { shouldShowShimmer = false },
                 contentScale = ContentScale.Inside
             )
@@ -209,7 +204,6 @@ fun ArticlePrototype(
                 modifier = Modifier.padding(10.dp),
                 overflow = TextOverflow.Ellipsis
             )
-        }
 
 
     }
