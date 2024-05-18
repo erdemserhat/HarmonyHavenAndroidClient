@@ -18,7 +18,7 @@ import com.erdemserhat.harmonyhaven.data.local.entities.NotificationEntity
         ArticleEntity::class,
         CategoryEntity::class
 
-    ], version = 4
+    ], version = 5
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun jwtTokenDao(): JwtTokenDao

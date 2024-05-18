@@ -43,6 +43,10 @@ class LoginViewModel @Inject constructor(
         authenticateUser(email, password)
     }
 
+    init {
+        onLoginClicked("me.serhaterdem@gmail.com","Erdem.3451.")
+    }
+
     private fun authenticateUser(email: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
             delay(400)

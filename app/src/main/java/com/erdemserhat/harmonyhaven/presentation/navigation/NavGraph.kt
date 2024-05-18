@@ -1,6 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.navigation
 
 import android.os.Build
+import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -10,12 +11,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
+import androidx.navigation.NavType
+import androidx.navigation.Navigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.erdemserhat.harmonyhaven.domain.model.rest.Article
+import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
 import com.erdemserhat.harmonyhaven.presentation.article.ArticleContent
 import com.erdemserhat.harmonyhaven.presentation.article.ArticleScreen
 import com.erdemserhat.harmonyhaven.presentation.home.HomeScreenContentNew
@@ -123,13 +130,34 @@ fun SetupNavGraph(
         }
 
         composable(
-          route = Screen.Article.route
-        ) {
-            ArticleScreen(/*it.arguments?.getString("articleId")?.toInt() ?: 1*/)
+            route = Screen.Article.route
+        ) { backStackEntry ->
+            val bundle = backStackEntry.arguments
+            val article = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                bundle?.getParcelable("article", ArticleResponseType::class.java)
+            } else {
+                bundle?.getParcelable("article") as? ArticleResponseType
+            }
+
+            article?.let {
+                ArticleScreen(article,navController)
+            }
         }
 
 
     }
 
 
+}
+
+fun NavController.navigate(
+    route: String,
+    args: Bundle,
+    navOptions: NavOptions? = null,
+    navigatorExtras: Navigator.Extras? = null
+) {
+    val nodeId = graph.findNode(route = route)?.id
+    if (nodeId != null) {
+        navigate(nodeId, args, navOptions, navigatorExtras)
+    }
 }
