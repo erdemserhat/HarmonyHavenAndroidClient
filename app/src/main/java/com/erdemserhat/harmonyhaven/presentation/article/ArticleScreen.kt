@@ -8,6 +8,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import com.erdemserhat.harmonyhaven.R
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,7 +23,11 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,7 +41,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
@@ -53,22 +60,12 @@ data class ArticleUIModel(
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ArticleScreen(
-   // articleId: Int,
-    //viewModel: ArticleViewModel = hiltViewModel()
+   article:ArticleResponseType,
+   navController: NavController
 ) {
-  //  viewModel.prepareArticle(articleId)
 
-    //val articleScreenState by viewModel.articleState.collectAsState()
-
-   // val articleUIModel = ArticleUIModel(
-    //    title = articleScreenState.articleTitle,
-     //   content = articleScreenState.articleContent,
-     //   publishDate = articleScreenState.publishDate,
-      //  category = articleScreenState.category,
-      //  imagePath = articleScreenState.imagePath,
-     //   isLoaded = articleScreenState.isLoaded
-    //)
-    ArticleScreenContent()
+    ArticleScreenContent(article,navController)
+    //AlertExample()
 
 
 
@@ -77,15 +74,23 @@ fun ArticleScreen(
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ArticleScreenContent(
-  //  articleUIModel: ArticleUIModel
+    article:ArticleResponseType,
+    navController: NavController
 ) {
+    var fontSize by rememberSaveable {
+        mutableIntStateOf(16)
+    }
 
     Scaffold(
         topBar = {
-            ArticleToolbar()
+            ArticleToolbar(
+                onTextFontMinusClicked = {fontSize--},
+                onTextFontPlusClicked = {fontSize++},
+                navController = navController
+            )
         },
         content = {
-            ArticleContent()
+            ArticleContent(article,fontSize)
         }
     )
 
@@ -97,7 +102,13 @@ fun ArticleScreenContent(
 
 
 @Composable
-fun ArticleToolbar() {
+fun ArticleToolbar(
+    onTextFontPlusClicked:()->Unit,
+    onTextFontMinusClicked:()->Unit,
+    navController: NavController
+
+
+) {
     TopAppBar(
         elevation = 0.dp, // Kenarlık kalınlığını sıfıra ayarlar
         backgroundColor = Color.Transparent,
@@ -108,7 +119,12 @@ fun ArticleToolbar() {
                 Icon(
                     painter = painterResource(id = R.drawable.return_back_icon),
                     contentDescription = "Geri",
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50.dp))
+                        .size(32.dp)
+                        .clickable {
+                            navController.popBackStack()
+                        }
 
 
                 )
@@ -118,8 +134,39 @@ fun ArticleToolbar() {
             // Kaydetme ve Paylaşma düğmeleri
             IconButton(onClick = { /* Kaydetme işlemi */ }) {
                 Icon(
+                    painter = painterResource(id = R.drawable.text_size_minus),
+                    contentDescription = "Play",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50.dp))
+                        .size(32.dp)
+                        .clickable { onTextFontMinusClicked() },
+
+
+                )
+            }
+
+            IconButton(onClick = { /* Kaydetme işlemi */ }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.text_size_plus),
+                    contentDescription = "Play",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50.dp))
+                        .size(32.dp)
+                        .clickable { onTextFontPlusClicked() }
+
+
+
+                )
+            }
+
+
+
+
+
+            IconButton(onClick = { /* Kaydetme işlemi */ }) {
+                Icon(
                     painter = painterResource(id = R.drawable.play_icon),
-                    contentDescription = "Geri",
+                    contentDescription = "Play",
                     modifier = Modifier.size(24.dp)
 
 
@@ -128,7 +175,7 @@ fun ArticleToolbar() {
             IconButton(onClick = { /* Paylaşma işlemi */ }) {
                 Icon(
                     painter = painterResource(id = R.drawable.shareicon),
-                    contentDescription = "Geri",
+                    contentDescription = "Share",
                     modifier = Modifier.size(24.dp)
 
 
@@ -138,7 +185,7 @@ fun ArticleToolbar() {
             IconButton(onClick = { /* Paylaşma işlemi */ }) {
                 Icon(
                     painter = painterResource(id = R.drawable.three_dots_icon),
-                    contentDescription = "Geri",
+                    contentDescription = "Additional",
                     modifier = Modifier.size(24.dp)
 
 
@@ -149,7 +196,10 @@ fun ArticleToolbar() {
 }
 
 @Composable
-fun ArticleContent() {
+fun ArticleContent(
+    article:ArticleResponseType,
+    fontSize:Int
+) {
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -158,11 +208,11 @@ fun ArticleContent() {
     ) {
 
         AsyncImage(
-            model = "https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg?t=st=1715796090~exp=1715799690~hmac=28425ab14b9885e337250e319592a26e80f70b31890dd23a6a853f73b6341027&w=1060", // yer tutucu görüntü
+            model = article.imagePath,
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .aspectRatio(1.5f)
                 .clip(RoundedCornerShape(8.dp)),
             contentScale = ContentScale.Fit
         )
@@ -170,13 +220,13 @@ fun ArticleContent() {
         Spacer(modifier = Modifier.height(16.dp))
 
         //HtmlText(article.content)
-        MinimalExampleContent()
+        MinimalExampleContent(article.content,fontSize)
     }
 }
 @Preview(showBackground = true)
 @Composable
 private fun ArticleScreenContentPreview() {
-    ArticleScreenContent()
+    //ArticleScreenContent()
 
 }
 
@@ -188,6 +238,60 @@ fun HtmlText(html: String, modifier: Modifier = Modifier) {
         update = { it.text = HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_COMPACT) }
     )
 }
+
+
+
+
+@Composable
+fun MinimalExampleContent(
+    articleContent:String,
+    fontSize :Int =16
+) {
+    MarkdownText(
+        fontSize = fontSize.sp,
+        markdown = articleContent,
+        modifier = Modifier.fillMaxSize()
+
+
+
+    )
+}
+
+@Composable
+fun AlertExample() {
+    AlertDialog(
+        onDismissRequest = { /*showDialog = false*/ },
+        title = { Text(text = "Title") },
+        text = { Text("This is the content of the pop-up.") },
+        confirmButton = {
+            Button(onClick = { /*showDialog = false*/ }) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            Button(onClick = {/* showDialog = false*/ }) {
+                Text("Cancel")
+            }
+        })
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 val markdownContent = """  
 An h1 header
@@ -333,14 +437,12 @@ term/definition pair to spread things out more.)
 Here's a "line block":
 
 | Line one
-|   Line too
+| Line too
 | Line tree
 
 and images can be specified like so:
 
 ![example image](example-image.jpg "An exemplary image")
-
-Inline math equations go in like so: ${'$'}\omega = d\phi / dt${'$'}. Display
 math should get its own line and be put in in double-dollarsigns:
 
 
@@ -348,18 +450,6 @@ And note that you can backslash-escape any punctuation characters
 which you wish to be displayed literally, ex.: \`foo\`, \*bar\*, etc.
 
 """
-
-
-@Composable
-fun MinimalExampleContent() {
-    MarkdownText(
-        markdown = markdownContent,
-        modifier = Modifier.fillMaxSize()
-
-
-
-    )
-}
 
 
 

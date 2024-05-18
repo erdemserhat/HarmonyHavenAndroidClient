@@ -3,6 +3,8 @@ plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
     id("com.google.dagger.hilt.android")
+    id ("kotlin-parcelize")
+
     id("org.jetbrains.kotlin.android")
     //id("com.google.devtools.ksp")
     kotlin("kapt")
