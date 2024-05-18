@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
                     SetupNavGraph(
 
                         navController = navController,
-                        startDestination = if (isFirstLaunch) Screen.Welcome.route else Screen.Home.route,
+                        startDestination = if (isFirstLaunch) Screen.Welcome.route else Screen.Login.route,
                         modifier = Modifier.padding(paddingValues) // Padding değerlerini burada kullanın
                     )
                     // Uygulama başlatıldığında isFirstLaunch değerini false olarak ayarlama
