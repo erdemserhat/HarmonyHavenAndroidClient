@@ -1,7 +1,15 @@
 package com.erdemserhat.harmonyhaven.presentation.home
 
+import android.os.Bundle
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -68,12 +76,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
 import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category
 import com.erdemserhat.harmonyhaven.presentation.appcomponents.items
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.util.AppColors
 import com.erdemserhat.harmonyhaven.util.DefaultAppFont
@@ -102,6 +112,7 @@ fun HomeScreenContentNew(
         mutableStateOf(false)
     }
 
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -124,19 +135,49 @@ fun HomeScreenContentNew(
             isKeyboardVisible = WindowInsets.isImeVisible
         }
 
-        if(isFocusedSearchBar && isKeyboardVisible){
-            items(articles){filteredArticles->
-                Column() {
-                    //List here
-                    SearchingItem(filteredArticles)
-                    Spacer(modifier = Modifier.size(10.dp))
-
-
-                }
-
-
-
+        // Durum kontrolü
+        if (isFocusedSearchBar && isKeyboardVisible) {
+            val filteredArticles = articles.filter {
+                it.title.contains(query, ignoreCase = true) ||
+                        it.content.contains(query, ignoreCase = true) ||
+                        it.contentPreview.contains(query, ignoreCase = true)
             }
+            items(filteredArticles) { filteredArticle ->
+                var isVisible by remember { mutableStateOf(false) }
+                LaunchedEffect(Unit) {
+                    isVisible = true
+                }
+                    AnimatedVisibility(
+                        visible = isVisible,
+                        enter = expandVertically(
+                            animationSpec = tween(
+                                durationMillis = 300,
+                                easing = FastOutSlowInEasing
+                            )
+                        ) + fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 300,
+                                easing = FastOutSlowInEasing
+                            )
+                        ),
+                        exit = shrinkVertically(
+                            animationSpec = tween(
+                                durationMillis = 300,
+                                easing = FastOutSlowInEasing
+                            )
+                        ) + fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 300,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
+                    ) {
+                        Column {
+                            SearchingItem(filteredArticle)
+                            Spacer(modifier = Modifier.size(10.dp))
+                        }
+                    }
+                }
 
 
         }else{
@@ -150,7 +191,16 @@ fun HomeScreenContentNew(
             items(articles) { article ->
                 Article(
                     article,
-                    onReadButtonClicked ={navController.navigate(Screen.Article.route)}
+                    onReadButtonClicked = {
+                        //normal parcelable data
+                        val bundle = Bundle()
+                        bundle.putParcelable("article", article)
+                        navController.navigate(
+                            route = Screen.Article.route,
+                            args = bundle
+                        )
+
+                    }
 
                 )
 
@@ -263,6 +313,7 @@ fun SearchBarWithIcon(
         horizontalArrangement = Arrangement.Center
 
     ) {
+        Spacer(modifier = Modifier.size(25.dp))
         Image(
             painter = painterResource(id = R.drawable.serch1),
             contentDescription = "Search Icon",
@@ -281,117 +332,109 @@ fun SearchBarWithIcon(
             ),
             keyboardActions = KeyboardActions(onSearch = { onSearch() }),
             modifier = Modifier
-                .background(Color.Transparent)
-                .onFocusChanged {
-                    onActiveChange(it.isFocused)
+                    .background(Color.Transparent)
+                    .fillMaxWidth()
+                    .onFocusChanged {
+                        onActiveChange(it.isFocused)
 
-                },
-            colors = colors
-        )
-
-
-    }
-}
+                    },
+                colors = colors
+            )
 
 
-@Composable
-fun Article(
-    article: ArticleResponseType,
-    modifier: Modifier = Modifier,
-    onReadButtonClicked: () -> Unit = {},
-
-    ) {
-    var shouldShowShimmer by rememberSaveable {
-        mutableStateOf(true)
+        }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 30.dp)
-            .background(
-                color = Color.Transparent,
-                shape = RoundedCornerShape(15.dp),
 
-                )
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(bounded = true, radius = 100.dp)
-            ) { onReadButtonClicked() },
-        contentAlignment = Alignment.Center
-
-    ) {
-        Card(
-            modifier = Modifier
-                .clip(shape = RoundedCornerShape(16.dp))
-                .fillMaxWidth(0.9f)// Köşeleri yuvarla ve 16dp'lik yarıçapa sahip olacak şekilde kırp
+    @Composable
+    fun Article(
+        article: ArticleResponseType,
+        modifier: Modifier = Modifier,
+        onReadButtonClicked: () -> Unit = {},
 
         ) {
+        var shouldShowShimmer by rememberSaveable {
+            mutableStateOf(true)
+        }
 
-            AsyncImage(
-                model = article.imagePath,
-                contentDescription = null,
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 30.dp)
+                .background(
+                    color = Color.Transparent,
+                    shape = RoundedCornerShape(15.dp),
+
+                    )
+                ,
+            contentAlignment = Alignment.Center
+
+        ) {
+            Card(
                 modifier = Modifier
-                    .fillMaxWidth(1f)
-                    .fillMaxHeight(1f)
-                    .aspectRatio(2f) // // Genişlik / Yükseklik oranı 1.5
-                    .align(Alignment.CenterHorizontally),
-                onSuccess = { shouldShowShimmer = false },
-                contentScale = ContentScale.FillBounds
-            )
-            Text(
-                text = "The future of backend is Kotlin",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = DefaultAppFont,
-                color = harmonyHavenDarkGreenColor,
-                modifier = Modifier
-                    .padding(start = 10.dp, top = 10.dp)
-                    .align(Alignment.Start),
-                overflow = TextOverflow.Ellipsis
-            )
 
+                    .clip(shape = RoundedCornerShape(16.dp))
+                    .fillMaxWidth(0.9f)// Köşeleri yuvarla ve 16dp'lik yarıçapa sahip olacak şekilde kırp
+                    .clickable(
+                    ) { onReadButtonClicked() }
 
-
-            Text(
-                text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc lobortis venenatis nulla quis lobortis. Vivamus pharetra odio id lectus tristique, ac fermentum odio eleifend. Morbi quis mattis nisi, eget euismod odio.",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                fontFamily = DefaultAppFont,
-                color = harmonyHavenDarkGreenColor,
-                modifier = Modifier
-                    .padding(10.dp)
-                    .align(Alignment.Start),
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Button(
-                onClick = { },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.Black
-
-                ),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(end = 5.dp)
-                    .background(color = Color.Transparent)
             ) {
-                Text(
-                    text = "Read More...",
-                    fontFamily = DefaultAppFont,
-                    fontWeight = FontWeight.Bold
 
+                AsyncImage(
+                    model = article.imagePath,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .fillMaxHeight(1f)
+                        .aspectRatio(2f) // // Genişlik / Yükseklik oranı 1.5
+                        .align(Alignment.CenterHorizontally),
+                    onSuccess = { shouldShowShimmer = false },
+                    contentScale = ContentScale.FillBounds
                 )
-            }
+                Text(
+                    text = article.title,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = DefaultAppFont,
+                    color = harmonyHavenDarkGreenColor,
+                    modifier = Modifier
+                        .padding(start = 10.dp, top = 10.dp)
+                        .align(Alignment.Start),
+                    overflow = TextOverflow.Ellipsis
+                )
+
+
+
+                Text(
+                    text = article.contentPreview,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = DefaultAppFont,
+                    color = harmonyHavenDarkGreenColor,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .align(Alignment.Start),
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                    Text(
+                        text = "Read More...",
+                        fontFamily = DefaultAppFont,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(20.dp)
+                            .background(color = Color.Transparent)
+
+                    )
+                }
+
+
+
 
         }
 
-
     }
-
-}
 /**
 
 @Composable
@@ -635,7 +678,7 @@ fun SearchingItem(
                     .fillMaxHeight(0.1f)
                     .background(Color(0xFFE0E0E0), shape = RoundedCornerShape(15.dp))
                     .clip(RoundedCornerShape(15.dp))
-                    .clickable {  }
+                    .clickable { }
                     
 
             
@@ -658,15 +701,19 @@ fun SearchingItem(
                         text = article.title,
                         fontFamily = DefaultAppFont,
                         fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.align(Alignment.Start).padding(start = 5.dp,end=5.dp)
+                        modifier = Modifier
+                            .align(Alignment.Start)
+                            .padding(start = 5.dp, end = 5.dp)
 
 
                     )
                     Text(
-                        text = article.content,
+                        text = article.contentPreview,
                         fontFamily = DefaultAppFont,
                         fontWeight = FontWeight.ExtraLight,
-                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(start = 5.dp,end=5.dp),
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(start = 5.dp, end = 5.dp),
                         maxLines = 3
 
 
@@ -703,3 +750,5 @@ fun generateMockArticles(count: Int): List<ArticleResponseType> {
 
     return articles
 }
+
+

@@ -11,6 +11,7 @@ data class ArticleEntity(
     val id: Int,
     val title: String,
     val content: String,
+    val contentPreview:String,
     val publishDate: String,
     val categoryId:Int,
     val imagePath:String,
@@ -19,6 +20,6 @@ data class ArticleEntity(
 
 fun ArticleEntity.toArticle():Article{
     return Article(
-        id, title, content,publishDate,categoryId,imagePath
+        id, title, content,contentPreview,publishDate,categoryId,imagePath
     )
 }
