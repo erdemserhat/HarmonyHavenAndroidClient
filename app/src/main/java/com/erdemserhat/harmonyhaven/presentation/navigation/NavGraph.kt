@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.presentation.navigation
 
+import AccountInformationScreen
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
@@ -8,28 +9,16 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
-import androidx.navigation.NavType
 import androidx.navigation.Navigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.erdemserhat.harmonyhaven.domain.model.rest.Article
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
-import com.erdemserhat.harmonyhaven.presentation.article.ArticleContent
 import com.erdemserhat.harmonyhaven.presentation.article.ArticleScreen
-import com.erdemserhat.harmonyhaven.presentation.home.HomeScreenContentNew
 import com.erdemserhat.harmonyhaven.presentation.home.HomeScreenNew
-import com.erdemserhat.harmonyhaven.presentation.home.HomeViewModel
-import com.erdemserhat.harmonyhaven.presentation.home.MostReadArticleDev
-import com.erdemserhat.harmonyhaven.presentation.home.MostReadHorizontalPagerDev
 import com.erdemserhat.harmonyhaven.presentation.login.LoginScreen
 import com.erdemserhat.harmonyhaven.presentation.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.passwordreset.mail.ForgotPasswordMailScreen
@@ -37,9 +26,7 @@ import com.erdemserhat.harmonyhaven.presentation.profile.ProfileScreen
 import com.erdemserhat.harmonyhaven.presentation.quotes.QuotesScreen
 import com.erdemserhat.harmonyhaven.presentation.register.RegisterScreen
 import com.erdemserhat.harmonyhaven.presentation.settings.SettingsScreen
-import com.erdemserhat.harmonyhaven.presentation.splash.SplashScreen
 import com.erdemserhat.harmonyhaven.presentation.welcome.WelcomeScreen
-import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalFoundationApi::class)
@@ -82,6 +69,10 @@ fun SetupNavGraph(
             //ForgotPasswordResetScreen(navController = navController)
         }
 
+        composable(route = Screen.Profile.route) {
+            AccountInformationScreen()
+        }
+
 
         composable(
             route = Screen.Home.route,
@@ -110,7 +101,7 @@ fun SetupNavGraph(
 
         }
 
-        composable(route = Screen.Profile.route,
+        composable(route = Screen.Settings.route,
             enterTransition = { fadeIn(animationSpec = tween(100)) },
             exitTransition = { fadeOut(animationSpec = tween(100)) },
             popEnterTransition = { fadeIn(animationSpec = tween(100)) },

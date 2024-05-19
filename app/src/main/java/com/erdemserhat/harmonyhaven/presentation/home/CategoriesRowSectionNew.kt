@@ -39,8 +39,13 @@ import com.erdemserhat.harmonyhaven.util.AppColors
 import com.erdemserhat.harmonyhaven.util.DefaultAppFont
 
 @Composable
-fun CategoryRow(categories: List<Category>, onCategoryClick: (Category) -> Unit) {
-    val selectedCategoryId = rememberSaveable { mutableIntStateOf(0) }
+fun CategoryRow(
+    categories: List<Category>,
+    onCategoryClick: (Category) -> Unit,
+    selectedCategoryId:Int,
+
+
+) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -72,9 +77,8 @@ fun CategoryRow(categories: List<Category>, onCategoryClick: (Category) -> Unit)
             items(categories) { category ->
                 CategoryItem(
                     category = category,
-                    isSelected = selectedCategoryId.intValue == category.id,
+                    isSelected = selectedCategoryId == category.id,
                     onItemClick = {
-                        selectedCategoryId.intValue = category.id
                         onCategoryClick(category)
                     }
                 )
@@ -154,10 +158,10 @@ private fun CategoriesRowSectionPreview() {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        CategoryRow(categories = categories) { selectedCategory ->
-            // Handle category selection here
-            println("Selected category: ${selectedCategory.name}")
-        }
+       // CategoryRow(categories = categories) { selectedCategory ->
+          //  // Handle category selection here
+         //   println("Selected category: ${selectedCategory.name}")
+      //  }
 
     }
 
@@ -183,14 +187,14 @@ fun CategoriesPrototype() {
 
 
 
-    Column(
+    //Column(
 
-    ) {
-        CategoryRow(categories = categories) { selectedCategory ->
-            // Handle category selection here
-            println("Selected category: ${selectedCategory.name}")
-        }
+ //   ) {
+     //   CategoryRow(categories = categories) { selectedCategory ->
+   //         // Handle category selection here
+      //      println("Selected category: ${selectedCategory.name}")
+      //  }
 
-    }
+   // }
 
 }
