@@ -96,7 +96,6 @@ dependencies {
     implementation("androidx.compose.ui:ui") // Jetpack Compose UI components.
     implementation("androidx.compose.ui:ui-graphics") // Jetpack Compose graphic components.
     implementation("androidx.compose.ui:ui-tooling-preview") // Preview tools for Jetpack Compose.
-    implementation("androidx.compose.material3:material3") // Jetpack Compose Material3 components.
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00")) // BOM (Bill of Materials) for Jetpack Compose libraries.
     debugImplementation("androidx.compose.ui:ui-tooling") // Developer tools for Jetpack Compose.
     implementation("androidx.navigation:navigation-compose:2.7.7") // Android Navigation Component with Compose support.

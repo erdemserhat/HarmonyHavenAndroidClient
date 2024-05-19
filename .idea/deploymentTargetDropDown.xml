@@ -2,10 +2,22 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="AccountInformationPreview">
+        <State />
+      </entry>
+      <entry key="AlertDialogSamplePreview">
+        <State />
+      </entry>
       <entry key="ArticleScreenContentPreview">
         <State />
       </entry>
-      <entry key="Ep">
+      <entry key="PreviewPopupExample">
+        <State />
+      </entry>
+      <entry key="SettingsScreenPreview">
+        <State />
+      </entry>
+      <entry key="app">
         <State>
           <runningDeviceTargetSelectedWithDropDown>
             <Target>
@@ -13,25 +25,12 @@
               <deviceKey>
                 <Key>
                   <type value="SERIAL_NUMBER" />
-                  <value value="R52W804XR0W" />
+                  <value value="ws55vwzhs8u4hmge" />
                 </Key>
               </deviceKey>
             </Target>
           </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-05-11T17:45:00.239727900Z" />
-        </State>
-      </entry>
-      <entry key="LoginScreenPreview">
-        <State />
-      </entry>
-      <entry key="MostReadArticleDevPreview">
-        <State />
-      </entry>
-      <entry key="SearchButtonPreview">
-        <State />
-      </entry>
-      <entry key="app">
-        <State>
+          <timeTargetWasSelectedWithDropDown value="2024-05-19T18:00:56.463425600Z" />
           <runningDeviceTargetsSelectedWithDialog>
             <Target>
               <type value="RUNNING_DEVICE_TARGET" />
