@@ -111,6 +111,8 @@ fun HomeScreenContentNew(
     var isKeyboardVisible by remember {
         mutableStateOf(false)
     }
+    var selectedCategoryId = rememberSaveable { mutableIntStateOf(0) }
+
 
 
     LazyColumn(
@@ -147,45 +149,51 @@ fun HomeScreenContentNew(
                 LaunchedEffect(Unit) {
                     isVisible = true
                 }
-                    AnimatedVisibility(
-                        visible = isVisible,
-                        enter = expandVertically(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = FastOutSlowInEasing
-                            )
-                        ) + fadeIn(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = FastOutSlowInEasing
-                            )
-                        ),
-                        exit = shrinkVertically(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = FastOutSlowInEasing
-                            )
-                        ) + fadeOut(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = FastOutSlowInEasing
-                            )
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = expandVertically(
+                        animationSpec = tween(
+                            durationMillis = 300,
+                            easing = FastOutSlowInEasing
                         )
-                    ) {
-                        Column {
-                            SearchingItem(filteredArticle)
-                            Spacer(modifier = Modifier.size(10.dp))
-                        }
+                    ) + fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 300,
+                            easing = FastOutSlowInEasing
+                        )
+                    ),
+                    exit = shrinkVertically(
+                        animationSpec = tween(
+                            durationMillis = 300,
+                            easing = FastOutSlowInEasing
+                        )
+                    ) + fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 300,
+                            easing = FastOutSlowInEasing
+                        )
+                    )
+                ) {
+                    Column {
+                        SearchingItem(filteredArticle,navController)
+                        Spacer(modifier = Modifier.size(10.dp))
                     }
                 }
+            }
 
 
-        }else{
+        } else {
             item {
-                CategoryRow(categories = categories) { selectedCategory ->
-                    onCategorySelected(selectedCategory)
+                CategoryRow(
+                    categories = categories,
+                    selectedCategoryId = selectedCategoryId.intValue,
+                    onCategoryClick = { category ->
+                        onCategorySelected(category)
+                        selectedCategoryId.intValue = category.id
 
-                }
+                    }
+
+                )
             }
 
             items(articles) { article ->
@@ -205,7 +213,6 @@ fun HomeScreenContentNew(
                 )
 
 
-
             }
 
 
@@ -214,9 +221,7 @@ fun HomeScreenContentNew(
     }
 
 
-
 }
-
 
 
 @Preview(showBackground = true)
@@ -332,109 +337,107 @@ fun SearchBarWithIcon(
             ),
             keyboardActions = KeyboardActions(onSearch = { onSearch() }),
             modifier = Modifier
-                    .background(Color.Transparent)
-                    .fillMaxWidth()
-                    .onFocusChanged {
-                        onActiveChange(it.isFocused)
+                .background(Color.Transparent)
+                .fillMaxWidth()
+                .onFocusChanged {
+                    onActiveChange(it.isFocused)
 
-                    },
-                colors = colors
+                },
+            colors = colors
+        )
+
+
+    }
+}
+
+
+@Composable
+fun Article(
+    article: ArticleResponseType,
+    modifier: Modifier = Modifier,
+    onReadButtonClicked: () -> Unit = {},
+
+    ) {
+    var shouldShowShimmer by rememberSaveable {
+        mutableStateOf(true)
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 30.dp)
+            .background(
+                color = Color.Transparent,
+                shape = RoundedCornerShape(15.dp),
+
+                ),
+        contentAlignment = Alignment.Center
+
+    ) {
+        Card(
+            modifier = Modifier
+
+                .clip(shape = RoundedCornerShape(16.dp))
+                .fillMaxWidth(0.9f)// Köşeleri yuvarla ve 16dp'lik yarıçapa sahip olacak şekilde kırp
+                .clickable(
+                ) { onReadButtonClicked() }
+
+        ) {
+
+            AsyncImage(
+                model = article.imagePath,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .fillMaxHeight(1f)
+                    .aspectRatio(2f) // // Genişlik / Yükseklik oranı 1.5
+                    .align(Alignment.CenterHorizontally),
+                onSuccess = { shouldShowShimmer = false },
+                contentScale = ContentScale.FillBounds
+            )
+            Text(
+                text = article.title,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = DefaultAppFont,
+                color = harmonyHavenDarkGreenColor,
+                modifier = Modifier
+                    .padding(start = 10.dp, top = 10.dp)
+                    .align(Alignment.Start),
+                overflow = TextOverflow.Ellipsis
             )
 
 
-        }
-    }
 
-
-    @Composable
-    fun Article(
-        article: ArticleResponseType,
-        modifier: Modifier = Modifier,
-        onReadButtonClicked: () -> Unit = {},
-
-        ) {
-        var shouldShowShimmer by rememberSaveable {
-            mutableStateOf(true)
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 30.dp)
-                .background(
-                    color = Color.Transparent,
-                    shape = RoundedCornerShape(15.dp),
-
-                    )
-                ,
-            contentAlignment = Alignment.Center
-
-        ) {
-            Card(
+            Text(
+                text = article.contentPreview,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                fontFamily = DefaultAppFont,
+                color = harmonyHavenDarkGreenColor,
                 modifier = Modifier
+                    .padding(10.dp)
+                    .align(Alignment.Start),
+                overflow = TextOverflow.Ellipsis
+            )
 
-                    .clip(shape = RoundedCornerShape(16.dp))
-                    .fillMaxWidth(0.9f)// Köşeleri yuvarla ve 16dp'lik yarıçapa sahip olacak şekilde kırp
-                    .clickable(
-                    ) { onReadButtonClicked() }
+            Text(
+                text = "Read More...",
+                fontFamily = DefaultAppFont,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(20.dp)
+                    .background(color = Color.Transparent)
 
-            ) {
-
-                AsyncImage(
-                    model = article.imagePath,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth(1f)
-                        .fillMaxHeight(1f)
-                        .aspectRatio(2f) // // Genişlik / Yükseklik oranı 1.5
-                        .align(Alignment.CenterHorizontally),
-                    onSuccess = { shouldShowShimmer = false },
-                    contentScale = ContentScale.FillBounds
-                )
-                Text(
-                    text = article.title,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = DefaultAppFont,
-                    color = harmonyHavenDarkGreenColor,
-                    modifier = Modifier
-                        .padding(start = 10.dp, top = 10.dp)
-                        .align(Alignment.Start),
-                    overflow = TextOverflow.Ellipsis
-                )
-
-
-
-                Text(
-                    text = article.contentPreview,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontFamily = DefaultAppFont,
-                    color = harmonyHavenDarkGreenColor,
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .align(Alignment.Start),
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                    Text(
-                        text = "Read More...",
-                        fontFamily = DefaultAppFont,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .align(Alignment.End)
-                            .padding(20.dp)
-                            .background(color = Color.Transparent)
-
-                    )
-                }
-
-
-
-
+            )
         }
 
+
     }
+
+}
+
 /**
 
 @Composable
@@ -665,61 +668,69 @@ article = articleList[page], modifier = Modifier.fillMaxSize()
 @Preview(showBackground = true)
 @Composable
 private fun SearchingItemPreview() {
-    SearchingItem(generateMockArticles(1)[0])
+    //SearchingItem(generateMockArticles(1)[0])
 }
 
 @Composable
 fun SearchingItem(
-    article: ArticleResponseType
+    article: ArticleResponseType,
+    navController: NavController
 ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .fillMaxHeight(0.1f)
-                    .background(Color(0xFFE0E0E0), shape = RoundedCornerShape(15.dp))
-                    .clip(RoundedCornerShape(15.dp))
-                    .clickable { }
-                    
-
-            
-            ){
-                AsyncImage(
-                    model = article.imagePath,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .weight(0.3f)
-                        .clip(shape = RoundedCornerShape(15.dp, 0.dp, 0.dp, 15.dp))
-                        .aspectRatio(1.5f) // // Genişlik / Yükseklik oranı 1.5
-                    ,
-                    contentScale = ContentScale.FillBounds
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(0.9f)
+            .fillMaxHeight(0.1f)
+            .background(Color(0xFFE0E0E0), shape = RoundedCornerShape(15.dp))
+            .clip(RoundedCornerShape(15.dp))
+            .clickable { //normal parcelable data
+                val bundle = Bundle()
+                bundle.putParcelable("article", article)
+                navController.navigate(
+                    route = Screen.Article.route,
+                    args = bundle
                 )
 
-                Column(
-                    modifier = Modifier.weight(0.5f)
-                ) {
-                    Text(
-                        text = article.title,
-                        fontFamily = DefaultAppFont,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier
-                            .align(Alignment.Start)
-                            .padding(start = 5.dp, end = 5.dp)
+             }
 
 
-                    )
-                    Text(
-                        text = article.contentPreview,
-                        fontFamily = DefaultAppFont,
-                        fontWeight = FontWeight.ExtraLight,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(start = 5.dp, end = 5.dp),
-                        maxLines = 3
+    ) {
+        AsyncImage(
+            model = article.imagePath,
+            contentDescription = null,
+            modifier = Modifier
+                .weight(0.3f)
+                .clip(shape = RoundedCornerShape(15.dp, 0.dp, 0.dp, 15.dp))
+                .aspectRatio(1.5f) // // Genişlik / Yükseklik oranı 1.5
+            ,
+            contentScale = ContentScale.FillBounds
+        )
+
+        Column(
+            modifier = Modifier.weight(0.5f)
+        ) {
+            Text(
+                text = article.title,
+                fontFamily = DefaultAppFont,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(start = 5.dp, end = 5.dp)
 
 
-                    )
-                }
-            }
+            )
+            Text(
+                text = article.contentPreview,
+                fontFamily = DefaultAppFont,
+                fontWeight = FontWeight.ExtraLight,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(start = 5.dp, end = 5.dp),
+                maxLines = 3
+
+
+            )
+        }
+    }
 
 
 }
