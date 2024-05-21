@@ -77,7 +77,7 @@ dependencies {
     //Android Core Dependencies
 
     implementation("androidx.appcompat:appcompat:1.6.1") // AndroidX AppCompat library to make new Android features available on older Android versions.
-    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.core:core-ktx:1.13.1")
     implementation("com.google.firebase:firebase-messaging-ktx:23.4.1")
 
     //Test Dependencies
@@ -91,8 +91,8 @@ dependencies {
 
     implementation("androidx.compose.material3:material3") // Jetpack Compose Material3 components.
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0") // Android Jetpack Lifecycle components.
-    implementation("androidx.activity:activity-compose:1.8.2") // AndroidX Activity Compose library for building Android activities with Jetpack Compose.
-    implementation(platform("androidx.compose:compose-bom:2023.08.00")) // BOM (Bill of Materials) for Jetpack Compose libraries.
+    implementation("androidx.activity:activity-compose:1.9.0") // AndroidX Activity Compose library for building Android activities with Jetpack Compose.
+    implementation(platform("androidx.compose:compose-bom:2024.05.00")) // BOM (Bill of Materials) for Jetpack Compose libraries.
     implementation("androidx.compose.ui:ui") // Jetpack Compose UI components.
     implementation("androidx.compose.ui:ui-graphics") // Jetpack Compose graphic components.
     implementation("androidx.compose.ui:ui-tooling-preview") // Preview tools for Jetpack Compose.
@@ -104,7 +104,7 @@ dependencies {
 
     implementation ("com.google.accompanist:accompanist-pager:0.24.7-alpha") // Accompanist Pager library for providing paging functionality.
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.24.7-alpha") // Accompanist Pager Indicators library for providing paging indicators.
-    implementation("androidx.paging:paging-common-android:3.3.0-alpha03") // AndroidX Paging library to extend RecyclerViews with paging capabilities.
+    implementation("androidx.paging:paging-common-android:3.3.0") // AndroidX Paging library to extend RecyclerViews with paging capabilities.
 
     //Room Database
     //2.5.0 is compatible with ksp
@@ -165,7 +165,7 @@ dependencies {
 
     implementation ("com.google.code.gson:gson:2.10.1")
 
-    implementation ("com.google.android.material:material:1.4.0")
+    implementation ("com.google.android.material:material:1.12.0")
 
     implementation("androidx.core:core-splashscreen:1.0.1")
 

@@ -1,7 +1,10 @@
+import android.annotation.SuppressLint
 import android.support.v4.os.IResultReceiver.Default
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -12,11 +15,15 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,7 +83,11 @@ fun AccountInformationContent() {
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.5f))
-                .clickable { shouldShowUpdateNamePopUp = false }, // To dismiss the popup when clicking outside
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        shouldShowUpdateNamePopUp = false
+                    })
+                }, // To dismiss the popup when clicking outside
             contentAlignment = Alignment.BottomCenter
 
         ) {
@@ -86,7 +97,11 @@ fun AccountInformationContent() {
                 }
             )
         }
+
+
     }
+
+
 }
 
 
@@ -241,71 +256,79 @@ fun PopupExample(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var text by rememberSaveable { mutableStateOf("Serhat Erdem") }
+    val textState = remember {
+        mutableStateOf(TextFieldValue("Serhat ERDEM"))
+    }
 
     // FocusRequester ve KeyboardController'ı tanımlayın
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    // Popup gösterildiğinde TextField'ı odaklamak ve klavyeyi açmak için LaunchedEffect kullanın
+    // LaunchedEffect içindeki işlemler
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
         keyboardController?.show()
     }
 
-        Popup(
-            alignment = Alignment.BottomCenter,
-            onDismissRequest = {
-                onDismissRequest()
-
-            },
-            properties = PopupProperties(
-                focusable = true
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .background(Color.White)
+            .padding(16.dp)
+            .focusable(true)
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(modifier = Modifier.size(10.dp))
+            Text(
+                text = "Enter your name",
+                modifier = Modifier.align(Alignment.Start),
+                fontFamily = DefaultAppFont,
+                fontWeight = FontWeight.SemiBold
             )
-        ) {
-            Box(
-                modifier = modifier
+            Spacer(modifier = Modifier.size(20.dp))
+            TextField(
+                value = textState.value,
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent
+                ),
+                onValueChange = { text ->
+                    // Metin değiştiğinde, metnin tamamını seçili hale getir
+                    textState.value = text
+                },
+                modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(16.dp)
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Spacer(modifier = Modifier.size(10.dp))
-                    Text(text = "Enter your name",modifier = Modifier.align(Alignment.Start),
-                        fontFamily = DefaultAppFont, fontWeight = FontWeight.SemiBold)
-                    Spacer(modifier = Modifier.size(20.dp))
-                    TextField(
-                        value = text,
-                        colors =  TextFieldDefaults.textFieldColors(
-                            backgroundColor = Color.Transparent
-                        ),
-                        onValueChange = { text = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester)  // FocusRequester'ı ekleyin
-                            .clickable {
-                                focusRequester.requestFocus()  // Tıklama olayında odaklanma
-                                keyboardController?.show()  // Klavyeyi açma
-                            }
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(modifier = Modifier.align(Alignment.End)) {
-                        Button(
-                            onClick = { /* TODO: Save action */ }
-                        ) {
-                            Text(text = "Save")
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(onClick = {
-                        }) {
-                            Text(text = "Cancel")
-                        }
-                    }
-                }
+                    .focusRequester(focusRequester)
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused) {
+                            val text = textState.value.text
+                            textState.value = textState.value.copy(
+                                selection = TextRange(0, text.length)
+                            )
 
+
+                        }
+                        keyboardController?.show()  // Klavyeyi açma
+                    }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(modifier = Modifier.align(Alignment.End)) {
+                Button(
+                    onClick = { /* TODO: Save action */ }
+                ) {
+                    Text(text = "Save")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(onClick = {
+                    onDismissRequest()
+                }) {
+                    Text(text = "Cancel")
+                }
+            }
         }
     }
 }
+
 @Composable
 @Preview
 fun PreviewPopupExample() {
