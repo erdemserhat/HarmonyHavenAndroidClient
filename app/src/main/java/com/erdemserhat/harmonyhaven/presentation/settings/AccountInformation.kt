@@ -1,13 +1,12 @@
-import android.annotation.SuppressLint
-import android.support.v4.os.IResultReceiver.Default
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -16,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
@@ -27,8 +27,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.util.DefaultAppFont
 
@@ -65,13 +63,97 @@ fun AccountInformationContent() {
                     .padding(it)
                     .fillMaxSize()
             ) {
-                UpdateFieldRow(
-                    painterResourceId = R.drawable.profile_svgrepo_com,
-                    fieldName = "Name",
-                    currentValue = "Serhat Erdem",
-                    note = "This is not your username or pin. This name will be used in notifications and articles to call you.",
-                    onUpdateFieldRowClicked = { shouldShowUpdateNamePopUp = true }
-                )
+
+                Column(
+                    modifier =
+                    Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                ) {
+
+                    RowElement(
+                        modifier = Modifier,
+                        title = "Name",
+                        titleIcon = R.drawable.profile_svgrepo_com,
+                        text = "Serhat",
+                        shouldShowActionIcon = true,
+                        actionIcon = R.drawable.edit_svgrepo_com__1_,
+                        actionIconModifier = Modifier.size(45.dp),
+
+                        extraText = "This is not your username or pin. This name will be used in notification and articles to call you.",
+                        shouldShowExtraText = true,
+                        onRowElementClicked = { shouldShowUpdateNamePopUp = true },
+                    )
+
+                    RowDividingLine(modifier = Modifier.align(Alignment.CenterHorizontally))
+
+                    RowElement(
+                        modifier = Modifier,
+                        title = "E-Mail",
+                        titleIcon = R.drawable.email_svgrepo_com,
+                        text = "me.serhaterdem@gmail.com",
+                        shouldShowActionIcon = false,
+                        actionIcon = R.drawable.edit_svgrepo_com,
+                        extraText = "This is not your username or pin. This name will be used in notification and articles to call you.",
+                        shouldShowExtraText = true,
+                        onRowElementClicked = {},
+                    )
+                    RowDividingLine(modifier = Modifier.align(Alignment.CenterHorizontally))
+
+                    RowElement(
+                        modifier = Modifier,
+                        title = "Password",
+                        titleIcon = R.drawable.password_lock_solid_svgrepo_com,
+                        text = "Change your password",
+                        shouldShowActionIcon = true,
+                        actionIcon = R.drawable.right_arrow_svgrepo_com,
+                        actionIconModifier = Modifier.size(36.dp),
+                        extraText = "",
+                        shouldShowExtraText = false,
+                        onRowElementClicked = {},
+                    )
+                    RowDividingLine(modifier = Modifier.align(Alignment.CenterHorizontally))
+
+
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceEvenly,
+
+                        ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.editsection),
+                            contentDescription = null
+
+                        )
+
+                        Column(
+                            modifier = Modifier.padding(20.dp)
+                        ) {
+                            Text(
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                text = "For e-mail changes, you can write to us at ",
+                                fontFamily = DefaultAppFont,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFF5B5353)
+                            )
+
+                            Text(
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                text = "support@harmonyhaven.com",
+                                fontFamily = DefaultAppFont,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFF5FA0FF), // Metnin rengini kırmızı olarak ayarlayın
+
+                            )
+                        }
+                    }
+
+                }
+
+
             }
 
 
@@ -116,74 +198,6 @@ private fun AccountInformationPreview() {
     AccountInformationScreen()
 }
 
-@Composable
-fun UpdateFieldRow(
-    painterResourceId: Int,
-    fieldName: String,
-    currentValue: String,
-    note: String,
-    onUpdateFieldRowClicked: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .clickable { onUpdateFieldRowClicked() },
-    ) {
-        Image(
-            painter = painterResource(id = painterResourceId),
-            contentDescription = null,
-            modifier = Modifier
-                .size(45.dp)
-                .padding(start = 5.dp, top = 20.dp),
-            colorFilter = ColorFilter.tint(Color(0xFF5B5353))
-        )
-        Spacer(modifier = Modifier.size(20.dp))
-
-        Column {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = fieldName,
-                        fontFamily = DefaultAppFont,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal,
-                        color = Color(0xFF5B5353)
-                    )
-                    Text(
-                        text = currentValue,
-                        fontFamily = DefaultAppFont,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF342929)
-                    )
-                }
-                Image(
-                    painter = painterResource(id = R.drawable.edit_svgrepo_com__1_),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(45.dp)
-                        .padding(top = 20.dp, end = 20.dp),
-                    colorFilter = ColorFilter.tint(Color(0xFF00612D))
-                )
-            }
-            Spacer(modifier = Modifier.size(10.dp))
-
-            Text(
-                text = note,
-                fontFamily = DefaultAppFont,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Normal,
-                color = Color(0xFF5B5353),
-                modifier = Modifier.padding(bottom = 10.dp, end = 10.dp),
-            )
-        }
-    }
-}
 
 @Composable
 fun UpdateNamePopUp(
@@ -330,7 +344,120 @@ fun PopupExample(
 }
 
 @Composable
-@Preview
-fun PreviewPopupExample() {
-    PopupExample(onDismissRequest = {})
+fun DrawLineExample() {
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        drawLine(
+            color = Color.Black,
+            start = Offset(x = 12f, y = 12f),
+            end = Offset(x = 300f, y = 100f),
+            strokeWidth = 5f
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DrawLineExamplePreview() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        RowElement()
+    }
+
+}
+
+@Composable
+fun RowElement(
+    modifier: Modifier = Modifier,
+    title: String = "E-Mail",
+    titleIcon: Int = R.drawable.email_svgrepo_com,
+    titleModifier: Modifier = Modifier,
+    text: String = "me.serhaterdem@gmail.com",
+    shouldShowActionIcon: Boolean = true,
+    actionIcon: Int = R.drawable.edit_svgrepo_com,
+    actionIconModifier: Modifier = Modifier,
+    extraText: String = "This is not your username or pin. This name will be used in notification and articles to call you.",
+    shouldShowExtraText: Boolean = false,
+    onRowElementClicked: () -> Unit = {},
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(5.dp)
+            .clip(RoundedCornerShape(10.dp))
+
+            .clickable { onRowElementClicked() }
+    ) {
+        Image(
+            modifier = Modifier
+                .padding(12.dp)
+                .size(20.dp)
+                .align(Alignment.CenterStart),
+            painter = painterResource(id = titleIcon),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(Color(0xFF5B5353))
+        )
+
+        Text(
+            modifier = Modifier
+                .padding(start = 59.dp, top = 0.dp, bottom = 5.dp, end = 5.dp),
+            text = title,
+            fontFamily = DefaultAppFont,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Normal,
+            color = Color(0xFF5B5353)
+        )
+
+        Text(
+            modifier = Modifier
+                .padding(start = 59.dp, top = 20.dp, bottom = 5.dp, end = 5.dp),
+            text = text,
+            fontFamily = DefaultAppFont,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color(0xFF342929)
+        )
+
+        if (shouldShowExtraText)
+            Text(
+                modifier = Modifier
+                    .padding(
+                        start = 59.dp,
+                        top = 45.dp,
+                        bottom = 5.dp,
+                        end = if (shouldShowActionIcon) 44.dp else 5.dp
+                    ),
+                text = extraText,
+                fontFamily = DefaultAppFont,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color(0xFF5B5353),
+            )
+
+
+        if (shouldShowActionIcon)
+            Image(
+                modifier = actionIconModifier
+                    .padding(12.dp)
+                    .align(Alignment.CenterEnd),
+                painter = painterResource(id = actionIcon),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(Color(0xFF5FA0FF))
+            )
+
+
+    }
+}
+
+@Composable
+fun RowDividingLine(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth(0.9f)
+            .border(1.dp, Color(0xFFEDEDED))
+            .height(1.dp)
+
+    )
+
 }
