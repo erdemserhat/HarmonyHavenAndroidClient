@@ -7,7 +7,12 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.*
@@ -19,20 +24,32 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.GifDecoder
+import coil.request.ImageRequest
+import coil.size.Scale
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.util.DefaultAppFont
 
 @Composable
 fun AccountInformationContent() {
     var shouldShowUpdateNamePopUp by rememberSaveable { mutableStateOf(false) }
+    var shouldShowUpdatePasswordPopUp by rememberSaveable { mutableStateOf(false) }
+
 
     Scaffold(
         topBar = {
@@ -110,7 +127,7 @@ fun AccountInformationContent() {
                         actionIconModifier = Modifier.size(36.dp),
                         extraText = "",
                         shouldShowExtraText = false,
-                        onRowElementClicked = {},
+                        onRowElementClicked = {shouldShowUpdatePasswordPopUp=true},
                     )
                     RowDividingLine(modifier = Modifier.align(Alignment.CenterHorizontally))
 
@@ -173,7 +190,7 @@ fun AccountInformationContent() {
             contentAlignment = Alignment.BottomCenter
 
         ) {
-            PopupExample(
+            NameUpdatePopup(
                 onDismissRequest = {
                     shouldShowUpdateNamePopUp = false
                 }
@@ -182,6 +199,31 @@ fun AccountInformationContent() {
 
 
     }
+
+    if (shouldShowUpdatePasswordPopUp) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f))
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        shouldShowUpdatePasswordPopUp = false
+                    })
+                }, // To dismiss the popup when clicking outside
+            contentAlignment = Alignment.BottomCenter
+
+        ) {
+            PasswordUpdatePopup(
+                onDismissRequest = {
+                    shouldShowUpdatePasswordPopUp= false
+                }
+            )
+        }
+
+
+    }
+
+
 
 
 }
@@ -198,75 +240,8 @@ private fun AccountInformationPreview() {
     AccountInformationScreen()
 }
 
-
 @Composable
-fun UpdateNamePopUp(
-    onPositiveButtonClicked: () -> Unit = {},
-    onNegativeButtonClicked: () -> Unit = {},
-    onDismissRequest: () -> Unit = {},
-) {
-    var text by rememberSaveable {
-        mutableStateOf("")
-    }
-    val focusRequester = remember { FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-        keyboardController?.show()
-    }
-
-    AlertDialog(
-        backgroundColor = Color.White,
-        modifier = Modifier
-            .clip(RoundedCornerShape(12.dp))
-            .fillMaxWidth(),
-        onDismissRequest = { onDismissRequest() },
-        title = {
-            Text(
-                text = "Enter Your Name",
-                fontFamily = DefaultAppFont
-            )
-        },
-        text = {
-            TextField(
-                value = text,
-                onValueChange = { text = it },
-                modifier = Modifier.focusRequester(focusRequester)
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = {
-                onPositiveButtonClicked()
-            }) {
-                Text(
-                    text = "Save",
-                    color = Color.Red,
-                    fontFamily = DefaultAppFont
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                onNegativeButtonClicked()
-            }) {
-                Text(
-                    text = "Cancel",
-                    fontFamily = DefaultAppFont
-                )
-            }
-        }
-    )
-}
-
-@Preview
-@Composable
-private fun NameEditPopUp() {
-    UpdateNamePopUp()
-}
-
-@Composable
-fun PopupExample(
+fun NameUpdatePopup(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -288,7 +263,7 @@ fun PopupExample(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .background(Color.White)
+            .background(Color.White, shape = RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp))
             .padding(16.dp)
             .focusable(true)
     ) {
@@ -438,10 +413,11 @@ fun RowElement(
             Image(
                 modifier = actionIconModifier
                     .padding(12.dp)
+                    .aspectRatio(1f)
                     .align(Alignment.CenterEnd),
                 painter = painterResource(id = actionIcon),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(Color(0xFF5FA0FF))
+                colorFilter = ColorFilter.tint(Color(0xFF5FA0FF)),
             )
 
 
@@ -461,3 +437,248 @@ fun RowDividingLine(
     )
 
 }
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun PasswordUpdatePopup(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val newPassword = remember {
+        mutableStateOf(TextFieldValue(""))
+    }
+
+    val confirmNewPassword = remember {
+        mutableStateOf(TextFieldValue(""))
+    }
+
+    val currentPassword = remember {
+        mutableStateOf(TextFieldValue(""))
+    }
+
+    val isNewPasswordVisible = remember { mutableStateOf(false) }
+
+    val isCurrentPasswordVisible = remember { mutableStateOf(false) }
+
+    val (currentPasswordTfRequester, newPasswordTfRequester,newPasswordConfirmTfRequester) = remember { FocusRequester.createRefs() }
+
+
+
+
+    // FocusRequester ve KeyboardController'ı tanımlayın
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    // LaunchedEffect içindeki işlemler
+    LaunchedEffect(Unit) {
+        currentPasswordTfRequester.requestFocus()
+        keyboardController?.show()
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .background(Color.White, shape = RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp))
+            .padding(16.dp)
+            .focusable(true)
+
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(modifier = Modifier.size(10.dp))
+            Text(
+                text = "Current Password",
+                modifier = Modifier.align(Alignment.Start),
+                fontFamily = DefaultAppFont,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            TextField(
+                value = currentPassword.value,
+                onValueChange = { text ->
+                    // Metin değiştiğinde, metnin tamamını seçili hale getir
+                    currentPassword.value = text
+                },
+                visualTransformation = if (isCurrentPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(
+                    onNext = {
+                        newPasswordTfRequester.requestFocus()
+                    }
+                ),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(currentPasswordTfRequester)
+                    .onFocusChanged {
+                        keyboardController?.show()  // Klavyeyi açma
+                    },
+
+                maxLines = 1,
+                trailingIcon = {
+                    val image = if (isCurrentPasswordVisible.value) {
+                        painterResource(id = R.drawable.visibility_eye_icon)
+                    } else {
+                        painterResource(id = R.drawable.visibility_off_eye_icon)
+                    }
+
+                    // Localized description for accessibility services
+                    val description = if (isCurrentPasswordVisible.value) "Hide password" else "Show password"
+
+                    IconButton(onClick = { isCurrentPasswordVisible.value = !isCurrentPasswordVisible.value }) {
+                        Image(painter = image, contentDescription = description)
+                    }
+                }
+            )
+
+
+
+            Spacer(modifier = Modifier.size(10.dp))
+
+
+
+            Text(
+                text = "New Password",
+                modifier = Modifier.align(Alignment.Start),
+                fontFamily = DefaultAppFont,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            TextField(
+                value = newPassword.value,
+                maxLines = 1,
+
+                onValueChange = { text ->
+                    // Metin değiştiğinde, metnin tamamını seçili hale getir
+                    newPassword.value = text
+                },
+                visualTransformation = if (isNewPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(
+                    onNext = {
+                        newPasswordConfirmTfRequester.requestFocus() // Optionally hide the keyboard
+                    }
+                ),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent
+                ),
+
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(newPasswordTfRequester),
+                trailingIcon = {
+                    val image = if (isNewPasswordVisible.value) {
+                        painterResource(id = R.drawable.visibility_eye_icon)
+                    } else {
+                        painterResource(id = R.drawable.visibility_off_eye_icon)
+                    }
+
+                    // Localized description for accessibility services
+                    val description = if (isNewPasswordVisible.value) "Hide password" else "Show password"
+
+                    IconButton(onClick = { isNewPasswordVisible.value = !isNewPasswordVisible.value }) {
+                        Image(painter = image, contentDescription = description)
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.size(10.dp))
+
+            Text(
+                text = "Confirm New Password",
+                modifier = Modifier.align(Alignment.Start),
+                fontFamily = DefaultAppFont,
+                fontWeight = FontWeight.SemiBold
+            )
+            TextField(
+                value = confirmNewPassword.value,
+                maxLines = 1,
+
+                visualTransformation = if (isNewPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction. Done),
+
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent
+                ),
+                onValueChange = { text ->
+                    // Metin değiştiğinde, metnin tamamını seçili hale getir
+                    confirmNewPassword.value = text
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(newPasswordConfirmTfRequester)
+            )
+
+
+
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(modifier = Modifier.align(Alignment.End)) {
+                Button(
+                    onClick = { /* TODO: Save action */ }
+                ) {
+                    Text(text = "Save")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(onClick = {
+                    onDismissRequest()
+                }) {
+                    Text(text = "Cancel")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PasswordInputField() {
+    val password = remember { mutableStateOf("") }
+    val passwordVisible = remember { mutableStateOf(false) }
+
+    OutlinedTextField(
+        value = password.value,
+        onValueChange = { password.value = it },
+        label = { Text("Password") },
+        visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        trailingIcon = {
+            val image = if (passwordVisible.value) {
+                Icons.Default.Favorite
+            } else {
+                Icons.Default.AccountBox
+            }
+
+            // Localized description for accessibility services
+            val description = if (passwordVisible.value) "Hide password" else "Show password"
+
+            IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
+                Icon(imageVector = image, description)
+            }
+        }
+    )
+}
+
+@Composable
+fun LocalGifImage(resId: Int=R.raw.orion1, modifier: Modifier = Modifier) {
+    val painter = rememberAsyncImagePainter(
+        ImageRequest.Builder(LocalContext.current)
+            .data(resId)
+            .decoderFactory(GifDecoder.Factory())
+            .scale(Scale.FIT)
+            .build()
+    )
+
+    Image(
+        painter = painter,
+        contentDescription = null,
+        modifier = modifier,
+        contentScale = ContentScale.Crop
+    )
+}
+
+@Composable
+private fun Information() {
+    
+}
+
