@@ -65,7 +65,9 @@ val items = listOf(
     NavigationBarItem(
         "Profile", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle, false, null,
         Screen.Settings.route
-    )
+    ),
+
+
 
 )
 

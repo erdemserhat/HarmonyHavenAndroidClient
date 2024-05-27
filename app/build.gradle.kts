@@ -171,6 +171,11 @@ dependencies {
 
     implementation ("com.github.jeziellago:compose-markdown:0.5.0")
 
+    implementation ("androidx.compose.material:material:1.4.0")
+
+    implementation ("io.coil-kt:coil-compose:2.0.0") // Coil için Compose entegrasyonu
+    implementation ("io.coil-kt:coil-gif:2.0.0") // GIF desteği için
+
 
 
 

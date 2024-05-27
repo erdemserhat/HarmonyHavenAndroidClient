@@ -19,18 +19,6 @@
       </entry>
       <entry key="app">
         <State>
-          <runningDeviceTargetSelectedWithDropDown>
-            <Target>
-              <type value="RUNNING_DEVICE_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="SERIAL_NUMBER" />
-                  <value value="ws55vwzhs8u4hmge" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-05-19T18:00:56.463425600Z" />
           <runningDeviceTargetsSelectedWithDialog>
             <Target>
               <type value="RUNNING_DEVICE_TARGET" />
