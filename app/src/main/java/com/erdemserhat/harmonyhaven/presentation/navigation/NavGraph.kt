@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material3.NavigationBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -17,6 +18,8 @@ import androidx.navigation.Navigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
+import com.erdemserhat.harmonyhaven.presentation.about_us.AboutUsScreen
+import com.erdemserhat.harmonyhaven.presentation.appcomponents.HarmonyHavenNavigationBar
 import com.erdemserhat.harmonyhaven.presentation.article.ArticleScreen
 import com.erdemserhat.harmonyhaven.presentation.home.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.login.LoginScreen
@@ -25,6 +28,7 @@ import com.erdemserhat.harmonyhaven.presentation.passwordreset.mail.ForgotPasswo
 import com.erdemserhat.harmonyhaven.presentation.profile.ProfileScreen
 import com.erdemserhat.harmonyhaven.presentation.quotes.QuotesScreen
 import com.erdemserhat.harmonyhaven.presentation.register.RegisterScreen
+import com.erdemserhat.harmonyhaven.presentation.saved_articles.SavedArticlesScreen
 import com.erdemserhat.harmonyhaven.presentation.settings.SettingsScreen
 import com.erdemserhat.harmonyhaven.presentation.welcome.WelcomeScreen
 
@@ -70,7 +74,7 @@ fun SetupNavGraph(
         }
 
         composable(route = Screen.Profile.route) {
-            AccountInformationScreen()
+            AccountInformationScreen(navController)
         }
 
 
@@ -134,6 +138,21 @@ fun SetupNavGraph(
                 ArticleScreen(article,navController)
             }
         }
+
+        composable(route = Screen.Main.route) {
+            HarmonyHavenNavigationBar(navController)
+        }
+
+
+        composable(route = Screen.SavedArticles.route) {
+            SavedArticlesScreen(navController = navController)
+        }
+        composable(route = Screen.AboutUs.route) {
+            AboutUsScreen(navController = navController)
+        }
+
+
+
 
 
     }

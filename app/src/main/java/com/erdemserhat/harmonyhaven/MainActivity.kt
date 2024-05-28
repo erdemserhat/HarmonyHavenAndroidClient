@@ -56,27 +56,10 @@ class MainActivity : ComponentActivity() {
                 navController = rememberNavController()
 
                 val navController = rememberNavController()
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentRoute = navBackStackEntry?.destination?.route
-
-                Scaffold(
-                    bottomBar = {
-                        if (currentRoute in listOf(
-                                Screen.Home.route,
-                                Screen.Notification.route,
-                                Screen.Quotes.route,
-                                Screen.Settings.route
-                            )
-                        ) {
-                            HarmonyHavenNavigationBar(navController = navController)
-                        }
-                    }
-                ) {paddingValues ->
                     SetupNavGraph(
-
                         navController = navController,
-                        startDestination = if (isFirstLaunch) Screen.Welcome.route else Screen.Settings.route,
-                        modifier = Modifier.padding(paddingValues) // Padding değerlerini burada kullanın
+                        startDestination = if (isFirstLaunch) Screen.Welcome.route else Screen.Main.route,
+                        modifier = Modifier // Padding değerlerini burada kullanın
                     )
                     // Uygulama başlatıldığında isFirstLaunch değerini false olarak ayarlama
                     LaunchedEffect(key1 = Unit) {
@@ -94,6 +77,6 @@ class MainActivity : ComponentActivity() {
     }
 
 
-}
+
 
 
