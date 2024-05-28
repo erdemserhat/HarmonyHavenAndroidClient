@@ -38,17 +38,28 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import coil.size.Scale
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.util.DefaultAppFont
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun AccountInformationContent() {
+fun AccountInformationContent(navController: NavController) {
     var shouldShowUpdateNamePopUp by rememberSaveable { mutableStateOf(false) }
     var shouldShowUpdatePasswordPopUp by rememberSaveable { mutableStateOf(false) }
+    var shouldShowSuccessAnimation by rememberSaveable {
+        mutableStateOf(false)
+    }
 
 
     Scaffold(
@@ -67,7 +78,7 @@ fun AccountInformationContent() {
                                 .clip(RoundedCornerShape(50.dp))
                                 .size(32.dp)
                                 .clickable {
-                                    //navController.popBackStack()
+                                    navController.popBackStack()
                                 }
                         )
                     }
@@ -127,7 +138,7 @@ fun AccountInformationContent() {
                         actionIconModifier = Modifier.size(36.dp),
                         extraText = "",
                         shouldShowExtraText = false,
-                        onRowElementClicked = {shouldShowUpdatePasswordPopUp=true},
+                        onRowElementClicked = { shouldShowUpdatePasswordPopUp = true },
                     )
                     RowDividingLine(modifier = Modifier.align(Alignment.CenterHorizontally))
 
@@ -193,6 +204,11 @@ fun AccountInformationContent() {
             NameUpdatePopup(
                 onDismissRequest = {
                     shouldShowUpdateNamePopUp = false
+                },
+
+                onPositiveButtonClicked = {
+                    shouldShowSuccessAnimation = true
+                    shouldShowUpdateNamePopUp = false
                 }
             )
         }
@@ -215,7 +231,7 @@ fun AccountInformationContent() {
         ) {
             PasswordUpdatePopup(
                 onDismissRequest = {
-                    shouldShowUpdatePasswordPopUp= false
+                    shouldShowUpdatePasswordPopUp = false
                 }
             )
         }
@@ -223,27 +239,43 @@ fun AccountInformationContent() {
 
     }
 
-
-
+    if (shouldShowSuccessAnimation) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            LocalGifImage(resId = R.raw.successfullygif)
+            LaunchedEffect(Unit) {
+                delay(1000)
+                shouldShowSuccessAnimation = false
+            }
+        }
+    }
 
 }
 
 
+
+
+
+
+
+
+
+
 @Composable
-fun AccountInformationScreen() {
-    AccountInformationContent()
+fun AccountInformationScreen(navController: NavController) {
+    AccountInformationContent(navController)
 }
 
 @Preview
 @Composable
 private fun AccountInformationPreview() {
-    AccountInformationScreen()
+    AccountInformationScreen(rememberNavController())
 }
 
 @Composable
 fun NameUpdatePopup(
     onDismissRequest: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onPositiveButtonClicked: () -> Unit = {}
 ) {
     val textState = remember {
         mutableStateOf(TextFieldValue("Serhat ERDEM"))
@@ -303,7 +335,7 @@ fun NameUpdatePopup(
             Spacer(modifier = Modifier.height(8.dp))
             Row(modifier = Modifier.align(Alignment.End)) {
                 Button(
-                    onClick = { /* TODO: Save action */ }
+                    onClick = { onPositiveButtonClicked() }
                 ) {
                     Text(text = "Save")
                 }
@@ -460,9 +492,7 @@ fun PasswordUpdatePopup(
 
     val isCurrentPasswordVisible = remember { mutableStateOf(false) }
 
-    val (currentPasswordTfRequester, newPasswordTfRequester,newPasswordConfirmTfRequester) = remember { FocusRequester.createRefs() }
-
-
+    val (currentPasswordTfRequester, newPasswordTfRequester, newPasswordConfirmTfRequester) = remember { FocusRequester.createRefs() }
 
 
     // FocusRequester ve KeyboardController'ı tanımlayın
@@ -499,7 +529,10 @@ fun PasswordUpdatePopup(
                     currentPassword.value = text
                 },
                 visualTransformation = if (isCurrentPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Next
+                ),
                 keyboardActions = KeyboardActions(
                     onNext = {
                         newPasswordTfRequester.requestFocus()
@@ -524,9 +557,12 @@ fun PasswordUpdatePopup(
                     }
 
                     // Localized description for accessibility services
-                    val description = if (isCurrentPasswordVisible.value) "Hide password" else "Show password"
+                    val description =
+                        if (isCurrentPasswordVisible.value) "Hide password" else "Show password"
 
-                    IconButton(onClick = { isCurrentPasswordVisible.value = !isCurrentPasswordVisible.value }) {
+                    IconButton(onClick = {
+                        isCurrentPasswordVisible.value = !isCurrentPasswordVisible.value
+                    }) {
                         Image(painter = image, contentDescription = description)
                     }
                 }
@@ -554,7 +590,10 @@ fun PasswordUpdatePopup(
                     newPassword.value = text
                 },
                 visualTransformation = if (isNewPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Next
+                ),
                 keyboardActions = KeyboardActions(
                     onNext = {
                         newPasswordConfirmTfRequester.requestFocus() // Optionally hide the keyboard
@@ -575,9 +614,12 @@ fun PasswordUpdatePopup(
                     }
 
                     // Localized description for accessibility services
-                    val description = if (isNewPasswordVisible.value) "Hide password" else "Show password"
+                    val description =
+                        if (isNewPasswordVisible.value) "Hide password" else "Show password"
 
-                    IconButton(onClick = { isNewPasswordVisible.value = !isNewPasswordVisible.value }) {
+                    IconButton(onClick = {
+                        isNewPasswordVisible.value = !isNewPasswordVisible.value
+                    }) {
                         Image(painter = image, contentDescription = description)
                     }
                 }
@@ -596,7 +638,10 @@ fun PasswordUpdatePopup(
                 maxLines = 1,
 
                 visualTransformation = if (isNewPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction. Done),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
 
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent
@@ -660,7 +705,7 @@ fun PasswordInputField() {
 }
 
 @Composable
-fun LocalGifImage(resId: Int=R.raw.orion1, modifier: Modifier = Modifier) {
+fun LocalGifImage(resId: Int = R.raw.examplegif, modifier: Modifier = Modifier) {
     val painter = rememberAsyncImagePainter(
         ImageRequest.Builder(LocalContext.current)
             .data(resId)
@@ -672,13 +717,13 @@ fun LocalGifImage(resId: Int=R.raw.orion1, modifier: Modifier = Modifier) {
     Image(
         painter = painter,
         contentDescription = null,
-        modifier = modifier,
+        modifier = modifier.size(200.dp),
         contentScale = ContentScale.Crop
     )
 }
 
 @Composable
 private fun Information() {
-    
+
 }
 

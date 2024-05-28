@@ -128,7 +128,10 @@ fun SettingsScreenContent(navController: NavController) {
                     RoundedCornerShape(
                         0.dp, 0.dp, 12.dp, 12.dp
                     )
-                )
+                ),
+                onButtonClicked = {
+                    navController.navigate(Screen.SavedArticles.route)
+                }
             )
         }
 
@@ -146,7 +149,10 @@ fun SettingsScreenContent(navController: NavController) {
                     RoundedCornerShape(
                         12.dp, 12.dp, 0.dp, 0.dp
                     )
-                )
+                ),
+                onButtonClicked = {
+                    navController.navigate(Screen.AboutUs.route)
+                }
             )
 
             Divider(

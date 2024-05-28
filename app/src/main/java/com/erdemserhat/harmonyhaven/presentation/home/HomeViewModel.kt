@@ -16,6 +16,8 @@ import com.erdemserhat.harmonyhaven.domain.model.rest.toArticleResponseType
 import com.erdemserhat.harmonyhaven.domain.model.rest.toCategoryEntity
 import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
+import com.erdemserhat.harmonyhaven.presentation.saved_articles.MockSavedArticles
+import com.erdemserhat.harmonyhaven.presentation.saved_articles.MockSavedArticles.mockArticle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -80,6 +82,8 @@ class HomeViewModel @Inject constructor(
 
                 )
                 Log.d("homepage_tests", "request operation is successful")
+                //for mocking//////
+                MockSavedArticles.setData(_homeState.value.categorizedArticles)
                 return@launch
 
 
