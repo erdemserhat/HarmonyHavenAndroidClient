@@ -5,16 +5,16 @@
       <entry key="AccountInformationPreview">
         <State />
       </entry>
-      <entry key="AlertDialogSamplePreview">
-        <State />
-      </entry>
       <entry key="DrawLineExamplePreview">
         <State />
       </entry>
       <entry key="PreviewPopupExample">
         <State />
       </entry>
-      <entry key="SettingsScreenPreview">
+      <entry key="TransactionOperationContentPreview">
+        <State />
+      </entry>
+      <entry key="TransactionScreenPreview">
         <State />
       </entry>
       <entry key="app">
