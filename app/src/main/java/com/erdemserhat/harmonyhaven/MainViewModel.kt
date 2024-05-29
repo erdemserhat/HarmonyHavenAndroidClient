@@ -2,7 +2,7 @@ package com.erdemserhat.harmonyhaven
 
 import androidx.lifecycle.ViewModel
 import com.erdemserhat.harmonyhaven.data.local.repository.JwtTokenRepository
-import com.erdemserhat.harmonyhaven.di.JwtInterceptor
+import com.erdemserhat.harmonyhaven.di.network.JwtInterceptor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
