@@ -1,6 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.navigation
 
 sealed class Screen(val route:String) {
+    //Screenes
     object Splash: Screen("splash_screen")
     object Login: Screen("login_screen")
     object Register: Screen("register_screen")

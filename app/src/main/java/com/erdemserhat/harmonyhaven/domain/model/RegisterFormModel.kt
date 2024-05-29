@@ -1,7 +1,7 @@
 package com.erdemserhat.harmonyhaven.domain.model
 
 import com.erdemserhat.harmonyhaven.domain.model.rest.User
-import com.erdemserhat.harmonyhaven.domain.model.ui.Gender
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.welcome.Gender
 import com.erdemserhat.harmonyhaven.dto.requests.UserInformationSchema
 import kotlinx.serialization.Serializable
 
