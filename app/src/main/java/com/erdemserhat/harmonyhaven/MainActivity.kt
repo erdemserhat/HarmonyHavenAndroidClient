@@ -35,13 +35,12 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var userUseCases: UserUseCases
 
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SuspiciousIndentation")
     @OptIn(DelicateCoroutinesApi::class)
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-
         installSplashScreen()
 
         val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
