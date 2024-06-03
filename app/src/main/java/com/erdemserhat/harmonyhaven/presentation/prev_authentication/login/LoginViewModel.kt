@@ -44,7 +44,7 @@ class LoginViewModel @Inject constructor(
     }
 
     init {
-        onLoginClicked("me.serhaterdem@gmail.com","Erdem.3451.")
+        //onLoginClicked("me.serhaterdem@gmail.com","Erdem.3451.")
     }
 
     private fun authenticateUser(email: String, password: String) {
