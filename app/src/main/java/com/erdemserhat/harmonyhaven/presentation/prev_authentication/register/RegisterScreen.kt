@@ -62,12 +62,12 @@ fun RegisterScreenContent(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painterResource(R.drawable.login_register_background),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds
-        )
+      //  Image(
+         //   painter = painterResource(R.drawable.login_register_background),
+        //    contentDescription = null,
+        //    modifier = Modifier.fillMaxSize(),
+           // contentScale = ContentScale.FillBounds
+      //  )
 
         //screen content
         Column(
