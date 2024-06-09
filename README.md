@@ -4,7 +4,8 @@
 
 ## System Operation Overview
 
-![image](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/19a77e34-119b-4e5c-af53-d6b79db5938f)
+![image](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/b02ad5f5-0154-48bf-a813-33b750f34397)
+
 
 
 ## Android Architecture Overview
