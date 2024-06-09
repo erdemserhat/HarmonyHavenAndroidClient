@@ -8,70 +8,70 @@
 
 ## App Structure
 
-- app
-  - build
-  - src
-    - androidTest
-    - main
-      - java
-        - com.erdemsah.armonyhaven
-          - data
-            - api
-              - article
-              - fcm
-              - user
-            - local
-              - dao
-              - entities
-              - repository
-          - di
-            - database
-            - network
-          - domain
-            - model
-              - rest
-          - usecase
-            - article
-            - password_reset
-            - user
-            - validation
-          - dto
-            - requests
-            - responses
-          - presentation
-            - common
-              - appcomponents
-            - navigation
-              - post_authentication
-                - article
-                - home
-                  - components
-                - notification
-                  - profile
-                    - about_us
-                    - account_information
-                    - saved_articles
-                - quotes
-              - prev_authentication
-                - login
-                  - components
-                  - state
-                  - util
-                - passwordreset
-                  - auth
-                  - mail
-                  - reset
-                - register
-                  - components
-                  - state
-                - splash
-                - welcome
-              - unused
-                - profile
-            - ui.theme
-            - util
-          - test
-            - unitTest
+app
+├── build
+└── src
+    ├── androidTest
+    └── main
+        └── java
+            └── com.erdemsah.armonyhaven
+                ├── data
+                │   ├── api
+                │   │   ├── article
+                │   │   ├── fcm
+                │   │   └── user
+                │   └── local
+                │       ├── dao
+                │       ├── entities
+                │       └── repository
+                ├── di
+                │   ├── database
+                │   └── network
+                ├── domain
+                │   └── model
+                │       └── rest
+                ├── usecase
+                │   ├── article
+                │   ├── password_reset
+                │   ├── user
+                │   └── validation
+                ├── dto
+                │   ├── requests
+                │   └── responses
+                ├── presentation
+                │   ├── common
+                │   │   └── appcomponents
+                │   ├── navigation
+                │   │   ├── post_authentication
+                │   │   │   ├── article
+                │   │   │   ├── home
+                │   │   │   │   └── components
+                │   │   │   ├── notification
+                │   │   │   │   └── profile
+                │   │   │   │       ├── about_us
+                │   │   │   │       ├── account_information
+                │   │   │   │       └── saved_articles
+                │   │   │   └── quotes
+                │   │   ├── prev_authentication
+                │   │   │   ├── login
+                │   │   │   │   ├── components
+                │   │   │   │   ├── state
+                │   │   │   │   └── util
+                │   │   │   ├── passwordreset
+                │   │   │   │   ├── auth
+                │   │   │   │   ├── mail
+                │   │   │   │   └── reset
+                │   │   │   ├── register
+                │   │   │   │   ├── components
+                │   │   │   │   └── state
+                │   │   │   ├── splash
+                │   │   │   └── welcome
+                │   │   └── unused
+                │   │       └── profile
+                │   ├── ui.theme
+                │   └── util
+                └── test
+                    └── unitTest
 
 
 ## Technologies and Paradigms Used:
