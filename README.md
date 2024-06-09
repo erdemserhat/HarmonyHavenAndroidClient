@@ -10,7 +10,9 @@
 
 Here is the directory structure in Markdown format with proper indentation to ensure it looks good in a preview:
 
-```markdown
+Tabii, işte düzeltilmiş ağaç diyagramı:
+
+```plaintext
 app
 ├── build
 └── src
@@ -29,15 +31,16 @@ app
                 │       └── repository
                 ├── di
                 │   ├── database
-                │   └── network
+                │   ├── network
+                │   └── usecase
                 ├── domain
-                │   └── model
-                │       └── rest
-                ├── usecase
-                │   ├── article
-                │   ├── password_reset
-                │   ├── user
-                │   └── validation
+                │   ├── model
+                │   │   └── rest
+                │   └── usecase  // Use case dizini artık domain dizininin bir alt dizini
+                │       ├── article
+                │       ├── password_reset
+                │       ├── user
+                │       └── validation
                 ├── dto
                 │   ├── requests
                 │   └── responses
@@ -45,36 +48,34 @@ app
                 │   ├── common
                 │   │   └── appcomponents
                 │   ├── navigation
-                │   │   ├── post_authentication
-                │   │   │   ├── article
-                │   │   │   ├── home
-                │   │   │   │   └── components
-                │   │   │   ├── notification
-                │   │   │   │   └── profile
-                │   │   │   │       ├── about_us
-                │   │   │   │       ├── account_information
-                │   │   │   │       └── saved_articles
-                │   │   │   └── quotes
-                │   │   ├── prev_authentication
-                │   │   │   ├── login
-                │   │   │   │   ├── components
-                │   │   │   │   ├── state
-                │   │   │   │   └── util
-                │   │   │   ├── passwordreset
-                │   │   │   │   ├── auth
-                │   │   │   │   ├── mail
-                │   │   │   │   └── reset
-                │   │   │   ├── register
-                │   │   │   │   ├── components
-                │   │   │   │   └── state
-                │   │   │   ├── splash
-                │   │   │   └── welcome
-                │   │   └── unused
-                │   │       └── profile
-                │   ├── ui.theme
-                │   └── util
-                └── test
-                    └── unitTest
+                │   ├── post_authentication
+                │   │   ├── article
+                │   │   ├── home
+                │   │   │   └── components
+                │   │   ├── notification
+                │   │   └── profile
+                │   │       ├── about_us
+                │   │       ├── account_information
+                │   │       └── saved_articles
+                │   ├── prev_authentication
+                │   │   ├── login
+                │   │   │   ├── components
+                │   │   │   ├── state
+                │   │   │   └── util
+                │   │   ├── passwordreset
+                │   │   │   ├── auth
+                │   │   │   ├── mail
+                │   │   │   └── reset
+                │   │   ├── register
+                │   │   │   ├── components
+                │   │   │   └── state
+                │   │   ├── splash
+                │   │   └── welcome
+                │   └── unused
+                │       └── profile
+                ├── test
+                │   └── unitTest
+                └── util
 ```
 
 ## Technologies and Paradigms Used:
