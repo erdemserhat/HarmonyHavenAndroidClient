@@ -8,6 +8,9 @@
 
 ## App Structure
 
+Here is the directory structure in Markdown format with proper indentation to ensure it looks good in a preview:
+
+```markdown
 app
 ├── build
 └── src
@@ -72,7 +75,7 @@ app
                 │   └── util
                 └── test
                     └── unitTest
-
+```
 
 ## Technologies and Paradigms Used:
 
