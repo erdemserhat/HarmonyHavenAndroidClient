@@ -1,4 +1,4 @@
-# **Harmony Haven Android Client**
+![9-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/09e9b91c-2dc9-4c3a-a8d5-027645abdf60)# **Harmony Haven Android Client**
 
 **Harmony Haven** is an ongoing project under development, utilizing various libraries throughout its development process. Primarily a motivational application, *Harmony Haven* offers users a range of articles from different categories and delivers personalized notifications using artificial intelligence. It also provides users with personalized quotes, adding a touch of inspiration to their daily lives.
 
@@ -100,27 +100,31 @@ app
 
 ## App Screens
 
-![image](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/129db9b2-7ab4-46a2-a781-fbe6cd1b267a)
+![1-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/639a2683-11b1-4bce-8814-027d3adc837e)
+
+![2-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/7cf35236-97cc-4c52-82e6-f3cdb598a62e)
+
+![3-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/e60042f5-42c1-4021-ad3c-d0064421a78e)
+
+![4-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/68fc94d2-c267-414a-9899-c3e4d402d57e)
+
+![5-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/88082c71-4b35-4bf2-867e-f28a9b0cf0a3)
+
+![6-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/34820ee5-ec03-47fb-b404-40875cb2f48c)
+
+![7-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/45009d57-7767-443b-8177-1234b061533e)
+
+![8-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/5afcca94-52d7-437c-b368-dbb76d34876b)
+
+![9-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/b7b322bb-1e8c-4589-be61-7f9bea1bbf7c)
 
 
-![image](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/bc1e3204-9f56-4622-9612-9e1e4912f1ad)
 
 
 
 
-![image](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/53e949e4-932f-4047-899b-43f3a4dd4eba)
 
-![image](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/08f77661-a1aa-4696-8382-49afca9b01f4)
 
-![image](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/539f627a-0627-480d-aff2-e7a8bd627e1f)
-
-![image](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/f1b7a62a-6dc1-4ef9-af88-dcb5f8cb7449)
-
-![image](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/033d1f4e-e57e-4b5f-aa37-86f42a54d295)
-
-![image](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/604a1476-e685-4424-a11e-c00df950448c)
-
-![image](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/768bc659-b5b3-40f3-b005-63d7d3c52330)
 
 
 
