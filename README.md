@@ -94,3 +94,12 @@ app
 - **Core Splash Screen API**: Splash Screen
 - **Compose Markdown**: Markdown Rendering
 - **Gson**: JSON Parsing
+- 
+
+## App Screens
+
+![image](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/9ca219dd-453a-4f5a-a5e5-36be44108ec6)
+
+
+
+
