@@ -33,7 +33,7 @@ app
                 ├── domain
                 │   ├── model
                 │   │   └── rest
-                │   └── usecase  // Use case dizini artık domain dizininin bir alt dizini
+                │   └── usecase
                 │       ├── article
                 │       ├── password_reset
                 │       ├── user
