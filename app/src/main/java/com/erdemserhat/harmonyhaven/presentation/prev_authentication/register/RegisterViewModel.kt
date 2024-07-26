@@ -42,7 +42,6 @@ class RegisterViewModel @Inject constructor(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            delay(400)
             registerUser(formModel.toUserInformationSchema())
 
         }

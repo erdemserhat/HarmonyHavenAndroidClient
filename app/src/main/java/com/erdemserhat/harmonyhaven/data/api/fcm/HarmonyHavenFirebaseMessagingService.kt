@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.data.api.fcm
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -10,6 +11,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.erdemserhat.harmonyhaven.MainActivity
@@ -24,6 +26,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -45,11 +48,10 @@ class HarmonyHavenFirebaseMessagingService() : FirebaseMessagingService() {
 
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
+    @SuppressLint("RemoteViewLayout")
     override fun onMessageReceived(message: RemoteMessage) {
-        val data = message.data
-        val title = data["specializedTitle"] ?: "Varsayılan Başlık"
-        val body = data["specializedBody"] ?: "Varsayılan İçerik"
+        val title = message.notification?.title.toString()
+        val body = message.notification?.body.toString()
 
 
         runBlocking {
@@ -87,10 +89,11 @@ class HarmonyHavenFirebaseMessagingService() : FirebaseMessagingService() {
         )
 
 
+
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setContentTitle(title)
             .setContentText(body)
-            .setSmallIcon(R.drawable.harmony_haven_icon)
+            .setSmallIcon(R.drawable.notf_ico)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)

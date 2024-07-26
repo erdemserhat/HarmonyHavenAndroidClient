@@ -77,12 +77,12 @@ fun LoginScreenContent(
     ) {
 
         //Screen Background
-       // Image(
-         //   painter = painterResource(R.drawable.login_register_background),
-        //    contentDescription = null,
-         //   modifier = Modifier.fillMaxSize(),
-        //    contentScale = ContentScale.FillBounds
-      //  )
+        Image(
+            painter = painterResource(R.drawable.login_register_background),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
+        )
 
 
 
@@ -242,11 +242,11 @@ fun LoginScreen(
 
 ) {
     var email by rememberSaveable {
-        mutableStateOf("me.serhaterdem@gmail.com")
+        mutableStateOf("")
     }
 
     var password by rememberSaveable {
-        mutableStateOf("Erdem.3451.")
+        mutableStateOf("DemoPassword.01.")
     }
 
 
@@ -271,7 +271,7 @@ fun LoginScreen(
         onPasswordValueChanged = { password = it },
         warningText = viewModel.loginState.value.loginWarning,
         canNavigateToDashBoard = viewModel.loginState.value.canNavigateToDashBoard,
-        onCanNavigateToDashBoard = { navController.navigate(Screen.Main.route) },
+        onCanNavigateToDashBoard = { /*navController.navigate(Screen.Main.route)*/ },
         isLoading = viewModel.loginState.value.isLoading,
         isEmailValid = !viewModel.loginState.value.validationState.isEmailValid,
         isPasswordValid = !viewModel.loginState.value.validationState.isPasswordValid
