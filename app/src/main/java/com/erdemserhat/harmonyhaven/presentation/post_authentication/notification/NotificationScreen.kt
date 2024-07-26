@@ -99,7 +99,7 @@ fun NotificationScreen(
                 Spacer(modifier = Modifier.size(20.dp))
                 Text(
                     text = "Harmony Haven can send notifications to provide you with a better experience. These notifications are customized based on your interests and usage habits.",
-                    modifier = Modifier.widthIn(max = 400.dp), // Metnin genişliği
+                    modifier = Modifier.widthIn(max = 400.dp).padding(25.dp), // Metnin genişliği
                     softWrap = true // Satır başı yapma
                 )
 

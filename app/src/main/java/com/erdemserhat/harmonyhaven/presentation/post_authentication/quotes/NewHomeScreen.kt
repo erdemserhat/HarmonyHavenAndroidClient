@@ -25,11 +25,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientWhite
 
@@ -40,27 +43,24 @@ data class Quote(
 )
 
 val quoteList = listOf(
-    Quote("Hayatta en hakiki mürşit ilimdir, fendir.", "Hz. Ali"),
-    Quote("Bütün renkler beyazın içindedir.", "Necip Fazıl Kısakürek"),
-    Quote("Hayat bir gölgedir ki, kaybolup gitmektedir.", "William Shakespeare"),
-    Quote(
-        "Güzel olan her şeyin doğru olan her şeye yakıştığı gibi, doğru olan her şeyin de güzel olan her şeye yakıştığı bir dünya hayal ediyorum.",
-        "Platon"
-    ),
-    Quote("Hayatta en büyük zafer insanın kendi nefsiyle yaptığı mücadeledir.", "Platon"),
-    Quote("Dünyada en hakiki mürşit ilimdir, fendir.", "Hz. Ali"),
-    Quote("Bir insanı tanımanın yolu, onunla seyahat etmektir.", "Amerikan atasözü"),
-    Quote("Kendini tanımanın yolu, dünyayı görmektir.", "Goethe"),
-    Quote("Hayatı sevin, çünkü aynı çiçek bir daha açmayabilir.", "Muhammed Ali"),
-    Quote(
-        "Gelecek, görmek isteyenler için değil, onu kendi elleriyle kuranlar içindir.",
-        "Jules Verne"
-    ),
-    Quote(
-        "Yaşamak, hatırlamak, düşünmek, hayal kurmak, yaratmak için değil, yaşamak için yaşamalı.",
-        "Hermann Hesse"
-    )
+    Quote("The only way to do great work is to love what you do.", "Steve Jobs"),
+    Quote("In the end, it's not the years in your life that count. It's the life in your years.", "Abraham Lincoln"),
+    Quote("Life is what happens when you're busy making other plans.", "John Lennon"),
+    Quote("Life is not about finding yourself. Life is about creating yourself.", "George Bernard Shaw"),
+    Quote("Life is 10% what happens to us and 90% how we react to it.", "Charles R. Swindoll"),
+    Quote("Success is not final, failure is not fatal: It is the courage to continue that counts.", "Winston Churchill"),
+    Quote("The only impossible journey is the one you never begin.", "Tony Robbins"),
+    Quote("The best way to predict the future is to create it.", "Peter Drucker"),
+    Quote("The only limit to our realization of tomorrow will be our doubts of today.", "Franklin D. Roosevelt"),
+    Quote("The future belongs to those who believe in the beauty of their dreams.", "Eleanor Roosevelt"),
+    Quote("Happiness is not something ready-made. It comes from your own actions.", "Dalai Lama"),
+    Quote("The purpose of our lives is to be happy.", "Dalai Lama"),
+    Quote("Life is a succession of lessons which must be lived to be understood.", "Helen Keller"),
+    Quote("Life is either a daring adventure or nothing at all.", "Helen Keller"),
+    Quote("The only thing necessary for the triumph of evil is for good men to do nothing.", "Edmund Burke"),
+    Quote("Life is like riding a bicycle. To keep your balance, you must keep moving.", "Albert Einstein")
 )
+
 
 @Composable
 fun QuotesScreen() {
@@ -75,15 +75,22 @@ fun QuotesContent(quote: List<Quote>) {
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(
-
-                Color.White
-            ),
+            .fillMaxSize(),
         contentAlignment = Alignment.Center,
 
         )
     {
+        Image(
+            painter = painterResource(R.drawable.background
+            ),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
+        )
+
+
+
+
         QuoteVerticalList(quoteList = quote, modifier = Modifier.align(Alignment.Center))
 
 
