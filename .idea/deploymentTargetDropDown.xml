@@ -2,21 +2,6 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="AccountInformationPreview">
-        <State />
-      </entry>
-      <entry key="DrawLineExamplePreview">
-        <State />
-      </entry>
-      <entry key="PreviewPopupExample">
-        <State />
-      </entry>
-      <entry key="TransactionOperationContentPreview">
-        <State />
-      </entry>
-      <entry key="TransactionScreenPreview">
-        <State />
-      </entry>
       <entry key="app">
         <State>
           <runningDeviceTargetsSelectedWithDialog>
