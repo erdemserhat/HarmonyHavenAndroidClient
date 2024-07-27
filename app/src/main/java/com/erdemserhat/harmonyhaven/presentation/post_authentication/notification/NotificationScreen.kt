@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,17 +24,21 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.erdemserhat.dto.responses.NotificationDto
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.data.local.entities.NotificationEntity
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenButton
@@ -62,8 +68,15 @@ fun NotificationScreen(
     viewModel: NotificationViewModel = hiltViewModel()
 
 ) {
-    val notifications by viewModel.allNotifications.observeAsState(initial = emptyList())
+    //val notifications by viewModel.allNotifications.observeAsState(initial = emptyList())
+    val notifications by viewModel.notifications.collectAsState()
     var permissionGranted by remember { mutableStateOf(viewModel.isPermissionGranted()) }
+
+    LaunchedEffect(Unit) {
+        viewModel.loadNotifications()
+    }
+
+
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -99,7 +112,7 @@ fun NotificationScreen(
                 Spacer(modifier = Modifier.size(20.dp))
                 Text(
                     text = "Harmony Haven can send notifications to provide you with a better experience. These notifications are customized based on your interests and usage habits.",
-                    modifier = Modifier.widthIn(max = 400.dp).padding(25.dp), // Metnin genişliği
+                    modifier = Modifier.widthIn(max = 400.dp), // Metnin genişliği
                     softWrap = true // Satır başı yapma
                 )
 
@@ -129,11 +142,36 @@ fun NotificationScreen(
 
 
             } else {
-                LazyColumn {
-                    items(notifications) {
-                        NotificationContent(notification = it)
+                val scrollState = rememberLazyListState()
+                LazyColumn(state = scrollState) {
+                    items(notifications) {it
+                        NotificationContent(it)
                     }
+
+                    // Loading indicator or more items
+                    item {
+                        if (viewModel.isLoading) {
+                            // Show loading indicator
+                            Text(text = "Loading...", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                        }
+                    }
+
                 }
+
+                // Detect when user scrolls to the end
+                LaunchedEffect(scrollState) {
+                    snapshotFlow { scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+                        .collect { lastVisibleIndex ->
+                            if (lastVisibleIndex != null) {
+                                if (lastVisibleIndex >= notifications.size - 1 && !viewModel.isLoading && viewModel.hasMoreData) {
+                                    viewModel.loadNotifications()
+                                }
+                            }
+                        }
+                }
+
+
+
 
             }
 
@@ -156,13 +194,13 @@ fun NotificationScreenPreview() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NotificationContent(notification: NotificationEntity) {
+fun NotificationContent(notification: NotificationDto) {
     Column(
         modifier = Modifier
             .padding(10.dp)
     ) {
         Text(
-            text = unixToDateTime(notification.date / 1000),
+            text = unixToDateTime(notification.timeStamp / 1000),
             fontFamily = customFontInter,
             fontWeight = FontWeight.Medium,
             modifier = Modifier
@@ -187,7 +225,7 @@ fun NotificationContent(notification: NotificationEntity) {
 
                 )
                 Text(
-                    text = notification.body,
+                    text = notification.content,
                     modifier = Modifier
                         .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
                         .width(310.dp),
