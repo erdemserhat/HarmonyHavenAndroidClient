@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
@@ -45,6 +46,7 @@ import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import coil.size.Scale
 import com.erdemserhat.harmonyhaven.R
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.account_information.AccountInformationViewModel
 import com.erdemserhat.harmonyhaven.util.DefaultAppFont
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -60,6 +62,9 @@ fun AccountInformationContent(navController: NavController) {
     var shouldShowSuccessAnimation by rememberSaveable {
         mutableStateOf(false)
     }
+
+
+    var viewModel:AccountInformationViewModel = hiltViewModel()
 
 
     Scaffold(
@@ -103,7 +108,7 @@ fun AccountInformationContent(navController: NavController) {
                         modifier = Modifier,
                         title = "Name",
                         titleIcon = R.drawable.profile_svgrepo_com,
-                        text = "Serhat",
+                        text = viewModel.userInfo.value.name,
                         shouldShowActionIcon = true,
                         actionIcon = R.drawable.edit_svgrepo_com__1_,
                         actionIconModifier = Modifier.size(45.dp),
@@ -111,6 +116,7 @@ fun AccountInformationContent(navController: NavController) {
                         extraText = "This is not your username or pin. This name will be used in notification and articles to call you.",
                         shouldShowExtraText = true,
                         onRowElementClicked = { shouldShowUpdateNamePopUp = true },
+
                     )
 
                     RowDividingLine(modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -119,7 +125,7 @@ fun AccountInformationContent(navController: NavController) {
                         modifier = Modifier,
                         title = "E-Mail",
                         titleIcon = R.drawable.email_svgrepo_com,
-                        text = "me.serhaterdem@gmail.com",
+                        text = viewModel.userInfo.value.email,
                         shouldShowActionIcon = false,
                         actionIcon = R.drawable.edit_svgrepo_com,
                         extraText = "This is not your username or pin. This name will be used in notification and articles to call you.",
@@ -206,10 +212,13 @@ fun AccountInformationContent(navController: NavController) {
                     shouldShowUpdateNamePopUp = false
                 },
 
-                onPositiveButtonClicked = {
+                onPositiveButtonClicked = {newName->
                     shouldShowSuccessAnimation = true
                     shouldShowUpdateNamePopUp = false
-                }
+                    viewModel.changeName(newName)
+                },
+                currentName = viewModel.userInfo.value.name,
+
             )
         }
 
@@ -275,10 +284,11 @@ private fun AccountInformationPreview() {
 fun NameUpdatePopup(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    onPositiveButtonClicked: () -> Unit = {}
+    onPositiveButtonClicked: (String) -> Unit = {},
+    currentName:String
 ) {
     val textState = remember {
-        mutableStateOf(TextFieldValue("Serhat ERDEM"))
+        mutableStateOf(TextFieldValue(currentName))
     }
 
     // FocusRequester ve KeyboardController'ı tanımlayın
@@ -335,7 +345,7 @@ fun NameUpdatePopup(
             Spacer(modifier = Modifier.height(8.dp))
             Row(modifier = Modifier.align(Alignment.End)) {
                 Button(
-                    onClick = { onPositiveButtonClicked() }
+                    onClick = { onPositiveButtonClicked(textState.value.text) }
                 ) {
                     Text(text = "Save")
                 }
@@ -366,7 +376,7 @@ fun DrawLineExample() {
 @Composable
 fun DrawLineExamplePreview() {
     Box(modifier = Modifier.fillMaxSize()) {
-        RowElement()
+       // RowElement()
     }
 
 }
@@ -384,6 +394,7 @@ fun RowElement(
     extraText: String = "This is not your username or pin. This name will be used in notification and articles to call you.",
     shouldShowExtraText: Boolean = false,
     onRowElementClicked: () -> Unit = {},
+
 ) {
     Box(
         modifier = modifier

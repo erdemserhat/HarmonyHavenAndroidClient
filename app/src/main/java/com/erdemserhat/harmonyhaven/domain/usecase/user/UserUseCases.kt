@@ -11,6 +11,8 @@ data class UserUseCases(
     val sendPasswordResetMail: SendPasswordResetMail,
     val authenticatePasswordResetAttempt: AuthenticatePasswordResetAttempt,
     val completePasswordResetAttempt: CompletePasswordResetAttempt,
-    val checkUserAuthenticationStatus: CheckUserAuthenticationStatus
+    val checkUserAuthenticationStatus: CheckUserAuthenticationStatus,
+    val getUserInformation: GetUserInformation,
+    val updateUserInformation: UpdateUserInformation
 
 )

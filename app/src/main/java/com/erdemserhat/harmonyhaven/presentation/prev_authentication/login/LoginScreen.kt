@@ -242,11 +242,11 @@ fun LoginScreen(
 
 ) {
     var email by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf("me.serhaterdem@gmail.com")
     }
 
     var password by rememberSaveable {
-        mutableStateOf("DemoPassword.01.")
+        mutableStateOf("Erdem.3451.")
     }
 
 
@@ -271,7 +271,7 @@ fun LoginScreen(
         onPasswordValueChanged = { password = it },
         warningText = viewModel.loginState.value.loginWarning,
         canNavigateToDashBoard = viewModel.loginState.value.canNavigateToDashBoard,
-        onCanNavigateToDashBoard = { /*navController.navigate(Screen.Main.route)*/ },
+        onCanNavigateToDashBoard = { navController.navigate(Screen.Main.route) },
         isLoading = viewModel.loginState.value.isLoading,
         isEmailValid = !viewModel.loginState.value.validationState.isEmailValid,
         isPasswordValid = !viewModel.loginState.value.validationState.isPasswordValid

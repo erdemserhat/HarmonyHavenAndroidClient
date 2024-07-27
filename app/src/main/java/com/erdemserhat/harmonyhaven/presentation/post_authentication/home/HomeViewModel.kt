@@ -58,7 +58,7 @@ class HomeViewModel @Inject constructor(
                 val categories = categoriesDeferred.await()
                 val articles = articlesDeferred.await()
                 val authStatus = authStatusDeferred.await()
-                Log.d("erdem121212",authStatus.toString())
+                Log.d("authStatusTest",authStatus.toString())
 
                 if(authStatus==2){
                     _homeState.value = _homeState.value.copy(authStatus=2)
