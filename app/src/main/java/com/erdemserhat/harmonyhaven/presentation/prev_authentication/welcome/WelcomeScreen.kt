@@ -5,9 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults.flingBehavior
 import androidx.compose.foundation.pager.PagerState
@@ -70,7 +68,7 @@ fun WelcomeScreen(navHostController: NavHostController) {
     ) {
         HorizontalPager(
             modifier = Modifier
-                .weight(8f),
+                .weight(10f),
                     state = pagerState,
             verticalAlignment = Alignment.Top,
             flingBehavior = flingBehavior(state = pagerState),
@@ -107,8 +105,6 @@ fun WelcomeScreen(navHostController: NavHostController) {
             modifier = Modifier.weight(2f)
 
         )
-
-        Spacer(modifier = Modifier.size(25.dp))
 
 
     }

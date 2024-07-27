@@ -1,15 +1,14 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.notification
 
 import android.content.Context
-import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erdemserhat.harmonyhaven.data.local.entities.NotificationEntity
-import com.erdemserhat.harmonyhaven.data.local.repository.NotificationRepository
+import com.erdemserhat.dto.responses.NotificationDto
+import com.erdemserhat.harmonyhaven.domain.usecase.notification.NotificationUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -17,24 +16,48 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NotificationViewModel @Inject constructor(
-    notificationRepository: NotificationRepository,
+    private val notificationUseCases: NotificationUseCases,
     context: Context
-) :ViewModel() {
-    val visiblePermissionDialogQueue = mutableStateListOf<String>()
-    val allNotifications: LiveData<List<NotificationEntity>> = notificationRepository.allNotifications
-    private val sharedPreferences = context.getSharedPreferences("PermissionPreferences", Context.MODE_PRIVATE)
+) : ViewModel() {
+    private val _notifications = MutableStateFlow<List<NotificationDto>>(emptyList())
+    val notifications: StateFlow<List<NotificationDto>> = _notifications
 
+    // Offset variables
+    private var currentPage = 1
+    private val pageSize = 5
+    var isLoading = false
+    var hasMoreData = true
 
-    init {
-        Log.d("erdem3451",notificationRepository.allNotifications.value?.size.toString())
+    //load notification via offset
+    fun loadNotifications() {
+        if (isLoading || !hasMoreData) return
+        isLoading = true
+        viewModelScope.launch {
+            try {
+                val newNotifications =
+                    notificationUseCases.getNotification.executeRequest(currentPage, pageSize)
+                if (newNotifications.isNotEmpty()) {
+                    _notifications.value += newNotifications
+                    currentPage++
+                } else {
+                    hasMoreData = false
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                isLoading = false
+            }
+        }
     }
 
-    fun dismissDialog() {
-        visiblePermissionDialogQueue.removeFirst()
-    }
 
-    fun updatePermissionStatus(value: Boolean=false) {
-        val key: String ="notificationPref"
+    //Permission operations
+    private val sharedPreferences =
+        context.getSharedPreferences("PermissionPreferences", Context.MODE_PRIVATE)
+
+
+    fun updatePermissionStatus(value: Boolean = false) {
+        val key: String = "notificationPref"
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 sharedPreferences.edit().putBoolean(key, value).apply()
@@ -43,12 +66,9 @@ class NotificationViewModel @Inject constructor(
     }
 
     fun isPermissionGranted(): Boolean {
-        val key: String ="notificationPref"
-        return sharedPreferences.getBoolean(key,false)
+        val key: String = "notificationPref"
+        return sharedPreferences.getBoolean(key, false)
     }
-
-
-
 
 
 }

@@ -30,7 +30,6 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.sav
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.welcome.WelcomeScreen
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SetupNavGraph(
     navController: NavHostController,

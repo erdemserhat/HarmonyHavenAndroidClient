@@ -44,7 +44,7 @@ class LoginViewModel @Inject constructor(
     }
 
     init {
-        //onLoginClicked("me.serhaterdem@gmail.com","Erdem.3451.")
+        onLoginClicked("example@gmail.com","ExamplePassword.010.")
     }
 
     private fun authenticateUser(email: String, password: String) {
@@ -124,6 +124,7 @@ class LoginViewModel @Inject constructor(
             Log.d("AuthenticationTests", "Everything is nice")
 
             jwtRepository.saveJwtToken(response.jwt!!)
+            Log.d("AuthenticationTests",response.toString())
             Log.d("AuthenticationTests", "jwt saved as :" + jwtRepository.getJwtToken())
             ///Redirect the user main page...
 
