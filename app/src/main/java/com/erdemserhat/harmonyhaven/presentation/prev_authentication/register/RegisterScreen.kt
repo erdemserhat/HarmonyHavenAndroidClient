@@ -1,6 +1,5 @@
 package com.erdemserhat.harmonyhaven.presentation.prev_authentication.register
 
-import LocalGifImage
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -45,13 +43,6 @@ import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.co
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenTextField
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.util.customFontFamilyJunge
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 
 @Composable
 fun RegisterScreenContent(
@@ -167,10 +158,10 @@ fun RegisterScreenContent(
                     Spacer(modifier = Modifier.size(10.dp))
 
 
-                    if (params.isTermsOfUserAccepted) {
+                    if(params.isTermsOfUserAccepted){
                         isButtonsEnabled = true
 
-                    } else {
+                    }else{
                         isButtonsEnabled = false
 
                     }
@@ -261,14 +252,8 @@ fun RegisterScreenContent(
 
 }
 
-fun generateRandomString(characters: String, length: Int): String {
-    val random = java.util.Random()
-    return (1..length)
-        .map { characters[random.nextInt(characters.length)] }
-        .joinToString("")
-}
 
-@OptIn(DelicateCoroutinesApi::class)
+
 @Composable
 fun RegisterScreen(
     registerViewModel: RegisterViewModel = hiltViewModel(),
@@ -278,24 +263,22 @@ fun RegisterScreen(
 
 
     var name by rememberSaveable {
-        mutableStateOf("Example Name")
+        mutableStateOf("")
     }
 
     var surname by rememberSaveable {
-        mutableStateOf("Example Surname")
+        mutableStateOf("")
     }
-    val alphabet = "abcdefghijklmnopqrstuvwxyz"
-    val randomString = generateRandomString(alphabet, 5)
 
     var email by rememberSaveable {
-        mutableStateOf("${randomString}@example.com")
+        mutableStateOf("")
     }
     var password by rememberSaveable {
-        mutableStateOf("DemoPassword.01.")
+        mutableStateOf("")
     }
 
     var passwordConfirm by rememberSaveable {
-        mutableStateOf("DemoPassword.01.")
+        mutableStateOf("")
     }
 
     var gender by rememberSaveable {
@@ -303,10 +286,6 @@ fun RegisterScreen(
     }
 
     var isTermsOfConditionsAccepted by rememberSaveable {
-        mutableStateOf(true)
-    }
-
-    var shouldShowSuccessAnimation by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -325,7 +304,7 @@ fun RegisterScreen(
         gender = gender,
         onGenderValueChanged = { gender = it },
         onSignUpClicked = {
-            if (isTermsOfConditionsAccepted) {
+            if (isTermsOfConditionsAccepted){
                 registerViewModel.onRegisterClicked(
                     RegisterFormModel(
                         name = name,
@@ -339,43 +318,30 @@ fun RegisterScreen(
             }
 
 
-
-
         },
         onSignUpViaGoogleClicked = {},
         isTermsOfUserAccepted = isTermsOfConditionsAccepted,
-        onTermsOfConditionsAcceptanceStatusChanged = {
-            isTermsOfConditionsAccepted = !isTermsOfConditionsAccepted
-        },
+        onTermsOfConditionsAcceptanceStatusChanged = { isTermsOfConditionsAccepted = !isTermsOfConditionsAccepted },
         onSignInClicked = { navController.navigate(Screen.Login.route) },
         warningText = registerViewModel.registerState.value.registerWarning,
         isLoading = registerViewModel.registerState.value.isLoading,
         shouldNavigateTo = registerViewModel.registerState.value.canNavigateTo,
-        onShouldNavigateTo = {
-           shouldShowSuccessAnimation = true
-
-        },
+        onShouldNavigateTo = { navController.navigate(Screen.Login.route) },
         isNameValid = !registerViewModel.registerState.value.registerValidationState.isNameValid,
         isSurnameValid = !registerViewModel.registerState.value.registerValidationState.isSurnameValid,
         isEmailValid = !registerViewModel.registerState.value.registerValidationState.isEmailValid,
         isPasswordValid = !registerViewModel.registerState.value.registerValidationState.isPasswordValid,
 
 
+
+
+
+
+
         )
 
 
     RegisterScreenContent(params = registerScreenParams)
-
-    if (shouldShowSuccessAnimation) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            LocalGifImage(resId = R.raw.successfullygif)
-            LaunchedEffect(Unit) {
-                delay(500)
-                shouldShowSuccessAnimation = false
-                navController.navigate(Screen.Login.route)
-            }
-        }
-    }
 
 
 }
@@ -409,10 +375,10 @@ data class RegisterScreenParams(
     val isLoading: Boolean,
     val shouldNavigateTo: Boolean,
     val onShouldNavigateTo: () -> Unit,
-    val isNameValid: Boolean,
-    val isSurnameValid: Boolean,
-    val isEmailValid: Boolean,
-    val isPasswordValid: Boolean
+    val isNameValid:Boolean,
+    val isSurnameValid:Boolean,
+    val isEmailValid:Boolean,
+    val isPasswordValid:Boolean
 )
 
 private val defaultRegisterScreenParams = RegisterScreenParams(

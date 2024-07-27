@@ -1,8 +1,10 @@
 package com.erdemserhat.harmonyhaven.di.network
 
 import com.erdemserhat.harmonyhaven.data.api.user.AuthenticationStatusCheckerApiService
+import com.erdemserhat.harmonyhaven.data.api.user.InformationUpdateApiService
 import com.erdemserhat.harmonyhaven.data.api.user.PasswordResetApiService
 import com.erdemserhat.harmonyhaven.data.api.user.UserAuthenticationApiService
+import com.erdemserhat.harmonyhaven.data.api.user.UserInformationApiService
 import com.erdemserhat.harmonyhaven.data.api.user.UserRegistrationApiService
 import dagger.Module
 import dagger.Provides
@@ -37,6 +39,18 @@ object UserNetworkModule {
     @Singleton
     fun provideAuthenticationStatusCheckerApiService(retrofit: Retrofit): AuthenticationStatusCheckerApiService {
         return retrofit.create(AuthenticationStatusCheckerApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserInformationApiService(retrofit: Retrofit): UserInformationApiService {
+        return retrofit.create(UserInformationApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserInformationUpdateApiService(retrofit: Retrofit): InformationUpdateApiService {
+        return retrofit.create(InformationUpdateApiService::class.java)
     }
 
 

@@ -48,7 +48,6 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.Quot
 fun AppMainScreen(navController: NavController) {
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
-
     Scaffold(
         bottomBar = {
             NavigationBar(
@@ -94,7 +93,6 @@ fun AppMainScreen(navController: NavController) {
             }
         }
     ) {
-
         HorizontalPager(
             state = pagerState,
             count = items.size,
