@@ -16,11 +16,21 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+
+data class PasswordChangeResponseModel(
+    val isCurrentPasswordCorrect:Boolean = true,
+    val isNewPasswordAppropriate:Boolean = true,
+    val isSuccessfullyChangedPassword:Boolean = false,
+    val errorMessage:String="",
+    val isNewPasswordsMatch:Boolean = true,
+    val isLoading:Boolean = false
+)
 
 @HiltViewModel
 class AccountInformationViewModel @Inject constructor(
@@ -28,6 +38,9 @@ class AccountInformationViewModel @Inject constructor(
 ) : ViewModel() {
     private val _userInfo = mutableStateOf(UserInformationDto())
     val userInfo: State<UserInformationDto> = _userInfo
+
+    private val _passwordChangeResponseModel = mutableStateOf(PasswordChangeResponseModel())
+    val passwordChangeResponseModel: State<PasswordChangeResponseModel> = _passwordChangeResponseModel
 
 
     private fun getUserInfo(){
@@ -44,10 +57,52 @@ class AccountInformationViewModel @Inject constructor(
     }
 
 
-    fun changePassword(newPassword: String,currentPassword:String) {
+    fun changePassword(newPassword: String,currentPassword:String,confirmNewPassword:String) {
+        _passwordChangeResponseModel.value = PasswordChangeResponseModel(isNewPasswordsMatch = true)
+
+        if (newPassword!=confirmNewPassword){
+            _passwordChangeResponseModel.value = _passwordChangeResponseModel.value.copy(
+                isNewPasswordsMatch = false,
+                isLoading = false
+            )
+            return
+        }
+
         viewModelScope.launch {
             val result = userUseCases.updateUserInformation.updatePassword(newPassword, currentPassword)
+            if(!result.isValid){
+                if(result.errorCode==0)
+                    _passwordChangeResponseModel.value = _passwordChangeResponseModel.value.copy(
+                        isCurrentPasswordCorrect = false,
+                        errorMessage = result.errorMessage,
+                        isLoading = false
+
+                    )
+                else
+                    _passwordChangeResponseModel.value = _passwordChangeResponseModel.value.copy(
+                        isNewPasswordAppropriate = false,
+                        errorMessage = result.errorMessage,
+                        isLoading = false
+
+                    )
+
+            }else{
+                _passwordChangeResponseModel.value = _passwordChangeResponseModel.value.copy(
+                    isSuccessfullyChangedPassword = true,
+                    errorMessage = "",
+                    isLoading = false
+
+                )
+
+
+
+            }
+
+
+
         }
+
+
     }
 
     fun changeName(newName: String) {
@@ -55,5 +110,9 @@ class AccountInformationViewModel @Inject constructor(
             val result = userUseCases.updateUserInformation.updateName(newName)
             getUserInfo()
         }
+    }
+
+    fun resetPasswordResetStates(){
+        _passwordChangeResponseModel.value = PasswordChangeResponseModel()
     }
 }
