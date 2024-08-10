@@ -163,34 +163,37 @@ fun ArticleToolbar(
 
 
 
-            IconButton(onClick = { /* Kaydetme işlemi */ }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.play_icon),
-                    contentDescription = "Play",
-                    modifier = Modifier.size(24.dp)
+          //  IconButton(onClick = { /* Kaydetme işlemi */ }) {
+             //   Icon(
+              //     painter = painterResource(id = R.drawable.play_icon),
+               //     contentDescription = "Play",
+               //     modifier = Modifier.size(24.dp)
 
 
-                )
-            }
-            IconButton(onClick = { /* Paylaşma işlemi */ }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.shareicon),
-                    contentDescription = "Share",
-                    modifier = Modifier.size(24.dp)
+               // )
+           //}
 
 
-                )
-            }
-
-            IconButton(onClick = { /* Paylaşma işlemi */ }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.three_dots_icon),
-                    contentDescription = "Additional",
-                    modifier = Modifier.size(24.dp)
+           // IconButton(onClick = { /* Paylaşma işlemi */ }) {
+               // Icon(
+                  //  painter = painterResource(id = R.drawable.shareicon),
+                   // contentDescription = "Share",
+                   // modifier = Modifier.size(24.dp)
 
 
-                )
-            }
+                //)
+           // }
+
+
+          //  IconButton(onClick = { /* Paylaşma işlemi */ }) {
+               // Icon(
+                   // painter = painterResource(id = R.drawable.three_dots_icon),
+                   // contentDescription = "Additional",
+                   // modifier = Modifier.size(24.dp)
+
+
+               // )
+            //}
         },
     )
 }
