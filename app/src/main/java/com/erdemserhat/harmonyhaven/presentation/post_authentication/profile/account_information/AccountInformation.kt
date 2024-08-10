@@ -53,9 +53,15 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.acc
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.account_information.AccountInformationViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.account_information.NameUpdatePopup
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.account_information.PasswordUpdatePopup
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.Thread.sleep
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun AccountInformationContent(
     navController: NavController,
@@ -67,6 +73,8 @@ fun AccountInformationContent(
     var shouldShowSuccessAnimation by rememberSaveable {
         mutableStateOf(false)
     }
+
+
 
     val passwordChangeResponse by viewModel.passwordChangeResponseModel
 
@@ -192,7 +200,7 @@ fun AccountInformationContent(
                 .fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.5f))
                 .pointerInput(Unit) {
-                    detectTapGestures(onTap = {
+                    detectTapGestures(onDoubleTap = {
                         shouldShowUpdatePasswordPopUp = false
                         viewModel.resetPasswordResetStates()
                     })
@@ -208,11 +216,22 @@ fun AccountInformationContent(
                 onSaveButtonClicked = {
                     newPassword, confirmNewPassword, currentPassword ->
                     viewModel.changePassword(newPassword,currentPassword,confirmNewPassword)
+                    GlobalScope.launch(Dispatchers.IO) {
+                        delay(3000)
+                        withContext(Dispatchers.Main){
+                            viewModel.resetPasswordResetStates()
+                        }
+
+                    }
+
+
 
                 },
                 isNewPasswordAppropriate = viewModel.passwordChangeResponseModel.value.isNewPasswordAppropriate,
                 isCurrentPasswordCorrect = viewModel.passwordChangeResponseModel.value.isCurrentPasswordCorrect,
-                isNewPasswordsMatch = viewModel.passwordChangeResponseModel.value.isNewPasswordsMatch
+                isNewPasswordsMatch = viewModel.passwordChangeResponseModel.value.isNewPasswordsMatch,
+                isLoading = passwordChangeResponse.isLoading,
+                isCurrentPasswordShort = passwordChangeResponse.isCurrentPasswordShort
 
             )
         }
@@ -227,6 +246,13 @@ fun AccountInformationContent(
                 delay(1000)
                 shouldShowSuccessAnimation = false
             }
+        }
+    }
+
+    if (passwordChangeResponse.isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            LocalGifImage(resId = R.raw.loading)
+
         }
     }
 
@@ -274,3 +300,7 @@ fun LocalGifImage(resId: Int = R.raw.examplegif, modifier: Modifier = Modifier) 
         contentScale = ContentScale.Crop
     )
 }
+
+/**
+ * TODO():
+ */

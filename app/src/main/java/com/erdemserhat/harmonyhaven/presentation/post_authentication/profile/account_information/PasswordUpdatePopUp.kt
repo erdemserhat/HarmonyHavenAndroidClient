@@ -1,5 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.account_information
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -34,6 +36,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -53,38 +56,74 @@ fun PasswordUpdatePopup(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     onSaveButtonClicked: (newPassword: String, confirmNewPassword: String, currentPassword: String) -> Unit,
-    isCurrentPasswordCorrect:Boolean = true,
-    isNewPasswordAppropriate:Boolean= true,
-    isNewPasswordsMatch:Boolean = true,
+    isCurrentPasswordCorrect: Boolean = true,
+    isNewPasswordAppropriate: Boolean = true,
+    isNewPasswordsMatch: Boolean = true,
+    isLoading: Boolean = false,
+    isCurrentPasswordShort:Boolean=false
 
 ) {
+    Log.d("RecomposablePasswordUpdatePopUptest",isCurrentPasswordShort.toString())
     var showCurrentPasswordError by remember { mutableStateOf(false) }
     var showNewPasswordError by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
-    LaunchedEffect(isNewPasswordsMatch) {
-        if (!isNewPasswordsMatch) {
+
+    var tempVar2 = isNewPasswordsMatch
+
+    LaunchedEffect(tempVar2) {
+        if (!tempVar2) {
+            Toast.makeText(context, "Passwords don't match", Toast.LENGTH_SHORT).show()
             showNewPasswordError = true
             delay(1000)
             showNewPasswordError = false
         }
+
+        tempVar2 = !tempVar2
     }
 
-    LaunchedEffect(isNewPasswordAppropriate) {
+    var tempVar1 = isNewPasswordAppropriate
+
+    LaunchedEffect(tempVar1) {
         if (!isNewPasswordAppropriate) {
+            Toast.makeText(
+                context,
+                "New password should be at least 8 digits and contain at least one uppercase letter, one lowercase letter, and one digit.",
+                Toast.LENGTH_SHORT
+            ).show()
             showNewPasswordError = true
             delay(1000)
             showNewPasswordError = false
         }
+        tempVar1 = !tempVar1
     }
 
-    LaunchedEffect(isCurrentPasswordCorrect) {
+    var tempVar = isCurrentPasswordCorrect
+
+    LaunchedEffect(tempVar) {
         if (!isCurrentPasswordCorrect) {
+            Toast.makeText(context, "Current password was wrong", Toast.LENGTH_SHORT).show()
             showCurrentPasswordError = true
             delay(1000)
             showCurrentPasswordError = false
         }
+        tempVar = !tempVar
+
     }
 
+    var tempVar0 = isCurrentPasswordShort
+
+    LaunchedEffect(tempVar0) {
+        if (isCurrentPasswordShort) {
+            Toast.makeText(context, "Current password was wrong", Toast.LENGTH_SHORT).show()
+            showCurrentPasswordError = true
+            delay(1000)
+            showCurrentPasswordError = false
+            tempVar0 = !tempVar0
+        }
+
+
+    }
 
 
 
@@ -138,6 +177,7 @@ fun PasswordUpdatePopup(
 
             TextField(
                 isError = showCurrentPasswordError,
+                enabled = !isLoading,
                 value = currentPassword.value,
                 onValueChange = { text ->
                     // Metin değiştiğinde, metnin tamamını seçili hale getir
@@ -159,7 +199,7 @@ fun PasswordUpdatePopup(
                     errorIndicatorColor = Color.Red,
                     errorCursorColor = Color.Red,
 
-                ),
+                    ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(currentPasswordTfRequester)
@@ -203,6 +243,7 @@ fun PasswordUpdatePopup(
             TextField(
                 isError = showNewPasswordError,
                 value = newPassword.value,
+                enabled = !isLoading,
                 maxLines = 1,
 
                 onValueChange = { text ->
@@ -258,6 +299,7 @@ fun PasswordUpdatePopup(
             )
             TextField(
                 isError = showNewPasswordError,
+                enabled = !isLoading,
                 value = confirmNewPassword.value,
                 maxLines = 1,
 
@@ -294,14 +336,18 @@ fun PasswordUpdatePopup(
                             confirmNewPassword.value.text,
                             currentPassword.value.text
                         )
-                    }
+                    },
+                    enabled = !isLoading,
                 ) {
                     Text(text = "Save")
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Button(onClick = {
-                    onDismissRequest()
-                }) {
+                Button(
+                    onClick = {
+                        onDismissRequest()
+                    },
+                    enabled = !isLoading,
+                ) {
                     Text(text = "Cancel")
                 }
             }
