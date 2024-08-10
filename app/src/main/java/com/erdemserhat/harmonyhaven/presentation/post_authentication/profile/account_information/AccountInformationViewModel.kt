@@ -29,7 +29,8 @@ data class PasswordChangeResponseModel(
     val isSuccessfullyChangedPassword:Boolean = false,
     val errorMessage:String="",
     val isNewPasswordsMatch:Boolean = true,
-    val isLoading:Boolean = false
+    val isLoading:Boolean = false,
+    val isCurrentPasswordShort:Boolean=false
 )
 
 @HiltViewModel
@@ -58,17 +59,35 @@ class AccountInformationViewModel @Inject constructor(
 
 
     fun changePassword(newPassword: String,currentPassword:String,confirmNewPassword:String) {
-        _passwordChangeResponseModel.value = PasswordChangeResponseModel(isNewPasswordsMatch = true)
 
-        if (newPassword!=confirmNewPassword){
+        if (currentPassword.length<8){
             _passwordChangeResponseModel.value = _passwordChangeResponseModel.value.copy(
-                isNewPasswordsMatch = false,
-                isLoading = false
+                isCurrentPasswordShort = true,
             )
             return
         }
 
+
+        if (newPassword!=confirmNewPassword){
+            _passwordChangeResponseModel.value = _passwordChangeResponseModel.value.copy(
+                isNewPasswordsMatch = false,
+            )
+            return
+        }
+
+        if (newPassword.length<8){
+            _passwordChangeResponseModel.value = _passwordChangeResponseModel.value.copy(
+                isNewPasswordAppropriate = false,
+            )
+            return
+        }
+
+
+
+        _passwordChangeResponseModel.value = PasswordChangeResponseModel(isNewPasswordsMatch = true, isLoading = true)
+
         viewModelScope.launch {
+            delay(1000)
             val result = userUseCases.updateUserInformation.updatePassword(newPassword, currentPassword)
             if(!result.isValid){
                 if(result.errorCode==0)

@@ -14,12 +14,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,29 +45,59 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
+import com.erdemserhat.harmonyhaven.presentation.navigation.MyAppBar
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.util.DefaultAppFont
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(navController: NavController) {
-    SettingsScreenContent(navController)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                elevation = 0.dp,
+                backgroundColor = Color.Transparent,
+                contentColor = Color.Transparent,
+                title = { Text(text = "Settings") },
+                navigationIcon = {
+                    androidx.compose.material.IconButton(onClick = { /* Geri gitme işlemi */ }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.return_back_icon),
+                            contentDescription = "Geri",
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(50.dp))
+                                .size(32.dp)
+                                .clickable {
+                                    navController.popBackStack()
+                                }
+                        )
+                    }
+                }
+            )
+        }
+
+    ){padding->
+        SettingsScreenContent(navController, modifier = Modifier.padding(padding))
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun SettingsScreenPreview() {
     val navController = rememberNavController()
-    SettingsScreenContent(navController)
+
+    
 }
 
 @Composable
-fun SettingsScreenContent(navController: NavController) {
+fun SettingsScreenContent(navController: NavController,modifier: Modifier) {
 
     var shouldShowLogoutAlertDialog by rememberSaveable {
         mutableStateOf(false)
     }
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
     ) {
@@ -84,12 +123,6 @@ fun SettingsScreenContent(navController: NavController) {
 ///////////////////////////////Exit Alert Dialog/////////////////////////////
 
 
-
-        Text(
-            text = "Settings",
-            style = MaterialTheme.typography.h4,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
 
         // Border ile ayrılmış 3 adet buton
         Column(
@@ -117,18 +150,18 @@ fun SettingsScreenContent(navController: NavController) {
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
-            SettingsButton(
-                icon = painterResource(id = R.drawable.saved_articles_icon),
-                title = "Saved articles",
-                modifier = Modifier.clip(
-                    RoundedCornerShape(
-                        0.dp, 0.dp, 12.dp, 12.dp
-                    )
-                ),
-                onButtonClicked = {
-                    navController.navigate(Screen.SavedArticles.route)
-                }
-            )
+          //  SettingsButton(
+            //    icon = painterResource(id = R.drawable.saved_articles_icon),
+             //   title = "Saved articles",
+             //   modifier = Modifier.clip(
+              //      RoundedCornerShape(
+               //         0.dp, 0.dp, 12.dp, 12.dp
+                //    )
+               // ),
+               // onButtonClicked = {
+                //    navController.navigate(Screen.SavedArticles.route)
+               // }
+          //  )
         }
 
         Spacer(modifier = Modifier.size(25.dp))
@@ -157,11 +190,11 @@ fun SettingsScreenContent(navController: NavController) {
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
-            SettingsButton(
-                icon = painterResource(id = R.drawable.report_icon),
-                title = "Report problem",
-                modifier = Modifier
-            )
+         //   SettingsButton(
+              //  icon = painterResource(id = R.drawable.report_icon),
+              //  title = "Report problem",
+              //  modifier = Modifier
+           // )
 
             Divider(
                 color = Color(0xFFD9D9D9),
@@ -220,7 +253,7 @@ fun SettingsButton(
         modifier = modifier
             .fillMaxWidth()
             .height(50.dp)
-            .clickable(onClick = {onButtonClicked()})
+            .clickable(onClick = { onButtonClicked() })
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

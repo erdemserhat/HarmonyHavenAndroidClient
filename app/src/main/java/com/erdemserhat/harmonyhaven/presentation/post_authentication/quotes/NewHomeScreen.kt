@@ -120,6 +120,7 @@ fun Quote(quote: Quote) {
 
 
 
+        /*
 
         Box(
             contentAlignment = Alignment.BottomCenter,
@@ -147,6 +148,8 @@ fun Quote(quote: Quote) {
             }
 
         }
+        */
+
     }
 
 
