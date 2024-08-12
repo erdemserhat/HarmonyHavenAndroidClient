@@ -196,6 +196,7 @@ fun MyAppBar(navController: NavController, title: String) {
                 }) {
                     Text("Settings")
                 }
+
                 //DropdownMenuItem(onClick = { /* Handle option 2 click */ }) {
                //     Text("Option 2")
                // }
