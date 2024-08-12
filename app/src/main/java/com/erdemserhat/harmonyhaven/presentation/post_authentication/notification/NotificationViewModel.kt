@@ -3,7 +3,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.notificati
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erdemserhat.dto.responses.NotificationDto
+import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import com.erdemserhat.harmonyhaven.domain.usecase.notification.NotificationUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
