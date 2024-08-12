@@ -1,6 +1,6 @@
 package com.erdemserhat.harmonyhaven.data.api.notification
 
-import com.erdemserhat.dto.responses.NotificationDto
+import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

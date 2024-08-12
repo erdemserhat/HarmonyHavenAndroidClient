@@ -1,20 +1,21 @@
-package com.erdemserhat.harmonyhaven.domain.usecase.notification
+package com.erdemserhat.harmonyhaven.domain.usecase
 
 import android.util.Log
-import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import com.erdemserhat.harmonyhaven.data.api.notification.NotificationApiService
-import javax.inject.Inject
-
+import com.erdemserhat.harmonyhaven.data.api.quote.QuoteApiService
+import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
+import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class GetNotification @Inject constructor(
-    private val notificationApiService: NotificationApiService
+class GetQuotesUseCase @Inject constructor(
+    private val quotesApiService: QuoteApiService
 ) {
-    suspend fun executeRequest(page: Int, size: Int): List<NotificationDto> {
+    suspend fun executeRequest(): List<Quote> {
         return try {
             val response = withContext(Dispatchers.IO) {
-                notificationApiService.getNotifications(page, size)
+                quotesApiService.getQuotes()
             }
             if (response.isSuccessful) {
                 Log.d("API-CALL-LOGS", "Get Notification API call was successful")
