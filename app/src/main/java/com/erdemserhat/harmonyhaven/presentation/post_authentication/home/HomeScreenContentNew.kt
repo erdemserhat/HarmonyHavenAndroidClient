@@ -40,6 +40,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -77,6 +79,8 @@ fun HomeScreenContentNew(
         mutableStateOf(false)
     }
     var selectedCategoryId = rememberSaveable { mutableIntStateOf(0) }
+
+
 
 
 
@@ -296,7 +300,7 @@ fun SearchBarWithIcon(
         TextField(
             value = query,
             onValueChange = onQueryChange,
-            placeholder = { Text("Search...") },
+            placeholder = { Text("Ara...") },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Search
             ),

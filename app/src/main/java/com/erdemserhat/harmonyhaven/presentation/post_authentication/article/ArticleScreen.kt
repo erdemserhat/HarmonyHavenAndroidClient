@@ -8,6 +8,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import com.erdemserhat.harmonyhaven.R
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
@@ -111,7 +112,7 @@ fun ArticleToolbar(
 ) {
     TopAppBar(
         elevation = 0.dp, // Kenarlık kalınlığını sıfıra ayarlar
-        backgroundColor = Color.Transparent,
+        backgroundColor = Color.White,
         contentColor = Color.Transparent,
         title = {  },
         navigationIcon = {
@@ -205,8 +206,10 @@ fun ArticleContent(
 ) {
     Column(
         modifier = Modifier
+            .background(Color.White)
             .padding(16.dp)
             .fillMaxSize()
+
             .verticalScroll(rememberScrollState())
     ) {
 

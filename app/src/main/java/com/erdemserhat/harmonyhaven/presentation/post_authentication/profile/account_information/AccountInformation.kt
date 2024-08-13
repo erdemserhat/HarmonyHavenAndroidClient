@@ -99,6 +99,7 @@ fun AccountInformationContent(
         content = {padding->
             Column(
                 modifier = Modifier
+                    .background(Color.White)
                     .padding(padding)
                     .fillMaxSize()
             ) {
@@ -107,14 +108,14 @@ fun AccountInformationContent(
 
                     AccountInformationRowElement(
                         modifier = Modifier,
-                        title = "Name",
+                        title = "Ad",
                         titleIcon = R.drawable.profile_svgrepo_com,
                         text = viewModel.userInfo.value.name,
                         shouldShowActionIcon = true,
                         actionIcon = R.drawable.edit_svgrepo_com__1_,
                         actionIconModifier = Modifier.size(45.dp),
 
-                        extraText = "This is not your username or pin. This name will be used in notification and articles to call you.",
+                        extraText = "Bu, kullanıcı adınız değildir. Bu isim, bildirimlerde size hitap etmek için kullanılacaktır.",
                         shouldShowExtraText = true,
                         onRowElementClicked = { shouldShowUpdateNamePopUp = true },
 
@@ -124,12 +125,12 @@ fun AccountInformationContent(
 
                     AccountInformationRowElement(
                         modifier = Modifier,
-                        title = "E-Mail",
+                        title = "E-Posta",
                         titleIcon = R.drawable.email_svgrepo_com,
                         text = viewModel.userInfo.value.email,
                         shouldShowActionIcon = false,
                         actionIcon = R.drawable.edit_svgrepo_com,
-                        extraText = "This is not your username or pin. This name will be used in notification and articles to call you.",
+                        extraText = "Güvenlik nedenlerinden dolayı e-posta adresinizi doğrudan güncellemiyoruz. Talebinizi bize e-posta göndererek iletebilirsiniz.",
                         shouldShowExtraText = true,
                         onRowElementClicked = {},
                     )
@@ -137,9 +138,9 @@ fun AccountInformationContent(
 
                     AccountInformationRowElement(
                         modifier = Modifier,
-                        title = "Password",
+                        title = "Şifre",
                         titleIcon = R.drawable.password_lock_solid_svgrepo_com,
-                        text = "Change your password",
+                        text = "Şifreni Güncelle",
                         shouldShowActionIcon = true,
                         actionIcon = R.drawable.right_arrow_svgrepo_com,
                         actionIconModifier = Modifier.size(36.dp),
@@ -296,7 +297,7 @@ fun LocalGifImage(resId: Int = R.raw.examplegif, modifier: Modifier = Modifier) 
     Image(
         painter = painter,
         contentDescription = null,
-        modifier = modifier.size(200.dp),
+        modifier = modifier,
         contentScale = ContentScale.Crop
     )
 }

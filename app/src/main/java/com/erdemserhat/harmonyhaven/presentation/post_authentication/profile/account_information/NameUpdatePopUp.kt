@@ -66,7 +66,7 @@ fun NameUpdatePopup(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(modifier = Modifier.size(10.dp))
             Text(
-                text = "Enter your name",
+                text = "Size nasıl hitap edilmesini istersiniz?",
                 modifier = Modifier.align(Alignment.Start),
                 fontFamily = DefaultAppFont,
                 fontWeight = FontWeight.SemiBold
@@ -101,13 +101,13 @@ fun NameUpdatePopup(
                 Button(
                     onClick = { onPositiveButtonClicked(textState.value.text) }
                 ) {
-                    Text(text = "Save")
+                    Text(text = "Kaydet")
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(onClick = {
                     onDismissRequest()
                 }) {
-                    Text(text = "Cancel")
+                    Text(text = "Vazgeç")
                 }
             }
         }

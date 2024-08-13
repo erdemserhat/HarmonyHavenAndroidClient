@@ -46,7 +46,7 @@ fun CategoryRow(
     ) {
 
         Text(
-            text = "Category",
+            text = "Kategoriler",
             fontFamily = DefaultAppFont,
             color = androidx.compose.material.MaterialTheme.AppColors.secondary,
             fontWeight = FontWeight.Bold,

@@ -1,6 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.notification
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
@@ -48,6 +49,8 @@ class NotificationViewModel @Inject constructor(
                 isLoading = false
             }
         }
+
+        Log.d("testNotification",_notifications.value.toString())
     }
 
 

@@ -5,7 +5,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults.flingBehavior
 import androidx.compose.foundation.pager.PagerState
@@ -102,7 +105,7 @@ fun WelcomeScreen(navHostController: NavHostController) {
         FinishButton(
             pagerState = pagerState,
             onClick = { navHostController.navigate(Screen.Login.route) },
-            modifier = Modifier.weight(2f)
+            modifier = Modifier.weight(2f).padding(bottom = 10.dp)
 
         )
 
@@ -137,7 +140,9 @@ fun PagerScreen(onBoardingPage: OnBoardingPage) {
         Image(
             painter = painterResource(onBoardingPage.image),
             contentDescription = null,
-            modifier = Modifier.padding(top = 50.dp)
+            modifier = Modifier
+                .padding(top = 50.dp)
+                .aspectRatio(16f / 9f) // Aspect ratio burada belirtiliyor
         )
         Text(
             text = onBoardingPage.title,
@@ -176,11 +181,13 @@ fun FinishButton(
         visible = pagerState.currentPage == 2
     ) {
         HarmonyHavenGreetingButton(
-            buttonText = stringResource(R.string.finish),
+            buttonText = "Başla",
             onClick = onClick,
             modifier = modifier
 
         )
+
+
     }
 
 }
