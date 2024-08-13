@@ -11,20 +11,20 @@ sealed class OnBoardingPage(
 ){
     data object First: OnBoardingPage(
         image = R.drawable.onboarding_screen_image_1,
-        title = "Welcome to Harmony Haven!",
-        description = "Discover something new every day with personalized notifications and daily tips on personal development, health, relationships, and more. Let's embark on this journey together!"
+        title = "Harmony Haven'a Hoş Geldiniz!",
+        description = "Harmony Haven ile gününüzü aydınlatın! En güncel ve ilginç haberleri anında bildirim olarak alın. Ayrıca, kişiselleştirilmiş önerilerle ilgi alanlarınıza özel içeriklere ulaşarak her gününüzü daha anlamlı kılın. Bu yolculukta bize katılın ve bilgi dolu bir deneyimin keyfini çıkarın!"
     )
 
     data object Second: OnBoardingPage(
         image = R.drawable.onboarding_screen_image_2,
-        title = "Get Personalized Notifications",
-        description = "Receive personalized notifications and discover inspiring content. Find support in tough times, and always have a companion by your side."
+        title = "Size Özel Olarak Hazırlanmış Bildirimler Alın",
+        description = "Kişiselleştirilmiş bildirimler alın ve ilham verici içeriklerle tanışın. Zor zamanlarda destek bulun ve her zaman yanınızda bir dost hissini yaşayın."
     )
 
     data object Third: OnBoardingPage(
         image = R.drawable.onboarding_screen_image_3,
-        title = "Explore New Insights Daily",
-        description = "Discover something new every day with personalized notifications and daily tips on personal development, health, relationships, and more. Let's embark on this journey together!"
+        title = "Günlük Olarak Yeni Bilgiler Öğrenin",
+        description = "Farklı yazarların derlediği ve her gün güncellenen ilham verici sözlere göz atın. Ayrıca, günlük olarak hayatınıza değer katacak yeni bilgiler öğrenin ve kendinizi sürekli geliştirin"
     )
 
 }

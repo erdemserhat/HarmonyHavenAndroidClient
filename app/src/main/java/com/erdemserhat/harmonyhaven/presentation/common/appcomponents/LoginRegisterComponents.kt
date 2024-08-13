@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -247,7 +248,8 @@ fun HarmonyHavenGreetingLogo(modifier: Modifier) {
     Image(
         painter = painterResource(id = R.drawable.harmony_haven_icon),
         contentDescription = null,
-        modifier = modifier
+        modifier = modifier.aspectRatio(16f / 9f) // Aspect ratio burada belirtiliyor
+
 
     )
 }

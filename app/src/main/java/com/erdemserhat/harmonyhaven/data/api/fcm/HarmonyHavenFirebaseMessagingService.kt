@@ -17,6 +17,7 @@ import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.data.local.AppDatabase
 import com.erdemserhat.harmonyhaven.data.local.entities.NotificationEntity
 import com.erdemserhat.harmonyhaven.data.local.repository.NotificationRepository
+import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,6 +28,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
+
+
 
 
 @AndroidEntryPoint
@@ -45,11 +48,10 @@ class HarmonyHavenFirebaseMessagingService() : FirebaseMessagingService() {
 
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
+
     override fun onMessageReceived(message: RemoteMessage) {
-        val data = message.data
-        val title = data["specializedTitle"] ?: "Varsayılan Başlık"
-        val body = data["specializedBody"] ?: "Varsayılan İçerik"
+        val title = message.notification?.title ?: ""
+        val body = message.notification?.body ?: ""
 
 
         runBlocking {
@@ -76,14 +78,18 @@ class HarmonyHavenFirebaseMessagingService() : FirebaseMessagingService() {
         val bigTextStyle = NotificationCompat.BigTextStyle()
             .bigText(body) // Büyük içerik,
 
-        val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra("destination",Screen.Notification.route)  // Hedef ekran için ekstra bilgi
+
+        }
+
 
         val pendingIntent = PendingIntent.getActivity(
             this,
-            1,
+            0, // İstediğiniz unique request code'u kullanın
             intent,
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
 

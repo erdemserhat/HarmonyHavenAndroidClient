@@ -26,6 +26,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
+        multiDexEnabled =true
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -79,6 +80,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1") // AndroidX AppCompat library to make new Android features available on older Android versions.
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("com.google.firebase:firebase-messaging-ktx:23.4.1")
+    implementation("com.google.firebase:protolite-well-known-types:18.0.0")
 
     //Test Dependencies
 

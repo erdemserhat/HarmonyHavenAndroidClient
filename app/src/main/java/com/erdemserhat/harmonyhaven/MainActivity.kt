@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -36,7 +37,6 @@ class MainActivity : ComponentActivity() {
     lateinit var userUseCases: UserUseCases
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SuspiciousIndentation")
-    @OptIn(DelicateCoroutinesApi::class)
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,18 +49,16 @@ class MainActivity : ComponentActivity() {
             HarmonyHavenTheme {
                 navController = rememberNavController()
 
-                val navController = rememberNavController()
-                    SetupNavGraph(
-                        navController = navController,
-                        startDestination = if (isFirstLaunch) Screen.Welcome.route else Screen.Main.route,
-                        modifier = Modifier // Padding değerlerini burada kullanın
-                    )
-                    // Uygulama başlatıldığında isFirstLaunch değerini false olarak ayarlama
-                    LaunchedEffect(key1 = Unit) {
-                        sharedPrefs.edit().putBoolean("isFirstLaunch", false).apply()
-                    }
+                SetupNavGraph(
+                    navController = navController,
+                    startDestination = if (isFirstLaunch) Screen.Welcome.route else Screen.Main.route,
+                    modifier = Modifier // Padding değerlerini burada kullanın
+                )
 
+                LaunchedEffect(key1 = Unit) {
+                    sharedPrefs.edit().putBoolean("isFirstLaunch", false).apply()
                 }
+
 
 
             }
@@ -68,8 +66,10 @@ class MainActivity : ComponentActivity() {
 
         }
 
+
     }
 
+}
 
 
 

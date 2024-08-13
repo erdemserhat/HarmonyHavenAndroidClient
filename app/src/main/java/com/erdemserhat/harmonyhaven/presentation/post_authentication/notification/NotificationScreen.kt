@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.notification
 
+import LocalGifImage
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
@@ -54,10 +55,18 @@ import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenButton
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.util.customFontInter
+import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Locale
+
+fun convertTimestampToTurkishDate(timestamp: Long): String {
+    val date = java.util.Date(timestamp * 1000) // Timestamp'i milisaniyeye çeviriyoruz
+    val sdf = SimpleDateFormat("dd MMMM yyyy, HH:mm", Locale("tr", "TR"))
+    return sdf.format(date)
+}
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -89,7 +98,7 @@ fun NotificationScreen(
         Modifier
             .fillMaxSize()
             .background(
-               Color.White
+                Color.White
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -109,13 +118,13 @@ fun NotificationScreen(
                 )
                 Spacer(modifier = Modifier.size(20.dp))
                 Text(
-                    text = "Harmony Haven can send notifications to provide you with a better experience. These notifications are customized based on your interests and usage habits.",
+                    text = "Harmony Haven, size daha iyi bir deneyim sunmak için bildirimler gönderebilir. Bu bildirimler, ilgi alanlarınıza ve kullanım alışkanlıklarınıza göre özelleştirilmiştir.",
                     modifier = Modifier.widthIn(max = 400.dp), // Metnin genişliği
                     softWrap = true // Satır başı yapma
                 )
 
                 Spacer(modifier = Modifier.size(20.dp))
-                HarmonyHavenButton(buttonText = "Give Permission", onClick = {
+                HarmonyHavenButton(buttonText = "İzin Ver", onClick = {
                     notificationPermissionLauncher.launch(
                         Manifest.permission.POST_NOTIFICATIONS
                     )
@@ -133,7 +142,7 @@ fun NotificationScreen(
                 )
                 Spacer(modifier = Modifier.size(10.dp))
                 Text(
-                    text = "There is no notification yet, you are going to start take notification as soon as possbile",
+                    text = "Henüz bir bildirim yok, en kısa sürede bildirim almaya başlayacaksınız.",
                     textAlign = TextAlign.Center
 
                 )
@@ -198,7 +207,7 @@ fun NotificationContent(notification: NotificationDto) {
             .padding(10.dp)
     ) {
         Text(
-            text = unixToDateTime(notification.timeStamp / 1000),
+            text = convertTimestampToTurkishDate(notification.timeStamp),
             fontFamily = customFontInter,
             fontWeight = FontWeight.Medium,
             modifier = Modifier
@@ -212,6 +221,10 @@ fun NotificationContent(notification: NotificationDto) {
                 .background(color = harmonyHavenComponentWhite, shape = RoundedCornerShape(20.dp)),
 
             ) {
+
+
+
+
             Column {
                 Text(
                     text = notification.title,
@@ -225,8 +238,7 @@ fun NotificationContent(notification: NotificationDto) {
                 Text(
                     text = notification.content,
                     modifier = Modifier
-                        .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
-                        .width(310.dp),
+                        .padding(start = 10.dp, end = 10.dp, bottom = 10.dp),
                     textAlign = TextAlign.Justify,
                     fontFamily = customFontInter,
                     fontSize = MaterialTheme.typography.bodyMedium.fontSize
@@ -235,21 +247,21 @@ fun NotificationContent(notification: NotificationDto) {
 
             }
 
-            Image(
-                painter = painterResource(id = R.drawable.shareicon),
-                contentDescription = null,
-                Modifier
-                    .size(50.dp)
-                    .padding(10.dp)
-                    .align(Alignment.BottomEnd),
+           // Image(
+              //  painter = painterResource(id = R.drawable.shareicon),
+              //  contentDescription = null,
+              //  Modifier
+               //     .size(50.dp)
+                //    .padding(10.dp)
+               //     .align(Alignment.BottomEnd),
 
-                )
+               // )
 
             Image(
                 painter = painterResource(id = R.drawable.harmony_haven_icon),
                 contentDescription = null,
                 Modifier
-                    .size(50.dp)
+                    .size(35.dp)
                     .padding(10.dp)
                     .align(Alignment.TopEnd),
 

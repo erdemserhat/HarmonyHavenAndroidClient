@@ -73,7 +73,7 @@ fun PasswordUpdatePopup(
 
     LaunchedEffect(tempVar2) {
         if (!tempVar2) {
-            Toast.makeText(context, "Passwords don't match", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Şifreler Eşleşmiyor...", Toast.LENGTH_SHORT).show()
             showNewPasswordError = true
             delay(1000)
             showNewPasswordError = false
@@ -88,7 +88,7 @@ fun PasswordUpdatePopup(
         if (!isNewPasswordAppropriate) {
             Toast.makeText(
                 context,
-                "New password should be at least 8 digits and contain at least one uppercase letter, one lowercase letter, and one digit.",
+                "Yeni şifre en az 8 karakter olmalı ve en az bir büyük harf, bir küçük harf ve bir rakam içermelidir.",
                 Toast.LENGTH_SHORT
             ).show()
             showNewPasswordError = true
@@ -102,7 +102,7 @@ fun PasswordUpdatePopup(
 
     LaunchedEffect(tempVar) {
         if (!isCurrentPasswordCorrect) {
-            Toast.makeText(context, "Current password was wrong", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Mevcut şifreniz yanlış gibi görünüyor.", Toast.LENGTH_SHORT).show()
             showCurrentPasswordError = true
             delay(1000)
             showCurrentPasswordError = false
@@ -115,7 +115,7 @@ fun PasswordUpdatePopup(
 
     LaunchedEffect(tempVar0) {
         if (isCurrentPasswordShort) {
-            Toast.makeText(context, "Current password was wrong", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Mevcut şifreniz çok kısa, lütfen tekrar kontrol edin.", Toast.LENGTH_SHORT).show()
             showCurrentPasswordError = true
             delay(1000)
             showCurrentPasswordError = false
@@ -169,7 +169,7 @@ fun PasswordUpdatePopup(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(modifier = Modifier.size(10.dp))
             Text(
-                text = "Current Password",
+                text = "Mevcut Şifreniz",
                 modifier = Modifier.align(Alignment.Start),
                 fontFamily = DefaultAppFont,
                 fontWeight = FontWeight.SemiBold,
@@ -234,7 +234,7 @@ fun PasswordUpdatePopup(
 
 
             Text(
-                text = "New Password",
+                text = "Yeni Şifreniz",
                 modifier = Modifier.align(Alignment.Start),
                 fontFamily = DefaultAppFont,
                 fontWeight = FontWeight.SemiBold
@@ -292,7 +292,7 @@ fun PasswordUpdatePopup(
             Spacer(modifier = Modifier.size(10.dp))
 
             Text(
-                text = "Confirm New Password",
+                text = "Yeni Şifrenizi Onaylayın",
                 modifier = Modifier.align(Alignment.Start),
                 fontFamily = DefaultAppFont,
                 fontWeight = FontWeight.SemiBold
@@ -339,7 +339,7 @@ fun PasswordUpdatePopup(
                     },
                     enabled = !isLoading,
                 ) {
-                    Text(text = "Save")
+                    Text(text = "Kaydet")
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
@@ -348,7 +348,7 @@ fun PasswordUpdatePopup(
                     },
                     enabled = !isLoading,
                 ) {
-                    Text(text = "Cancel")
+                    Text(text = "Vazgeç")
                 }
             }
         }

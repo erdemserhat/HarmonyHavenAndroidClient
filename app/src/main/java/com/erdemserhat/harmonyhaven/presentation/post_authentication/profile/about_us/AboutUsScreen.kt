@@ -3,6 +3,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.ab
 import LocalGifImage
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
@@ -92,7 +93,6 @@ fun AboutUsScreenContent(
 
 ) {
 
-
     Scaffold(
         topBar = {
             SavedArticlesToolBar(
@@ -100,12 +100,9 @@ fun AboutUsScreenContent(
             )
         },
         content = {
-
-
-
-            
             Column(
                 modifier = Modifier
+                    .background(Color.White)
                     .padding(it)
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
@@ -139,7 +136,8 @@ fun AboutUsScreenContent(
 
             }
 
-        }
+        },
+
     )
 
 }
@@ -152,7 +150,7 @@ fun SavedArticlesToolBar(
 ) {
     TopAppBar(
         elevation = 0.dp, // Kenarlık kalınlığını sıfıra ayarlar
-        backgroundColor = Color.Transparent,
+        backgroundColor = Color.White,
         contentColor = Color.Transparent,
         title = {
             Text(text = "About us")
