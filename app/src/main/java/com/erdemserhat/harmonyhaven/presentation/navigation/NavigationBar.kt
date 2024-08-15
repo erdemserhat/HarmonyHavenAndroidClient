@@ -41,6 +41,8 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,13 +68,22 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeSc
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.SettingsScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.QuotesScreen
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
+import kotlinx.coroutines.GlobalScope
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
-fun AppMainScreen(navController: NavController) {
+fun AppMainScreen(navController: NavController,params: MainScreenParams = MainScreenParams()) {
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
+    val paramsData = params
+    coroutineScope.launch {
+        if(paramsData.screenNo!=-1)
+            pagerState.scrollToPage(paramsData.screenNo)
+
+    }
     Box{
         Scaffold(
             bottomBar = {
@@ -94,6 +105,7 @@ fun AppMainScreen(navController: NavController) {
                             onClick = {
                                 coroutineScope.launch {
                                     pagerState.scrollToPage(index)
+                                    paramsData.screenNo = -1
                                 }
                             },
                             icon = {
@@ -122,6 +134,11 @@ fun AppMainScreen(navController: NavController) {
                             }
                         )
                     }
+
+
+
+
+
                 }
             },
             topBar = {
@@ -133,12 +150,19 @@ fun AppMainScreen(navController: NavController) {
                         2 -> "Söz Akışı"
                         else -> "Default Title"  // Diğer durumlar için bir başlık eklemek isteyebilirsiniz
 
+                    },
+                    topBarBackgroundColor = when(pagerState.currentPage){
+                        0-> Color.White
+                        1->Color.White
+                        2-> harmonyHavenComponentWhite
+                        else->Color.White
                     }
                 )
 
 
             }
         ) {
+
 
             HorizontalPager(
                 state = pagerState,
@@ -148,12 +172,14 @@ fun AppMainScreen(navController: NavController) {
                     .padding(it)
             ) { page ->
                 when (page) {
-
                     0 -> HomeScreenNew(navController = navController)
                     1 -> NotificationScreen(navController)
                     2 -> QuotesScreen()
-                    3 -> SettingsScreen(navController)
+
+
+
                 }
+
             }
         }
 
@@ -236,12 +262,15 @@ private val items = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyAppBar(navController: NavController, title: String) {
+fun MyAppBar(navController: NavController, title: String,topBarBackgroundColor:Color) {
     // State to manage the visibility of the dropdown menu
     var expanded by remember { mutableStateOf(false) }
 
         TopAppBar(
             title = { Text(text = title) },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = topBarBackgroundColor
+            ),
             actions = {
                 IconButton(onClick = { expanded = !expanded }) {
                     Icon(

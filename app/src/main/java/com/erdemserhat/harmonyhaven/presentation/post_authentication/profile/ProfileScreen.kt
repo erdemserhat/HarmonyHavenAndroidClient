@@ -172,18 +172,18 @@ fun SettingsScreenContent(navController: NavController,modifier: Modifier) {
                 .fillMaxWidth()
                 .border(1.dp, Color(0xFFD9D9D9), RoundedCornerShape(12.dp))
         ) {
-            SettingsButton(
-                icon = painterResource(id = R.drawable.information_icon),
-                title = "Hakkımızda",
-                modifier = Modifier.clip(
-                    RoundedCornerShape(
-                        12.dp, 12.dp, 0.dp, 0.dp
-                    )
-                ),
-                onButtonClicked = {
-                    navController.navigate(Screen.AboutUs.route)
-                }
-            )
+            //SettingsButton(
+              //  icon = painterResource(id = R.drawable.information_icon),
+               // title = "Hakkımızda",
+               // modifier = Modifier.clip(
+                 //   RoundedCornerShape(
+                   //     12.dp, 12.dp, 0.dp, 0.dp
+                  //  )
+              //  ),
+              //  onButtonClicked = {
+              //     navController.navigate(Screen.AboutUs.route)
+              //  }
+          //  )
 
            // Divider(
             //    color = Color(0xFFD9D9D9),
