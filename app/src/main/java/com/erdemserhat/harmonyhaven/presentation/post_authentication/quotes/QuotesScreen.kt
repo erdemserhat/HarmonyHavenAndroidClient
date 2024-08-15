@@ -27,10 +27,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import com.erdemserhat.harmonyhaven.presentation.navigation.AnimatedGif
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 
 
 @Composable
@@ -47,7 +49,8 @@ fun QuotesContent(quote: List<com.erdemserhat.harmonyhaven.dto.responses.Quote>)
 
     Box(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(harmonyHavenComponentWhite),
         contentAlignment = Alignment.Center,
 
         ) {
@@ -55,13 +58,17 @@ fun QuotesContent(quote: List<com.erdemserhat.harmonyhaven.dto.responses.Quote>)
         Box(modifier = Modifier
             .align(Alignment.Center)
             .height(300.dp)){
-            AnimatedGif(R.drawable.bird2,true, duration = 10000, modifier = Modifier.align(Alignment.Center))
-            AnimatedGif(R.drawable.bird,false, duration = 15000,modifier = Modifier.align(Alignment.Center))
+            AnimatedGif(R.drawable.bird2,true, duration = 20000, modifier = Modifier.align(Alignment.Center).zIndex(2f))
+            AnimatedGif(R.drawable.bird,false, duration = 25000,modifier = Modifier.align(Alignment.Center).zIndex(2f))
             LocalGifImage(R.drawable.examplecloud, modifier = Modifier
                 .align(Alignment.Center)
                 .size(700.dp))
 
+          //  Image(painter = painterResource(id = R.drawable.backgroundnotif), contentDescription = null, modifier = Modifier.align(
+             //   Alignment.TopEnd).fillMaxSize().zIndex(1f))
+
         }
+
 
         Image(painter = painterResource(id = R.drawable.sun), contentDescription = null, modifier = Modifier.align(
             Alignment.TopEnd))
@@ -69,7 +76,7 @@ fun QuotesContent(quote: List<com.erdemserhat.harmonyhaven.dto.responses.Quote>)
         Image(painter = painterResource(id = R.drawable.forest), contentDescription = null, modifier = Modifier.align(
             Alignment.BottomCenter).aspectRatio(1.6f))
         QuoteVerticalList(quoteList = quote, modifier = Modifier.align(Alignment.Center))
-        
+
 
 
 

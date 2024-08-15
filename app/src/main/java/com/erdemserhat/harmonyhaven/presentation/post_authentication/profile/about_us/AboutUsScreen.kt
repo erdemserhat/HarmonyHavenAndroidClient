@@ -32,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -112,11 +113,11 @@ fun AboutUsScreenContent(
 
             ) {
                 Box(contentAlignment = Alignment.Center){
-                    LocalGifImage(resId=R.raw.examplegif)
+                    LocalGifImage(resId=R.raw.examplegif, modifier = Modifier.zIndex(2f))
                     Image(
                         painter = painterResource(id = R.drawable.dsadas),
                         contentDescription = null,
-                        modifier = Modifier.size(300.dp)
+                        modifier = Modifier.size(300.dp).zIndex(1f)
 
                     )
 

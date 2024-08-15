@@ -25,7 +25,7 @@ object ArticleUseCaseModule {
     ): ArticleUseCases {
         return ArticleUseCases(
             Categories(),
-            GetArticleById(),
+            GetArticleById(articleApiService),
             GetRecentArticles(),
             GetArticlesByCategory(),
             GetAllArticles(),

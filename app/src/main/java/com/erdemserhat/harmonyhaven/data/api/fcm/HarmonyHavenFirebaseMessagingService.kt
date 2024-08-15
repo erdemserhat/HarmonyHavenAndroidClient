@@ -5,6 +5,8 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.RingtoneManager
 import android.os.Build
 import android.os.Handler
@@ -12,6 +14,7 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.erdemserhat.harmonyhaven.MainActivity
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.data.local.AppDatabase
@@ -27,6 +30,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.net.HttpURLConnection
+import java.net.URL
 import javax.inject.Inject
 
 
@@ -34,6 +39,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class HarmonyHavenFirebaseMessagingService() : FirebaseMessagingService() {
+
     @ApplicationContext
     @Inject
     lateinit var context: Context
@@ -41,18 +47,18 @@ class HarmonyHavenFirebaseMessagingService() : FirebaseMessagingService() {
     @Inject
     lateinit var notificationRepository: NotificationRepository
 
-
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.d("erde11", token)
-
+        // Token güncelleme işlemleri burada yapılabilir
     }
 
-
     override fun onMessageReceived(message: RemoteMessage) {
-        val title = message.notification?.title ?: ""
-        val body = message.notification?.body ?: ""
+        Log.d("FCM", "Message data payload: ${message.data}")
 
+        val title = message.data["title"] ?: "Default Title"
+        val body = message.data["body"] ?: "Default Body"
+        val image = message.data["image"] ?: ""
+        val screen = message.data["screen"] ?: ""
 
         runBlocking {
             notificationRepository.insert(
@@ -64,34 +70,35 @@ class HarmonyHavenFirebaseMessagingService() : FirebaseMessagingService() {
             )
         }
 
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "my_channel_id"
         val channelName = "My Channel"
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel =
-                NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+            val channel = NotificationChannel(
+                channelId, channelName, NotificationManager.IMPORTANCE_HIGH
+            )
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Expandable bildirim oluştur
-        val bigTextStyle = NotificationCompat.BigTextStyle()
-            .bigText(body) // Büyük içerik,
+        val bigStyle = if (image.isNotEmpty()) {
+            val bitmap = getBitmapFromUrl(image)
+            NotificationCompat.BigPictureStyle()
+                .bigPicture(bitmap)
+
+        } else {
+            NotificationCompat.BigTextStyle()
+                .bigText(body)
+        }
 
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra("destination",Screen.Notification.route)  // Hedef ekran için ekstra bilgi
-
+            putExtra("data", screen)  // Hedef ekran için ekstra bilgi
         }
 
-
         val pendingIntent = PendingIntent.getActivity(
-            this,
-            0, // İstediğiniz unique request code'u kullanın
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setContentTitle(title)
@@ -101,16 +108,27 @@ class HarmonyHavenFirebaseMessagingService() : FirebaseMessagingService() {
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-            .setStyle(bigTextStyle) // Expandable bildirim stilini ayarla
+            .setStyle(bigStyle) // Resimli bildirim stilini ayarla
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC) // Bildirim görünürlüğünü ayarla
 
         val notificationId = (Math.random() * 1000).toInt()
         notificationManager.notify(notificationId, notificationBuilder.build())
-
-
     }
 
-
+    private fun getBitmapFromUrl(urlString: String): Bitmap? {
+        return try {
+            val url = URL(urlString)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.apply {
+                doInput = true
+                connect()
+            }
+            BitmapFactory.decodeStream(connection.inputStream)
+        } catch (e: Exception) {
+            Log.e("FCM", "Error loading image", e)
+            null
+        }
+    }
 }
 
 

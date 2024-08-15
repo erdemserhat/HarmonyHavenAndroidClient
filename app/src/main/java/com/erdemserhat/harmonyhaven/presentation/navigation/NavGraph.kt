@@ -3,6 +3,7 @@ package com.erdemserhat.harmonyhaven.presentation.navigation
 import AccountInformationScreen
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -28,6 +29,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.Quot
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.RegisterScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles.SavedArticlesScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.welcome.WelcomeScreen
+import kotlinx.parcelize.Parcelize
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -129,14 +131,28 @@ fun SetupNavGraph(
             } else {
                 bundle?.getParcelable("article") as? ArticleResponseType
             }
-
             article?.let {
                 ArticleScreen(article,navController)
             }
         }
 
-        composable(route = Screen.Main.route) {
-            AppMainScreen(navController)
+
+        composable(
+            route = Screen.Main.route
+        ) { backStackEntry ->
+            val bundle = backStackEntry.arguments
+            val params = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                bundle?.getParcelable("params", MainScreenParams::class.java)
+            } else {
+                bundle?.getParcelable("params") as? MainScreenParams
+            }
+
+            if(params==null){
+                AppMainScreen(navController)
+            }else{
+                AppMainScreen(navController,params)
+            }
+
         }
 
 
@@ -167,3 +183,9 @@ fun NavController.navigate(
         navigate(nodeId, args, navOptions, navigatorExtras)
     }
 }
+
+@Parcelize
+data class MainScreenParams(
+    var screenNo:Int=-1,
+    val articleId:Int =0
+) : Parcelable

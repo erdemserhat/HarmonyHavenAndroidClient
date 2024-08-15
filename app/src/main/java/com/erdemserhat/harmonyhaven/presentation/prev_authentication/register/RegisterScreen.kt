@@ -77,7 +77,7 @@ fun RegisterScreenContent(
 
 
             //horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
+            //verticalArrangement = Arrangement.SpaceBetween,
 
 
             ) {

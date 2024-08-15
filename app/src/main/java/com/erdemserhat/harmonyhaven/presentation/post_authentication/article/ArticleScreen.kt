@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -62,11 +63,28 @@ data class ArticleUIModel(
 @Composable
 fun ArticleScreen(
    article:ArticleResponseType,
-   navController: NavController
+   navController: NavController,
+   postId:Int=-1
 ) {
+    if(article.id!=-1){
+        val articleVM:ArticleViewModel = hiltViewModel()
+        val articleState = articleVM.articleState.collectAsState()
+        LaunchedEffect(key1 = article) {
+            articleVM.prepareArticle(article.id)
+            Log.d("dsasdsad","worked")
 
-    ArticleScreenContent(article,navController)
-    //AlertExample()
+        }
+        ArticleScreenContent(articleState.value.toArticleResponseType(),navController)
+
+
+
+    }else{
+        ArticleScreenContent(article,navController)
+        //AlertExample()
+
+    }
+
+
 
 
 
@@ -85,8 +103,8 @@ fun ArticleScreenContent(
     Scaffold(
         topBar = {
             ArticleToolbar(
-                onTextFontMinusClicked = {fontSize--},
-                onTextFontPlusClicked = {fontSize++},
+                onTextFontMinusClicked = {if(!(fontSize<10)) fontSize-- },
+                onTextFontPlusClicked = {if(!(fontSize>24)) fontSize++},
                 navController = navController
             )
         },
