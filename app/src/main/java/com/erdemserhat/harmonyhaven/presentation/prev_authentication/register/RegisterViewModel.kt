@@ -35,7 +35,7 @@ class RegisterViewModel @Inject constructor(
         if (!areStringsEqual(formModel.password, formModel.confirmPassword)) {
             _registerState.value = _registerState.value.copy(
                 registerValidationState = RegisterValidationState(isPasswordValid = false),
-                registerWarning = "Passwords don't match",
+                registerWarning = "Şifreler uyuşmuyor.",
                 isLoading = false
             )
             return
@@ -51,13 +51,13 @@ class RegisterViewModel @Inject constructor(
 
     private suspend fun registerUser(userInformationSchema: UserInformationSchema) {
         viewModelScope.launch(Dispatchers.IO) {
-            val responseDeferred =  async { userUseCases.registerUser.executeRequest(userInformationSchema) }
+            val responseDeferred =  async { userUseCases.registerUser.executeRequest(userInformationSchema.apply { userInformationSchema.surname="default" }) }
             val response = responseDeferred.await()
 
             if (response == null) {
                 //network error
                 _registerState.value = _registerState.value.copy(
-                    registerWarning = "Network Error...",
+                    registerWarning = "Bağlantı Hatasu :(",
                     isLoading = false
                 )
 
@@ -70,7 +70,20 @@ class RegisterViewModel @Inject constructor(
                 val errorCode = response.formValidationResult.errorCode
                 _registerState.value = _registerState.value.copy(
                     registerValidationState = RegisterValidationState().getValidationStateByErrorCode(errorCode),
-                    registerWarning = response.formValidationResult.errorMessage.toString(),
+                    registerWarning = when (errorCode) {
+                        201 -> "İsim çok kısa. En az 2 karakter uzunluğunda olmalıdır."
+                        202 -> "İsim yalnızca harfler içermelidir."
+                        203 -> "Soyad çok kısa. En az 2 karakter uzunluğunda olmalıdır."
+                        204 -> "Soyad yalnızca harfler içermelidir."
+                        205 -> "Geçersiz e-posta formatı."
+                        206 -> "Bu e-posta ile zaten kayıtlı bir kullanıcı var."
+                        207 -> "Şifre en az 8 karakter uzunluğunda olmalıdır."
+                        208 -> "Şifre en az bir büyük harf, bir küçük harf ve bir rakam içermelidir."
+                        209 -> "Şifre kullanıcı adını içermemelidir. Lütfen farklı bir şifre seçin."
+                        210 -> "Şifre soyadı içermemelidir. Lütfen farklı bir şifre seçin."
+                        211 -> "Şifre e-posta adresini içermemelidir. Lütfen farklı bir şifre seçin."
+                        else -> "Bilinmeyen bir hata oluştu."
+                    },
                     isLoading = false
                 )
                 return@launch
@@ -78,7 +91,7 @@ class RegisterViewModel @Inject constructor(
 
             if(!response.isRegistered){
                 _registerState.value = _registerState.value.copy(
-                    registerWarning = "An error occurred about your registration",
+                    registerWarning = "Bağlantı hatası :(",
                     isLoading = false
                 )
                 return@launch

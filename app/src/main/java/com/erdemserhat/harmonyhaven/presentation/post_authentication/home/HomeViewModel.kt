@@ -72,8 +72,11 @@ class HomeViewModel @Inject constructor(
                 }
 
                 _homeState.value = _homeState.value.copy(
+
                     categories = categories!!,
-                    categorizedArticles = articles!!.map { it.toArticleResponseType(categories) },
+                    categorizedArticles = articles!!.map {
+                        it.id=-1
+                        it.toArticleResponseType(categories) },
                     isCategoryReady = true,
                     isArticleReady = true,
                     recentArticles = articles.take(4)

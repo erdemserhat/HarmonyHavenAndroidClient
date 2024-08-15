@@ -68,7 +68,7 @@ class LoginViewModel @Inject constructor(
                 _loginState.value = _loginState.value.copy(
                     isLoading = false,
                     canNavigateToDashBoard = false,
-                    loginWarning = "Network Error"
+                    loginWarning = "Bağlantı Hatası :("
                 )
 
                 return@launch
@@ -82,7 +82,13 @@ class LoginViewModel @Inject constructor(
                 _loginState.value = _loginState.value.copy(
                     isLoading = false,
                     canNavigateToDashBoard = false,
-                    loginWarning = errorMessage,
+                    loginWarning = when (errorCode) {
+                        101 -> "Hmmmm, bu bir e-posta formatı değil gibi..."
+                        102, 103 -> "Şifre en az 8 karakter uzunluğunda olmalı ve en az bir büyük harf, bir küçük harf ve bir rakam içermelidir."
+                        104 -> "Bu e-posta adresi ile ilişkilendirilmiş bir hesap bulunmuyor. Kaydolmayı deneyebilirsiniz."
+                        105 -> "Şifreniz yanlış gibi görünüyor..."
+                        else -> "Bilinmeyen bir hata oluştu."
+                    },
                     validationState = LoginValidationState().getValidationStateByErrorCode(errorCode)
                 )
 
@@ -99,7 +105,13 @@ class LoginViewModel @Inject constructor(
                 _loginState.value = _loginState.value.copy(
                     isLoading = false,
                     canNavigateToDashBoard = false,
-                    loginWarning = errorMessage,
+                    loginWarning =  when (errorCode) {
+                        101 -> "Hmmmm, bu bir e-posta formatı değil gibi..."
+                        102, 103 -> "Şifre en az 8 karakter uzunluğunda olmalı ve en az bir büyük harf, bir küçük harf ve bir rakam içermelidir."
+                        104 -> "Bu e-posta adresi ile ilişkilendirilmiş bir hesap bulunmuyor. Kaydolmayı deneyebilirsiniz."
+                        105 -> "Şifreniz yanlış gibi görünüyor..."
+                        else -> "Bilinmeyen bir hata oluştu."
+                    },
                     validationState = LoginValidationState().getValidationStateByErrorCode(errorCode)
                 )
 
@@ -131,7 +143,7 @@ class LoginViewModel @Inject constructor(
             _loginState.value = _loginState.value.copy(
                 isLoading = false,
                 canNavigateToDashBoard = true,
-                loginWarning = "Welcome :)"
+                loginWarning = "Hoş Geldin  ${userUseCases.getUserInformation.executeRequest().name} :)"
             )
             //if login is successfully then save the fcm id
 

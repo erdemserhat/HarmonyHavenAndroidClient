@@ -8,6 +8,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import com.erdemserhat.harmonyhaven.R
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -61,11 +63,28 @@ data class ArticleUIModel(
 @Composable
 fun ArticleScreen(
    article:ArticleResponseType,
-   navController: NavController
+   navController: NavController,
+   postId:Int=-1
 ) {
+    if(article.id!=-1){
+        val articleVM:ArticleViewModel = hiltViewModel()
+        val articleState = articleVM.articleState.collectAsState()
+        LaunchedEffect(key1 = article) {
+            articleVM.prepareArticle(article.id)
+            Log.d("dsasdsad","worked")
 
-    ArticleScreenContent(article,navController)
-    //AlertExample()
+        }
+        ArticleScreenContent(articleState.value.toArticleResponseType(),navController)
+
+
+
+    }else{
+        ArticleScreenContent(article,navController)
+        //AlertExample()
+
+    }
+
+
 
 
 
@@ -84,8 +103,8 @@ fun ArticleScreenContent(
     Scaffold(
         topBar = {
             ArticleToolbar(
-                onTextFontMinusClicked = {fontSize--},
-                onTextFontPlusClicked = {fontSize++},
+                onTextFontMinusClicked = {if(!(fontSize<10)) fontSize-- },
+                onTextFontPlusClicked = {if(!(fontSize>24)) fontSize++},
                 navController = navController
             )
         },
@@ -111,7 +130,7 @@ fun ArticleToolbar(
 ) {
     TopAppBar(
         elevation = 0.dp, // Kenarlık kalınlığını sıfıra ayarlar
-        backgroundColor = Color.Transparent,
+        backgroundColor = Color.White,
         contentColor = Color.Transparent,
         title = {  },
         navigationIcon = {
@@ -205,8 +224,10 @@ fun ArticleContent(
 ) {
     Column(
         modifier = Modifier
+            .background(Color.White)
             .padding(16.dp)
             .fillMaxSize()
+
             .verticalScroll(rememberScrollState())
     ) {
 

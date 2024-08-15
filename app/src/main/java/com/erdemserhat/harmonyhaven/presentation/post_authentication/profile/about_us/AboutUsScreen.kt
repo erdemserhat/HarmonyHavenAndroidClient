@@ -3,6 +3,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.ab
 import LocalGifImage
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -92,7 +94,6 @@ fun AboutUsScreenContent(
 
 ) {
 
-
     Scaffold(
         topBar = {
             SavedArticlesToolBar(
@@ -100,12 +101,9 @@ fun AboutUsScreenContent(
             )
         },
         content = {
-
-
-
-            
             Column(
                 modifier = Modifier
+                    .background(Color.White)
                     .padding(it)
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
@@ -115,11 +113,11 @@ fun AboutUsScreenContent(
 
             ) {
                 Box(contentAlignment = Alignment.Center){
-                    LocalGifImage(resId=R.raw.examplegif)
+                    LocalGifImage(resId=R.raw.examplegif, modifier = Modifier.zIndex(2f))
                     Image(
                         painter = painterResource(id = R.drawable.dsadas),
                         contentDescription = null,
-                        modifier = Modifier.size(300.dp)
+                        modifier = Modifier.size(300.dp).zIndex(1f)
 
                     )
 
@@ -139,7 +137,8 @@ fun AboutUsScreenContent(
 
             }
 
-        }
+        },
+
     )
 
 }
@@ -152,7 +151,7 @@ fun SavedArticlesToolBar(
 ) {
     TopAppBar(
         elevation = 0.dp, // Kenarlık kalınlığını sıfıra ayarlar
-        backgroundColor = Color.Transparent,
+        backgroundColor = Color.White,
         contentColor = Color.Transparent,
         title = {
             Text(text = "About us")

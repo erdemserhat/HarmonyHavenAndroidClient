@@ -20,9 +20,9 @@ import com.erdemserhat.harmonyhaven.R
 fun AccountInformationTopBar(navController:NavController){
     TopAppBar(
         elevation = 0.dp,
-        backgroundColor = Color.Transparent,
+        backgroundColor = Color.White,
         contentColor = Color.Transparent,
-        title = { Text(text = "Profile") },
+        title = { Text(text = "Profil") },
         navigationIcon = {
             IconButton(onClick = { /* Geri gitme işlemi */ }) {
                 Icon(

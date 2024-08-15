@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,6 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category
 import com.erdemserhat.harmonyhaven.presentation.common.AppColors
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenIndicatorColor
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenSelectedNavigationBarItemColor
 import com.erdemserhat.harmonyhaven.util.DefaultAppFont
 
 @Composable
@@ -46,7 +50,7 @@ fun CategoryRow(
     ) {
 
         Text(
-            text = "Category",
+            text = "Kategoriler",
             fontFamily = DefaultAppFont,
             color = androidx.compose.material.MaterialTheme.AppColors.secondary,
             fontWeight = FontWeight.Bold,
@@ -92,7 +96,7 @@ fun CategoryItem(
 ) {
 
     val targetColor =
-        if (isSelected) androidx.compose.material.MaterialTheme.AppColors.buttonSurfaceClickedColor else androidx.compose.material.MaterialTheme.AppColors.buttonSurfaceColor
+        if (isSelected) harmonyHavenIndicatorColor else Color.Black
 
 
     val animatedColor by animateColorAsState(
@@ -121,7 +125,7 @@ fun CategoryItem(
             Text(
                 text = category.name,
                 style = MaterialTheme.typography.labelLarge,
-                color = if (isSelected) androidx.compose.material.MaterialTheme.AppColors.buttonTextClickedColor else androidx.compose.material.MaterialTheme.AppColors.buttonTextColor
+                color = if (isSelected) Color.Black else Color.White
 
             )
         }
