@@ -24,14 +24,14 @@ class ForgotPasswordMailViewModel @Inject constructor(
     fun sendMail(email: String) {
         _mailState.value = _mailState.value.copy(
             isLoading = true,
-            mailWarning = "Loading...."
+            mailWarning = "Bir saniye bekleyin...."
 
         )
         viewModelScope.launch(Dispatchers.IO) {
             if (!isEmailValid(email)) {
                 _mailState.value = _mailState.value.copy(
                     isLoading = false,
-                    mailWarning = "Invalid E-mail Format",
+                    mailWarning = "Geçersiz E-posta formatı...",
                     canNavigateTo = false,
                     isError = true
 
@@ -46,7 +46,7 @@ class ForgotPasswordMailViewModel @Inject constructor(
             if (response == null) {
                 _mailState.value = _mailState.value.copy(
                     isLoading = false,
-                    mailWarning = "Network Error",
+                    mailWarning = "Bağlantı hatası :(",
                     canNavigateTo = false,
 
                     )
@@ -56,6 +56,7 @@ class ForgotPasswordMailViewModel @Inject constructor(
             }
 
             if (!response.result) {
+
                 _mailState.value = _mailState.value.copy(
                     isLoading = false,
                     mailWarning = response.message,

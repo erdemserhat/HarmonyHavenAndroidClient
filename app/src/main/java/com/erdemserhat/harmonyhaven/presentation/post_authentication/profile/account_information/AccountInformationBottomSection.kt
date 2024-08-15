@@ -37,7 +37,7 @@ fun AccountInformationBottomSection(modifier: Modifier = Modifier) {
         ) {
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = "For e-mail changes, you can write to us at ",
+                text = "E-posta değişiklikleri için bize şu adresten yazabilirsiniz:",
                 fontFamily = DefaultAppFont,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,

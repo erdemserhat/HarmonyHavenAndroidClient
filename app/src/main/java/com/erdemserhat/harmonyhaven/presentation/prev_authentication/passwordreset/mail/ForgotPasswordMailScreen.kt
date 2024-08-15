@@ -125,7 +125,7 @@ fun ForgotPasswordMailScreenContent(
                 } else {
                     Spacer(modifier = Modifier.size(20.dp))
                     HarmonyHavenButton(
-                        buttonText = stringResource(R.string.e_mail),
+                        buttonText = "Talep Gönder",
                         onClick = onSendMailClicked,
                         modifier = Modifier,
                         isEnabled = !isLoading

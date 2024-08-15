@@ -77,7 +77,7 @@ fun RegisterScreenContent(
 
 
             //horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
+            //verticalArrangement = Arrangement.SpaceBetween,
 
 
             ) {
@@ -128,12 +128,12 @@ fun RegisterScreenContent(
                         isError = params.isNameValid
                     )
 
-                    HarmonyHavenTextField(
-                        text = params.surname,
-                        onValueChanged = params.onSurnameValueChanged,
-                        placeHolderText = stringResource(R.string.surname),
-                        isError = params.isSurnameValid
-                    )
+                   // HarmonyHavenTextField(
+                     //   text = params.surname,
+                     //   onValueChanged = params.onSurnameValueChanged,
+                      //  placeHolderText = stringResource(R.string.surname),
+                     //   isError = params.isSurnameValid
+                   // )
 
                     HarmonyHavenTextField(
                         text = params.email,
@@ -178,11 +178,11 @@ fun RegisterScreenContent(
 
 
 
-                    Spacer(modifier = Modifier.size(20.dp))
-                    GenderSection(
-                        gender = params.gender,
-                        onGenderSelected = params.onGenderValueChanged
-                    )
+                   // Spacer(modifier = Modifier.size(20.dp))
+                   // GenderSection(
+                    //    gender = params.gender,
+                    //    onGenderSelected = params.onGenderValueChanged
+                   // )
 
 
 
@@ -210,13 +210,13 @@ fun RegisterScreenContent(
                             )
                             Spacer(modifier = Modifier.size(10.dp))
 
-                            HarmonyHavenButtonWithIcon(
-                                onClick = params.onSignUpViaGoogleClicked,
-                                painterId = R.drawable.google_sign_in_icon,
-                                buttonText = stringResource(id = R.string.sign_in_via_google),
-                                isEnabled = isButtonsEnabled
+                          //  HarmonyHavenButtonWithIcon(
+                              //  onClick = params.onSignUpViaGoogleClicked,
+                              //  painterId = R.drawable.google_sign_in_icon,
+                              //  buttonText = stringResource(id = R.string.sign_in_via_google),
+                              //  isEnabled = isButtonsEnabled
 
-                            )
+
                             Spacer(modifier = Modifier.size(10.dp))
 
                             AcceptanceOfTermsOfUse(

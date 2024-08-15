@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -57,9 +58,9 @@ fun SettingsScreen(navController: NavController) {
         topBar = {
             TopAppBar(
                 elevation = 0.dp,
-                backgroundColor = Color.Transparent,
+                backgroundColor = Color.White,
                 contentColor = Color.Transparent,
-                title = { Text(text = "Settings") },
+                title = { Text(text = "Ayarlar") },
                 navigationIcon = {
                     androidx.compose.material.IconButton(onClick = { /* Geri gitme işlemi */ }) {
                         Icon(
@@ -78,7 +79,7 @@ fun SettingsScreen(navController: NavController) {
         }
 
     ){padding->
-        SettingsScreenContent(navController, modifier = Modifier.padding(padding))
+        SettingsScreenContent(navController, modifier = Modifier.background(Color.White).padding(padding))
     }
 }
 
@@ -105,10 +106,10 @@ fun SettingsScreenContent(navController: NavController,modifier: Modifier) {
 ///////////////////////////////Exit Alert Dialog/////////////////////////////
         if (shouldShowLogoutAlertDialog) {
             AlertDialogBase(
-                alertTitle = "Logout",
-                alertBody = "Are you sure to logout?",
-                positiveButtonText = "Logout",
-                negativeButtonText = "Cancel",
+                alertTitle = "Çıkış Yap",
+                alertBody = "Çıkış yapmak istediğine emin misin?",
+                positiveButtonText = "Çıkış Yap",
+                negativeButtonText = "Vazgeç",
                 onPositiveButtonClicked = {
                     navController.navigate(Screen.Login.route)
                     shouldShowLogoutAlertDialog = false
@@ -132,7 +133,7 @@ fun SettingsScreenContent(navController: NavController,modifier: Modifier) {
         ) {
             SettingsButton(
                 icon = painterResource(id = R.drawable.account_icon),
-                title = "Account information",
+                title = "Hesap Bilgileri",
                 modifier = Modifier
                     .clip(
                         RoundedCornerShape(
@@ -171,24 +172,24 @@ fun SettingsScreenContent(navController: NavController,modifier: Modifier) {
                 .fillMaxWidth()
                 .border(1.dp, Color(0xFFD9D9D9), RoundedCornerShape(12.dp))
         ) {
-            SettingsButton(
-                icon = painterResource(id = R.drawable.information_icon),
-                title = "About us",
-                modifier = Modifier.clip(
-                    RoundedCornerShape(
-                        12.dp, 12.dp, 0.dp, 0.dp
-                    )
-                ),
-                onButtonClicked = {
-                    navController.navigate(Screen.AboutUs.route)
-                }
-            )
+            //SettingsButton(
+              //  icon = painterResource(id = R.drawable.information_icon),
+               // title = "Hakkımızda",
+               // modifier = Modifier.clip(
+                 //   RoundedCornerShape(
+                   //     12.dp, 12.dp, 0.dp, 0.dp
+                  //  )
+              //  ),
+              //  onButtonClicked = {
+              //     navController.navigate(Screen.AboutUs.route)
+              //  }
+          //  )
 
-            Divider(
-                color = Color(0xFFD9D9D9),
-                thickness = 1.dp,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
+           // Divider(
+            //    color = Color(0xFFD9D9D9),
+           //     thickness = 1.dp,
+            //    modifier = Modifier.padding(horizontal = 16.dp)
+         //   )
 
          //   SettingsButton(
               //  icon = painterResource(id = R.drawable.report_icon),
@@ -202,15 +203,15 @@ fun SettingsScreenContent(navController: NavController,modifier: Modifier) {
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
-            SettingsButton(
-                icon = painterResource(id = R.drawable.terms_icon),
-                title = "Terms and conditions",
-                modifier = Modifier.clip(
-                    RoundedCornerShape(
-                        0.dp, 0.dp, 12.dp, 12.dp
-                    )
-                )
-            )
+          //  SettingsButton(
+             //   icon = painterResource(id = R.drawable.terms_icon),
+              //  title = "Terms and conditions",
+               // modifier = Modifier.clip(
+                //    RoundedCornerShape(
+                  //      0.dp, 0.dp, 12.dp, 12.dp
+                  //  )
+              //  )
+           // )
         }
 
         Spacer(modifier = Modifier.size(25.dp))
@@ -223,7 +224,7 @@ fun SettingsScreenContent(navController: NavController,modifier: Modifier) {
             SettingsButton(
                 icon = painterResource(id = R.drawable.logout_icon),
                 iconColor = Color.Red,
-                title = "Sign out",
+                title = "Çıkış Yap",
                 titleColor = Color.Red,
                 modifier = Modifier
                     .clip(
@@ -296,14 +297,16 @@ fun AlertDialogBase(
         title = {
             Text(
                 text = alertTitle,
-                fontFamily = DefaultAppFont
+                fontFamily = DefaultAppFont,
+                color = Color.Black
 
             )
         },
         text = {
             Text(
                 text = alertBody,
-                fontFamily = DefaultAppFont
+                fontFamily = DefaultAppFont,
+                color = Color.Black
 
             )
         },

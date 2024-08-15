@@ -33,6 +33,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.TextField
@@ -40,6 +41,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -52,7 +55,9 @@ import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
 import com.erdemserhat.harmonyhaven.util.DefaultAppFont
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
 
@@ -77,6 +82,8 @@ fun HomeScreenContentNew(
         mutableStateOf(false)
     }
     var selectedCategoryId = rememberSaveable { mutableIntStateOf(0) }
+
+
 
 
 
@@ -296,7 +303,7 @@ fun SearchBarWithIcon(
         TextField(
             value = query,
             onValueChange = onQueryChange,
-            placeholder = { Text("Search...") },
+            placeholder = { Text("Ara...") },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Search
             ),
@@ -341,11 +348,17 @@ fun Article(
     ) {
         Card(
             modifier = Modifier
-
                 .clip(shape = RoundedCornerShape(16.dp))
                 .fillMaxWidth(0.9f)// Köşeleri yuvarla ve 16dp'lik yarıçapa sahip olacak şekilde kırp
                 .clickable(
-                ) { onReadButtonClicked() }
+                ) { onReadButtonClicked() },
+            colors = CardColors(
+                containerColor = harmonyHavenComponentWhite, // Beyazdan yeşile çalan renk
+                contentColor = Color.Black, // İçerik rengi
+                disabledContainerColor = Color.Gray, // Devre dışı bırakılmış durumda arka plan rengi
+                disabledContentColor = Color.LightGray // Devre dışı bırakılmış durumda içerik rengi
+            )
+
 
         ) {
 

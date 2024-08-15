@@ -152,15 +152,14 @@ fun LoginScreenContent(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                        horizontalArrangement = Arrangement.End
                     ) {
-                        LoginScreenRememberCredentialsCheckbox(
-                            isChecked = params.isCheckedRememberCredentials,
-                            onCheckedChange = params.onRememberCredentialsStateChanged
-                        )
-                        Spacer(modifier = Modifier.size(60.dp))
+                       // LoginScreenRememberCredentialsCheckbox(
+                         //   isChecked = params.isCheckedRememberCredentials,
+                         //   onCheckedChange = params.onRememberCredentialsStateChanged
+                       // )
                         LoginScreenForgotPasswordTextButton(
-                            onClick = params.onForgotPasswordClicked
+                            onClick = params.onForgotPasswordClicked,
                         )
                     }
                     Spacer(modifier = Modifier.size(20.dp))
@@ -190,10 +189,10 @@ fun LoginScreenContent(
                                 onClick = params.onLoginButtonClicked
                             )
 
-                            Spacer(modifier = Modifier.size(10.dp))
-                            LoginScreenGoogleSignInButton(
-                                onClick = params.onLoginViaGoogleClicked
-                            )
+                           // Spacer(modifier = Modifier.size(10.dp))
+                            //LoginScreenGoogleSignInButton(
+                             //   onClick = params.onLoginViaGoogleClicked
+                            //)
 
                         }
 
