@@ -52,7 +52,7 @@ fun PermissionDialog(
             }
         },
         title = {
-            Text(text = "Permission required")
+            Text(text = "Bildirim Almak İçin İzin Gerekiyor")
         },
         text = {
             Text(
