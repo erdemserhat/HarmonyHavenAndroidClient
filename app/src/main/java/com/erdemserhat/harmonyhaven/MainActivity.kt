@@ -11,10 +11,15 @@ import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.data.local.repository.JwtTokenRepository
@@ -67,7 +72,13 @@ class MainActivity : ComponentActivity() {
         val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val isFirstLaunch = sharedPrefs.getBoolean("isFirstLaunch", true)
         setContent {
+
             HarmonyHavenTheme {
+                SetStatusBarAppearance(
+                    statusBarColor = Color.White, // Durum çubuğunun arka plan rengi
+                    darkIcons = true // Simgelerin siyah olmasını sağla
+                )
+
                 navController = rememberNavController()
 
 
@@ -125,7 +136,19 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+@Composable
+fun SetStatusBarAppearance(statusBarColor: Color, darkIcons: Boolean) {
+    val window = (LocalView.current.context as? ComponentActivity)?.window
+    window?.let {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            it.statusBarColor = statusBarColor.toArgb()
+        }
 
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+            insetsController?.isAppearanceLightStatusBars = darkIcons
+        }
+    }
+}
 
 
