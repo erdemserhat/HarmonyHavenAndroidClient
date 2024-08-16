@@ -1,5 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.prev_authentication.login
 
+import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -16,6 +18,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.ktx.messaging
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -27,12 +30,14 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
-    private val jwtRepository: JwtTokenRepository
+    private val jwtRepository: JwtTokenRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     //Encapsulation principle
     private val _loginState = mutableStateOf(LoginState())
     val loginState: State<LoginState> = _loginState
+    val sharedPrefs = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
 
     fun onLoginClicked(email: String, password: String) {
@@ -43,9 +48,6 @@ class LoginViewModel @Inject constructor(
         authenticateUser(email, password)
     }
 
-    init {
-        onLoginClicked("example@gmail.com","ExamplePassword.010.")
-    }
 
     private fun authenticateUser(email: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -58,7 +60,7 @@ class LoginViewModel @Inject constructor(
                     )
                 )
             }
-            
+
             val response = request.await()
 
             if (response == null) {
@@ -105,7 +107,7 @@ class LoginViewModel @Inject constructor(
                 _loginState.value = _loginState.value.copy(
                     isLoading = false,
                     canNavigateToDashBoard = false,
-                    loginWarning =  when (errorCode) {
+                    loginWarning = when (errorCode) {
                         101 -> "Hmmmm, bu bir e-posta formatı değil gibi..."
                         102, 103 -> "Şifre en az 8 karakter uzunluğunda olmalı ve en az bir büyük harf, bir küçük harf ve bir rakam içermelidir."
                         104 -> "Bu e-posta adresi ile ilişkilendirilmiş bir hesap bulunmuyor. Kaydolmayı deneyebilirsiniz."
@@ -135,8 +137,11 @@ class LoginViewModel @Inject constructor(
             }
             Log.d("AuthenticationTests", "Everything is nice")
 
+
+            sharedPrefs.edit().putString("email", email).apply()
+
             jwtRepository.saveJwtToken(response.jwt!!)
-            Log.d("AuthenticationTests",response.toString())
+            Log.d("AuthenticationTests", response.toString())
             Log.d("AuthenticationTests", "jwt saved as :" + jwtRepository.getJwtToken())
             ///Redirect the user main page...
 
@@ -148,7 +153,6 @@ class LoginViewModel @Inject constructor(
             //if login is successfully then save the fcm id
 
             getToken()
-
 
 
         }
@@ -177,6 +181,15 @@ class LoginViewModel @Inject constructor(
 
         }
 
+    }
+
+     fun getEmailIfExist(): String {
+        val savedEmail = sharedPrefs.getString("email", "")
+        if (savedEmail == "" || savedEmail == null) {
+            return ""
+        } else {
+            return savedEmail
+        }
     }
 
 
