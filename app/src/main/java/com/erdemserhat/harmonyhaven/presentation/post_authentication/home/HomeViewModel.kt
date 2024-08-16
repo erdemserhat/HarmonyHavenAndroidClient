@@ -18,12 +18,17 @@ import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles.MockSavedArticles
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles.MockSavedArticles.mockArticle
+import com.google.android.gms.tasks.Task
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.ktx.messaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
@@ -60,10 +65,12 @@ class HomeViewModel @Inject constructor(
                 val authStatus = authStatusDeferred.await()
                 Log.d("authStatusTest",authStatus.toString())
 
-                if(authStatus==2){
+                if(authStatus!=1){
                     _homeState.value = _homeState.value.copy(authStatus=2)
                     return@launch
                 }
+
+                updateFcmToken()
 
 
                 if (categories == null && articles == null) {
@@ -126,6 +133,31 @@ class HomeViewModel @Inject constructor(
 
 
         }
+    }
+
+    private fun updateFcmToken() {
+        viewModelScope.launch(Dispatchers.IO) {
+            FirebaseMessaging.getInstance().subscribeToTopic("everyone")
+                .addOnCompleteListener { task: Task<Void?> ->
+                    Log.d("erdem", task.result.toString())
+                    if (task.isSuccessful) {
+                        Log.d("spec1", "Successfully subscribed to topic")
+                    } else {
+                        Log.e("spec1", "Failed to subscribe to topic", task.exception)
+                    }
+                }
+            val localToken = Firebase.messaging.token.await()
+            //send your fcm id to server
+            Log.d("erdem1212", localToken.toString())
+            val fcmToken = localToken.toString()
+
+            val response = userUseCases.fcmEnrolment.executeRequest(fcmToken)
+
+            Log.d("fcmtestResults", response.message)
+
+
+        }
+
     }
 
 

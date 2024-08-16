@@ -12,6 +12,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,6 +45,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,142 +61,146 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenIndicatorColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenSelectedNavigationBarItemColor
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.AlertDialogBase
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.SettingsScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.QuotesScreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import kotlinx.coroutines.GlobalScope
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
-fun AppMainScreen(navController: NavController,params: MainScreenParams = MainScreenParams()) {
+fun AppMainScreen(navController: NavController, params: MainScreenParams = MainScreenParams()) {
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
     val paramsData = params
-    coroutineScope.launch {
-        if(paramsData.screenNo!=-1)
+
+    // Scroll to the initial page if provided
+    LaunchedEffect(paramsData.screenNo) {
+        if (paramsData.screenNo != -1) {
             pagerState.scrollToPage(paramsData.screenNo)
-
+        }
     }
-    Box{
-        Scaffold(
-            bottomBar = {
-                NavigationBar(
-                    containerColor = Color.White,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .size(width = 0.dp, height = 50.dp),
-                ) {
-                    items.forEachIndexed { index, item ->
-                        NavigationBarItem(
-                            selected = pagerState.currentPage == index,
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = harmonyHavenSelectedNavigationBarItemColor,
-                                selectedTextColor = harmonyHavenSelectedNavigationBarItemColor,
-                                indicatorColor = harmonyHavenIndicatorColor,
-                                unselectedIconColor = harmonyHavenSelectedNavigationBarItemColor
-                            ),
-                            onClick = {
-                                coroutineScope.launch {
-                                    pagerState.scrollToPage(index)
-                                    paramsData.screenNo = -1
-                                }
-                            },
-                            icon = {
-                                BadgedBox(
-                                    badge = {
-                                        if (item.badgeCount != null) {
-                                            Badge {
-                                                Text(text = item.badgeCount.toString())
-                                            }
-                                        } else if (item.hasNews) {
-                                            Badge()
-                                        }
-                                    }
-                                ) {
-                                    if (pagerState.currentPage == index)
-                                        Icon(
-                                            imageVector = item.selectedIcon,
-                                            contentDescription = item.title
-                                        )
-                                    else
-                                        Icon(
-                                            imageVector = item.unSelectedIcon,
-                                            contentDescription = item.title
-                                        )
-                                }
+
+    Scaffold(
+        bottomBar = {
+            NavigationBar(
+                containerColor = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                items.forEachIndexed { index, item ->
+                    NavigationBarItem(
+                        selected = pagerState.currentPage == index,
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = harmonyHavenSelectedNavigationBarItemColor,
+                            selectedTextColor = harmonyHavenSelectedNavigationBarItemColor,
+                            indicatorColor = harmonyHavenIndicatorColor,
+                            unselectedIconColor = harmonyHavenSelectedNavigationBarItemColor
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
+                                pagerState.scrollToPage(index)
+                                paramsData.screenNo = -1
                             }
-                        )
-                    }
-
-
-
-
-
+                        },
+                        icon = {
+                            BadgedBox(
+                                badge = {
+                                    if (item.badgeCount != null) {
+                                        Badge {
+                                            Text(text = item.badgeCount.toString())
+                                        }
+                                    } else if (item.hasNews) {
+                                        Badge()
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = if (pagerState.currentPage == index) item.selectedIcon else item.unSelectedIcon,
+                                    contentDescription = item.title
+                                )
+                            }
+                        },
+                        label = {
+                            Text(
+                                text = item.title,
+                                fontWeight = if (pagerState.currentPage == index) FontWeight.Bold else FontWeight.Normal
+                            ) // Simgelerin altına yazıyı ekler
+                        }
+                    )
                 }
-            },
-            topBar = {
+            }
+        },
+        topBar = {
+
+            if(pagerState.currentPage!=2){
                 MyAppBar(
-                    navController, title =
-                    when (pagerState.currentPage) {
-                        0 -> "İçerikler"
+                    modifier = Modifier.zIndex(1f),
+                    navController = navController,
+                    title = when (pagerState.currentPage) {
+                        0 -> "Harmony Haven"
                         1 -> "Bildirimler"
                         2 -> "Söz Akışı"
-                        else -> "Default Title"  // Diğer durumlar için bir başlık eklemek isteyebilirsiniz
-
+                        else -> "Default Title"
                     },
-                    topBarBackgroundColor = when(pagerState.currentPage){
-                        0-> Color.White
-                        1->Color.White
-                        2-> harmonyHavenComponentWhite
-                        else->Color.White
-                    }
+                    topBarBackgroundColor = when (pagerState.currentPage) {
+                        0 -> Color.White
+                        1 -> Color.White
+                        2 -> Color.White
+                        else -> Color.White
+                    },
+                    isMainScreen = pagerState.currentPage == 0
                 )
 
-
             }
-        ) {
 
-
+        }
+    ) { innerPadding ->
+        Box(modifier = Modifier.fillMaxSize()) {
             HorizontalPager(
                 state = pagerState,
                 count = items.size,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it)
+                    .padding(innerPadding)
             ) { page ->
                 when (page) {
                     0 -> HomeScreenNew(navController = navController)
                     1 -> NotificationScreen(navController)
                     2 -> QuotesScreen()
-
-
-
                 }
-
             }
         }
-
-        //AnimatedGifExample(R.drawable.bird,true)
-
-
     }
 }
 
+
 @Composable
 fun AnimatedGif(
-    gifId:Int,
-    shouldMoveFromRightToLeft:Boolean = true,
-    duration:Int = 10000,
-    @SuppressLint("ModifierParameter") modifier:Modifier = Modifier
+    gifId: Int,
+    shouldMoveFromRightToLeft: Boolean = true,
+    duration: Int = 10000,
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
 ) {
     // Ekranın genişliğini temsil edecek bir Float değeri tanımlıyoruz
     val screenWidth = 1000f // Ekran genişliği, ekran genişliğinize göre ayarlayın
@@ -209,7 +215,7 @@ fun AnimatedGif(
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = duration, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
-        )
+        ), label = ""
     )
 
     // Ekran boyutlarının alınabilmesi için bir Box kullanıyoruz
@@ -217,7 +223,7 @@ fun AnimatedGif(
         modifier = modifier.fillMaxSize()
     ) {
         // GIF'in hareket ettiği alanı tanımlıyoruz
-        val offset =if(shouldMoveFromRightToLeft)  screenWidth - offsetX else offsetX
+        val offset = if (shouldMoveFromRightToLeft) screenWidth - offsetX else offsetX
 
         val imageModifier = Modifier
             .offset(x = (offset).dp) // Ekranın genişliği kadar hareket
@@ -243,15 +249,15 @@ private data class NavigationBarItem(
 
 private val items = listOf(
     NavigationBarItem(
-        "Home", Icons.Filled.Home, Icons.Outlined.Home, false, null,
+        "İçerikler", Icons.Filled.Home, Icons.Outlined.Home, false, null,
         Screen.Home.route
     ),
     NavigationBarItem(
-        "Notification", Icons.Filled.Notifications, Icons.Outlined.Notifications, false, null,
+        "Bildirimler", Icons.Filled.Notifications, Icons.Outlined.Notifications, false, null,
         Screen.Notification.route
     ),
     NavigationBarItem(
-        "Quotes", Icons.Filled.Favorite, Icons.Outlined.FavoriteBorder, false, null,
+        "Sözler", Icons.Filled.Favorite, Icons.Outlined.FavoriteBorder, false, null,
         Screen.Quotes.route
     ),
     // NavigationBarItem(
@@ -262,48 +268,121 @@ private val items = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyAppBar(navController: NavController, title: String,topBarBackgroundColor:Color) {
+fun MyAppBar(
+    navController: NavController,
+    title: String,
+    topBarBackgroundColor: Color,
+    isMainScreen:Boolean,
+    modifier:Modifier = Modifier
+
+
+) {
+
     // State to manage the visibility of the dropdown menu
     var expanded by remember { mutableStateOf(false) }
+    var shouldShowLogoutAlertDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
 
-        TopAppBar(
-            title = { Text(text = title) },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = topBarBackgroundColor
-            ),
-            actions = {
-                IconButton(onClick = { expanded = !expanded }) {
-                    Icon(
-                        imageVector = Icons.Filled.MoreVert,
-                        contentDescription = "More options"
-                    )
-                }
-                // Dropdown menu
-                DropdownMenu(
+    if (shouldShowLogoutAlertDialog) {
+        AlertDialogBase(
+            alertTitle = "Çıkış Yap",
+            alertBody = "Çıkış yapmak istediğine emin misin?",
+            positiveButtonText = "Çıkış Yap",
+            negativeButtonText = "Vazgeç",
+            onPositiveButtonClicked = {
+                navController.navigate(Screen.Login.route)
+                shouldShowLogoutAlertDialog = false
 
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    DropdownMenuItem(onClick = {
-                        navController.navigate(Screen.Settings.route)
-                        expanded = false
+            },
+            onNegativeButtonClicked = {
+                shouldShowLogoutAlertDialog = false
+            }) {
+
+        }
+    }
+
+    TopAppBar(
+        modifier = modifier.drawBehind {
+            drawLine(
+                color = Color(0xFFE0E0E0), // Alt kenar rengini belirler
+                start = Offset(0f, size.height),
+                end = Offset(size.width, size.height),
+                strokeWidth = 1.dp.toPx() // Sınır kalınlığını belirler
+            )
+        },
+
+        title = {
 
 
-                    }) {
-                        Text("Ayarlar")
-                    }
+            Text(
+                text = title,
+                fontSize = 24.sp,
+                fontWeight = when (isMainScreen) {
+                    true -> FontWeight.Bold
+                    false -> FontWeight.Normal
+                },
 
-                    //DropdownMenuItem(onClick = { /* Handle option 2 click */ }) {
-                    //     Text("Option 2")
-                    // }
-                    // DropdownMenuItem(onClick = { /* Handle option 3 click */ }) {
-                    //    Text("Option 3")
-                    //  }
-                }
+                color = when (isMainScreen) {
+                    true -> harmonyHavenSelectedNavigationBarItemColor
+                    false -> Color.Black
+                }// Beyazdan yeşile çalan renk (RGB: 191, 255, 191)
+            )
+
+
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = topBarBackgroundColor
+        ),
+        actions = {
+            IconButton(onClick = { expanded = !expanded }) {
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = "More options"
+                )
             }
+            // Dropdown menu
+            DropdownMenu(
+                modifier = Modifier.background(harmonyHavenComponentWhite),
+
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(onClick = {
+                    navController.navigate(Screen.Profile.route)
+                    expanded = false
+
+
+                }) {
+                    Text("Hesap Ayarları")
+                }
+
+                DropdownMenuItem(onClick = {
+                    expanded = false
+                    shouldShowLogoutAlertDialog = true
+
+
+                }) {
+                    Text("Çıkış Yap")
+
+                }
+
+                //DropdownMenuItem(onClick = { /* Handle option 2 click */ }) {
+                //     Text("Option 2")
+                // }
+                // DropdownMenuItem(onClick = { /* Handle option 3 click */ }) {
+                //    Text("Option 3")
+                //  }
+            }
+        },
+
         )
 
-    }
+}
+
+
+
+
 
 
 

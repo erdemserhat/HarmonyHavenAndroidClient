@@ -54,7 +54,7 @@ fun CategoryRow(
             fontFamily = DefaultAppFont,
             color = androidx.compose.material.MaterialTheme.AppColors.secondary,
             fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
+            fontSize = 18.sp,
             modifier = Modifier.align(Alignment.Start),
             textAlign = TextAlign.Center,
 
