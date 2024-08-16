@@ -121,7 +121,7 @@ dependencies {
 
     //Dagger-Hilt
     //2.48 is compatible with ksp
-    
+
     implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-android-compiler:2.50")
 
@@ -178,6 +178,9 @@ dependencies {
     implementation ("io.coil-kt:coil-compose:2.0.0") // Coil için Compose entegrasyonu
     implementation ("io.coil-kt:coil-gif:2.0.0") // GIF desteği için
 
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.30.1") // Status bar için
+
+
 
 
 
@@ -197,6 +200,3 @@ dependencies {
 kapt {
     correctErrorTypes = true
 }
-
-
-
