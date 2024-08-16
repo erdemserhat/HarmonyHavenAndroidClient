@@ -18,6 +18,20 @@ fun HomeScreenNew(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val homeState by homeViewModel.homeState.collectAsState()
+    if (homeState.authStatus==2){
+        navController.navigate(Screen.Login.route)
+    }else{
+        HomeScreenContentNew(
+            categories = homeState.categories,
+            navController = navController,
+            articles =  homeState.categorizedArticles,
+            onCategorySelected = {
+                homeViewModel.getArticlesByCategoryId(it.id)
+            },
+        )
+
+
+    }
 
 
    // if(homeState.authStatus==2)
@@ -25,13 +39,6 @@ fun HomeScreenNew(
 
   //  homeViewModel.getArticlesByCategoryId(selectedCategory.id)
 
-    HomeScreenContentNew(
-        categories = homeState.categories,
-        navController = navController,
-        articles =  homeState.categorizedArticles,
-        onCategorySelected = {
-             homeViewModel.getArticlesByCategoryId(it.id)
-        },
-    )
+
 
 }

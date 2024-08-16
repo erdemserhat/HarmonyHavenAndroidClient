@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -54,6 +55,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import com.erdemserhat.harmonyhaven.R
+import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
+import com.erdemserhat.harmonyhaven.presentation.navigation.MainScreenParams
+import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenButton
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.util.customFontInter
@@ -154,7 +159,7 @@ fun NotificationScreen(
                 val scrollState = rememberLazyListState()
                 LazyColumn(state = scrollState) {
                     items(notifications) {it
-                        NotificationContent(it)
+                        NotificationContent(it,navController)
                     }
 
                     // Loading indicator or more items
@@ -203,7 +208,7 @@ fun NotificationScreenPreview() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NotificationContent(notification: NotificationDto) {
+fun NotificationContent(notification: NotificationDto,navController: NavController) {
     Column(
         modifier = Modifier
             .padding(10.dp)
@@ -222,7 +227,32 @@ fun NotificationContent(notification: NotificationDto) {
                 .defaultMinSize(minHeight = 100.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(color = harmonyHavenComponentWhite)
-                .clickable {  },
+                .clickable {
+                    val shouldNavigateToPost = notification.screenCode.startsWith("-1")
+                    if(shouldNavigateToPost){
+                        val postId = notification.screenCode.drop(2)
+                        val bundleArticle = Bundle()
+                        bundleArticle.putParcelable("article",
+                            ArticleResponseType(
+                                id =postId.toInt())
+                        )
+
+                        navController.navigate(
+                            route = Screen.Article.route,
+                            args = bundleArticle
+                        )
+
+                    }else if(notification.screenCode!="1"){
+                        val bundleMain = Bundle()
+                        val screenCode = notification.screenCode.toInt()
+                        bundleMain.putParcelable("params", MainScreenParams(screenNo = screenCode))
+                        navController.navigate(
+                            route =Screen.Main.route,
+                            args = bundleMain)
+                    }
+
+
+                },
 
             ) {
 

@@ -7,5 +7,6 @@ data class NotificationDto(
     val id: Int,
     val title: String,
     val content: String,
-    val timeStamp:Long
+    val timeStamp:Long,
+    val screenCode:String
 )
