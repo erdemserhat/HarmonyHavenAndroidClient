@@ -2,6 +2,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes
 
 import LocalGifImage
 import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -32,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +47,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontStyle
@@ -54,6 +59,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -146,6 +152,7 @@ fun Quote(quote: Quote, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .zIndex(2f)
+
     ) {
         FullScreenImage(
             quote.imageUrl,
@@ -194,6 +201,12 @@ fun Quote(quote: Quote, modifier: Modifier = Modifier) {
 fun QuoteVerticalList(
     quoteList: List<Quote>, modifier: Modifier
 ) {
+
+
+
+
+
+
     if (quoteList.isNotEmpty()) {
 
 
@@ -206,6 +219,7 @@ fun QuoteVerticalList(
             VerticalPager(
                 modifier = Modifier
                     .fillMaxSize()
+                    //.background(Color.Cyan)
                     .align(Alignment.Center), state = pagerState
             ) { page ->
                 val quote = quoteList[page]

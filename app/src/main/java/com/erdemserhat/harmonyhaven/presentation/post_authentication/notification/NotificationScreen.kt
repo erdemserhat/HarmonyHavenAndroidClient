@@ -86,12 +86,6 @@ fun NotificationScreen(
     val notifications by viewModel.notifications.collectAsState()
     var permissionGranted by remember { mutableStateOf(viewModel.isPermissionGranted()) }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadNotifications()
-    }
-
-
-
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
@@ -100,6 +94,16 @@ fun NotificationScreen(
 
         }
     )
+    LaunchedEffect(Unit) {
+        viewModel.loadNotifications()
+        notificationPermissionLauncher.launch(
+            Manifest.permission.POST_NOTIFICATIONS
+        )
+    }
+
+
+
+
 
     Column(
         Modifier
