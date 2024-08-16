@@ -16,6 +16,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -63,6 +64,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -73,7 +75,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
-import coil.decode.GifDecoder
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
@@ -83,30 +84,46 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.Quot
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collectLatest
 
-@SuppressLint("CoroutineCreationDuringComposition")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
 fun AppMainScreen(navController: NavController, params: MainScreenParams = MainScreenParams()) {
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
-    val paramsData = params
+    val systemUiController = rememberSystemUiController()
 
     // Scroll to the initial page if provided
-    LaunchedEffect(paramsData.screenNo) {
-        if (paramsData.screenNo != -1) {
-            pagerState.scrollToPage(paramsData.screenNo)
+    LaunchedEffect(params.screenNo) {
+        if (params.screenNo != -1) {
+            pagerState.scrollToPage(params.screenNo)
         }
     }
 
+
+
+    // Observe page changes and update status bar color accordingly
+   // LaunchedEffect(pagerState.currentPage) {
+      //  snapshotFlow { pagerState.currentPage }.collectLatest { page ->
+         //   when (page) {
+          //      0, 1 -> systemUiController.setSystemBarsColor(color = Color.White, darkIcons = true)
+           //     2 -> systemUiController.setSystemBarsColor(color = Color.Black, darkIcons = false)
+           // }
+        //}
+   /// }
+
     Scaffold(
         bottomBar = {
+            // Conditionally show or hide the NavigationBar based on the current page
+            // Hide NavigationBar on the third page
             NavigationBar(
                 containerColor = Color.White,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(50.dp)
             ) {
                 items.forEachIndexed { index, item ->
                     NavigationBarItem(
@@ -120,7 +137,7 @@ fun AppMainScreen(navController: NavController, params: MainScreenParams = MainS
                         onClick = {
                             coroutineScope.launch {
                                 pagerState.scrollToPage(index)
-                                paramsData.screenNo = -1
+                                params.screenNo = -1
                             }
                         },
                         icon = {
@@ -142,18 +159,18 @@ fun AppMainScreen(navController: NavController, params: MainScreenParams = MainS
                             }
                         },
                         label = {
-                            Text(
-                                text = item.title,
-                                fontWeight = if (pagerState.currentPage == index) FontWeight.Bold else FontWeight.Normal
-                            ) // Simgelerin altına yazıyı ekler
+                            //  Text(
+                            //    text = item.title,
+                            //   fontWeight = if (pagerState.currentPage == index) FontWeight.Bold else FontWeight.Normal
+                            // ) // Simgelerin altına yazıyı ekler
                         }
                     )
                 }
             }
+
         },
         topBar = {
-
-            if(pagerState.currentPage!=2){
+            if (pagerState.currentPage != 2) {
                 MyAppBar(
                     modifier = Modifier.zIndex(1f),
                     navController = navController,
@@ -171,9 +188,7 @@ fun AppMainScreen(navController: NavController, params: MainScreenParams = MainS
                     },
                     isMainScreen = pagerState.currentPage == 0
                 )
-
             }
-
         }
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
@@ -193,7 +208,6 @@ fun AppMainScreen(navController: NavController, params: MainScreenParams = MainS
         }
     }
 }
-
 
 @Composable
 fun AnimatedGif(
@@ -272,8 +286,8 @@ fun MyAppBar(
     navController: NavController,
     title: String,
     topBarBackgroundColor: Color,
-    isMainScreen:Boolean,
-    modifier:Modifier = Modifier
+    isMainScreen: Boolean,
+    modifier: Modifier = Modifier
 
 
 ) {

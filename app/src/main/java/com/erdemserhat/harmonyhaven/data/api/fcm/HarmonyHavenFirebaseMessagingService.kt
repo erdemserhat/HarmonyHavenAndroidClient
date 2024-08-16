@@ -35,8 +35,6 @@ import java.net.URL
 import javax.inject.Inject
 
 
-
-
 @AndroidEntryPoint
 class HarmonyHavenFirebaseMessagingService() : FirebaseMessagingService() {
 
