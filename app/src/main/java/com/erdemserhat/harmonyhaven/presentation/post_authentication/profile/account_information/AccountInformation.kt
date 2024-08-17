@@ -163,6 +163,7 @@ fun AccountInformationContent(
         }
     )
 
+
     if (shouldShowUpdateNamePopUp) {
         Box(
             modifier = Modifier

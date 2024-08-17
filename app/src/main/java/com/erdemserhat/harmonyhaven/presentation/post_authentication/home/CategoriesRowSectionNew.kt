@@ -52,7 +52,7 @@ fun CategoryRow(
         Text(
             text = "Kategoriler",
             fontFamily = DefaultAppFont,
-            color = androidx.compose.material.MaterialTheme.AppColors.secondary,
+            color = Color.Black,
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp,
             modifier = Modifier.align(Alignment.Start),

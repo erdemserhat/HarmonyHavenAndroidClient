@@ -55,61 +55,59 @@ data class ArticleUIModel(
     val publishDate: String,
     val category: String?,
     val imagePath: String,
-    val isLoaded:Boolean
+    val isLoaded: Boolean
 
 )
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ArticleScreen(
-   article:ArticleResponseType,
-   navController: NavController,
-   postId:Int=-1
+    article: ArticleResponseType,
+    navController: NavController,
+    postId: Int = -1
 ) {
-    if(article.id!=-1){
-        val articleVM:ArticleViewModel = hiltViewModel()
+
+    if (article.id != -1) {
+        val articleVM: ArticleViewModel = hiltViewModel()
         val articleState = articleVM.articleState.collectAsState()
         LaunchedEffect(key1 = article) {
             articleVM.prepareArticle(article.id)
-            Log.d("dsasdsad","worked")
+            Log.d("dsasdsad", "worked")
 
         }
-        ArticleScreenContent(articleState.value.toArticleResponseType(),navController)
+        ArticleScreenContent(articleState.value.toArticleResponseType(), navController)
 
 
-
-    }else{
-        ArticleScreenContent(article,navController)
+    } else {
+        ArticleScreenContent(article, navController)
         //AlertExample()
 
     }
-
-
-
-
-
 }
+
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ArticleScreenContent(
-    article:ArticleResponseType,
+    article: ArticleResponseType,
     navController: NavController
 ) {
     var fontSize by rememberSaveable {
         mutableIntStateOf(16)
     }
 
+
+
     Scaffold(
         topBar = {
             ArticleToolbar(
-                onTextFontMinusClicked = {if(!(fontSize<10)) fontSize-- },
-                onTextFontPlusClicked = {if(!(fontSize>24)) fontSize++},
+                onTextFontMinusClicked = { if (!(fontSize < 10)) fontSize-- },
+                onTextFontPlusClicked = { if (!(fontSize > 24)) fontSize++ },
                 navController = navController
             )
         },
         content = {
-            ArticleContent(article,fontSize)
+            ArticleContent(article, fontSize)
         }
     )
 
@@ -117,22 +115,20 @@ fun ArticleScreenContent(
 }
 
 
-
-
-
 @Composable
 fun ArticleToolbar(
-    onTextFontPlusClicked:()->Unit,
-    onTextFontMinusClicked:()->Unit,
+    onTextFontPlusClicked: () -> Unit,
+    onTextFontMinusClicked: () -> Unit,
     navController: NavController
 
 
 ) {
     TopAppBar(
+        modifier = Modifier,
         elevation = 0.dp, // Kenarlık kalınlığını sıfıra ayarlar
         backgroundColor = Color.White,
         contentColor = Color.Transparent,
-        title = {  },
+        title = { },
         navigationIcon = {
             IconButton(onClick = { /* Geri gitme işlemi */ }) {
                 Icon(
@@ -161,7 +157,7 @@ fun ArticleToolbar(
                         .clickable { onTextFontMinusClicked() },
 
 
-                )
+                    )
             }
 
             IconButton(onClick = { /* Kaydetme işlemi */ }) {
@@ -174,44 +170,40 @@ fun ArticleToolbar(
                         .clickable { onTextFontPlusClicked() }
 
 
-
                 )
             }
 
 
+            //  IconButton(onClick = { /* Kaydetme işlemi */ }) {
+            //   Icon(
+            //     painter = painterResource(id = R.drawable.play_icon),
+            //     contentDescription = "Play",
+            //     modifier = Modifier.size(24.dp)
 
 
-
-          //  IconButton(onClick = { /* Kaydetme işlemi */ }) {
-             //   Icon(
-              //     painter = painterResource(id = R.drawable.play_icon),
-               //     contentDescription = "Play",
-               //     modifier = Modifier.size(24.dp)
+            // )
+            //}
 
 
-               // )
-           //}
+            // IconButton(onClick = { /* Paylaşma işlemi */ }) {
+            // Icon(
+            //  painter = painterResource(id = R.drawable.shareicon),
+            // contentDescription = "Share",
+            // modifier = Modifier.size(24.dp)
 
 
-           // IconButton(onClick = { /* Paylaşma işlemi */ }) {
-               // Icon(
-                  //  painter = painterResource(id = R.drawable.shareicon),
-                   // contentDescription = "Share",
-                   // modifier = Modifier.size(24.dp)
+            //)
+            // }
 
 
-                //)
-           // }
+            //  IconButton(onClick = { /* Paylaşma işlemi */ }) {
+            // Icon(
+            // painter = painterResource(id = R.drawable.three_dots_icon),
+            // contentDescription = "Additional",
+            // modifier = Modifier.size(24.dp)
 
 
-          //  IconButton(onClick = { /* Paylaşma işlemi */ }) {
-               // Icon(
-                   // painter = painterResource(id = R.drawable.three_dots_icon),
-                   // contentDescription = "Additional",
-                   // modifier = Modifier.size(24.dp)
-
-
-               // )
+            // )
             //}
         },
     )
@@ -219,13 +211,13 @@ fun ArticleToolbar(
 
 @Composable
 fun ArticleContent(
-    article:ArticleResponseType,
-    fontSize:Int
+    article: ArticleResponseType,
+    fontSize: Int
 ) {
     Column(
         modifier = Modifier
             .background(Color.White)
-            .padding(16.dp)
+            .padding(end = 16.dp, start = 16.dp)
             .fillMaxSize()
 
             .verticalScroll(rememberScrollState())
@@ -244,9 +236,10 @@ fun ArticleContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         //HtmlText(article.content)
-        MinimalExampleContent(article.content,fontSize)
+        MinimalExampleContent(article.content, fontSize)
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 private fun ArticleScreenContentPreview() {
@@ -264,18 +257,15 @@ fun HtmlText(html: String, modifier: Modifier = Modifier) {
 }
 
 
-
-
 @Composable
 fun MinimalExampleContent(
-    articleContent:String,
-    fontSize :Int =16
+    articleContent: String,
+    fontSize: Int = 16
 ) {
     MarkdownText(
         fontSize = fontSize.sp,
         markdown = articleContent,
         modifier = Modifier.fillMaxSize()
-
 
 
     )
@@ -299,22 +289,6 @@ fun AlertExample() {
         })
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 val markdownContent = """  

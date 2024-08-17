@@ -2,7 +2,9 @@ package com.erdemserhat.harmonyhaven.presentation.navigation
 
 import LocalGifImage
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Build
+import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -20,9 +22,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreVert
@@ -47,6 +51,7 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,14 +73,18 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.core.view.WindowCompat
 import coil.compose.rememberAsyncImagePainter
 import com.erdemserhat.harmonyhaven.R
+import com.erdemserhat.harmonyhaven.SetSystemBarsAppearance
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.AlertDialogBase
@@ -86,7 +95,9 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.runBlocking
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
@@ -95,6 +106,53 @@ fun AppMainScreen(navController: NavController, params: MainScreenParams = MainS
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
     val systemUiController = rememberSystemUiController()
+
+
+ //   val context = LocalContext.current
+   // val activity = context as? Activity
+  //  val window = activity?.window
+
+   // window?.let {
+    //    WindowCompat.setDecorFitsSystemWindows(it, true)
+    //    it.setFlags(
+     //       WindowManager.LayoutParams.FLAG_SECURE,
+     //       WindowManager.LayoutParams.FLAG_SECURE
+     ///   )
+   // }
+
+  //  SetSystemBarsAppearance(
+    //    navigationBarColor = Color.White,
+    //    statusBarColor = Color.White,
+    //    navigationBarDarkIcons = true,
+    //    statusBarDarkIcons = true
+  //  )
+    val context = LocalContext.current
+    val activity = context as? Activity
+    val window = activity?.window
+
+
+    SideEffect {
+            window?.let {
+                WindowCompat.setDecorFitsSystemWindows(it, true)
+
+                it.statusBarColor = Color.White.toArgb()
+                it.navigationBarColor = Color.White.toArgb()
+
+
+
+                val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+                insetsController.isAppearanceLightStatusBars = true
+                insetsController.isAppearanceLightNavigationBars = true
+
+            }
+
+    }
+
+
+
+
+
+
 
     // Scroll to the initial page if provided
     LaunchedEffect(params.screenNo) {
@@ -123,7 +181,11 @@ fun AppMainScreen(navController: NavController, params: MainScreenParams = MainS
                 containerColor = Color.White,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
+                    .height(45.dp)
+
+
+
+
             ) {
                 items.forEachIndexed { index, item ->
                     NavigationBarItem(
@@ -190,14 +252,14 @@ fun AppMainScreen(navController: NavController, params: MainScreenParams = MainS
                 )
             }
         }
-    ) { innerPadding ->
+    ) {padding->
         Box(modifier = Modifier.fillMaxSize()) {
             HorizontalPager(
                 state = pagerState,
                 count = items.size,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
+                    .padding(padding)
             ) { page ->
                 when (page) {
                     0 -> HomeScreenNew(navController = navController)
@@ -258,8 +320,7 @@ private data class NavigationBarItem(
     val unSelectedIcon: ImageVector,
     val hasNews: Boolean,
     val badgeCount: Int? = null,
-    val route: String
-)
+    val route: String)
 
 private val items = listOf(
     NavigationBarItem(
@@ -270,10 +331,10 @@ private val items = listOf(
         "Bildirimler", Icons.Filled.Notifications, Icons.Outlined.Notifications, false, null,
         Screen.Notification.route
     ),
-    NavigationBarItem(
-        "Sözler", Icons.Filled.Favorite, Icons.Outlined.FavoriteBorder, false, null,
-        Screen.Quotes.route
-    ),
+    //NavigationBarItem(
+    //    "Sözler", Icons.Filled.Favorite, Icons.Outlined.FavoriteBorder, false, null,
+     //   Screen.Quotes.route
+  //  ),
     // NavigationBarItem(
     //     "Profile", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle, false, null,
     //       Screen.Settings.route
@@ -325,6 +386,20 @@ fun MyAppBar(
                 strokeWidth = 1.dp.toPx() // Sınır kalınlığını belirler
             )
         },
+        navigationIcon = {
+            IconButton(onClick = {
+                navController.navigate(Screen.QuoteMain.route){
+
+                }
+
+
+            }) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        },
 
         title = {
 
@@ -346,7 +421,7 @@ fun MyAppBar(
 
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = topBarBackgroundColor
+            containerColor =topBarBackgroundColor
         ),
         actions = {
             IconButton(onClick = { expanded = !expanded }) {

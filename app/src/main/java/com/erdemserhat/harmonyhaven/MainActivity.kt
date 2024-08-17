@@ -86,30 +86,33 @@ class MainActivity : ComponentActivity() {
             //systemUiController.setSystemBarsColor(color = Color.Black, darkIcons = true)
 
             HarmonyHavenTheme {
-                SetStatusBarAppearance(
-                    statusBarColor = Color.White, // Durum çubuğunun arka plan rengi
-                    darkIcons = true // Simgelerin siyah olmasını sağla
-                            // )
-                )
+                //SetStatusBarAppearance(
+                 //   statusBarColor = Color.White, // Durum çubuğunun arka plan rengi
+                  //  darkIcons = true // Simgelerin siyah olmasını sağla
+                    //        // )
+                //)
               //  )
 
-              //  WindowCompat.setDecorFitsSystemWindows(
-               //     window,
-                //    false
+
+
+                //SetSystemBarsAppearance(
+                  //  navigationBarColor = Color.Transparent,
+                   // statusBarColor = Color.Transparent,
+                   // navigationBarDarkIcons = false,
+                   // statusBarDarkIcons = false
                // )
 
-                //window.setFlags(
-                 //   WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                  //  WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-
                 navController = rememberNavController()
+                window
 
 
 
                 SetupNavGraph(
                     navController = navController,
-                    startDestination = if (isFirstLaunch) Screen.Welcome.route else Screen.Main.route,
-                    modifier = Modifier // Padding değerlerini burada kullanın
+                    startDestination = if (isFirstLaunch) Screen.Welcome.route else Screen.QuoteMain.route,
+                    modifier = Modifier, // Padding değerlerini burada kullanın
+                    window = window
+
                 )
 
                 extraData?.let {
@@ -129,14 +132,22 @@ class MainActivity : ComponentActivity() {
                             args = bundleArticle
                         )
 
-                    } else {
+                    }
+                    else {
                         val bundleMain = Bundle()
                         val screenCode = extraData.toInt()
-                        bundleMain.putParcelable("params", MainScreenParams(screenNo = screenCode))
-                        navController.navigate(
-                            route = Screen.Main.route,
-                            args = bundleMain
-                        )
+
+                        if(screenCode==2){
+
+                        }else{
+                            bundleMain.putParcelable("params", MainScreenParams(screenNo = screenCode))
+                            navController.navigate(
+                                route = Screen.Main.route,
+                                args = bundleMain
+                            )
+
+                        }
+
 
                     }
 
@@ -173,6 +184,23 @@ fun SetStatusBarAppearance(statusBarColor: Color, darkIcons: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val insetsController = WindowCompat.getInsetsController(window, window.decorView)
             insetsController?.isAppearanceLightStatusBars = darkIcons
+        }
+    }
+}
+
+@Composable
+fun SetSystemBarsAppearance(statusBarColor: Color, statusBarDarkIcons: Boolean, navigationBarColor: Color, navigationBarDarkIcons: Boolean) {
+    val window = (LocalView.current.context as? ComponentActivity)?.window
+    window?.let {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            it.statusBarColor = statusBarColor.toArgb()
+            it.navigationBarColor = navigationBarColor.toArgb()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+            insetsController.isAppearanceLightStatusBars = statusBarDarkIcons
+            insetsController.isAppearanceLightNavigationBars = navigationBarDarkIcons
         }
     }
 }
