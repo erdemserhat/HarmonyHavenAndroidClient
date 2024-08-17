@@ -54,33 +54,35 @@ import com.erdemserhat.harmonyhaven.util.DefaultAppFont
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(navController: NavController) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                elevation = 0.dp,
-                backgroundColor = Color.White,
-                contentColor = Color.Transparent,
-                title = { Text(text = "Ayarlar") },
-                navigationIcon = {
-                    androidx.compose.material.IconButton(onClick = { /* Geri gitme işlemi */ }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.return_back_icon),
-                            contentDescription = "Geri",
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(50.dp))
-                                .size(32.dp)
-                                .clickable {
-                                    navController.popBackStack()
-                                }
-                        )
-                    }
-                }
-            )
-        }
+  Column {
+      Scaffold(
+          topBar = {
+              TopAppBar(
+                  elevation = 0.dp,
+                  backgroundColor = Color.White,
+                  contentColor = Color.Transparent,
+                  title = { Text(text = "Ayarlar") },
+                  navigationIcon = {
+                      androidx.compose.material.IconButton(onClick = { /* Geri gitme işlemi */ }) {
+                          Icon(
+                              painter = painterResource(id = R.drawable.return_back_icon),
+                              contentDescription = "Geri",
+                              modifier = Modifier
+                                  .clip(RoundedCornerShape(50.dp))
+                                  .size(32.dp)
+                                  .clickable {
+                                      navController.popBackStack()
+                                  }
+                          )
+                      }
+                  }
+              )
+          }
 
-    ){padding->
-        SettingsScreenContent(navController, modifier = Modifier.background(Color.White).padding(padding))
-    }
+      ){padding->
+          SettingsScreenContent(navController, modifier = Modifier.background(Color.White).padding(padding))
+      }
+  }
 }
 
 @Preview(showBackground = true)
