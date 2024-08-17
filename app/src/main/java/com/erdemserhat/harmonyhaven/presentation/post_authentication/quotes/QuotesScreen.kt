@@ -101,17 +101,6 @@ fun QuotesContent(quote: List<Quote>) {
 
         ) {
 
-        //  Box(modifier = Modifier
-        //   .align(Alignment.Center)
-        //  .height(300.dp)){
-        // AnimatedGif(R.drawable.bird2,true, duration = 20000, modifier = Modifier.align(Alignment.Center).zIndex(2f))
-        // AnimatedGif(R.drawable.bird,false, duration = 25000,modifier = Modifier.align(Alignment.Center).zIndex(2f))
-        // LocalGifImage(R.drawable.examplecloud, modifier = Modifier
-        //  .align(Alignment.Center)
-        //  .size(700.dp))
-
-        //  Image(painter = painterResource(id = R.drawable.backgroundnotif), contentDescription = null, modifier = Modifier.align(
-        //   Alignment.TopEnd).fillMaxSize().zIndex(1f))
         QuoteVerticalList(quoteList = quote, modifier = Modifier.align(Alignment.Center))
 
     }
@@ -151,7 +140,6 @@ fun Quote(quote: Quote, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .zIndex(2f)
 
     ) {
         FullScreenImage(
@@ -201,11 +189,6 @@ fun Quote(quote: Quote, modifier: Modifier = Modifier) {
 fun QuoteVerticalList(
     quoteList: List<Quote>, modifier: Modifier
 ) {
-
-
-
-
-
 
     if (quoteList.isNotEmpty()) {
 

@@ -26,6 +26,7 @@ sealed class Screen(val route:String) {
 
     object SavedArticles:Screen("saved_articles_screen")
     object AboutUs:Screen("about_us_screen")
+    object QuoteMain:Screen("quote_main")
 
 
 

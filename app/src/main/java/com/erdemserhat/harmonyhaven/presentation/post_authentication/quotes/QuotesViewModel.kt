@@ -41,8 +41,4 @@ class QuotesViewModel @Inject constructor(
             }
         }
     }
-
-
-
-
 }

@@ -19,6 +19,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonColors
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -47,6 +49,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.erdemserhat.harmonyhaven.R
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.util.DefaultAppFont
 import kotlinx.coroutines.delay
 
@@ -196,8 +199,13 @@ fun PasswordUpdatePopup(
                 ),
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
-                    errorIndicatorColor = Color.Red,
+                    errorIndicatorColor = Color.Red, // Color for the error indicator
+                    cursorColor = Color.Black, // Color for the cursor
                     errorCursorColor = Color.Red,
+                    focusedIndicatorColor = Color.Black, // Color for the focused indicator
+                    unfocusedIndicatorColor = Color.Gray, // Color for the unfocused indicator
+                    disabledIndicatorColor = Color.Gray, // Color for the indicator when the TextField is disabled
+                    disabledPlaceholderColor = Color.Gray // Color for the placehol
 
                     ),
                 modifier = Modifier
@@ -262,8 +270,13 @@ fun PasswordUpdatePopup(
                 ),
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
-                    errorIndicatorColor = Color.Red,
+                    errorIndicatorColor = Color.Red, // Color for the error indicator
+                    cursorColor = Color.Black, // Color for the cursor
                     errorCursorColor = Color.Red,
+                    focusedIndicatorColor = Color.Black, // Color for the focused indicator
+                    unfocusedIndicatorColor = Color.Gray, // Color for the unfocused indicator
+                    disabledIndicatorColor = Color.Gray, // Color for the indicator when the TextField is disabled
+                    disabledPlaceholderColor = Color.Gray // Color for the placehol
 
                     ),
 
@@ -310,9 +323,30 @@ fun PasswordUpdatePopup(
                 ),
 
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Black,
+                    backgroundColor = Color.White,
+                    textColor = Color.Black,
+                    placeholderColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
                     errorIndicatorColor = Color.Red,
+                    disabledIndicatorColor = Color.Black,
                     errorCursorColor = Color.Red,
+                    leadingIconColor = Color.Black,
+                    trailingIconColor = Color.Black,
+                    disabledTextColor = Color.Black,
+                    disabledLeadingIconColor = Color.Black,
+                    disabledTrailingIconColor = Color.Black,
+                    errorLeadingIconColor = Color.Black,
+                    errorLabelColor = Color.Black,
+                    disabledPlaceholderColor = Color.Black,
+                    errorTrailingIconColor = Color.Black,
+                    disabledLabelColor = Color.Black,
+
+
+
 
                     ),
                 onValueChange = { text ->
@@ -338,6 +372,10 @@ fun PasswordUpdatePopup(
                         )
                     },
                     enabled = !isLoading,
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.White,
+                        backgroundColor = Color.Black
+                    )
                 ) {
                     Text(text = "Kaydet")
                 }
@@ -347,6 +385,10 @@ fun PasswordUpdatePopup(
                         onDismissRequest()
                     },
                     enabled = !isLoading,
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.White,
+                        backgroundColor = Color.Black
+                    )
                 ) {
                     Text(text = "Vazgeç")
                 }

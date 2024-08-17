@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -75,7 +76,14 @@ fun NameUpdatePopup(
             TextField(
                 value = textState.value,
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent
+                    backgroundColor = Color.Transparent,
+                    errorIndicatorColor = Color.Red, // Color for the error indicator
+                    cursorColor = Color.Black, // Color for the cursor
+                    errorCursorColor = Color.Red,
+                    focusedIndicatorColor = Color.Black, // Color for the focused indicator
+                    unfocusedIndicatorColor = Color.Gray, // Color for the unfocused indicator
+                    disabledIndicatorColor = Color.Gray, // Color for the indicator when the TextField is disabled
+                    disabledPlaceholderColor = Color.Gray // Color for
                 ),
                 onValueChange = { text ->
                     // Metin değiştiğinde, metnin tamamını seçili hale getir
@@ -99,14 +107,22 @@ fun NameUpdatePopup(
             Spacer(modifier = Modifier.height(8.dp))
             Row(modifier = Modifier.align(Alignment.End)) {
                 Button(
-                    onClick = { onPositiveButtonClicked(textState.value.text) }
+                    onClick = { onPositiveButtonClicked(textState.value.text) },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.White,
+                        backgroundColor = Color.Black
+                    )
                 ) {
                     Text(text = "Kaydet")
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(onClick = {
                     onDismissRequest()
-                }) {
+                }, colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.White,
+                    backgroundColor = Color.Black
+                )
+                ) {
                     Text(text = "Vazgeç")
                 }
             }

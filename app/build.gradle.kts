@@ -179,6 +179,8 @@ dependencies {
     implementation ("io.coil-kt:coil-gif:2.0.0") // GIF desteği için
 
     implementation ("com.google.accompanist:accompanist-systemuicontroller:0.30.1") // Status bar için
+    implementation ("com.google.accompanist:accompanist-navigation-animation:0.28.0")
+
 
 
 
