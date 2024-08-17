@@ -4,7 +4,10 @@ import AccountInformationScreen
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.Window
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -28,15 +31,20 @@ import com.erdemserhat.harmonyhaven.presentation.prev_authentication.passwordres
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.QuotesScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.RegisterScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles.SavedArticlesScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.welcome.WelcomeScreen
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+
 import kotlinx.parcelize.Parcelize
 
+@OptIn(ExperimentalAnimationApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun SetupNavGraph(
     navController: NavHostController,
     startDestination: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    window: Window
 ) {
     NavHost(
         navController = navController,
@@ -44,6 +52,8 @@ fun SetupNavGraph(
         modifier = modifier // Modifier'ı burada kullanın
 
     ) {
+
+
 
         composable(route = Screen.Welcome.route) {
             WelcomeScreen(navHostController = navController)
@@ -123,7 +133,7 @@ fun SetupNavGraph(
         }
 
         composable(
-            route = Screen.Article.route
+            route = Screen.Article.route,
         ) { backStackEntry ->
             val bundle = backStackEntry.arguments
             val article = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -132,14 +142,22 @@ fun SetupNavGraph(
                 bundle?.getParcelable("article") as? ArticleResponseType
             }
             article?.let {
+
                 ArticleScreen(article,navController)
             }
         }
 
 
         composable(
-            route = Screen.Main.route
+            route = Screen.Main.route,
+            enterTransition = {
+                slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Up, animationSpec = tween(700))
+            },
+            exitTransition = {
+                slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Down, animationSpec = tween(700))
+            }
         ) { backStackEntry ->
+
             val bundle = backStackEntry.arguments
             val params = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 bundle?.getParcelable("params", MainScreenParams::class.java)
@@ -147,11 +165,15 @@ fun SetupNavGraph(
                 bundle?.getParcelable("params") as? MainScreenParams
             }
 
+
+
             if(params==null){
                 AppMainScreen(navController)
             }else{
                 AppMainScreen(navController,params)
             }
+
+            window.setDecorFitsSystemWindows(true)
 
         }
 
@@ -161,6 +183,11 @@ fun SetupNavGraph(
         }
         composable(route = Screen.AboutUs.route) {
             AboutUsScreen(navController = navController)
+        }
+
+        composable(route = Screen.QuoteMain.route) {
+            QuoteMainScreen(navController = navController)
+            window.setDecorFitsSystemWindows(false)
         }
 
 

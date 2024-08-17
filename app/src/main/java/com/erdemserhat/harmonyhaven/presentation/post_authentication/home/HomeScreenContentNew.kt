@@ -88,20 +88,24 @@ fun HomeScreenContentNew(
 
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally,
 
         ) {
 
         item {
-            Spacer(modifier = Modifier.size(20.dp))
-            SearchBarWithIcon(
-                modifier = Modifier.fillMaxWidth(0.9f),
-                onActiveChange = { isFocusedSearchBar = it },
-                query = query,
-                onQueryChange = { query = it }
-            )
-            Spacer(modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.size(15.dp))
+                SearchBarWithIcon(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f),
+                    onActiveChange = { isFocusedSearchBar = it },
+                    query = query,
+                    onQueryChange = { query = it }
+                )
+                Spacer(modifier = Modifier.size(20.dp))
+
 
         }
 
@@ -286,7 +290,8 @@ fun SearchBarWithIcon(
                 color = Color.LightGray,
                 shape = RoundedCornerShape(10.dp)
             )
-            .fillMaxWidth(0.9f),
+            .fillMaxWidth(0.9f)
+        ,
         horizontalArrangement = Arrangement.Center
 
     ) {
@@ -668,7 +673,7 @@ fun MinimizedArticleItem(
                     args = bundle
                 )
 
-             }
+            }
 
 
     ) {
