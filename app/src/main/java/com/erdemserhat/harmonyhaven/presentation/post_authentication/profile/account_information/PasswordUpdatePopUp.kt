@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -49,8 +48,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
-import com.erdemserhat.harmonyhaven.util.DefaultAppFont
+import com.erdemserhat.harmonyhaven.ui.theme.DefaultAppFont
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalComposeUiApi::class)

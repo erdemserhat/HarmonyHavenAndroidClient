@@ -36,13 +36,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category
+import com.erdemserhat.harmonyhaven.presentation.common.AppColors
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.components.shimmerBrush
+import com.erdemserhat.harmonyhaven.ui.theme.customFontFamilyJunge
+import com.erdemserhat.harmonyhaven.ui.theme.customFontInter
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenBottomAppBarContainerColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenTitleTextColor
-import com.erdemserhat.harmonyhaven.presentation.common.AppColors
-import com.erdemserhat.harmonyhaven.util.customFontFamilyJunge
-import com.erdemserhat.harmonyhaven.util.customFontInter
 
 @Composable
 fun CategoriesRowSection(

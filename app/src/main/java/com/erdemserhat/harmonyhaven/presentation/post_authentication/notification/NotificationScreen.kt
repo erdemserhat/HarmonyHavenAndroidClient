@@ -1,6 +1,5 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.notification
 
-import LocalGifImage
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
@@ -57,15 +56,15 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
+import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import com.erdemserhat.harmonyhaven.presentation.navigation.MainScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenButton
+import com.erdemserhat.harmonyhaven.ui.theme.customFontInter
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
-import com.erdemserhat.harmonyhaven.util.customFontInter
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime

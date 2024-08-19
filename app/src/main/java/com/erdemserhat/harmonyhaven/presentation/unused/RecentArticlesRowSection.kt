@@ -23,13 +23,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
+import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.ArticlePrototype
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.components.shimmerBrush
-import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.ui.theme.customFontInter
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenTitleTextColor
-import com.erdemserhat.harmonyhaven.util.customFontInter
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -97,9 +97,7 @@ fun MostReadHorizontalPager(
 
 @Composable
 fun MostReadHorizontalPagerShimmy() {
-    Column(
-
-    ) {
+    Column {
         Text(
             text = "Loading Recent Articles...",
             modifier = Modifier

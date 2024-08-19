@@ -1,9 +1,7 @@
 package com.erdemserhat.harmonyhaven.domain.usecase
 
 import android.util.Log
-import com.erdemserhat.harmonyhaven.data.api.notification.NotificationApiService
 import com.erdemserhat.harmonyhaven.data.api.quote.QuoteApiService
-import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

@@ -39,9 +39,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erdemserhat.harmonyhaven.R
+import com.erdemserhat.harmonyhaven.ui.theme.customFontFamilyJunge
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
-import com.erdemserhat.harmonyhaven.util.customFontFamilyJunge
 
 /////////////////////////////// Reusable Composable Components ////////////////////////////////////
 

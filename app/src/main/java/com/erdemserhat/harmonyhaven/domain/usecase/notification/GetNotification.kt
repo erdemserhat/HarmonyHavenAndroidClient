@@ -1,12 +1,11 @@
 package com.erdemserhat.harmonyhaven.domain.usecase.notification
 
 import android.util.Log
-import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import com.erdemserhat.harmonyhaven.data.api.notification.NotificationApiService
-import javax.inject.Inject
-
+import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 class GetNotification @Inject constructor(
     private val notificationApiService: NotificationApiService

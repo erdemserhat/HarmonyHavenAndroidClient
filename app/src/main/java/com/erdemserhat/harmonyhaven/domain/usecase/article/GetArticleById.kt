@@ -1,7 +1,6 @@
 package com.erdemserhat.harmonyhaven.domain.usecase.article
 
 import com.erdemserhat.harmonyhaven.data.api.article.ArticleApiService
-import com.erdemserhat.harmonyhaven.domain.model.rest.Article
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
 import retrofit2.HttpException
 import java.io.IOException

@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class GetRecentArticles @Inject constructor(
 ) {
-    suspend operator fun invoke(size:Int):List<ArticleResponseType>?{
+    suspend operator fun invoke(size:Int): List<ArticleResponseType> {
         /*
         val response = categoryApiService.getRecentArticles(size)
 
