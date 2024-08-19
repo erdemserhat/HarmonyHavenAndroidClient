@@ -21,6 +21,7 @@ fun LoginScreenEmailTextField(
 ) {
 
     OutlinedTextField(
+        singleLine = true,
         modifier = Modifier
             .size(width = 370.dp, height = 60.dp),
         value = email,

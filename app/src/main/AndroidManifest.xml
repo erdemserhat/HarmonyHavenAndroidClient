@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+
 
 
     <application
@@ -41,6 +43,8 @@
 
 
         </activity>
+
+
 
         <service
             android:name=".data.api.fcm.HarmonyHavenFirebaseMessagingService"

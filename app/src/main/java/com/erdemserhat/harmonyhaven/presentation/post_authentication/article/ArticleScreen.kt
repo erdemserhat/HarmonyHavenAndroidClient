@@ -1,6 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.article
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.util.Log
 import android.widget.TextView
 import androidx.compose.runtime.Composable
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -35,13 +37,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -123,6 +128,28 @@ fun ArticleToolbar(
 
 
 ) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+    val window = activity?.window
+
+    SideEffect {
+
+        window?.let {
+
+            WindowCompat.setDecorFitsSystemWindows(it, true)
+
+            it.statusBarColor = Color.White.toArgb()
+            it.navigationBarColor = Color.White.toArgb()
+
+
+
+            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+            insetsController.isAppearanceLightStatusBars = true
+            insetsController.isAppearanceLightNavigationBars = true
+
+        }
+
+    }
     TopAppBar(
         modifier = Modifier,
         elevation = 0.dp, // Kenarlık kalınlığını sıfıra ayarlar
