@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.presentation.prev_authentication.welcome
 
+import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -17,26 +18,28 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.ClickableHorizontalPagerIndicator
 import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.HarmonyHavenGreetingButton
+import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.ui.theme.customFontKumbhSans
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
-import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.ClickableHorizontalPagerIndicator
-import com.erdemserhat.harmonyhaven.util.customFontKumbhSans
 import com.google.accompanist.pager.ExperimentalPagerApi
 import kotlinx.coroutines.DelicateCoroutinesApi
 
@@ -44,6 +47,27 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class, DelicateCoroutinesApi::class)
 @Composable
 fun WelcomeScreen(navHostController: NavHostController) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+    val window = activity?.window
+    SideEffect {
+
+        window?.let {
+
+            WindowCompat.setDecorFitsSystemWindows(it, false)
+
+            it.statusBarColor = Color.Transparent.toArgb()
+            it.navigationBarColor = Color.Transparent.toArgb()
+
+
+            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+            insetsController.isAppearanceLightStatusBars = true
+            insetsController.isAppearanceLightNavigationBars = true
+
+        }
+
+    }
+
     // Display 3 items
     val pagerState: PagerState = rememberPagerState(pageCount = {
         3
@@ -86,28 +110,36 @@ fun WelcomeScreen(navHostController: NavHostController) {
 
         }
 
-        //HorizontalPagerIndicator dots
-        ClickableHorizontalPagerIndicator(
-            pagerState = pagerState,
-            activeColor = MaterialTheme.colorScheme.primary,
-            inactiveColor = Color.Gray,
-            indicatorWidth = 16.dp,
-            indicatorShape = CircleShape,
-            spacing = 8.dp,
-            pageCount = 3,
-            modifier = Modifier
-                .weight(1f),
+
+
+            ClickableHorizontalPagerIndicator(
+                pagerState = pagerState,
+                activeColor = MaterialTheme.colorScheme.primary,
+                inactiveColor = Color.Gray,
+                indicatorWidth = 16.dp,
+                indicatorShape = CircleShape,
+                spacing = 8.dp,
+                pageCount = 3,
+                modifier = Modifier
+                    .weight(1f),
+
+                )
+
+
+            FinishButton(
+                pagerState = pagerState,
+                onClick = { navHostController.navigate(Screen.Login.route) },
+                modifier = Modifier
+                    .weight(2f)
+                    .padding(bottom = 10.dp)
 
             )
 
+        Spacer(modifier = Modifier.size(100.dp))
 
 
-        FinishButton(
-            pagerState = pagerState,
-            onClick = { navHostController.navigate(Screen.Login.route) },
-            modifier = Modifier.weight(2f).padding(bottom = 10.dp)
 
-        )
+
 
 
     }

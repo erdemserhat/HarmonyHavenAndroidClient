@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import com.erdemserhat.harmonyhaven.domain.usecase.notification.NotificationUseCases
+import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

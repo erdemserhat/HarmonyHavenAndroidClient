@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.presentation.prev_authentication.register
 
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,34 +16,38 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.presentation.prev_authentication.welcome.Gender
 import com.erdemserhat.harmonyhaven.domain.model.RegisterFormModel
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.LoginViewModel
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.AcceptanceOfTermsOfUse
-import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.GenderSection
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenButton
-import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenButtonWithIcon
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenPasswordTextField
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenProgressIndicator
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenTextField
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.welcome.Gender
+import com.erdemserhat.harmonyhaven.ui.theme.customFontFamilyJunge
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
-import com.erdemserhat.harmonyhaven.util.customFontFamilyJunge
 
 @Composable
 fun RegisterScreenContent(
@@ -158,13 +163,7 @@ fun RegisterScreenContent(
                     Spacer(modifier = Modifier.size(10.dp))
 
 
-                    if(params.isTermsOfUserAccepted){
-                        isButtonsEnabled = true
-
-                    }else{
-                        isButtonsEnabled = false
-
-                    }
+                    isButtonsEnabled = params.isTermsOfUserAccepted
 
                     Text(
                         text = params.warningText,
@@ -257,9 +256,30 @@ fun RegisterScreenContent(
 @Composable
 fun RegisterScreen(
     registerViewModel: RegisterViewModel = hiltViewModel(),
+    loginViewModel: LoginViewModel = hiltViewModel(),
     navController: NavController
 
 ) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+    val window = activity?.window
+    SideEffect {
+
+        window?.let {
+
+            WindowCompat.setDecorFitsSystemWindows(it, false)
+
+            it.statusBarColor = Color.Transparent.toArgb()
+            it.navigationBarColor = Color.Transparent.toArgb()
+
+
+            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+            insetsController.isAppearanceLightStatusBars = true
+            insetsController.isAppearanceLightNavigationBars = true
+
+        }
+
+    }
 
 
     var name by rememberSaveable {
@@ -326,7 +346,11 @@ fun RegisterScreen(
         warningText = registerViewModel.registerState.value.registerWarning,
         isLoading = registerViewModel.registerState.value.isLoading,
         shouldNavigateTo = registerViewModel.registerState.value.canNavigateTo,
-        onShouldNavigateTo = { navController.navigate(Screen.Login.route) },
+        onShouldNavigateTo = {
+            loginViewModel.onLoginClicked(email, password)
+            navController.navigate(Screen.QuoteMain.route)
+
+                             },
         isNameValid = !registerViewModel.registerState.value.registerValidationState.isNameValid,
         isSurnameValid = !registerViewModel.registerState.value.registerValidationState.isSurnameValid,
         isEmailValid = !registerViewModel.registerState.value.registerValidationState.isEmailValid,

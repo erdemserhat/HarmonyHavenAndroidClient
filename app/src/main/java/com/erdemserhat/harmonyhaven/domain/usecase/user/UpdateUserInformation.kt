@@ -4,7 +4,6 @@ import android.util.Log
 import com.erdemserhat.harmonyhaven.data.api.user.InformationUpdateApiService
 import com.erdemserhat.harmonyhaven.dto.requests.UpdateNameDto
 import com.erdemserhat.harmonyhaven.dto.requests.UpdatePasswordDto
-import com.erdemserhat.harmonyhaven.dto.responses.RegistrationResponse
 import com.erdemserhat.harmonyhaven.dto.responses.ValidationResult
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers

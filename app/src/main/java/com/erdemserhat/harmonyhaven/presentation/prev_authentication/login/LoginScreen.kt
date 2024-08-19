@@ -2,9 +2,6 @@ package com.erdemserhat.harmonyhaven.presentation.prev_authentication.login
 
 
 import android.app.Activity
-import android.content.Intent
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -31,28 +29,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.HarmonyHavenGreetingLogo
 import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.HarmonyHavenGreetingText
 import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.HarmonyHavenGreetingTitle
+import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.LoginScreenEmailTextField
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.LoginScreenForgotPasswordTextButton
-import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.LoginScreenGoogleSignInButton
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.LoginScreenLoginButton
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.LoginScreenPasswordTextField
-import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.LoginScreenRememberCredentialsCheckbox
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.LoginScreenWarningText
-import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 
 @Composable
 fun LoginScreenContent(
@@ -267,11 +264,6 @@ fun LoginScreen(
         onLoginViaGoogleClicked = {
             //
 
-
-
-
-
-
         },
         onSignUpClicked = { navController.navigate(Screen.Register.route) },
         onForgotPasswordClicked = { navController.navigate(Screen.ForgotPasswordMail.route) },
@@ -290,6 +282,30 @@ fun LoginScreen(
         isEmailValid = !viewModel.loginState.value.validationState.isEmailValid,
         isPasswordValid = !viewModel.loginState.value.validationState.isPasswordValid,
     )
+
+    val context = LocalContext.current
+    val activity = context as? Activity
+    val window = activity?.window
+    SideEffect {
+
+        window?.let {
+
+            WindowCompat.setDecorFitsSystemWindows(it, false)
+
+            it.statusBarColor = Color.Transparent.toArgb()
+            it.navigationBarColor = Color.Transparent.toArgb()
+
+
+            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+            insetsController.isAppearanceLightStatusBars = true
+            insetsController.isAppearanceLightNavigationBars = true
+
+        }
+
+    }
+
+
+
 
     LoginScreenContent(params = loginParams)
 

@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.domain.model.RegisterFormModel
 import com.erdemserhat.harmonyhaven.domain.model.toUserInformationSchema
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
-import com.erdemserhat.harmonyhaven.domain.validation.areStringsEqual
 import com.erdemserhat.harmonyhaven.dto.requests.UserInformationSchema
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.state.RegisterState
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.state.RegisterValidationState
@@ -32,7 +31,7 @@ class RegisterViewModel @Inject constructor(
         _registerState.value = _registerState.value.copy(
             isLoading = true
         )
-        if (!areStringsEqual(formModel.password, formModel.confirmPassword)) {
+        if (formModel.password != formModel.confirmPassword) {
             _registerState.value = _registerState.value.copy(
                 registerValidationState = RegisterValidationState(isPasswordValid = false),
                 registerWarning = "Şifreler uyuşmuyor.",
@@ -49,7 +48,7 @@ class RegisterViewModel @Inject constructor(
 
     }
 
-    private suspend fun registerUser(userInformationSchema: UserInformationSchema) {
+    private fun registerUser(userInformationSchema: UserInformationSchema) {
         viewModelScope.launch(Dispatchers.IO) {
             val responseDeferred =  async { userUseCases.registerUser.executeRequest(userInformationSchema.apply { userInformationSchema.surname="default" }) }
             val response = responseDeferred.await()
@@ -109,4 +108,7 @@ class RegisterViewModel @Inject constructor(
         }
 
     }
+
+
+
 }

@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.util.DefaultAppFont
+import com.erdemserhat.harmonyhaven.ui.theme.DefaultAppFont
 
 @Composable
 fun AccountInformationBottomSection(modifier: Modifier = Modifier) {

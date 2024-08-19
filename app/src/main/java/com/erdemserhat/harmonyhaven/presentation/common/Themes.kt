@@ -1,18 +1,17 @@
 package com.erdemserhat.harmonyhaven.presentation.common
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Typography
-import androidx.compose.runtime.Composable
-import androidx.compose.material.Colors
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
-
 import androidx.compose.ui.graphics.Color
-import com.erdemserhat.harmonyhaven.util.DefaultAppFont
+import com.erdemserhat.harmonyhaven.ui.theme.DefaultAppFont
 
 private val Amber700 = Color(0xFF9C27B0)
 private val Amber500 = Color(0xFFFF9800)

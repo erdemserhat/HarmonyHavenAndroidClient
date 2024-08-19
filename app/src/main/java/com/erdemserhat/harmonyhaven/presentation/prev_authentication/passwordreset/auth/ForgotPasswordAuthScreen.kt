@@ -143,6 +143,7 @@ fun ForgotPasswordAuthScreenContent(
         Column(
             Modifier
                 .fillMaxSize()
+                .padding(top = 20.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
             ArrowBackButtonDev(

@@ -24,9 +24,7 @@ import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -40,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -51,17 +48,10 @@ import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.SetSystemBarsAppearance
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.FullScreenImage
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.QuotesContent
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.QuotesViewModel
-import com.erdemserhat.harmonyhaven.temp.FullScreenVideoPlayer
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalFoundationApi::class)
@@ -71,30 +61,52 @@ fun QuoteMainScreen(
     navController: NavController,
     viewmodel: QuoteMainViewModel = hiltViewModel()
 ) {
+    val authStatus by viewmodel.authStatus.collectAsState()
+
+    when (authStatus){
+        0-> UxAuthHelper(modifier = modifier, onClick = {viewmodel.tryLoad()})
+        1-> QuoteMainContent(modifier = modifier, navController = navController, viewmodel = viewmodel)
+        2->UxSessionExp(modifier = modifier, onClick = {navController.navigate(Screen.Login.route)})
+
+        
+    }
+
+
+}
+
+@Composable
+fun QuoteMainContent(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    viewmodel: QuoteMainViewModel
+) {
 
     val quotes = viewmodel.quotes.collectAsState()
-    val context = LocalContext.current
-    val activity = context as? Activity
-    val window = activity?.window
+
+
+    val authStatus = viewmodel.authStatus.collectAsState()
+
 
     val shouldShowUxDialog1 = viewmodel.shouldShowUxDialog1.collectAsState()
 
     var permissionGranted by remember { mutableStateOf(viewmodel.isPermissionGranted()) }
 
+    val context = LocalContext.current
+    val activity = context as? Activity
+    val window = activity?.window
     SideEffect {
 
         window?.let {
 
             WindowCompat.setDecorFitsSystemWindows(it, false)
 
-                it.statusBarColor = Color.Transparent.toArgb()
-                it.navigationBarColor = Color.Transparent.toArgb()
+            it.statusBarColor = Color.Transparent.toArgb()
+            it.navigationBarColor = Color.Transparent.toArgb()
 
 
-
-                val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-                insetsController.isAppearanceLightStatusBars = false
-                insetsController.isAppearanceLightNavigationBars = false
+            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+            insetsController.isAppearanceLightStatusBars = false
+            insetsController.isAppearanceLightNavigationBars = false
 
         }
 
@@ -123,7 +135,7 @@ fun QuoteMainScreen(
         modifier = modifier
             .fillMaxSize()
     ) {
-        if(shouldShowUxDialog1.value){
+        if (shouldShowUxDialog1.value) {
             UxScrollInformer(modifier = Modifier.zIndex(2f),
                 onClick = {
                     viewmodel.setShouldShowUxDialog1(false)
@@ -140,16 +152,16 @@ fun QuoteMainScreen(
                     WindowManager.LayoutParams.FLAG_SECURE
                 )
             }
-            navController.navigate(Screen.Main.route){
+            navController.navigate(Screen.Main.route) {
 
             }
-
 
 
         })
 
 
     }
+
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -202,14 +214,14 @@ fun Quote(
                 modifier = Modifier
             )
         } else {
-            FullScreenVideoPlayer(
+            VideoPlayer(
                 videoUrl = quote.imageUrl,
                 isPlaying = isCurrentPage, // Sadece aktif sayfa oynatılır
                 prepareOnly = isVisible // Görünür olan ancak aktif olmayan sayfa hazırlanır
             )
         }
 
-        if(quote.quote != ""){
+        if (quote.quote != "") {
             Box(
                 modifier = Modifier
                     .padding(15.dp)
@@ -251,7 +263,7 @@ fun Quote(
 }
 
 @Composable
-fun ButtonSurface(modifier: Modifier = Modifier,onClick:()->Unit) {
+fun ButtonSurface(modifier: Modifier = Modifier, onClick: () -> Unit) {
     // Renk kodunu ve alfa değerini ayarlayarak yarı transparan yapıyoruz
     Box(
         modifier = modifier
@@ -262,16 +274,15 @@ fun ButtonSurface(modifier: Modifier = Modifier,onClick:()->Unit) {
             .background(Color.Gray.copy(alpha = 0.5f)) // Alfa değerini 0.5 olarak ayarlıyoruz
             .clickable { onClick() }
     ) {
-       Icon(
-           painter = painterResource(id = R.drawable.newspaper),
-           contentDescription = null,
-           Modifier
-               .size(25.dp)
-               .align(Alignment.Center)
+        Icon(
+            painter = painterResource(id = R.drawable.newspaper),
+            contentDescription = null,
+            Modifier
+                .size(25.dp)
+                .align(Alignment.Center)
 
 
-       )
-
+        )
 
 
     }

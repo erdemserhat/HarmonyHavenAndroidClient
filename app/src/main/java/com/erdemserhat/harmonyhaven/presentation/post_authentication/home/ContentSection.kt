@@ -11,15 +11,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
@@ -38,9 +35,9 @@ import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.components.ContentGridShimmy
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.components.shimmerBrush
+import com.erdemserhat.harmonyhaven.ui.theme.customFontInter
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenTitleTextColor
-import com.erdemserhat.harmonyhaven.util.customFontInter
 
 
 @SuppressLint("StateFlowValueCalledInComposition")

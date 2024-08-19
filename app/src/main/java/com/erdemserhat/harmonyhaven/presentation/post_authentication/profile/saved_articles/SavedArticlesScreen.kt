@@ -1,7 +1,6 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,8 +27,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.article.ArticleContent
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.article.ArticleToolbar
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.MinimizedArticleItem
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles.MockSavedArticles.mockArticle

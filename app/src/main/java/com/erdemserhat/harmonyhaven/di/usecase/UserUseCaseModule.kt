@@ -23,9 +23,32 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Dagger Hilt module for providing use cases related to user operations.
+ *
+ * This module is responsible for providing an instance of [UserUseCases], which aggregates various use cases
+ * related to user management and authentication. It uses Dagger Hilt for dependency injection to ensure
+ * that the use cases are available as singletons throughout the application.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object UserUseCaseModule {
+
+    /**
+     * Provides a singleton instance of [UserUseCases].
+     *
+     * This method creates an instance of [UserUseCases] by injecting the necessary API services required
+     * for user-related operations, including authentication, registration, password reset, and user information management.
+     *
+     * @param fcmApiService An instance of [FcmApiService] used for Firebase Cloud Messaging operations.
+     * @param userAuthApiService An instance of [UserAuthenticationApiService] used for user authentication.
+     * @param userRegistrationApiService An instance of [UserRegistrationApiService] used for user registration.
+     * @param passwordResetApiService An instance of [PasswordResetApiService] used for password reset operations.
+     * @param authenticationStatusCheckerApiService An instance of [AuthenticationStatusCheckerApiService] used for checking user authentication status.
+     * @param getUserInformationApiService An instance of [UserInformationApiService] used for retrieving user information.
+     * @param updateApiService An instance of [InformationUpdateApiService] used for updating user information.
+     * @return A singleton instance of [UserUseCases] containing various user-related use cases.
+     */
     @Provides
     @Singleton
     fun provideUserUseCases(
@@ -48,7 +71,5 @@ object UserUseCaseModule {
             getUserInformation = GetUserInformation(getUserInformationApiService),
             updateUserInformation = UpdateUserInformation(updateApiService)
         )
-
-
     }
 }
