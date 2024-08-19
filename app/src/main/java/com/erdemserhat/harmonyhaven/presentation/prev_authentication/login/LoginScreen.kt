@@ -1,6 +1,10 @@
 package com.erdemserhat.harmonyhaven.presentation.prev_authentication.login
 
 
+import android.app.Activity
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +52,7 @@ import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.compo
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.LoginScreenWarningText
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 
 @Composable
 fun LoginScreenContent(
@@ -190,9 +196,9 @@ fun LoginScreenContent(
                             )
 
                            // Spacer(modifier = Modifier.size(10.dp))
-                            //LoginScreenGoogleSignInButton(
-                             //   onClick = params.onLoginViaGoogleClicked
-                            //)
+                         //   LoginScreenGoogleSignInButton(
+                           //     onClick = {params.onLoginViaGoogleClicked}
+                          //  )
 
                         }
 
@@ -253,11 +259,20 @@ fun LoginScreen(
         mutableStateOf(false)
     }
 
+
     //val shouldOpenAlertDialog = remember { mutableStateOf(false) }
 
     val loginParams = LoginScreenParams(
         onLoginButtonClicked = { viewModel.onLoginClicked(email, password) },
-        onLoginViaGoogleClicked = {},
+        onLoginViaGoogleClicked = {
+            //
+
+
+
+
+
+
+        },
         onSignUpClicked = { navController.navigate(Screen.Register.route) },
         onForgotPasswordClicked = { navController.navigate(Screen.ForgotPasswordMail.route) },
         onRememberCredentialsStateChanged = {
@@ -270,10 +285,10 @@ fun LoginScreen(
         onPasswordValueChanged = { password = it },
         warningText = viewModel.loginState.value.loginWarning,
         canNavigateToDashBoard = viewModel.loginState.value.canNavigateToDashBoard,
-        onCanNavigateToDashBoard = { navController.navigate(Screen.Main.route) },
+        onCanNavigateToDashBoard = { navController.navigate(Screen.QuoteMain.route) },
         isLoading = viewModel.loginState.value.isLoading,
         isEmailValid = !viewModel.loginState.value.validationState.isEmailValid,
-        isPasswordValid = !viewModel.loginState.value.validationState.isPasswordValid
+        isPasswordValid = !viewModel.loginState.value.validationState.isPasswordValid,
     )
 
     LoginScreenContent(params = loginParams)
@@ -290,7 +305,7 @@ LoginScreenContent(params = defaultLoginParams)
 
 data class LoginScreenParams(
     val onLoginButtonClicked: () -> Unit,
-    val onLoginViaGoogleClicked: () -> Unit,
+    val onLoginViaGoogleClicked: @Composable () -> Unit,
     val onSignUpClicked: () -> Unit,
     val onForgotPasswordClicked: () -> Unit,
     val onRememberCredentialsStateChanged: () -> Unit,

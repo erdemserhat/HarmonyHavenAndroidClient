@@ -7,9 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.domain.usecase.GetQuotesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,6 +26,8 @@ class QuoteMainViewModel @Inject constructor(
     // StateFlow ile UX Dialog gösterecek mi
     private val _shouldShowUxDialog1 = MutableStateFlow(true)
     val shouldShowUxDialog1: StateFlow<Boolean> = _shouldShowUxDialog1
+
+
 
     init {
         loadQuotes()
@@ -59,6 +63,25 @@ class QuoteMainViewModel @Inject constructor(
             context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         sharedPreferences.edit().putBoolean("shouldShowUxDialog1", show).apply()
         initializeUxDialogState()
+    }
+
+    //Permission operations
+    private val sharedPreferences =
+        context.getSharedPreferences("PermissionPreferences", Context.MODE_PRIVATE)
+
+
+    fun updatePermissionStatus(value: Boolean = false) {
+        val key: String = "notificationPref"
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                sharedPreferences.edit().putBoolean(key, value).apply()
+            }
+        }
+    }
+
+    fun isPermissionGranted(): Boolean {
+        val key: String = "notificationPref"
+        return sharedPreferences.getBoolean(key, false)
     }
 
 
