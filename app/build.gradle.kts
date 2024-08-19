@@ -17,14 +17,14 @@ plugins {
 
 android {
     namespace = "com.erdemserhat.harmonyhaven"
-    compileSdk = 34
+    compileSdk = 35
 
 
 
     defaultConfig {
         applicationId = "com.erdemserhat.harmonyhaven"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         multiDexEnabled =true
         versionName = "1.0"
@@ -180,6 +180,18 @@ dependencies {
 
     implementation ("com.google.accompanist:accompanist-systemuicontroller:0.30.1") // Status bar için
     implementation ("com.google.accompanist:accompanist-navigation-animation:0.28.0")
+
+    implementation("com.google.firebase:firebase-auth-ktx:22.1.1")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    implementation ("androidx.credentials:credentials:1.5.0-alpha04")
+    implementation ("androidx.credentials:credentials-play-services-auth:1.5.0-alpha04")
+    implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
+
+    implementation("androidx.media3:media3-exoplayer:1.0.0")
+    implementation("androidx.media3:media3-ui:1.0.0")
+
 
 
 

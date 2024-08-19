@@ -68,6 +68,8 @@ import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import com.erdemserhat.harmonyhaven.presentation.navigation.AnimatedGif
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.AlertDialogBase
+import com.erdemserhat.harmonyhaven.temp.FullScreenVideoPlayer
+import com.erdemserhat.harmonyhaven.temp.TempScreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenSelectedNavigationBarItemColor
 
@@ -142,11 +144,24 @@ fun Quote(quote: Quote, modifier: Modifier = Modifier) {
             .fillMaxSize()
 
     ) {
-        FullScreenImage(
-            quote.imageUrl,
-            modifier = Modifier
+      //  FullScreenImage(
+          //  quote.imageUrl,
+         //   modifier = Modifier
 
-        )
+      //  )
+
+        if(!quote.imageUrl.endsWith(".mp4")){
+              FullScreenImage(
+              quote.imageUrl,
+               modifier = Modifier
+              )
+
+        }else{
+
+           // FullScreenVideoPlayer(quote.imageUrl)
+
+        }
+
 
         Box(
             modifier = Modifier

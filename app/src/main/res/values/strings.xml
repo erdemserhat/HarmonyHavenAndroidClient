@@ -22,4 +22,7 @@
     <string name="app_logo">App Logo</string>
     <string name="finish">Finish</string>
     <string name="daily_greeting_text">Success is not final, failure is not fatal: It is the courage to continue that counts.</string>
+    <string name="default_web_client_id">456625388455-jur5t5m5navpis2qr8eouvfeco0kb024.apps.googleusercontent.com</string>
+
 </resources>
+
