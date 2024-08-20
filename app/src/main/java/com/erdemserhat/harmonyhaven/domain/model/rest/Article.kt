@@ -1,6 +1,5 @@
 package com.erdemserhat.harmonyhaven.domain.model.rest
 
-import android.os.Parcel
 import android.os.Parcelable
 import com.erdemserhat.harmonyhaven.data.local.entities.ArticleEntity
 import kotlinx.parcelize.Parcelize

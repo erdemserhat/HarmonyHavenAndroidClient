@@ -75,6 +75,7 @@ fun ForgotPasswordMailScreenContent(
         Column(
             Modifier
                 .fillMaxSize()
+                .padding(top=20.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
             ArrowBackButtonDev(

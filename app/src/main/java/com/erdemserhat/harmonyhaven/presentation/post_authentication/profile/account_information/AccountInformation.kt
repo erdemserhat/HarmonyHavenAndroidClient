@@ -1,47 +1,30 @@
-import android.util.Log
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.*
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
@@ -59,7 +42,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.Thread.sleep
 
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
@@ -75,10 +57,12 @@ fun AccountInformationContent(
     }
 
 
-
     val passwordChangeResponse by viewModel.passwordChangeResponseModel
 
-    if(passwordChangeResponse.isSuccessfullyChangedPassword) {
+    val nameChangeState by viewModel.nameChangeState
+
+
+    if (passwordChangeResponse.isSuccessfullyChangedPassword) {
         shouldShowUpdatePasswordPopUp = false
         LaunchedEffect(passwordChangeResponse.isSuccessfullyChangedPassword) {
             shouldShowSuccessAnimation = true
@@ -90,13 +74,26 @@ fun AccountInformationContent(
         }
     }
 
+    if (nameChangeState.result) {
+        shouldShowUpdateNamePopUp = false
+        LaunchedEffect(nameChangeState.result) {
+            shouldShowSuccessAnimation = true
+            delay(1000)
+            shouldShowSuccessAnimation = false
+            viewModel.resetNameState()
+
+
+        }
+
+    }
+
 
 
     Scaffold(
         topBar = {
             AccountInformationTopBar(navController = navController)
         },
-        content = {padding->
+        content = { padding ->
             Column(
                 modifier = Modifier
                     .background(Color.White)
@@ -105,59 +102,54 @@ fun AccountInformationContent(
             ) {
 
 
+                AccountInformationRowElement(
+                    modifier = Modifier,
+                    title = "Ad",
+                    titleIcon = R.drawable.profile_svgrepo_com,
+                    text = viewModel.userInfo.value.name,
+                    shouldShowActionIcon = true,
+                    actionIcon = R.drawable.edit_svgrepo_com__1_,
+                    actionIconModifier = Modifier.size(45.dp),
 
-                    AccountInformationRowElement(
-                        modifier = Modifier,
-                        title = "Ad",
-                        titleIcon = R.drawable.profile_svgrepo_com,
-                        text = viewModel.userInfo.value.name,
-                        shouldShowActionIcon = true,
-                        actionIcon = R.drawable.edit_svgrepo_com__1_,
-                        actionIconModifier = Modifier.size(45.dp),
-
-                        extraText = "Bu, kullanıcı adınız değildir. Bu isim, bildirimlerde size hitap etmek için kullanılacaktır.",
-                        shouldShowExtraText = true,
-                        onRowElementClicked = { shouldShowUpdateNamePopUp = true },
+                    extraText = "Bu, kullanıcı adınız değildir. Bu isim, bildirimlerde size hitap etmek için kullanılacaktır.",
+                    shouldShowExtraText = true,
+                    onRowElementClicked = { shouldShowUpdateNamePopUp = true },
 
                     )
 
-                    RowDividingLine(modifier = Modifier.align(Alignment.CenterHorizontally))
+                RowDividingLine(modifier = Modifier.align(Alignment.CenterHorizontally))
 
-                    AccountInformationRowElement(
-                        modifier = Modifier,
-                        title = "E-Posta",
-                        titleIcon = R.drawable.email_svgrepo_com,
-                        text = viewModel.userInfo.value.email,
-                        shouldShowActionIcon = false,
-                        actionIcon = R.drawable.edit_svgrepo_com,
-                        extraText = "Güvenlik nedenlerinden dolayı e-posta adresinizi doğrudan güncellemiyoruz. Talebinizi bize e-posta göndererek iletebilirsiniz.",
-                        shouldShowExtraText = true,
-                        onRowElementClicked = {},
-                    )
-                    RowDividingLine(modifier = Modifier.align(Alignment.CenterHorizontally))
+                AccountInformationRowElement(
+                    modifier = Modifier,
+                    title = "E-Posta",
+                    titleIcon = R.drawable.email_svgrepo_com,
+                    text = viewModel.userInfo.value.email,
+                    shouldShowActionIcon = false,
+                    actionIcon = R.drawable.edit_svgrepo_com,
+                    extraText = "Güvenlik nedenlerinden dolayı e-posta adresinizi doğrudan güncellemiyoruz. Talebinizi bize e-posta göndererek iletebilirsiniz.",
+                    shouldShowExtraText = true,
+                    onRowElementClicked = {},
+                )
+                RowDividingLine(modifier = Modifier.align(Alignment.CenterHorizontally))
 
-                    AccountInformationRowElement(
-                        modifier = Modifier,
-                        title = "Şifre",
-                        titleIcon = R.drawable.password_lock_solid_svgrepo_com,
-                        text = "Şifreni Güncelle",
-                        shouldShowActionIcon = true,
-                        actionIcon = R.drawable.right_arrow_svgrepo_com,
-                        actionIconModifier = Modifier.size(36.dp),
-                        extraText = "",
-                        shouldShowExtraText = false,
-                        onRowElementClicked = { shouldShowUpdatePasswordPopUp = true },
-                    )
-                    RowDividingLine(modifier = Modifier.align(Alignment.CenterHorizontally))
+                AccountInformationRowElement(
+                    modifier = Modifier,
+                    title = "Şifre",
+                    titleIcon = R.drawable.password_lock_solid_svgrepo_com,
+                    text = "Şifreni Güncelle",
+                    shouldShowActionIcon = true,
+                    actionIcon = R.drawable.right_arrow_svgrepo_com,
+                    actionIconModifier = Modifier.size(36.dp),
+                    extraText = "",
+                    shouldShowExtraText = false,
+                    onRowElementClicked = { shouldShowUpdatePasswordPopUp = true },
+                )
+                RowDividingLine(modifier = Modifier.align(Alignment.CenterHorizontally))
 
-                    AccountInformationBottomSection()
-
-
-
-                }
+                AccountInformationBottomSection()
 
 
-
+            }
 
 
         }
@@ -178,19 +170,20 @@ fun AccountInformationContent(
 
         ) {
             NameUpdatePopup(
+                isError = !nameChangeState.isNameAppropriate,
                 onDismissRequest = {
                     shouldShowUpdateNamePopUp = false
 
                 },
 
-                onPositiveButtonClicked = {newName->
-                    shouldShowSuccessAnimation = true
-                    shouldShowUpdateNamePopUp = false
+                onPositiveButtonClicked = { newName ->
                     viewModel.changeName(newName)
+
+
                 },
                 currentName = viewModel.userInfo.value.name,
 
-            )
+                )
         }
 
 
@@ -215,17 +208,15 @@ fun AccountInformationContent(
                     shouldShowUpdatePasswordPopUp = false
                     viewModel.resetPasswordResetStates()
                 },
-                onSaveButtonClicked = {
-                    newPassword, confirmNewPassword, currentPassword ->
-                    viewModel.changePassword(newPassword,currentPassword,confirmNewPassword)
+                onSaveButtonClicked = { newPassword, confirmNewPassword, currentPassword ->
+                    viewModel.changePassword(newPassword, currentPassword, confirmNewPassword)
                     GlobalScope.launch(Dispatchers.IO) {
                         delay(3000)
-                        withContext(Dispatchers.Main){
+                        withContext(Dispatchers.Main) {
                             viewModel.resetPasswordResetStates()
                         }
 
                     }
-
 
 
                 },
@@ -266,9 +257,6 @@ fun AccountInformationScreen(navController: NavController) {
 }
 
 
-
-
-
 @Composable
 fun RowDividingLine(
     modifier: Modifier = Modifier
@@ -284,9 +272,8 @@ fun RowDividingLine(
 }
 
 
-
 @Composable
-fun LocalGifImage(resId: Int = R.raw.examplegif, modifier: Modifier = Modifier) {
+fun LocalGifImage(resId: Int, modifier: Modifier = Modifier) {
     val painter = rememberAsyncImagePainter(
         ImageRequest.Builder(LocalContext.current)
             .data(resId)

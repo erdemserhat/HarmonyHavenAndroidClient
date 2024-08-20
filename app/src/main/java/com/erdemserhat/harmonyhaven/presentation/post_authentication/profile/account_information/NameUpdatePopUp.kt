@@ -33,15 +33,18 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.erdemserhat.harmonyhaven.util.DefaultAppFont
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.erdemserhat.harmonyhaven.ui.theme.DefaultAppFont
 
 @Composable
 fun NameUpdatePopup(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     onPositiveButtonClicked: (String) -> Unit = {},
-    currentName:String
+    currentName:String,
+    isError:Boolean = false
 ) {
+    val viewModel:AccountInformationViewModel = hiltViewModel()
     val textState = remember {
         mutableStateOf(TextFieldValue(currentName))
     }
@@ -55,6 +58,7 @@ fun NameUpdatePopup(
         focusRequester.requestFocus()
         keyboardController?.show()
     }
+
 
     Box(
         modifier = modifier
@@ -74,6 +78,7 @@ fun NameUpdatePopup(
             )
             Spacer(modifier = Modifier.size(20.dp))
             TextField(
+                isError = isError,
                 value = textState.value,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,

@@ -1,20 +1,14 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.about_us
 
-import LocalGifImage
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -37,10 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeViewModel
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.MinimizedArticleItem
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles.MockSavedArticles
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
 
@@ -113,9 +104,9 @@ fun AboutUsScreenContent(
 
             ) {
                 Box(contentAlignment = Alignment.Center){
-                    LocalGifImage(resId=R.raw.examplegif, modifier = Modifier.zIndex(2f))
+                    //LocalGifImage(resId=R.raw.examplegif, modifier = Modifier.zIndex(2f))
                     Image(
-                        painter = painterResource(id = R.drawable.dsadas),
+                        painter = painterResource(id = R.drawable.harmonyhaven_icon),
                         contentDescription = null,
                         modifier = Modifier.size(300.dp).zIndex(1f)
 

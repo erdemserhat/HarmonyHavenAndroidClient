@@ -11,7 +11,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -21,20 +20,18 @@ import androidx.navigation.Navigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.about_us.AboutUsScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.article.ArticleScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeScreenNew
-import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.LoginScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.SettingsScreen
-import com.erdemserhat.harmonyhaven.presentation.prev_authentication.passwordreset.mail.ForgotPasswordMailScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.QuotesScreen
-import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.RegisterScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.about_us.AboutUsScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles.SavedArticlesScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.QuotesScreen
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.LoginScreen
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.passwordreset.mail.ForgotPasswordMailScreen
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.RegisterScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.welcome.WelcomeScreen
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-
 import kotlinx.parcelize.Parcelize
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -173,7 +170,6 @@ fun SetupNavGraph(
                 AppMainScreen(navController,params)
             }
 
-            window.setDecorFitsSystemWindows(true)
 
         }
 
@@ -187,7 +183,6 @@ fun SetupNavGraph(
 
         composable(route = Screen.QuoteMain.route) {
             QuoteMainScreen(navController = navController)
-            window.setDecorFitsSystemWindows(false)
         }
 
 
