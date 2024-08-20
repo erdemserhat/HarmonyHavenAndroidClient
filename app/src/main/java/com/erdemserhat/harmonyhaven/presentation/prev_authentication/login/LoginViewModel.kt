@@ -1,6 +1,5 @@
 package com.erdemserhat.harmonyhaven.presentation.prev_authentication.login
 
-import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
@@ -153,6 +152,13 @@ class LoginViewModel @Inject constructor(
             //if login is successfully then save the fcm id
 
             getToken()
+            val sharedPrefs = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+            val editor = sharedPrefs.edit()
+            editor.putBoolean("isLoggedInBefore", true)
+            editor.apply()
+
+
+
 
 
         }
@@ -183,7 +189,7 @@ class LoginViewModel @Inject constructor(
 
     }
 
-     fun getEmailIfExist(): String {
+    fun getEmailIfExist(): String {
         val savedEmail = sharedPrefs.getString("email", "")
         if (savedEmail == "" || savedEmail == null) {
             return ""

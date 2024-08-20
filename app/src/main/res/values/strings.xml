@@ -10,7 +10,7 @@
     <string name="e_mail">E-Posta</string>
     <string name="sign_up">Kayıt Ol</string>
     <string name="harmony_haven">Harmony Haven</string>
-    <string name="login_register_greeting_text">Harmony Haven\'da seni bekliyoruz! Ücretsiz kaydol ve keşfetmeye başla!</string>
+    <string name="login_register_greeting_text">Harmony Haven\'da seni bekliyoruz! Kaydol ve keşfetmeye başla!</string>
     <string name="name">Ad</string>
     <string name="surname">Surname</string>
     <string name="confirm_password">Şifrenizi Tekrar Girin</string>

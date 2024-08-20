@@ -1,17 +1,12 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.domain.usecase.GetQuotesUseCase
-import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
-import com.erdemserhat.harmonyhaven.domain.usecase.notification.NotificationUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 

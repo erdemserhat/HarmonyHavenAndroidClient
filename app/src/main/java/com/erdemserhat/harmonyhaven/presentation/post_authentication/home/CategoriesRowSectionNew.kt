@@ -30,11 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category
-import com.erdemserhat.harmonyhaven.presentation.common.AppColors
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
+import com.erdemserhat.harmonyhaven.ui.theme.DefaultAppFont
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenIndicatorColor
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenSelectedNavigationBarItemColor
-import com.erdemserhat.harmonyhaven.util.DefaultAppFont
 
 @Composable
 fun CategoryRow(

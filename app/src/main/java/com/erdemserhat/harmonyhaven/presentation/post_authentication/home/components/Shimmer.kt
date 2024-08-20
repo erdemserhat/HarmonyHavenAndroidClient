@@ -11,7 +11,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientWhite
 
 @Composable
 fun shimmerBrush(

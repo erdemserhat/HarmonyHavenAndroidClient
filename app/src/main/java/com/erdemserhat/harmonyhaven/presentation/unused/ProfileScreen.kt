@@ -11,11 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ExitToApp
+import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -84,10 +84,11 @@ fun ProfileScreenContent(navController: NavController) {
             Option(optionName = "About us",
                 Icons.Outlined.Info)
             Option(optionName = "Report Problem",
-                Icons.Outlined.Send)
+                Icons.AutoMirrored.Outlined.Send
+            )
             Option(
                 optionName = "Sign Out",
-                imageVector = Icons.Outlined.ExitToApp,
+                imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
                 onOptionClicked = {navController.navigate(Screen.Login.route)}
 
             )

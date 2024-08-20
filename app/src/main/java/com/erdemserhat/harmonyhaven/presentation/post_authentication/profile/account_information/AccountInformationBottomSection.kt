@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.util.DefaultAppFont
+import com.erdemserhat.harmonyhaven.ui.theme.DefaultAppFont
 
 @Composable
 fun AccountInformationBottomSection(modifier: Modifier = Modifier) {
@@ -46,7 +46,7 @@ fun AccountInformationBottomSection(modifier: Modifier = Modifier) {
 
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = "support@harmonyhaven.com",
+                text = "harmonyhavenapp@gmail.com",
                 fontFamily = DefaultAppFont,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,

@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class GetArticlesByCategory @Inject constructor(
 ) {
-    suspend operator fun invoke(categoryId: Int): List<ArticleResponseType>? {
+    suspend operator fun invoke(categoryId: Int): List<ArticleResponseType> {
         /*
 
 

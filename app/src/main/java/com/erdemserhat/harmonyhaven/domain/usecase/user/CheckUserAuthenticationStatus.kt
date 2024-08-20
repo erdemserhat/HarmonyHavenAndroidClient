@@ -1,11 +1,6 @@
 package com.erdemserhat.harmonyhaven.domain.usecase.user
 
-import android.util.Log
 import com.erdemserhat.harmonyhaven.data.api.user.AuthenticationStatusCheckerApiService
-import com.erdemserhat.harmonyhaven.dto.requests.UserAuthenticationRequest
-import com.erdemserhat.harmonyhaven.dto.responses.AuthenticationResponse
-import com.google.gson.Gson
-import kotlinx.coroutines.time.withTimeoutOrNull
 import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 
