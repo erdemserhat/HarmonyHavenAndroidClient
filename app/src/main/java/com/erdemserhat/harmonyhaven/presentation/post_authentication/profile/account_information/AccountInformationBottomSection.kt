@@ -46,7 +46,7 @@ fun AccountInformationBottomSection(modifier: Modifier = Modifier) {
 
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = "support@harmonyhaven.com",
+                text = "harmonyhavenapp@gmail.com",
                 fontFamily = DefaultAppFont,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,

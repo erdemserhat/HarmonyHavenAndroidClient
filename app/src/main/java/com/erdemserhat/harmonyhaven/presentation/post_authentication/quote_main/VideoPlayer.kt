@@ -29,7 +29,7 @@ import com.erdemserhat.harmonyhaven.AppLifecycleObserver
 fun VideoPlayer(
     videoUrl: String,
     isPlaying: Boolean, // Aktif sayfa mı?
-    prepareOnly: Boolean // Görünür sayfa mı?
+    prepareOnly: Boolean, // Görünür sayfa mı?
 ) {
     val context = LocalContext.current
     val exoPlayer = remember {
@@ -38,6 +38,9 @@ fun VideoPlayer(
             prepare()
         }
     }
+
+
+
 
     // LifecycleObserver için bir uygulama yaşam döngüsü gözlemcisi ekle
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -68,9 +71,9 @@ fun VideoPlayer(
             modifier = Modifier.fillMaxSize(),
             factory = {
                 PlayerView(context).apply {
+                    useController = false
                     player = exoPlayer
                     resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-                    useController = false
                     layoutParams = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.FILL_PARENT,
                         ViewGroup.LayoutParams.FILL_PARENT
@@ -98,6 +101,7 @@ fun VideoPlayer(
             )
         }
     }
+
 
     DisposableEffect(Unit) {
         onDispose {

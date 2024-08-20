@@ -114,6 +114,12 @@ fun LoginScreenContent(
                 HarmonyHavenGreetingTitle(
                     modifier = Modifier
                         .padding(top = 5.dp)
+                    , text = "Zaten bir hesabın varmı?"
+                )
+                HarmonyHavenGreetingTitle(
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+                    , text = "Giriş Yap",
                 )
 
                 HarmonyHavenGreetingText(

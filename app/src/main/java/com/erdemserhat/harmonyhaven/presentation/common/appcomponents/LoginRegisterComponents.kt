@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -40,7 +41,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.ui.theme.customFontFamilyJunge
+import com.erdemserhat.harmonyhaven.ui.theme.georgiaFont
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenTitleTextColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
 
 /////////////////////////////// Reusable Composable Components ////////////////////////////////////
@@ -255,12 +260,14 @@ fun HarmonyHavenGreetingLogo(modifier: Modifier) {
 }
 
 @Composable
-fun HarmonyHavenGreetingTitle(modifier: Modifier) {
+fun HarmonyHavenGreetingTitle(modifier: Modifier,text: String ="",fontSize:Int=24) {
     Text(
-        text = stringResource(R.string.harmony_haven),
-        fontSize = 40.sp,
-        fontFamily = customFontFamilyJunge,
-        modifier = modifier
+
+        text = text,
+        fontSize = fontSize.sp,
+        fontFamily = georgiaFont,
+        modifier = modifier.padding(10.dp),
+        color = harmonyHavenDarkGreenColor
 
     )
 }
