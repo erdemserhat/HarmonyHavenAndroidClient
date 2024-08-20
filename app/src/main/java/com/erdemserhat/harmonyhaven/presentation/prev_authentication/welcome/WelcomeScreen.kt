@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -37,6 +38,7 @@ import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.ClickableHorizontalPagerIndicator
 import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.HarmonyHavenGreetingButton
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.HarmonyHavenBackground
 import com.erdemserhat.harmonyhaven.ui.theme.customFontKumbhSans
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
@@ -81,34 +83,30 @@ fun WelcomeScreen(navHostController: NavHostController) {
     )
 
 
-    Column(
-        modifier = Modifier
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        harmonyHavenGradientGreen,
-                        harmonyHavenWhite
-                    )
-                )
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        HorizontalPager(
+    Box{
+        HarmonyHavenBackground()
+        Column(
             modifier = Modifier
-                .weight(10f),
-                    state = pagerState,
-            verticalAlignment = Alignment.Top,
-            flingBehavior = flingBehavior(state = pagerState),
-            userScrollEnabled = true,
+                .background(Color.Transparent)
+            ,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            HorizontalPager(
+                modifier = Modifier
+                    .weight(10f),
+                state = pagerState,
+                verticalAlignment = Alignment.Top,
+                flingBehavior = flingBehavior(state = pagerState),
+                userScrollEnabled = true,
 
 
 
-        ) { page ->
+                ) { page ->
 
 
-            PagerScreen(onBoardingPage = pages[page])
+                PagerScreen(onBoardingPage = pages[page])
 
-        }
+            }
 
 
 
@@ -135,14 +133,17 @@ fun WelcomeScreen(navHostController: NavHostController) {
 
             )
 
-        Spacer(modifier = Modifier.size(100.dp))
+            Spacer(modifier = Modifier.size(100.dp))
 
 
 
 
 
+
+        }
 
     }
+
 
 }
 
@@ -193,7 +194,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage) {
             fontSize = 20.sp,
             color = Color.Black,
             fontWeight = FontWeight.Light,
-            textAlign = TextAlign.Justify,
+            textAlign = TextAlign.Center,
             modifier = Modifier
                 .padding(25.dp)
         )

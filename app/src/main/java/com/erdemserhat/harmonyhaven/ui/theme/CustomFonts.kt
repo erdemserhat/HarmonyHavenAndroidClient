@@ -30,3 +30,8 @@ val customFontInter = FontFamily(
     Font(R.font.inter_bold, FontWeight.Bold),
     Font(R.font.inter_regular, FontWeight.Medium)
 )
+
+val georgiaFont = FontFamily(
+    Font(R.font.georgiai, FontWeight.Light),
+    Font(R.font.georgiab, FontWeight.Bold),
+)

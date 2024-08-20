@@ -85,8 +85,8 @@ class MainActivity : ComponentActivity() {
                 SetupNavGraph(
                     navController = navController,
                     startDestination =when(isLoggedInBefore){
-                        true -> Screen.QuoteMain.route
-                        false-> if (isFirstLaunch) Screen.Welcome.route else Screen.Register.route
+                        true -> Screen.Welcome.route
+                        false-> if (isFirstLaunch) Screen.Welcome.route else Screen.Welcome.route
                     },
                     modifier = Modifier, // Padding değerlerini burada kullanın
                     window = window

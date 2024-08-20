@@ -38,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.RegisterFormModel
+import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.HarmonyHavenGreetingTitle
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.LoginViewModel
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.AcceptanceOfTermsOfUse
@@ -96,12 +97,17 @@ fun RegisterScreenContent(
                     Modifier.padding(top = 30.dp)
 
                 )
-                Text(
-                    text = "Harmony Haven",
-                    fontSize = 40.sp,
-                    fontFamily = customFontFamilyJunge
-
+                HarmonyHavenGreetingTitle(
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+                    , text = "Hadi bir hesap oluşturalım!"
                 )
+                HarmonyHavenGreetingTitle(
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+                    , text = "Kayıt Ol"
+                )
+
 
                 Text(
                     text = stringResource(R.string.login_register_greeting_text),

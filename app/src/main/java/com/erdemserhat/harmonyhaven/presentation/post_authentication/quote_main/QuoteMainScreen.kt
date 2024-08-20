@@ -8,11 +8,13 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -36,10 +38,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -52,9 +58,9 @@ import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.FullScreenImage
+import com.erdemserhat.harmonyhaven.ui.theme.georgiaFont
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun QuoteMainScreen(
     modifier: Modifier = Modifier,
@@ -63,12 +69,19 @@ fun QuoteMainScreen(
 ) {
     val authStatus by viewmodel.authStatus.collectAsState()
 
-    when (authStatus){
-        0-> UxAuthHelper(modifier = modifier, onClick = {viewmodel.tryLoad()})
-        1-> QuoteMainContent(modifier = modifier, navController = navController, viewmodel = viewmodel)
-        2->UxSessionExp(modifier = modifier, onClick = {navController.navigate(Screen.Login.route)})
+    when (authStatus) {
+        0 -> UxAuthHelper(modifier = modifier, onClick = { viewmodel.tryLoad() })
+        1 -> QuoteMainContent(
+            modifier = modifier,
+            navController = navController,
+            viewmodel = viewmodel
+        )
 
-        
+        2 -> UxSessionExp(
+            modifier = modifier,
+            onClick = { navController.navigate(Screen.Login.route) })
+
+
     }
 
 
@@ -134,6 +147,7 @@ fun QuoteMainContent(
     Box(
         modifier = modifier
             .fillMaxSize()
+            .background(Color.Black)
     ) {
         if (shouldShowUxDialog1.value) {
             UxScrollInformer(modifier = Modifier.zIndex(2f),
@@ -144,7 +158,7 @@ fun QuoteMainContent(
         }
 
         QuoteVerticalList1(quoteList = quotes.value, modifier = Modifier)
-        ButtonSurface(modifier = Modifier.align(Alignment.BottomStart), onClick = {
+        ButtonSurface(modifier = Modifier.align(Alignment.BottomEnd), onClick = {
             window?.let {
                 WindowCompat.setDecorFitsSystemWindows(it, true)
                 it.setFlags(
@@ -217,38 +231,56 @@ fun Quote(
             VideoPlayer(
                 videoUrl = quote.imageUrl,
                 isPlaying = isCurrentPage, // Sadece aktif sayfa oynatılır
-                prepareOnly = isVisible // Görünür olan ancak aktif olmayan sayfa hazırlanır
+                prepareOnly = isVisible, // Görünür olan ancak aktif olmayan sayfa hazırlanır,
             )
         }
 
         if (quote.quote != "") {
             Box(
-                modifier = Modifier
+                modifier = modifier
                     .padding(15.dp)
                     .wrapContentSize()
                     .align(Alignment.Center)
                     .background(
-                        color = Color.White.copy(alpha = 0.5f),
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color.Black.copy(alpha = 0.8f),
+                                Color.Gray.copy(alpha = 0.5f)
+                            ) // Gradient arka plan
+                        ),
                         shape = RoundedCornerShape(16.dp)
                     )
-            ) {
+
+                    .padding(24.dp) // İçerik için padding
+            )
+            {
+
+
+
+
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.wrapContentSize()
                 ) {
                     Text(
+                        color = Color.White.copy(0.9f),
                         text = quote.quote,
-                        modifier = Modifier.padding(30.dp),
+                        modifier = Modifier.padding(15.dp),
                         fontSize = 20.sp,
                         fontStyle = FontStyle.Italic,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        fontFamily = FontFamily.Serif,
+                        lineHeight = 30.sp // Satır yüksekliğini ayarlama
                     )
 
                     Text(
+                        color = Color.White.copy(0.7f),
                         text = quote.writer,
                         fontSize = 16.sp,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        fontFamily = georgiaFont
                     )
 
                     Spacer(modifier = Modifier.size(15.dp))
@@ -267,19 +299,20 @@ fun ButtonSurface(modifier: Modifier = Modifier, onClick: () -> Unit) {
     // Renk kodunu ve alfa değerini ayarlayarak yarı transparan yapıyoruz
     Box(
         modifier = modifier
-            .padding(bottom = 60.dp, start = 25.dp)
+            .padding(bottom = 70.dp, end = 35.dp)
             .clip(RoundedCornerShape(10.dp))
             .width(50.dp)
             .height(50.dp)
-            .background(Color.Gray.copy(alpha = 0.5f)) // Alfa değerini 0.5 olarak ayarlıyoruz
+            .background(Color.Gray.copy(alpha = 0.2f)) // Alfa değerini 0.5 olarak ayarlıyoruz
             .clickable { onClick() }
     ) {
-        Icon(
-            painter = painterResource(id = R.drawable.newspaper),
+        Image(
+            painter = painterResource(id = R.drawable.dashboard),
             contentDescription = null,
             Modifier
-                .size(25.dp)
-                .align(Alignment.Center)
+                .size(30.dp)
+                .align(Alignment.Center),
+            colorFilter = ColorFilter.tint(Color.Gray.copy(alpha = 0.5f))
 
 
         )
