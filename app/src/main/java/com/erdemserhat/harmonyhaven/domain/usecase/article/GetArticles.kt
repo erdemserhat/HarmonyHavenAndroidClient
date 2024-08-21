@@ -12,7 +12,7 @@ class GetArticles @Inject constructor(
             val response = articleApiService.getArticles()
             response.let {
                 if(response.isSuccessful)
-                    return response.body()!!
+                    return response.body()!!.reversed()
                 else return listOf()
             }
         }catch (e:Exception){
