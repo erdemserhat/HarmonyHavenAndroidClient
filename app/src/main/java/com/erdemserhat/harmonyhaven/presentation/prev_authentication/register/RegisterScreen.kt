@@ -353,7 +353,6 @@ fun RegisterScreen(
         isLoading = registerViewModel.registerState.value.isLoading,
         shouldNavigateTo = registerViewModel.registerState.value.canNavigateTo,
         onShouldNavigateTo = {
-            loginViewModel.onLoginClicked(email, password)
             navController.navigate(Screen.QuoteMain.route)
 
                              },
