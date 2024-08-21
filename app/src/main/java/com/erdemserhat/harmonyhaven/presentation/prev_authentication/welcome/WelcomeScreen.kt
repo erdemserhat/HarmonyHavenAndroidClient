@@ -126,7 +126,7 @@ fun WelcomeScreen(navHostController: NavHostController) {
 
             FinishButton(
                 pagerState = pagerState,
-                onClick = { navHostController.navigate(Screen.Login.route) },
+                onClick = { navHostController.navigate(Screen.Register.route) },
                 modifier = Modifier
                     .weight(2f)
                     .padding(bottom = 10.dp)

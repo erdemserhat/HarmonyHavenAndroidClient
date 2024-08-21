@@ -61,7 +61,7 @@ class QuoteMainViewModel @Inject constructor(
     }
 
 
-    fun checkConnection(){
+    private fun checkConnection(){
         viewModelScope.launch {
 
             val authStatus = async {
