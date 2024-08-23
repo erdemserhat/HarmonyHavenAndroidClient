@@ -10,7 +10,7 @@ sealed class OnBoardingPage(
     val description:String
 ){
     data object First: OnBoardingPage(
-        image = R.drawable.harmony_haven_icon,
+        image = R.drawable.harmonyhaven_icon,
         title = "Hoş Geldiniz!",
         description = "Harmony Haven ile gününüzü aydınlatın. Güncel haberler ve kişiselleştirilmiş önerilerle her anınızı daha anlamlı kılın!"
     )

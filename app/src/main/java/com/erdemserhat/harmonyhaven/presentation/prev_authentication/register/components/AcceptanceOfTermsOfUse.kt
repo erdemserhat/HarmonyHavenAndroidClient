@@ -2,6 +2,7 @@ package com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.c
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -26,7 +27,8 @@ fun AcceptanceOfTermsOfUse(
     Row(
         Modifier
             .height(56.dp)
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            ,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(

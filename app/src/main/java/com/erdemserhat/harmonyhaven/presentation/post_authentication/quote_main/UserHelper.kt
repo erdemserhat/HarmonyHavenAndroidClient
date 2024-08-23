@@ -57,7 +57,9 @@ fun UxScrollInformer(modifier: Modifier = Modifier,onClick:()->Unit ){
 
             Text(
                 text = "Alıntıları okumak için kaydır",
-                modifier = Modifier.align(Alignment.Center).padding(end = 5.dp, start = 5.dp),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(end = 5.dp, start = 5.dp),
                 textAlign = TextAlign.Center,
                 fontSize = 18.sp
             )
@@ -85,6 +87,62 @@ fun UxScrollInformer(modifier: Modifier = Modifier,onClick:()->Unit ){
 
 
 }
+
+@Composable
+fun UxScrollInformer2(modifier: Modifier = Modifier,onClick:()->Unit ){
+
+    Box(modifier = modifier
+        .fillMaxSize()
+        .background(color = Color.Black.copy(alpha = 0.5f)), contentAlignment = Alignment.Center) {
+
+        Box(
+            modifier = Modifier
+                .width(350.dp)
+                .height(350.dp)
+                .clip(RoundedCornerShape(25.dp))//
+                .background(Color.White),
+            contentAlignment = Alignment.Center
+            // İçeriği merkezde hizala
+        ) {
+
+            Column(modifier = Modifier.align(Alignment.TopCenter), horizontalAlignment = Alignment.CenterHorizontally) {
+             Image(painter = painterResource(id = R.drawable.ux1), contentDescription = null,modifier = Modifier.size(150.dp))
+
+                Text(
+                    text = "İçeriklere göz atmak, bildirimlerini okumak ve hesap ayarların için sağ alt köşedek, butona tıklayınız",
+                    modifier = Modifier
+                        .padding(end = 5.dp, start = 5.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 18.sp
+                )
+                Button(
+                    onClick = { onClick() },
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .clip(RoundedCornerShape(15.dp))
+                        .width(300.dp)
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = harmonyHavenGreen
+                    )
+
+                ) {
+                    Text(text = "Anladım!", fontSize = 20.sp, color = Color.White)
+
+                }
+
+
+            }
+
+
+
+        }
+
+    }
+
+
+}
+
 
 
 @Composable
@@ -117,7 +175,9 @@ fun UxAuthHelper(modifier: Modifier = Modifier,onClick:()->Unit ){
 
             Text(
                 text = "Lütfen internet bağlantınızı kontrol edin",
-                modifier = Modifier.align(Alignment.Center).padding(end = 5.dp, start = 5.dp),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(end = 5.dp, start = 5.dp),
                 fontSize = 18.sp,
                 textAlign = TextAlign.Center
             )
@@ -176,7 +236,9 @@ fun UxSessionExp(modifier: Modifier = Modifier,onClick:()->Unit ){
 
             Text(
                 text = "Oturumunuzun süresi doldu lütfen tekrar giriş yapın.",
-                modifier = Modifier.align(Alignment.Center).padding(end = 5.dp, start = 5.dp),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(end = 5.dp, start = 5.dp),
                 fontSize = 18.sp,
                 textAlign = TextAlign.Center
             )

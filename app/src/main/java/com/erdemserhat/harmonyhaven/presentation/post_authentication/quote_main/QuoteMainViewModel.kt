@@ -38,7 +38,10 @@ class QuoteMainViewModel @Inject constructor(
 
     // StateFlow ile UX Dialog gösterecek mi
     private val _shouldShowUxDialog1 = MutableStateFlow(true)
+    private val _shouldShowUxDialog2 = MutableStateFlow(false)
     val shouldShowUxDialog1: StateFlow<Boolean> = _shouldShowUxDialog1
+    val shouldShowUxDialog2: StateFlow<Boolean> = _shouldShowUxDialog2
+
 
     private val _authState = MutableStateFlow(1)
     val authStatus = _authState
@@ -55,6 +58,7 @@ class QuoteMainViewModel @Inject constructor(
     fun tryLoad(){
         loadQuotes()
         initializeUxDialogState()
+        initializeUxDialogState2()
         checkConnection()
 
 
@@ -98,12 +102,29 @@ class QuoteMainViewModel @Inject constructor(
         _shouldShowUxDialog1.value = showDialog
     }
 
+    private fun initializeUxDialogState2() {
+        val sharedPreferences: SharedPreferences =
+            context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val showDialog = sharedPreferences.getBoolean("shouldShowUxDialog2", true)
+        _shouldShowUxDialog2.value = showDialog
+    }
+
     fun setShouldShowUxDialog1(show: Boolean) {
         _shouldShowUxDialog1.value = show
         val sharedPreferences: SharedPreferences =
             context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         sharedPreferences.edit().putBoolean("shouldShowUxDialog1", show).apply()
         initializeUxDialogState()
+
+    }
+
+    fun setShouldShowUxDialog2(show: Boolean) {
+        _shouldShowUxDialog1.value = show
+        val sharedPreferences: SharedPreferences =
+            context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit().putBoolean("shouldShowUxDialog2", show).apply()
+        initializeUxDialogState()
+
     }
 
     //Permission operations

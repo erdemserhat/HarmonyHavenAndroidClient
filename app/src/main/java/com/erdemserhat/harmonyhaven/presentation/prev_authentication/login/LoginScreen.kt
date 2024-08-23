@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -74,8 +76,11 @@ fun LoginScreenContent(
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .imePadding()
             .background(Color.White),
-        contentAlignment = Alignment.Center
+            // Automatically adds padding for the IME (keyboard)
+           // .navigationBarsPadding(),
+    contentAlignment = Alignment.Center
 
     ) {
 
@@ -94,6 +99,7 @@ fun LoginScreenContent(
             Column(
             modifier = Modifier
                 .fillMaxSize()
+                .imePadding()
                 .verticalScroll(rememberScrollState()),
 
             verticalArrangement = Arrangement.SpaceBetween,
@@ -107,9 +113,11 @@ fun LoginScreenContent(
                 Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                HarmonyHavenGreetingLogo(
-                    modifier = Modifier
-                        .padding(top = 35.dp)
+                Image(
+                    painter = painterResource(id = R.drawable.harmonyhaven_icon),
+                    contentDescription = null,
+                    Modifier.padding(top = 30.dp).size(130.dp)
+
                 )
                 HarmonyHavenGreetingTitle(
                     modifier = Modifier
@@ -152,7 +160,8 @@ fun LoginScreenContent(
                             password = params.password,
                             isPasswordHidden = isPasswordHidden,
                             onClickIcon = { isPasswordHidden = !isPasswordHidden },
-                            isError = params.isPasswordValid
+                            isError = params.isPasswordValid,
+                            modifier = Modifier.imePadding()
 
                         )
 

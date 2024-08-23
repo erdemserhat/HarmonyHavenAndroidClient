@@ -8,7 +8,6 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
-
 /**
  * Dagger Hilt module for providing network-related dependencies related to quotes.
  *

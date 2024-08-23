@@ -29,7 +29,8 @@ fun HarmonyHavenPasswordTextField(
     password:String,
     onValueChanged:(String)->Unit,
     shouldExistVisibilityIcon:Boolean = true,
-    isError:Boolean = false
+    isError:Boolean = false,
+    modifier: Modifier = Modifier
 
 ) {
 
