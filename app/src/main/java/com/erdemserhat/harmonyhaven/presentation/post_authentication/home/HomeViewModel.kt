@@ -40,19 +40,10 @@ class HomeViewModel @Inject constructor(
                     articleUseCases.getArticles.executeRequest()
                 }
 
-                val authStatusDeferred = async {
-                    userUseCases.checkUserAuthenticationStatus.executeRequest()
-                }
 
                 val categories = categoriesDeferred.await()
                 val articles = articlesDeferred.await()
-                val authStatus = authStatusDeferred.await()
-                Log.d("authStatusTest",authStatus.toString())
 
-                if(authStatus!=1){
-                    _homeState.value = _homeState.value.copy(authStatus=2)
-                    return@launch
-                }
 
 
                 if (categories == null && articles == null) {

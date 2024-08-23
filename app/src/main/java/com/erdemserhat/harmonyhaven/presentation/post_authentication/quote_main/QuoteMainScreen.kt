@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
 
+import LocalGifImageWithFilter
 import android.Manifest
 import android.app.Activity
 import android.os.Build
@@ -101,6 +102,7 @@ fun QuoteMainContent(
 
 
     val shouldShowUxDialog1 = viewmodel.shouldShowUxDialog1.collectAsState()
+    val shouldShowUxDialog2 = viewmodel.shouldShowUxDialog2.collectAsState()
 
     var permissionGranted by remember { mutableStateOf(viewmodel.isPermissionGranted()) }
 
@@ -120,8 +122,10 @@ fun QuoteMainContent(
             val insetsController = WindowCompat.getInsetsController(it, it.decorView)
             insetsController.isAppearanceLightStatusBars = false
             insetsController.isAppearanceLightNavigationBars = false
+            it.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
 
         }
+
 
     }
 
@@ -149,15 +153,38 @@ fun QuoteMainContent(
             .fillMaxSize()
             .background(Color.Black)
     ) {
+        QuoteVerticalList1(quoteList = quotes.value, modifier = Modifier)
+        var isButtonClicked by remember { mutableStateOf(false) }
         if (shouldShowUxDialog1.value) {
+
             UxScrollInformer(modifier = Modifier.zIndex(2f),
                 onClick = {
                     viewmodel.setShouldShowUxDialog1(false)
+                    isButtonClicked = true
                 })
 
         }
+        if(shouldShowUxDialog2.value && isButtonClicked){
+            LocalGifImageWithFilter(
+                resId = R.drawable.down_animated,
+                modifier = Modifier.padding(end = 0.dp, bottom = 130.dp).size(120.dp).align(Alignment.BottomEnd),
+                colorFilter = ColorFilter.tint(Color.White.copy(alpha = 0.9f)))
 
-        QuoteVerticalList1(quoteList = quotes.value, modifier = Modifier)
+
+            UxScrollInformer(modifier = Modifier.zIndex(2f),
+                onClick = {
+                    viewmodel.setShouldShowUxDialog2(false)
+                })
+
+
+
+        }
+
+
+
+
+
+
         ButtonSurface(modifier = Modifier.align(Alignment.BottomEnd), onClick = {
             window?.let {
                 WindowCompat.setDecorFitsSystemWindows(it, true)
@@ -246,14 +273,16 @@ fun Quote(
                             colors = listOf(
                                 Color.Black.copy(alpha = 0.8f),
                                 Color.Gray.copy(alpha = 0.5f)
-                            ) // Gradient arka plan
+                            )
                         ),
                         shape = RoundedCornerShape(16.dp)
                     )
 
-                    .padding(24.dp) // İçerik için padding
+                    .padding(0.dp) // İçerik için padding
             )
             {
+              //  Image(painter = painterResource(id = R.drawable.a1), contentDescription =null,modifier = Modifier.align(
+                //    Alignment.TopStart).padding(12.dp), colorFilter = ColorFilter.tint(Color.Gray.copy(alpha = 0.4f)))
 
 
 

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -65,7 +66,8 @@ fun RegisterScreenContent(
 
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().imePadding()
+        ,
         contentAlignment = Alignment.Center
     ) {
         Image(
@@ -92,9 +94,9 @@ fun RegisterScreenContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.harmony_haven_icon),
+                    painter = painterResource(id = R.drawable.harmonyhaven_icon),
                     contentDescription = null,
-                    Modifier.padding(top = 30.dp)
+                    Modifier.padding(top = 30.dp).size(130.dp)
 
                 )
                 HarmonyHavenGreetingTitle(
@@ -150,21 +152,24 @@ fun RegisterScreenContent(
                         text = params.email,
                         onValueChanged = params.onEmailValueChanged,
                         placeHolderText = stringResource(R.string.e_mail),
-                        isError = params.isEmailValid
+                        isError = params.isEmailValid,
+
                     )
 
                     HarmonyHavenPasswordTextField(
                         placeHolderText = stringResource(R.string.password),
                         password = params.password,
                         onValueChanged = params.onPasswordValueChanged,
-                        isError = params.isPasswordValid
+                        isError = params.isPasswordValid,
+                        modifier = Modifier.imePadding()
                     )
 
                     HarmonyHavenPasswordTextField(
                         placeHolderText = stringResource(R.string.confirm_password),
                         password = params.passwordConfirm,
                         onValueChanged = params.onPasswordPasswordConfirmValueChanged,
-                        isError = params.isPasswordValid
+                        isError = params.isPasswordValid,
+                        modifier = Modifier.imePadding()
                     )
                     Spacer(modifier = Modifier.size(10.dp))
 
@@ -222,7 +227,7 @@ fun RegisterScreenContent(
                               //  isEnabled = isButtonsEnabled
 
 
-                            Spacer(modifier = Modifier.size(10.dp))
+                            Spacer(modifier = Modifier.size(10.dp).imePadding())
 
                             AcceptanceOfTermsOfUse(
                                 stringResource(R.string.terms_use),
@@ -236,7 +241,7 @@ fun RegisterScreenContent(
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 30.dp),
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(text = stringResource(R.string.already_have_an_account))
