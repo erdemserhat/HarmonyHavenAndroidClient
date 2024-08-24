@@ -98,9 +98,6 @@ fun QuoteMainContent(
     val quotes = viewmodel.quotes.collectAsState()
 
 
-    val authStatus = viewmodel.authStatus.collectAsState()
-
-
     val shouldShowUxDialog1 = viewmodel.shouldShowUxDialog1.collectAsState()
     val shouldShowUxDialog2 = viewmodel.shouldShowUxDialog2.collectAsState()
 
@@ -122,7 +119,7 @@ fun QuoteMainContent(
             val insetsController = WindowCompat.getInsetsController(it, it.decorView)
             insetsController.isAppearanceLightStatusBars = false
             insetsController.isAppearanceLightNavigationBars = false
-            //it.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            it.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
 
         }
 
@@ -188,10 +185,7 @@ fun QuoteMainContent(
         ButtonSurface(modifier = Modifier.align(Alignment.BottomEnd), onClick = {
             window?.let {
                 WindowCompat.setDecorFitsSystemWindows(it, true)
-                it.setFlags(
-                    WindowManager.LayoutParams.FLAG_SECURE,
-                    WindowManager.LayoutParams.FLAG_SECURE
-                )
+
             }
             navController.navigate(Screen.Main.route) {
 
