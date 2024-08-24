@@ -38,7 +38,7 @@ class QuoteMainViewModel @Inject constructor(
 
     // StateFlow ile UX Dialog gösterecek mi
     private val _shouldShowUxDialog1 = MutableStateFlow(true)
-    private val _shouldShowUxDialog2 = MutableStateFlow(false)
+    private val _shouldShowUxDialog2 = MutableStateFlow(true)
     val shouldShowUxDialog1: StateFlow<Boolean> = _shouldShowUxDialog1
     val shouldShowUxDialog2: StateFlow<Boolean> = _shouldShowUxDialog2
 
@@ -123,7 +123,7 @@ class QuoteMainViewModel @Inject constructor(
         val sharedPreferences: SharedPreferences =
             context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         sharedPreferences.edit().putBoolean("shouldShowUxDialog2", show).apply()
-        initializeUxDialogState()
+        initializeUxDialogState2()
 
     }
 

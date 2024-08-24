@@ -122,7 +122,7 @@ fun QuoteMainContent(
             val insetsController = WindowCompat.getInsetsController(it, it.decorView)
             insetsController.isAppearanceLightStatusBars = false
             insetsController.isAppearanceLightNavigationBars = false
-            it.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            //it.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
 
         }
 
@@ -171,7 +171,7 @@ fun QuoteMainContent(
                 colorFilter = ColorFilter.tint(Color.White.copy(alpha = 0.9f)))
 
 
-            UxScrollInformer(modifier = Modifier.zIndex(2f),
+            UxScrollInformer2(modifier = Modifier.zIndex(2f),
                 onClick = {
                     viewmodel.setShouldShowUxDialog2(false)
                 })
