@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.erdemserhat.harmonyhaven.domain.model.rest.toArticleResponseType
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 
 @Composable
@@ -50,6 +51,9 @@ fun HomeScreenNew(
                 onCategorySelected = {
                     homeViewModel.getArticlesByCategoryId(it.id)
                 },
+                allArticles = homeState.allArticles.map {
+                    it.toArticleResponseType(homeState.categories)
+                }
             )
 
 

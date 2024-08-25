@@ -30,8 +30,11 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -50,6 +53,10 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.shimmer
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
 data class ArticleUIModel(
@@ -247,6 +254,7 @@ fun ArticleContent(
 
             .verticalScroll(rememberScrollState())
     ) {
+        var isLoading by remember { mutableStateOf(true) } // Yüklenme durumunu takip edin
 
         AsyncImage(
             model = article.imagePath,
@@ -254,8 +262,18 @@ fun ArticleContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1.5f)
-                .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Fit
+                .clip(RoundedCornerShape(8.dp))
+                .placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.shimmer(
+                        highlightColor = Color.Gray.copy(0.3f)
+                    ),
+                    color = harmonyHavenComponentWhite
+                ),
+
+            contentScale = ContentScale.Fit,
+            onSuccess = { isLoading = false }, // Yükleme başarılı olursa shimmer efektini kaldır
+            onError = { isLoading = false } // Yükleme
         )
 
         Spacer(modifier = Modifier.height(16.dp))
