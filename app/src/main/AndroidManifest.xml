@@ -2,15 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="false" />
-
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
 
 
@@ -21,7 +15,6 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/objects"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HarmonyHaven.MySplash"
         android:usesCleartextTraffic="true"
@@ -30,6 +23,8 @@
 
         <activity
             android:name=".MainActivity"
+            android:configChanges = "orientation"
+            android:screenOrientation = "portrait"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.HarmonyHaven.MySplash"

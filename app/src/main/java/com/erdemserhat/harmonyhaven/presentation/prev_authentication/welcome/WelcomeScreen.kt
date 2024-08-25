@@ -40,7 +40,10 @@ import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.HarmonyHav
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.HarmonyHavenBackground
 import com.erdemserhat.harmonyhaven.ui.theme.customFontKumbhSans
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenIndicatorColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenWhite
 import com.google.accompanist.pager.ExperimentalPagerApi
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -112,7 +115,7 @@ fun WelcomeScreen(navHostController: NavHostController) {
 
             ClickableHorizontalPagerIndicator(
                 pagerState = pagerState,
-                activeColor = MaterialTheme.colorScheme.primary,
+                activeColor = harmonyHavenGreen,
                 inactiveColor = Color.Gray,
                 indicatorWidth = 16.dp,
                 indicatorShape = CircleShape,
