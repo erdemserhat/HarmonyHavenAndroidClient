@@ -95,10 +95,6 @@ fun VideoPlayer(
     LaunchedEffect(Unit) {
         activity?.let {
             originalWindowFlags = it.window.attributes.flags
-            it.window.setFlags(
-                WindowManager.LayoutParams.FLAG_SECURE,
-                WindowManager.LayoutParams.FLAG_SECURE
-            )
         }
     }
 
@@ -109,7 +105,12 @@ fun VideoPlayer(
                 it.window.setFlags(
                     originalWindowFlags,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN
+
                 )
+
+
+
+
             }
         }
     }
