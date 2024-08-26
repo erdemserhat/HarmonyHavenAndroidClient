@@ -25,9 +25,9 @@ android {
         applicationId = "com.erdemserhat.harmonyhaven"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
+        versionCode = 4
         multiDexEnabled =true
-        versionName = "1.0"
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -37,12 +37,16 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            // Kod gösterme (mapping) dosyasını oluştur
+            proguardFiles ("proguard-rules.pro")
         }
+
     }
 
 
@@ -192,6 +196,9 @@ dependencies {
 
     implementation("androidx.media3:media3-exoplayer:1.0.0")
     implementation("androidx.media3:media3-ui:1.0.0")
+
+    implementation("com.google.accompanist:accompanist-placeholder-material:0.31.2-alpha")
+
 
 
 

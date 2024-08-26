@@ -1,6 +1,6 @@
 package com.erdemserhat.harmonyhaven.data.api.user
 
-import com.erdemserhat.dto.responses.UserInformationDto
+import com.erdemserhat.harmonyhaven.dto.responses.UserInformationDto
 import retrofit2.Response
 import retrofit2.http.GET
 

@@ -51,6 +51,10 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.ui.theme.DefaultAppFont
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.shimmer
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
 
 @OptIn(ExperimentalSnapperApi::class, ExperimentalLayoutApi::class)
@@ -59,7 +63,8 @@ fun HomeScreenContentNew(
     navController: NavController,
     articles: List<ArticleResponseType>,
     categories: List<Category>,
-    onCategorySelected: (Category) -> Unit
+    onCategorySelected: (Category) -> Unit,
+    allArticles: List<ArticleResponseType>
 ) {
 
     var isFocusedSearchBar by remember {
@@ -107,7 +112,7 @@ fun HomeScreenContentNew(
 
         // Durum kontrolü
         if (isFocusedSearchBar && isKeyboardVisible) {
-            val filteredArticles = articles.filter {
+            val filteredArticles = allArticles.filter {
                 it.title.contains(query, ignoreCase = true) ||
                         it.content.contains(query, ignoreCase = true) ||
                         it.contentPreview.contains(query, ignoreCase = true)
@@ -327,10 +332,6 @@ fun Article(
     onReadButtonClicked: () -> Unit = {},
 
     ) {
-    var shouldShowShimmer by rememberSaveable {
-        mutableStateOf(true)
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -357,17 +358,25 @@ fun Article(
 
 
         ) {
-
+            var isLoading by remember { mutableStateOf(true) } // Yüklenme durumunu takip edin
             AsyncImage(
+
                 model = article.imagePath,
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth(1f)
                     .fillMaxHeight(1f)
                     .aspectRatio(2f) // // Genişlik / Yükseklik oranı 1.5
-                    .align(Alignment.CenterHorizontally),
-                onSuccess = { shouldShowShimmer = false },
-                contentScale = ContentScale.FillBounds
+                    .align(Alignment.CenterHorizontally).placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer(
+                            highlightColor = Color.Gray.copy(0.3f)
+                        ),
+                        color = harmonyHavenComponentWhite
+                    ),
+                contentScale = ContentScale.Crop,
+                onSuccess = { isLoading = false }, // Yükleme başarılı olursa shimmer efektini kaldır
+                onError = { isLoading = false } // Yükleme başarısız olursa da shimmer efektini kaldır
             )
             Text(
                 text = article.title,
