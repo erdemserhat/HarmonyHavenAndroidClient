@@ -35,7 +35,6 @@ fun HomeScreenNew(
                 it.navigationBarColor = Color.White.toArgb()
 
 
-
                 val insetsController = WindowCompat.getInsetsController(it, it.decorView)
                 insetsController.isAppearanceLightStatusBars = true
                 insetsController.isAppearanceLightNavigationBars = true

@@ -36,6 +36,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -652,7 +653,7 @@ fun MinimizedArticleItem(
     Row(
         modifier = Modifier
             .fillMaxWidth(0.9f)
-            .fillMaxHeight(0.1f)
+            .height(100.dp)
             .background(Color(0xFFE0E0E0), shape = RoundedCornerShape(15.dp))
             .clip(RoundedCornerShape(15.dp))
             .clickable { //normal parcelable data
@@ -671,23 +672,26 @@ fun MinimizedArticleItem(
             model = article.imagePath,
             contentDescription = null,
             modifier = Modifier
-                .weight(0.3f)
+                .fillMaxHeight()
+                .height(120.dp)
+                .weight(0.4f)
                 .clip(shape = RoundedCornerShape(15.dp, 0.dp, 0.dp, 15.dp))
-                .aspectRatio(1.5f) // // Genişlik / Yükseklik oranı 1.5
             ,
-            contentScale = ContentScale.FillBounds
+            contentScale = ContentScale.Crop
         )
 
         Column(
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(0.75f)
         ) {
             Text(
                 text = article.title,
                 fontFamily = DefaultAppFont,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(start = 5.dp, end = 5.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .padding(5.dp),
+                maxLines = 2,
+                textAlign = TextAlign.Center
 
 
             )
@@ -697,8 +701,9 @@ fun MinimizedArticleItem(
                 fontWeight = FontWeight.ExtraLight,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(start = 5.dp, end = 5.dp),
-                maxLines = 3
+                    .padding(5.dp),
+                maxLines = 3,
+                textAlign = TextAlign.Center
 
 
             )

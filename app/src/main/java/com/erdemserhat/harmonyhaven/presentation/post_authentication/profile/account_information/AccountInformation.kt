@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -286,7 +287,26 @@ fun LocalGifImage(resId: Int, modifier: Modifier = Modifier) {
         painter = painter,
         contentDescription = null,
         modifier = modifier,
-        contentScale = ContentScale.Crop
+        contentScale = ContentScale.Crop,
+    )
+}
+
+@Composable
+fun LocalGifImageWithFilter(resId: Int, modifier: Modifier = Modifier,colorFilter: ColorFilter) {
+    val painter = rememberAsyncImagePainter(
+        ImageRequest.Builder(LocalContext.current)
+            .data(resId)
+            .decoderFactory(GifDecoder.Factory())
+            .scale(Scale.FIT)
+            .build()
+    )
+
+    Image(
+        painter = painter,
+        contentDescription = null,
+        modifier = modifier,
+        contentScale = ContentScale.Crop,
+        colorFilter = colorFilter
     )
 }
 
