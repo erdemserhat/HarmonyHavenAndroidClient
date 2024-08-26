@@ -1,11 +1,11 @@
 package com.erdemserhat.harmonyhaven.domain.usecase.article
 
-import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
+import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import javax.inject.Inject
 
 class GetArticlesByCategory @Inject constructor(
 ) {
-    suspend operator fun invoke(categoryId: Int): List<ArticleResponseType> {
+    suspend operator fun invoke(categoryId: Int): List<ArticlePresentableUIModel> {
         /*
 
 
@@ -21,6 +21,6 @@ class GetArticlesByCategory @Inject constructor(
 
          */
 
-        return listOf(ArticleResponseType())
+        return listOf(ArticlePresentableUIModel())
     }
 }

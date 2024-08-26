@@ -1,6 +1,7 @@
 package com.erdemserhat.harmonyhaven.di.usecase
 
 import com.erdemserhat.harmonyhaven.data.api.quote.QuoteApiService
+import com.erdemserhat.harmonyhaven.domain.usecase.DeleteQuoteByIdUseCase
 import com.erdemserhat.harmonyhaven.domain.usecase.GetQuotesUseCase
 import dagger.Module
 import dagger.Provides
@@ -33,6 +34,16 @@ object QuoteUseCaseModule {
         quoteApiService: QuoteApiService
     ): GetQuotesUseCase {
         return GetQuotesUseCase(
+            quoteApiService
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteQuoteUseCase(
+        quoteApiService: QuoteApiService
+    ): DeleteQuoteByIdUseCase {
+        return DeleteQuoteByIdUseCase(
             quoteApiService
         )
     }

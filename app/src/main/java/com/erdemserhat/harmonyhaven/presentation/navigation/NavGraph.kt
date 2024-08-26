@@ -19,9 +19,9 @@ import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.article.ArticleScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeScreenNew
+import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.article.composables.ArticleScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.SettingsScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.about_us.AboutUsScreen
@@ -134,9 +134,9 @@ fun SetupNavGraph(
         ) { backStackEntry ->
             val bundle = backStackEntry.arguments
             val article = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                bundle?.getParcelable("article", ArticleResponseType::class.java)
+                bundle?.getParcelable("article", ArticlePresentableUIModel::class.java)
             } else {
-                bundle?.getParcelable("article") as? ArticleResponseType
+                bundle?.getParcelable("article") as? ArticlePresentableUIModel
             }
             article?.let {
 

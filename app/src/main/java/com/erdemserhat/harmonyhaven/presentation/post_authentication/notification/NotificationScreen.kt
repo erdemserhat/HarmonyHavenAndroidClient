@@ -57,7 +57,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
+import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import com.erdemserhat.harmonyhaven.presentation.navigation.MainScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
@@ -263,7 +263,7 @@ fun NotificationContent(notification: NotificationDto,navController: NavControll
                         val postId = notification.screenCode.drop(2)
                         val bundleArticle = Bundle()
                         bundleArticle.putParcelable("article",
-                            ArticleResponseType(
+                            ArticlePresentableUIModel(
                                 id =postId.toInt())
                         )
 

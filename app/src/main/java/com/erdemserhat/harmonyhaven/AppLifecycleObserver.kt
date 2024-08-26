@@ -9,12 +9,11 @@ import androidx.media3.exoplayer.ExoPlayer
 
 class AppLifecycleObserver(
     private val context: Context,
-    private val exoPlayer: ExoPlayer // Kullanmakta olduğun medya oynatıcı
+    private val exoPlayer: ExoPlayer
 ) : LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onAppBackgrounded() {
-        // Uygulama arka plana alındığında medya oynatıcıyı durdur
         if (exoPlayer.isPlaying) {
             exoPlayer.pause()
         }
@@ -22,7 +21,6 @@ class AppLifecycleObserver(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onAppForegrounded() {
-        // Uygulama ön plana geldiğinde medya oynatıcıyı tekrar başlatmak istersen buraya ekleyebilirsin
         exoPlayer.play()
     }
 }
