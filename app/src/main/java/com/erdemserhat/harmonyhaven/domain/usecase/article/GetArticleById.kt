@@ -1,7 +1,7 @@
 package com.erdemserhat.harmonyhaven.domain.usecase.article
 
 import com.erdemserhat.harmonyhaven.data.api.article.ArticleApiService
-import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
+import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetArticleById @Inject constructor(
     private val articleApiService: ArticleApiService
 ) {
-    suspend fun executeRequest(id: Int): ArticleResponseType? {
+    suspend fun executeRequest(id: Int): ArticlePresentableUIModel? {
         return try {
             val response = articleApiService.getArticleById(id)
             if (response.isSuccessful) {

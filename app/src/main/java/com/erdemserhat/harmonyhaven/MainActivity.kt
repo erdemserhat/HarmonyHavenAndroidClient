@@ -23,7 +23,7 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.data.local.repository.JwtTokenRepository
-import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
+import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
 import com.erdemserhat.harmonyhaven.presentation.common.HarmonyHavenTheme
@@ -35,7 +35,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var navController: NavHostController
@@ -102,7 +101,7 @@ class MainActivity : ComponentActivity() {
                         val postId = extraData.drop(2)
                         bundleArticle.putParcelable(
                             "article",
-                            ArticleResponseType(
+                            ArticlePresentableUIModel(
                                 id = postId.toInt()
                             )
                         )

@@ -19,11 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val articleUseCases: ArticleUseCases,
-    //private val categoryRepository: CategoryRepository,
-    //private val articleRepository: ArticleRepository,
-    private val userUseCases: UserUseCases
 
-) : ViewModel() {
+    ) : ViewModel() {
     private val _homeState = MutableStateFlow(HomeState())
 
     val homeState: StateFlow<HomeState> = _homeState
@@ -55,8 +52,9 @@ class HomeViewModel @Inject constructor(
 
                     categories = categories!!,
                     categorizedArticles = articles!!.map {
-                        it.id=-1
-                        it.toArticleResponseType(categories) },
+                        it.id = -1
+                        it.toArticleResponseType(categories)
+                    },
                     isCategoryReady = true,
                     isArticleReady = true,
                     recentArticles = articles.take(4)
@@ -64,9 +62,6 @@ class HomeViewModel @Inject constructor(
                     allArticles = articles
 
                 )
-                Log.d("homepage_tests", "request operation is successful")
-                //for mocking//////
-                MockSavedArticles.setData(_homeState.value.categorizedArticles)
                 return@launch
 
 
@@ -83,13 +78,16 @@ class HomeViewModel @Inject constructor(
     fun getArticlesByCategoryId(categoryId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                if (categoryId==1){
+                if (categoryId == 1) {
                     _homeState.value = _homeState.value.copy(
 
-                        categorizedArticles = _homeState.value.allArticles.map { it.toArticleResponseType(_homeState.value.categories) }
+                        categorizedArticles = _homeState.value.allArticles.map {
+                            it.toArticleResponseType(
+                                _homeState.value.categories
+                            )
+                        }
                     )
-                }
-                else{
+                } else {
                     _homeState.value = _homeState.value.copy(
 
                         categorizedArticles = _homeState.value.allArticles.filter { it.categoryId == categoryId }
@@ -99,7 +97,6 @@ class HomeViewModel @Inject constructor(
                 }
 
 
-
             } catch (_: Exception) {
 
             }
@@ -107,8 +104,6 @@ class HomeViewModel @Inject constructor(
 
         }
     }
-
-
 
 
 }

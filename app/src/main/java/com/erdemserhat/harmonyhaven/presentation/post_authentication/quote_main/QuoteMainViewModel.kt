@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.erdemserhat.harmonyhaven.domain.usecase.DeleteQuoteByIdUseCase
 import com.erdemserhat.harmonyhaven.domain.usecase.GetQuotesUseCase
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
 import com.google.android.gms.tasks.Task
@@ -29,6 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 class QuoteMainViewModel @Inject constructor(
     private val getQuotesUseCase: GetQuotesUseCase,
+    private val deleteQuoteByIdUseCase: DeleteQuoteByIdUseCase,
     @ApplicationContext private val context: Context,
     private val userUseCases: UserUseCases
 ) : ViewModel() {
@@ -75,6 +77,17 @@ class QuoteMainViewModel @Inject constructor(
             Log.d("AuthStats",_authState.value.toString())
 
 
+        }
+
+    }
+
+    fun deleteQuoteById(id: Int) {
+        viewModelScope.launch {
+            try {
+                deleteQuoteByIdUseCase.executeRequest(id)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
     }
