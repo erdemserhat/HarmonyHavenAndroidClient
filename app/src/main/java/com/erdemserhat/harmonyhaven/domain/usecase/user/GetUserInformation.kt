@@ -1,7 +1,7 @@
 package com.erdemserhat.harmonyhaven.domain.usecase.user
 
 import android.util.Log
-import com.erdemserhat.dto.responses.UserInformationDto
+import com.erdemserhat.harmonyhaven.dto.responses.UserInformationDto
 import com.erdemserhat.harmonyhaven.data.api.user.UserInformationApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

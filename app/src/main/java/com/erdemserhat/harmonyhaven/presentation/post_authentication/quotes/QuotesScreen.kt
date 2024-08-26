@@ -1,6 +1,9 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.InfiniteRepeatableSpec
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +20,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +36,10 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
+import com.google.accompanist.placeholder.shimmer
 
 
 @Composable
@@ -84,11 +95,25 @@ val imageUrls = arrayOf(
 
 @Composable
 fun FullScreenImage(imageUrl: String, modifier: Modifier) {
+    var isLoading by remember { mutableStateOf(true) } // Yüklenme durumunu takip edin
+
     AsyncImage(
         model = imageUrl,
         contentDescription = "Full screen image",
-        modifier = modifier.fillMaxSize(),
-        contentScale = ContentScale.Crop // Resmi kapsama oranını ayarlar
+        modifier = modifier.fillMaxSize().placeholder(
+            visible = isLoading,
+            highlight = PlaceholderHighlight.shimmer(
+                highlightColor = Color.White.copy(0.08f),
+                animationSpec = InfiniteRepeatableSpec(
+                    animation = tween(durationMillis = 4000),
+                    repeatMode = RepeatMode.Restart
+                )
+            ), // Shimmer efekti
+            color = Color.Black // Shimmer efekti için arka plan rengi
+        ),
+        contentScale = ContentScale.Crop,
+        onSuccess = { isLoading = false }, // Yükleme başarılı olursa shimmer efektini kaldır
+        onError = { isLoading = false } // Yükleme başarısız olursa da shimmer efektini kaldır
     )
 }
 
