@@ -26,21 +26,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
+import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeViewModel
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.MinimizedArticleItem
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.cards.ArticleSearchBarCard
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles.MockSavedArticles.mockArticle
 
 //To mock data///
 object MockSavedArticles {
-    var mockArticle: List<ArticleResponseType> = listOf()
+    var mockArticle: List<ArticlePresentableUIModel> = listOf()
 
 
-    fun setData(artciles: List<ArticleResponseType>) {
+    fun setData(artciles: List<ArticlePresentableUIModel>) {
         mockArticle = artciles
     }
 
-    fun getData(): List<ArticleResponseType> {
+    fun getData(): List<ArticlePresentableUIModel> {
         return mockArticle
     }
 
@@ -60,7 +60,7 @@ fun SavedArticlesScreen(navController: NavController) {
 @Composable
 fun SavedArticlesScreenContent(
     navController: NavController,
-    savedArticles: List<ArticleResponseType>
+    savedArticles: List<ArticlePresentableUIModel>
 
 ) {
 
@@ -78,7 +78,7 @@ fun SavedArticlesScreenContent(
             ) {
                 items(savedArticles) { savedArticle ->
 
-                    MinimizedArticleItem(savedArticle, navController)
+                    ArticleSearchBarCard(savedArticle, navController)
                     Spacer(modifier = Modifier.size(10.dp))
 
                 }

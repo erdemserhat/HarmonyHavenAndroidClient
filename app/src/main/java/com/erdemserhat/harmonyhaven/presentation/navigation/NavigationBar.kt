@@ -62,7 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeScreenNew
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.AlertDialogBase
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.QuotesScreen

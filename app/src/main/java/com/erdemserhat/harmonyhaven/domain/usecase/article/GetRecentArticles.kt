@@ -1,11 +1,11 @@
 package com.erdemserhat.harmonyhaven.domain.usecase.article
 
-import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
+import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import javax.inject.Inject
 
 class GetRecentArticles @Inject constructor(
 ) {
-    suspend operator fun invoke(size:Int): List<ArticleResponseType> {
+    suspend operator fun invoke(size:Int): List<ArticlePresentableUIModel> {
         /*
         val response = categoryApiService.getRecentArticles(size)
 
@@ -20,6 +20,6 @@ class GetRecentArticles @Inject constructor(
 
          */
 
-        return arrayListOf(ArticleResponseType())
+        return arrayListOf(ArticlePresentableUIModel())
     }
 }
