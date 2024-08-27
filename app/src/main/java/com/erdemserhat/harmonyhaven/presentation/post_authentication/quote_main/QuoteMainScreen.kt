@@ -28,6 +28,9 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -150,7 +153,7 @@ fun QuoteMainContent(
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        QuoteVerticalList1(quoteList = quotes.value, modifier = Modifier)
+        QuoteVerticalList1(quoteList = quotes.value, modifier = Modifier,viewmodel)
         var isButtonClicked by remember { mutableStateOf(false) }
         if (shouldShowUxDialog1.value) {
 
@@ -202,7 +205,7 @@ fun QuoteMainContent(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun QuoteVerticalList1(
-    quoteList: List<Quote>, modifier: Modifier
+    quoteList: List<Quote>, modifier: Modifier,viewmodel: QuoteMainViewModel
 ) {
     if (quoteList.isNotEmpty()) {
         val pagerState = rememberPagerState(pageCount = {
@@ -226,8 +229,11 @@ fun QuoteVerticalList1(
                     quote = quote,
                     isVisible = isCurrentPageVisible || isPreviousPageVisible,
                     isCurrentPage = isCurrentPageVisible,
-                    modifier = Modifier.zIndex(2f)
-                )
+                    modifier = Modifier.zIndex(2f),
+                    onDeleteClicked = {viewmodel.deleteQuoteById(quote.id)}
+
+
+                    )
             }
         }
     }
@@ -238,11 +244,19 @@ fun Quote(
     quote: Quote,
     isVisible: Boolean, // Sayfanın görünür olup olmadığını kontrol eder
     isCurrentPage: Boolean, // Aktif sayfa olup olmadığını kontrol eder
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDeleteClicked:()->Unit
 ) {
     Box(
         modifier = modifier.fillMaxSize()
     ) {
+        Box(modifier = Modifier.align(Alignment.BottomStart).zIndex(2f)){
+            ButtonSurface1(onClick = onDeleteClicked)
+        }
+
+
+
+
         if (!quote.imageUrl.endsWith(".mp4")) {
             FullScreenImage(
                 quote.imageUrl,
@@ -336,6 +350,33 @@ fun ButtonSurface(modifier: Modifier = Modifier, onClick: () -> Unit) {
                 .size(30.dp)
                 .align(Alignment.Center),
             colorFilter = ColorFilter.tint(Color.Gray.copy(alpha = 0.5f))
+
+
+        )
+
+
+    }
+}
+
+
+@Composable
+fun ButtonSurface1(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    // Renk kodunu ve alfa değerini ayarlayarak yarı transparan yapıyoruz
+    Box(
+        modifier = modifier
+            .padding(bottom = 70.dp, start = 35.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .width(50.dp)
+            .height(50.dp)
+            .background(Color.Gray.copy(alpha = 0.2f)) // Alfa değerini 0.5 olarak ayarlıyoruz
+            .clickable { onClick() }
+    ) {
+        Icon(
+            imageVector = Icons.Default.Delete,
+            contentDescription = null,
+            Modifier
+                .size(30.dp)
+                .align(Alignment.Center)
 
 
         )

@@ -20,7 +20,7 @@ data class Article(
 
 @Serializable
 @Parcelize
-data class ArticleResponseType(
+data class ArticlePresentableUIModel(
     val id:Int=0,
     val title:String="",
     val content:String="",
@@ -32,8 +32,8 @@ data class ArticleResponseType(
 ) : Parcelable
 
 
-fun Article.toArticleResponseType(categoryList:List<Category>):ArticleResponseType{
-    return ArticleResponseType(
+fun Article.toArticleResponseType(categoryList:List<Category>):ArticlePresentableUIModel{
+    return ArticlePresentableUIModel(
         id = id,
         title = title,
         content = content,

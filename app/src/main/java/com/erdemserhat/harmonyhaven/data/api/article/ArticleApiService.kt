@@ -1,7 +1,7 @@
 package com.erdemserhat.harmonyhaven.data.api.article
 
 import com.erdemserhat.harmonyhaven.domain.model.rest.Article
-import com.erdemserhat.harmonyhaven.domain.model.rest.ArticleResponseType
+import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category
 import retrofit2.Response
 import retrofit2.http.GET
@@ -27,6 +27,6 @@ interface ArticleApiService {
     @GET("articles/{id}")
     suspend fun getArticleById(
         @Path("id") id: Int // The ID of the article to fetch
-    ): Response<ArticleResponseType>
+    ): Response<ArticlePresentableUIModel>
 
 }
