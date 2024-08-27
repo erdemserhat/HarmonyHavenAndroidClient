@@ -100,6 +100,17 @@ app
 
 ## App Screens
 
+![WhatsApp Image 2024-08-26 at 21 19 41_b309deab](https://github.com/user-attachments/assets/ef31e3cd-3132-4d21-9f37-5b6ed56d22cf)
+![WhatsApp Image 2024-08-26 at 21 19 41_ae20a15e](https://github.com/user-attachments/assets/e7733c2f-9f06-4290-8c09-65bc3f317199)
+![WhatsApp Image 2024-08-26 at 21 19 41_6036e142](https://github.com/user-attachments/assets/40c270ab-f308-4e5f-84e6-9244b2d9ec0f)
+![WhatsApp Image 2024-08-26 at 21 19 40_8d12e601](https://github.com/user-attachments/assets/45008255-b86b-4ff4-a83c-72e6bdc293d3)
+![WhatsApp Image 2024-08-26 at 21 18 34_31a76ef4](https://github.com/user-attachments/assets/141597a7-6aa5-4d98-8945-16c5281f0f35)
+![WhatsApp Image 2024-08-26 at 21 17 19_06cf4e29](https://github.com/user-attachments/assets/980a3e57-4061-48bb-a7b7-4c9a381845cf)
+
+
+
+
+
 ![1-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/639a2683-11b1-4bce-8814-027d3adc837e)
 
 ![2-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/7cf35236-97cc-4c52-82e6-f3cdb598a62e)
