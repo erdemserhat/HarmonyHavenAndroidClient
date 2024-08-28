@@ -97,7 +97,6 @@ app
 - **Core Splash Screen API**: Splash Screen
 - **Compose Markdown**: Markdown Rendering
 - **Gson**: JSON Parsing
-- 
 
 ## App Screens
 
