@@ -19,7 +19,7 @@ app
     ├── androidTest
     └── main
         └── java
-            └── com.erdemsah.armonyhaven
+            └── com.erdemserhat.harmonyhaven
                 ├── data
                 │   ├── api
                 │   │   ├── article
