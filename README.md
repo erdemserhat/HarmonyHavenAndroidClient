@@ -1,7 +1,6 @@
 # **Harmony Haven Android Client (Work In Progress)**
 
 **Harmony Haven** is an ongoing project under development, utilizing various libraries throughout its development process. Primarily a motivational application, *Harmony Haven* offers users a range of articles from different categories and delivers personalized notifications using artificial intelligence. It also provides users with personalized quotes, adding a touch of inspiration to their daily lives.
-![ps_icon](https://github.com/user-attachments/assets/04e9ea31-5fc0-42bb-a987-2ae5ad51fe8e)
 
 ## System Operation Overview
 
@@ -11,6 +10,7 @@
 
 ## Android Architecture Overview
 
+(Architecture may change during the development)
 
 ```plaintext
 app
