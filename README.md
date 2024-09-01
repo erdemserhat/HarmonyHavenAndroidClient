@@ -3,9 +3,12 @@
 Harmony Haven, şu anda geliştirilmekte olan bir motivasyon uygulamasıdır. Uygulama, kullanıcılara özel olarak seçilmiş yazarların özlü sözlerini bir akış halinde sunarak, günlük yaşamlarına ilham katar. Ayrıca, çeşitli kategorilerden makaleler sunar ve yapay zeka kullanarak kişiselleştirilmiş bildirimler sağlar.
 
 ## Üretim Ortamında Görüntüle
+<div align="center">
+    
 [![psico](https://github.com/user-attachments/assets/388b5df4-2096-4ced-a805-07550d46760d)](https://play.google.com/store/apps/details?id=com.erdemserhat.harmonyhaven)
 
 (Tahminen 07.09.2024 tarihinde Play Store'da erişilebilir olacaktır.)
+</div>
 
 ## Sistem İşleyişi Genel Görünümü
 
