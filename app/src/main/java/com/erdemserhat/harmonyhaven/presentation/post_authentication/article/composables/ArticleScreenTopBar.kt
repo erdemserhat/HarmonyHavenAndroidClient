@@ -54,8 +54,8 @@ fun ArticleScreenTopBar(
     TopAppBar(
         modifier = Modifier,
         elevation = 0.dp,
-        backgroundColor = if(isSystemInDarkTheme()) Color.Black else Color.White,
-        contentColor = if(isSystemInDarkTheme()) Color.White else Color.Black,
+        backgroundColor = if(false) Color.Black else Color.White,
+        contentColor = if(false) Color.White else Color.Black,
         title = { },
         navigationIcon = {
             IconButton(onClick = {
