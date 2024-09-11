@@ -38,7 +38,7 @@ fun ArticleContent(
 ) {
     Column(
         modifier = Modifier
-            .background(if (isSystemInDarkTheme()) Color.Black else Color.White)
+            .background(if (false) Color.Black else Color.White)
             .padding(end = 16.dp, start = 16.dp)
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
@@ -79,7 +79,7 @@ fun MarkdownArticleContent(
     fontSize: Int = 16
 ) {
     MarkdownText(
-        color = if(isSystemInDarkTheme()) Color.White else Color.Black,
+        color = if(false) Color.White else Color.Black,
         fontSize = fontSize.sp,
         markdown = articleContent,
         modifier = Modifier.fillMaxSize()
