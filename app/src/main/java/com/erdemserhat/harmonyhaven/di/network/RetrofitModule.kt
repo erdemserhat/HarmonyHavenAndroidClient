@@ -20,7 +20,7 @@ import javax.inject.Singleton
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object RetrofitModule {
+object xRetrofitModule {
 
     /**
      * Provides a singleton instance of [OkHttpClient].
