@@ -1,6 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables
 
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -12,11 +13,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
@@ -49,6 +52,9 @@ fun HomeScreenContentNew(
     }
     var selectedCategoryId = rememberSaveable { mutableIntStateOf(0) }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+
 
 
 
@@ -68,7 +74,13 @@ fun HomeScreenContentNew(
                         .fillMaxWidth(0.9f),
                     onActiveChange = { isFocusedSearchBar = it },
                     query = query,
-                    onQueryChange = { query = it }
+                    onQueryChange = { query = it },
+                    shouldShowExitButton = query.isNotEmpty() || isFocusedSearchBar,
+                    onExitButtonClicked = {
+                        query = ""
+                        isFocusedSearchBar = false
+                        keyboardController?.hide()
+                    }
                 )
                 Spacer(modifier = Modifier.size(20.dp))
 
@@ -80,48 +92,64 @@ fun HomeScreenContentNew(
         }
 
 
-        if (isFocusedSearchBar && isKeyboardVisible) {
+        if (isFocusedSearchBar) {
             val filteredArticles = allArticles.filter {
                 it.title.contains(query, ignoreCase = true) ||
                         it.content.contains(query, ignoreCase = true) ||
                         it.contentPreview.contains(query, ignoreCase = true)
             }
-            items(filteredArticles) { filteredArticle ->
-                var isVisible by remember { mutableStateOf(false) }
-                LaunchedEffect(Unit) {
-                    isVisible = true
-                }
-                AnimatedVisibility(
-                    visible = isVisible,
-                    enter = expandVertically(
-                        animationSpec = tween(
-                            durationMillis = 300,
-                            easing = FastOutSlowInEasing
+            if(filteredArticles.isNotEmpty()){
+                items(filteredArticles) { filteredArticle ->
+                    var isVisible by remember { mutableStateOf(false) }
+                    LaunchedEffect(Unit) {
+                        isVisible = true
+                    }
+                    AnimatedVisibility(
+                        visible = isVisible,
+                        enter = expandVertically(
+                            animationSpec = tween(
+                                durationMillis = 300,
+                                easing = FastOutSlowInEasing
+                            )
+                        ) + fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 300,
+                                easing = FastOutSlowInEasing
+                            )
+                        ),
+                        exit = shrinkVertically(
+                            animationSpec = tween(
+                                durationMillis = 300,
+                                easing = FastOutSlowInEasing
+                            )
+                        ) + fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 300,
+                                easing = FastOutSlowInEasing
+                            )
                         )
-                    ) + fadeIn(
-                        animationSpec = tween(
-                            durationMillis = 300,
-                            easing = FastOutSlowInEasing
-                        )
-                    ),
-                    exit = shrinkVertically(
-                        animationSpec = tween(
-                            durationMillis = 300,
-                            easing = FastOutSlowInEasing
-                        )
-                    ) + fadeOut(
-                        animationSpec = tween(
-                            durationMillis = 300,
-                            easing = FastOutSlowInEasing
-                        )
-                    )
-                ) {
-                    Column {
-                        ArticleSearchBarCard(filteredArticle,navController)
-                        Spacer(modifier = Modifier.size(10.dp))
+                    ) {
+
+                        if(filteredArticles.isNotEmpty()){
+                            Column {
+
+                                ArticleSearchBarCard(filteredArticle,navController)
+                                Spacer(modifier = Modifier.size(10.dp))
+                            }
+
+                        }
+
                     }
                 }
+            }else{
+                item { 
+                    Text(text = "Bir sonuç bulunamadı.")
+                }
             }
+            
+            
+            
+          
 
 
         } else {

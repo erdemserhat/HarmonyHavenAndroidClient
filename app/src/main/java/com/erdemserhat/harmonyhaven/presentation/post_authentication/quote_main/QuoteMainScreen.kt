@@ -250,9 +250,9 @@ fun Quote(
     Box(
         modifier = modifier.fillMaxSize()
     ) {
-        Box(modifier = Modifier.align(Alignment.BottomStart).zIndex(2f)){
-            ButtonSurface1(onClick = onDeleteClicked)
-        }
+        //Box(modifier = Modifier.align(Alignment.BottomStart).zIndex(2f)){
+        //    ButtonSurface1(onClick = onDeleteClicked)
+        //}
 
 
 

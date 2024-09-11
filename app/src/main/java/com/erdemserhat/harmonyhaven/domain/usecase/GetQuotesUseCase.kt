@@ -17,7 +17,7 @@ class GetQuotesUseCase @Inject constructor(
             }
             if (response.isSuccessful) {
                 Log.d("API-CALL-LOGS", "Get Notification API call was successful")
-                response.body()?.shuffled() ?: throw Exception("Request successful, but response was null")
+                response.body()?: throw Exception("Request successful, but response was null")
             } else {
                 throw Exception("Notification API call was unsuccessful: ${response.code()} ${response.message()}")
             }
