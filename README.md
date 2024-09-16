@@ -33,6 +33,11 @@ Harmony Haven, şu anda geliştirilmekte olan bir motivasyon uygulamasıdır. Uy
 - **Compose Markdown**: Markdown Rendering
 - **Gson**: JSON Ayrıştırma
 
+
+## BAckenend
+Uygulamanın backend tarafını incelemek isterseniz bu [repository'e](https://github.com/erdemserhat/HarmonyHavenKtorServer) göz atın.
+
+
 ## Uygulama Ekranları
 
 ![1-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/639a2683-11b1-4bce-8814-027d3adc837e)
