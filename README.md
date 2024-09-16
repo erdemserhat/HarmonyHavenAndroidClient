@@ -43,7 +43,6 @@ Uygulamanın backend tarafını incelemek isterseniz bu [repository'e](https://g
 
 
 ## Uygulama Ekranları
-![updated1](https://github.com/user-attachments/assets/2324c41c-7d72-4236-b72d-f4bd53b81da4)
 
 ![1-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/639a2683-11b1-4bce-8814-027d3adc837e)
 
