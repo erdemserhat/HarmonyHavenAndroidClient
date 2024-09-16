@@ -1,4 +1,4 @@
-# **Harmony Haven Android Client (Devam Ediyor)**
+# **Harmony Haven Android Client**
 
 Harmony Haven, şu anda geliştirilmekte olan bir motivasyon uygulamasıdır. Uygulama, kullanıcılara özel olarak seçilmiş yazarların özlü sözlerini bir akış halinde sunarak, günlük yaşamlarına ilham katar. Ayrıca, çeşitli kategorilerden makaleler sunar ve yapay zeka kullanarak kişiselleştirilmiş bildirimler sağlar.
 
@@ -6,6 +6,7 @@ Harmony Haven, şu anda geliştirilmekte olan bir motivasyon uygulamasıdır. Uy
 <div align="center">
     
 [![psico](https://github.com/user-attachments/assets/388b5df4-2096-4ced-a805-07550d46760d)](https://play.google.com/store/apps/details?id=com.erdemserhat.harmonyhaven)
+
 
 </div>
 
@@ -32,13 +33,17 @@ Harmony Haven, şu anda geliştirilmekte olan bir motivasyon uygulamasıdır. Uy
 - **Core Splash Screen API**: Splash Screen
 - **Compose Markdown**: Markdown Rendering
 - **Gson**: JSON Ayrıştırma
+- **Media3 ExoPlayer**: Video Oynatma
 
-
-## BAckenend
+## Backend
 Uygulamanın backend tarafını incelemek isterseniz bu [repository'e](https://github.com/erdemserhat/HarmonyHavenKtorServer) göz atın.
+
+## Harmony Haven'i Tanıyalım
+![Group 26086179-min](https://github.com/user-attachments/assets/14595aba-69a8-4e9c-a3e0-9c2051d0d5e7)
 
 
 ## Uygulama Ekranları
+![updated1](https://github.com/user-attachments/assets/2324c41c-7d72-4236-b72d-f4bd53b81da4)
 
 ![1-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/639a2683-11b1-4bce-8814-027d3adc837e)
 
