@@ -1,104 +1,48 @@
-# **Harmony Haven Android Client (Work In Progress)**
+# **Harmony Haven Android Client**
 
-**Harmony Haven** is an ongoing project under development, utilizing various libraries throughout its development process. Primarily a motivational application, *Harmony Haven* offers users a range of articles from different categories and delivers personalized notifications using artificial intelligence. It also provides users with personalized quotes, adding a touch of inspiration to their daily lives.
+Harmony Haven, şu anda geliştirilmekte olan bir motivasyon uygulamasıdır. Uygulama, kullanıcılara özel olarak seçilmiş yazarların özlü sözlerini bir akış halinde sunarak, günlük yaşamlarına ilham katar. Ayrıca, çeşitli kategorilerden makaleler sunar ve yapay zeka kullanarak kişiselleştirilmiş bildirimler sağlar.
 
-## System Operation Overview
+## Üretim Ortamında Görüntüle
+<div align="center">
+    
+[![psico](https://github.com/user-attachments/assets/388b5df4-2096-4ced-a805-07550d46760d)](https://play.google.com/store/apps/details?id=com.erdemserhat.harmonyhaven)
+
+
+</div>
+
+## Sistem İşleyişi Genel Görünümü
 
 ![image](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/b02ad5f5-0154-48bf-a813-33b750f34397)
 
 
+## Kullanılan Teknolojiler ve Paradigmalar
 
-## Android Architecture Overview
-
-
-```plaintext
-app
-├── build
-└── src
-    ├── androidTest
-    └── main
-        └── java
-            └── com.erdemsah.armonyhaven
-                ├── data
-                │   ├── api
-                │   │   ├── article
-                │   │   ├── fcm
-                │   │   └── user
-                │   └── local
-                │       ├── dao
-                │       ├── entities
-                │       └── repository
-                ├── di
-                │   ├── database
-                │   ├── network
-                │   └── usecase
-                ├── domain
-                │   ├── model
-                │   │   └── rest
-                │   └── usecase
-                │       ├── article
-                │       ├── password_reset
-                │       ├── user
-                │       └── validation
-                ├── dto
-                │   ├── requests
-                │   └── responses
-                ├── presentation
-                │   ├── common
-                │   │   └── appcomponents
-                │   ├── navigation
-                │   ├── post_authentication
-                │   │   ├── article
-                │   │   ├── home
-                │   │   │   └── components
-                │   │   ├── notification
-                │   │   └── profile
-                │   │       ├── about_us
-                │   │       ├── account_information
-                │   │       └── saved_articles
-                │   ├── prev_authentication
-                │   │   ├── login
-                │   │   │   ├── components
-                │   │   │   ├── state
-                │   │   │   └── util
-                │   │   ├── passwordreset
-                │   │   │   ├── auth
-                │   │   │   ├── mail
-                │   │   │   └── reset
-                │   │   ├── register
-                │   │   │   ├── components
-                │   │   │   └── state
-                │   │   ├── splash
-                │   │   └── welcome
-                │   └── unused
-                │       └── profile
-                ├── test
-                │   └── unitTest
-                └── util
-```
-
-## Technologies and Paradigms Used:
-
-
-- **MVVM (Model-View-ViewModel) architecture**: Architecture
-- **Clean Architecture**: Architecture
-- **SOLID principles**: Best Practices
+- **MVVM (Model-View-ViewModel) mimarisi**: Mimari
+- **Clean Architecture**: Mimari
+- **SOLID prensipleri**: En İyi Uygulamalar
 - **Jetpack Compose**: UI
-- **Dagger-Hilt (Dependency Injection)**: DI
-- **Room Database**: Local Database
-- **Shared Preferences**: Secure Data Retention
-- **Retrofit & OKHttp (REST API)**: Networking
-- **Firebase (Analytics, Cloud Messaging)**: Analytics, Notifications
-- **Coroutines (Asynchronous Communication)**: Concurrency
-- **LiveData**: Reactive UI
-- **Accompanist Pager**: UI Paging
-- **Coil (Image Loading, GIF)**: Image Loading
+- **Dagger-Hilt (Bağımlılık Enjeksiyonu)**: DI
+- **Room Database**: Yerel Veritabanı
+- **Shared Preferences**: Güvenli Veri Saklama
+- **Retrofit & OKHttp (REST API)**: Ağ İletişimi
+- **Firebase (Analitik, Bulut Mesajlaşma)**: Analitik, Bildirimler
+- **Coroutines (Asenkron İletişim)**: Eşzamanlılık
+- **LiveData**: Reaktif UI
+- **Accompanist Pager**: UI Sayfalama
+- **Coil (Görsel Yükleme, GIF)**: Görsel Yükleme
 - **Core Splash Screen API**: Splash Screen
 - **Compose Markdown**: Markdown Rendering
-- **Gson**: JSON Parsing
-- 
+- **Gson**: JSON Ayrıştırma
+- **Media3 ExoPlayer**: Video Oynatma
 
-## App Screens
+## Backend
+Uygulamanın backend tarafını incelemek isterseniz bu [repository'e](https://github.com/erdemserhat/HarmonyHavenKtorServer) göz atın.
+
+## Harmony Haven'i Tanıyalım
+![Group 26086179-min](https://github.com/user-attachments/assets/14595aba-69a8-4e9c-a3e0-9c2051d0d5e7)
+
+
+## Uygulama Ekranları
 
 ![1-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/639a2683-11b1-4bce-8814-027d3adc837e)
 
@@ -117,26 +61,3 @@ app
 ![8-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/5afcca94-52d7-437c-b368-dbb76d34876b)
 
 ![9-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/b7b322bb-1e8c-4589-be61-7f9bea1bbf7c)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
