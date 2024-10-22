@@ -52,16 +52,7 @@ class RegisterViewModel @Inject constructor(
 
     fun onRegisterClicked(formModel: RegisterFormModel) {
         _registerState.value = _registerState.value.copy(
-            isLoading = true
-        )
-        if (formModel.password != formModel.confirmPassword) {
-            _registerState.value = _registerState.value.copy(
-                registerValidationState = RegisterValidationState(isPasswordValid = false),
-                registerWarning = "Şifreler uyuşmuyor.",
-                isLoading = false
-            )
-            return
-        }
+            isLoading = true)
 
         viewModelScope.launch(Dispatchers.IO) {
             delay(400)

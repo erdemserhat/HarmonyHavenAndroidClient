@@ -53,31 +53,13 @@ class MainActivity : ComponentActivity() {
     lateinit var articleUseCases: ArticleUseCases
 
 
-    @SuppressLint(
-        "UnusedMaterial3ScaffoldPaddingParameter", "SuspiciousIndentation",
-        "CoroutineCreationDuringComposition"
-    )
-
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-
-
-
-
-
-
-
-
         val extraData = intent.getStringExtra("data")
-        if (extraData != null) {
-            Log.d("testIntentt", "Received data: $extraData")
-        } else {
-            Log.d("testIntentt", "No data received")
-        }
 
         installSplashScreen()
 
@@ -96,10 +78,10 @@ class MainActivity : ComponentActivity() {
                 SetupNavGraph(
                     navController = navController,
                     startDestination =when(isLoggedInBefore){
-                        true -> Screen.Login.route
-                        false-> if (isFirstLaunch) Screen.Login.route else Screen.Login.route
+                        true -> Screen.QuoteMain.route
+                        false-> if (isFirstLaunch) Screen.Welcome.route else Screen.Login.route
                     },
-                    modifier = Modifier, // Padding değerlerini burada kullanın
+                    modifier = Modifier,
                     window = window
 
                 )

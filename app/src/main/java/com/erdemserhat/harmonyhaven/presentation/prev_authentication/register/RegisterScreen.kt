@@ -169,6 +169,7 @@ fun RegisterScreenContent(
                         isError = params.isPasswordValid,
                         modifier = Modifier.imePadding()
                     )
+                    /*
 
                     HarmonyHavenPasswordTextField(
                         placeHolderText = stringResource(R.string.confirm_password),
@@ -177,6 +178,8 @@ fun RegisterScreenContent(
                         isError = params.isPasswordValid,
                         modifier = Modifier.imePadding()
                     )
+
+                     */
                     Spacer(modifier = Modifier.size(10.dp))
 
 
@@ -227,7 +230,7 @@ fun RegisterScreenContent(
 
                             GoogleSignInButton(
                                 buttonText =
-                                "Google ile Giriş Kaydol",
+                                "Google ile Kaydol",
                                 signInHandler ={
                                     params.signInGoogleHandler(it)
                                 }
@@ -248,6 +251,7 @@ fun RegisterScreenContent(
                             Spacer(modifier = Modifier
                                 .size(10.dp)
                                 .imePadding())
+                            /*
 
                             AcceptanceOfTermsOfUse(
                                 stringResource(R.string.terms_use),
@@ -255,6 +259,8 @@ fun RegisterScreenContent(
                                 checkedState = params.isTermsOfUserAccepted
 
                             )
+
+                             */
 
 
                         }
@@ -357,7 +363,6 @@ fun RegisterScreen(
         gender = gender,
         onGenderValueChanged = { gender = it },
         onSignUpClicked = {
-            if (isTermsOfConditionsAccepted){
                 registerViewModel.onRegisterClicked(
                     RegisterFormModel(
                         name = name,
@@ -368,12 +373,11 @@ fun RegisterScreen(
                         gender = gender
                     )
                 )
-            }
 
 
         },
         onSignUpViaGoogleClicked = {},
-        isTermsOfUserAccepted = isTermsOfConditionsAccepted,
+        isTermsOfUserAccepted = true,
         onTermsOfConditionsAcceptanceStatusChanged = { isTermsOfConditionsAccepted = !isTermsOfConditionsAccepted },
         onSignInClicked = { navController.navigate(Screen.Login.route) },
         warningText = registerViewModel.registerState.value.registerWarning,
@@ -425,8 +429,8 @@ data class RegisterScreenParams(
     val onGenderValueChanged: (Gender) -> Unit,
     val onSignUpClicked: () -> Unit,
     val onSignUpViaGoogleClicked: () -> Unit,
-    val isTermsOfUserAccepted: Boolean,
-    val onTermsOfConditionsAcceptanceStatusChanged: (Boolean) -> Unit,
+    val isTermsOfUserAccepted: Boolean = true,
+    val onTermsOfConditionsAcceptanceStatusChanged: (Boolean) -> Unit  ,
     val onSignInClicked: () -> Unit,
     val warningText: String,
     val isLoading: Boolean,

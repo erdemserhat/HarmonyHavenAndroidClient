@@ -23,7 +23,7 @@ fun HarmonyHavenButton(
         onClick =  onClick ,
         shape = RoundedCornerShape(topStart = 10.dp, bottomEnd = 20.dp),
         modifier = modifier
-            .size(width = 200.dp, 40.dp),
+            .size(width = 220.dp, 40.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = harmonyHavenGreen
         ),
