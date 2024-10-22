@@ -57,22 +57,12 @@ class MainActivity : ComponentActivity() {
         "CoroutineCreationDuringComposition"
     )
 
-    companion object {
-        init {
-            System.loadLibrary("harmonyhaven")  // Load the native library
-        }
-    }
-
-    external fun getApiKey(): String  // Declare the native function
-
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-
-
 
 
 
@@ -112,7 +102,6 @@ class MainActivity : ComponentActivity() {
                 )
 
                 extraData?.let {
-
                     val bundleArticle = Bundle()
                     val shouldNavigateToPost = extraData.startsWith("-1")
                     if (shouldNavigateToPost) {

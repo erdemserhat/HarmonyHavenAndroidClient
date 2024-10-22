@@ -10,7 +10,6 @@ plugins {
 
 
 
-
     // id ("dagger.hilt.android.plugin")
     //id ("kotlin-android-extensions")
 }
@@ -38,7 +37,6 @@ android {
             cmake {
                 cppFlags += ""
             }
-            
         }
     }
 
