@@ -4,15 +4,22 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialResponse
+import androidx.credentials.PasswordCredential
+import androidx.credentials.PublicKeyCredential
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.data.local.repository.JwtTokenRepository
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
+import com.erdemserhat.harmonyhaven.dto.requests.GoogleAuthenticationRequest
 import com.erdemserhat.harmonyhaven.dto.requests.UserAuthenticationRequest
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.state.LoginState
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.state.LoginValidationState
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.state.getValidationStateByErrorCode
 import com.google.android.gms.tasks.Task
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.ktx.messaging
@@ -52,6 +59,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             delay(400)
             val request = async {
+
                 userUseCases.authenticateUser.executeRequest(
                     UserAuthenticationRequest(
                         email = email,
@@ -163,6 +171,72 @@ class LoginViewModel @Inject constructor(
 
         }
     }
+
+
+    fun handleSignInWithGoogle(result: GetCredentialResponse) {
+        // Handle the successfully returned credential.
+        val credential = result.credential
+
+        when (credential) {
+
+            // Passkey credential
+            is PublicKeyCredential -> {
+                // Share responseJson such as a GetCredentialResponse on your server to
+                // validate and authenticate
+            }
+
+            // Password credential
+            is PasswordCredential -> {
+                // Send ID and password to your server to validate and authenticate.
+
+            }
+
+            // GoogleIdToken credential
+            is CustomCredential -> {
+                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                    try {
+                        // Use googleIdTokenCredential and extract the ID to validate and
+                        // authenticate on your server.
+
+                        val googleIdTokenCredential = GoogleIdTokenCredential
+                            .createFrom(credential.data)
+
+                        _loginState.value = _loginState.value.copy(
+                            isLoading = true,
+                        )
+                        viewModelScope.launch {
+                            val response = userUseCases.authenticateUserViaGoogle.executeRequest(
+                                GoogleAuthenticationRequest(
+                                    googleIdToken = googleIdTokenCredential.idToken
+                                )
+                            )
+
+                            jwtRepository.saveJwtToken(response?.jwt!!)
+                            _loginState.value = _loginState.value.copy(
+                                isLoading = false,
+                                canNavigateToDashBoard = true
+                            )
+
+
+                        }
+
+
+                    } catch (e: GoogleIdTokenParsingException) {
+                        Log.e("Google Sign-In", "Received an invalid google id token response", e)
+                    }
+                } else {
+                    // Catch any unrecognized custom credential type here.
+                    Log.e("Google Sign-In", "Unexpected type of credential")
+                }
+            }
+
+            else -> {
+                // Catch any unrecognized credential type here.
+                Log.e("google-sign-in", "Unexpected type of credential")
+            }
+        }
+    }
+
 
     private fun getToken() {
         viewModelScope.launch(Dispatchers.IO) {

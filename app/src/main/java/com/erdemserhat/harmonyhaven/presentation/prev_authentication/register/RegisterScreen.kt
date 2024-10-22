@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+import androidx.credentials.GetCredentialResponse
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
@@ -42,6 +43,7 @@ import com.erdemserhat.harmonyhaven.domain.model.RegisterFormModel
 import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.HarmonyHavenGreetingTitle
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.LoginViewModel
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.GoogleSignInButton
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.AcceptanceOfTermsOfUse
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenButton
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenPasswordTextField
@@ -66,7 +68,9 @@ fun RegisterScreenContent(
 
 
     Box(
-        modifier = Modifier.fillMaxSize().imePadding()
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding()
         ,
         contentAlignment = Alignment.Center
     ) {
@@ -96,7 +100,9 @@ fun RegisterScreenContent(
                 Image(
                     painter = painterResource(id = R.drawable.harmonyhaven_icon),
                     contentDescription = null,
-                    Modifier.padding(top = 30.dp).size(130.dp)
+                    Modifier
+                        .padding(top = 30.dp)
+                        .size(130.dp)
 
                 )
                 HarmonyHavenGreetingTitle(
@@ -216,8 +222,20 @@ fun RegisterScreenContent(
                                 modifier = Modifier,
                                 isEnabled = isButtonsEnabled
 
-
                             )
+                            Spacer(modifier = Modifier.size(25.dp))
+
+                            GoogleSignInButton(
+                                buttonText =
+                                "Google ile Giriş Kaydol",
+                                signInHandler ={
+                                    params.signInGoogleHandler(it)
+                                }
+                            )
+
+
+
+
                             Spacer(modifier = Modifier.size(10.dp))
 
                           //  HarmonyHavenButtonWithIcon(
@@ -227,7 +245,9 @@ fun RegisterScreenContent(
                               //  isEnabled = isButtonsEnabled
 
 
-                            Spacer(modifier = Modifier.size(10.dp).imePadding())
+                            Spacer(modifier = Modifier
+                                .size(10.dp)
+                                .imePadding())
 
                             AcceptanceOfTermsOfUse(
                                 stringResource(R.string.terms_use),
@@ -241,7 +261,9 @@ fun RegisterScreenContent(
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 30.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 30.dp),
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(text = stringResource(R.string.already_have_an_account))
@@ -365,6 +387,7 @@ fun RegisterScreen(
         isSurnameValid = !registerViewModel.registerState.value.registerValidationState.isSurnameValid,
         isEmailValid = !registerViewModel.registerState.value.registerValidationState.isEmailValid,
         isPasswordValid = !registerViewModel.registerState.value.registerValidationState.isPasswordValid,
+        signInGoogleHandler = { registerViewModel.handleSignInWithGoogle(it) }
 
 
 
@@ -412,7 +435,8 @@ data class RegisterScreenParams(
     val isNameValid:Boolean,
     val isSurnameValid:Boolean,
     val isEmailValid:Boolean,
-    val isPasswordValid:Boolean
+    val isPasswordValid:Boolean,
+    val signInGoogleHandler: (GetCredentialResponse) -> Unit
 )
 
 private val defaultRegisterScreenParams = RegisterScreenParams(
@@ -440,7 +464,8 @@ private val defaultRegisterScreenParams = RegisterScreenParams(
     isNameValid = false,
     isSurnameValid = false,
     isEmailValid = false,
-    isPasswordValid = false
+    isPasswordValid = false,
+    signInGoogleHandler = {}
 )
 
 

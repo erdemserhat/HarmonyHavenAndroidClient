@@ -13,6 +13,7 @@ data class UserUseCases(
     val completePasswordResetAttempt: CompletePasswordResetAttempt,
     val checkUserAuthenticationStatus: CheckUserAuthenticationStatus,
     val getUserInformation: GetUserInformation,
-    val updateUserInformation: UpdateUserInformation
+    val updateUserInformation: UpdateUserInformation,
+    val authenticateUserViaGoogle: AuthenticateUserViaGoogle,
 
 )

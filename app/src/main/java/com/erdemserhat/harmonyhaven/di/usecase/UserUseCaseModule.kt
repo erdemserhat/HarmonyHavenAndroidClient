@@ -11,6 +11,7 @@ import com.erdemserhat.harmonyhaven.domain.usecase.password_reset.AuthenticatePa
 import com.erdemserhat.harmonyhaven.domain.usecase.password_reset.CompletePasswordResetAttempt
 import com.erdemserhat.harmonyhaven.domain.usecase.password_reset.SendPasswordResetMail
 import com.erdemserhat.harmonyhaven.domain.usecase.user.AuthenticateUser
+import com.erdemserhat.harmonyhaven.domain.usecase.user.AuthenticateUserViaGoogle
 import com.erdemserhat.harmonyhaven.domain.usecase.user.CheckUserAuthenticationStatus
 import com.erdemserhat.harmonyhaven.domain.usecase.user.FcmEnrolment
 import com.erdemserhat.harmonyhaven.domain.usecase.user.GetUserInformation
@@ -58,7 +59,7 @@ object UserUseCaseModule {
         passwordResetApiService: PasswordResetApiService,
         authenticationStatusCheckerApiService: AuthenticationStatusCheckerApiService,
         getUserInformationApiService: UserInformationApiService,
-        updateApiService: InformationUpdateApiService
+        updateApiService: InformationUpdateApiService,
     ): UserUseCases {
         return UserUseCases(
             registerUser = RegisterUser(userRegistrationApiService),
@@ -69,7 +70,8 @@ object UserUseCaseModule {
             completePasswordResetAttempt = CompletePasswordResetAttempt(passwordResetApiService),
             checkUserAuthenticationStatus = CheckUserAuthenticationStatus(authenticationStatusCheckerApiService),
             getUserInformation = GetUserInformation(getUserInformationApiService),
-            updateUserInformation = UpdateUserInformation(updateApiService)
+            updateUserInformation = UpdateUserInformation(updateApiService),
+            authenticateUserViaGoogle = AuthenticateUserViaGoogle(userAuthApiService)
         )
     }
 }

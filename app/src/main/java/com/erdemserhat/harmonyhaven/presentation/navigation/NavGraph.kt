@@ -20,6 +20,7 @@ import androidx.navigation.Navigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
+import com.erdemserhat.harmonyhaven.presentation.test.google_auth.TestScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.article.composables.ArticleScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
@@ -184,6 +185,11 @@ fun SetupNavGraph(
         composable(route = Screen.QuoteMain.route) {
             QuoteMainScreen(navController = navController)
         }
+
+        composable(route = Screen.Test.route) {
+            TestScreen(navController = navController)
+        }
+
 
 
 

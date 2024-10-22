@@ -7,6 +7,18 @@
     <option name="deviceSelectionList">
       <list>
         <PersistentDeviceSelectionData>
+          <option name="api" value="29" />
+          <option name="brand" value="samsung" />
+          <option name="codename" value="crownqlteue" />
+          <option name="id" value="crownqlteue" />
+          <option name="manufacturer" value="Samsung" />
+          <option name="name" value="Galaxy Note9" />
+          <option name="screenDensity" value="420" />
+          <option name="screenX" value="2220" />
+          <option name="screenY" value="1080" />
+          <option name="selected" value="true" />
+        </PersistentDeviceSelectionData>
+        <PersistentDeviceSelectionData>
           <option name="api" value="27" />
           <option name="brand" value="DOCOMO" />
           <option name="codename" value="F01L" />
@@ -27,6 +39,17 @@
           <option name="screenDensity" value="480" />
           <option name="screenX" value="1080" />
           <option name="screenY" value="2160" />
+        </PersistentDeviceSelectionData>
+        <PersistentDeviceSelectionData>
+          <option name="api" value="34" />
+          <option name="brand" value="Lenovo" />
+          <option name="codename" value="TB370FU" />
+          <option name="id" value="TB370FU" />
+          <option name="manufacturer" value="Lenovo" />
+          <option name="name" value="Tab P12" />
+          <option name="screenDensity" value="340" />
+          <option name="screenX" value="1840" />
+          <option name="screenY" value="2944" />
         </PersistentDeviceSelectionData>
         <PersistentDeviceSelectionData>
           <option name="api" value="31" />
@@ -93,17 +116,6 @@
           <option name="screenDensity" value="390" />
           <option name="screenX" value="2076" />
           <option name="screenY" value="2152" />
-        </PersistentDeviceSelectionData>
-        <PersistentDeviceSelectionData>
-          <option name="api" value="29" />
-          <option name="brand" value="samsung" />
-          <option name="codename" value="crownqlteue" />
-          <option name="id" value="crownqlteue" />
-          <option name="manufacturer" value="Samsung" />
-          <option name="name" value="Galaxy Note9" />
-          <option name="screenDensity" value="420" />
-          <option name="screenX" value="2220" />
-          <option name="screenY" value="1080" />
         </PersistentDeviceSelectionData>
         <PersistentDeviceSelectionData>
           <option name="api" value="34" />
@@ -247,6 +259,17 @@
           <option name="screenDensity" value="420" />
           <option name="screenX" value="1812" />
           <option name="screenY" value="2176" />
+        </PersistentDeviceSelectionData>
+        <PersistentDeviceSelectionData>
+          <option name="api" value="34" />
+          <option name="brand" value="samsung" />
+          <option name="codename" value="q6q" />
+          <option name="id" value="q6q" />
+          <option name="manufacturer" value="Samsung" />
+          <option name="name" value="SM-F956B" />
+          <option name="screenDensity" value="420" />
+          <option name="screenX" value="1856" />
+          <option name="screenY" value="2160" />
         </PersistentDeviceSelectionData>
         <PersistentDeviceSelectionData>
           <option name="api" value="30" />

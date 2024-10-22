@@ -1,96 +1,75 @@
-package com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components
+package com.erdemserhat.harmonyhaven.presentation.test.google_auth
 
 import android.content.Context
+import android.content.Intent
+import android.provider.Settings
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MailOutline
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreenLoginButton(
+fun TestScreen(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-    buttonText: String = stringResource(id = R.string.sign_in),
-
-
+    navController: NavController,
+    viewModel: TestViewModel = hiltViewModel()
+) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-
-    Button(
-        onClick = {
-            onClick()
-        },
-        shape = RoundedCornerShape(topStart = 10.dp, bottomEnd = 20.dp),
-        modifier = modifier
-            .size(width = 200.dp, 40.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = harmonyHavenGreen
+        SignInWithGoogleButton(
+            signInHandler = {
+                viewModel.handleSignIn(it)
+            }
         )
-
-
-    ) {
-        Text(text = buttonText)
-
     }
-
 }
 
 @Composable
-fun GoogleSignInButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-    buttonText: String = stringResource(id = R.string.sign_in),
+fun SignInWithGoogleButton(
     signInHandler:(result: GetCredentialResponse)->Unit = {}
-
-
-
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
-
-    Button(
+    OutlinedButton(
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
         onClick = { doGoogleSignIn(coroutineScope, context,signInHandler) },
-        shape = RoundedCornerShape(topStart = 10.dp, bottomEnd = 20.dp),
-        modifier = modifier
-            .size(width = 200.dp, 40.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = harmonyHavenGreen
-        )
-
-
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
     ) {
-        Text(text = buttonText)
-
+        Icon(imageVector = Icons.Filled.MailOutline, contentDescription = "Gmail")
+        Text(
+            text = "Sign in with Google",
+            style = MaterialTheme.typography.headlineSmall.copy(fontSize = 14.sp),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
-
 }
-
 
 private fun doGoogleSignIn(
     coroutineScope: CoroutineScope,
@@ -102,7 +81,7 @@ private fun doGoogleSignIn(
         //Not that your project's private key's sha1 code (with jks extension) must be placed in google api console
         //otherwise you will get an error in production environment because your development sha1 and production sha1
         //might be different. Learning both of them and adding to api console can be a good approach.
-        val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
+        val googleIdOption: GetGoogleIdOption =GetGoogleIdOption.Builder()
             //you can learn this value from your google api console.
             .setServerClientId(context.getString(R.string.default_web_client_id))
             .setFilterByAuthorizedAccounts(false)
@@ -137,3 +116,12 @@ private fun doGoogleSignIn(
     }
 }
 
+
+
+
+
+fun getAddGoogleAccountIntent(): Intent {
+    return Intent(Settings.ACTION_ADD_ACCOUNT).apply {
+        putExtra(Settings.EXTRA_ACCOUNT_TYPES, arrayOf("com.google"))
+    }
+}
