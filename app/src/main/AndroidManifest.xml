@@ -2,9 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.CREDENTIAL_MANAGER_SET_ORIGIN" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+
+    <uses-permission android:name="android.permission.CREDENTIAL_MANAGER_GET_CREDENTIALS" />
+    <uses-permission android:name="android.permission.CREDENTIAL_MANAGER_SET_ORIGIN" />
+
+
+
 
 
 
@@ -65,6 +78,14 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_sound"
             android:value="@raw/firebase_common_keep" />
+
+        <meta-data
+            android:name="com.google.android.gms.auth.api.credentials.CREDENTIAL_PICKER_CONFIG"
+            android:value="456625388455" />
+
+        <meta-data
+            android:name="com.google.android.gms.client_id"
+            android:value="@string/default_web_client_id" />
 
 
     </application>

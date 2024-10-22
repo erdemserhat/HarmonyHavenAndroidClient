@@ -11,7 +11,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -26,12 +25,16 @@ import com.erdemserhat.harmonyhaven.data.local.repository.JwtTokenRepository
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
+import com.erdemserhat.harmonyhaven.dto.requests.GoogleAuthenticationRequest
 import com.erdemserhat.harmonyhaven.presentation.common.HarmonyHavenTheme
 import com.erdemserhat.harmonyhaven.presentation.navigation.MainScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.SetupNavGraph
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -62,6 +65,10 @@ class MainActivity : ComponentActivity() {
         window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
 
 
+
+
+
+
         val extraData = intent.getStringExtra("data")
         if (extraData != null) {
             Log.d("testIntentt", "Received data: $extraData")
@@ -86,8 +93,8 @@ class MainActivity : ComponentActivity() {
                 SetupNavGraph(
                     navController = navController,
                     startDestination =when(isLoggedInBefore){
-                        true -> Screen.QuoteMain.route
-                        false-> if (isFirstLaunch) Screen.Welcome.route else Screen.Register.route
+                        true -> Screen.Login.route
+                        false-> if (isFirstLaunch) Screen.Login.route else Screen.Login.route
                     },
                     modifier = Modifier, // Padding değerlerini burada kullanın
                     window = window
@@ -138,7 +145,6 @@ class MainActivity : ComponentActivity() {
                     sharedPrefs.edit().putBoolean("isFirstLaunch", false).apply()
                 }
 
-                // Eğer intent ile veri geldiyse, ilgili ekrana yönlendir
 
             }
         }

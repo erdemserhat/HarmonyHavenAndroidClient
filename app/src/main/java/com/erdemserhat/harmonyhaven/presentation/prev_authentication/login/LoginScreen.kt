@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -39,13 +38,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import androidx.credentials.GetCredentialResponse
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.HarmonyHavenGreetingLogo
 import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.HarmonyHavenGreetingText
 import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.HarmonyHavenGreetingTitle
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.GoogleSignInButton
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.LoginScreenEmailTextField
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.LoginScreenForgotPasswordTextButton
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.LoginScreenLoginButton
@@ -55,7 +55,7 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 
 @Composable
 fun LoginScreenContent(
-    params: LoginScreenParams
+    params: LoginScreenParams,
 ) {
     //Navigation control
     if (params.canNavigateToDashBoard) {
@@ -78,9 +78,9 @@ fun LoginScreenContent(
             .fillMaxWidth()
             .imePadding()
             .background(Color.White),
-            // Automatically adds padding for the IME (keyboard)
-           // .navigationBarsPadding(),
-    contentAlignment = Alignment.Center
+        // Automatically adds padding for the IME (keyboard)
+        // .navigationBarsPadding(),
+        contentAlignment = Alignment.Center
 
     ) {
 
@@ -93,10 +93,8 @@ fun LoginScreenContent(
         )
 
 
-
-
         //Screen Content
-            Column(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .imePadding()
@@ -116,18 +114,19 @@ fun LoginScreenContent(
                 Image(
                     painter = painterResource(id = R.drawable.harmonyhaven_icon),
                     contentDescription = null,
-                    Modifier.padding(top = 30.dp).size(130.dp)
+                    Modifier
+                        .padding(top = 30.dp)
+                        .size(130.dp)
 
                 )
                 HarmonyHavenGreetingTitle(
                     modifier = Modifier
-                        .padding(top = 5.dp)
-                    , text = "Zaten bir hesabın varmı?"
+                        .padding(top = 5.dp), text = "Zaten bir hesabın varmı?"
                 )
                 HarmonyHavenGreetingTitle(
                     modifier = Modifier
-                        .padding(top = 5.dp)
-                    , text = "Giriş Yap",
+                        .padding(top = 5.dp),
+                    text = "Giriş Yap",
                 )
 
                 HarmonyHavenGreetingText(
@@ -172,10 +171,10 @@ fun LoginScreenContent(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
                     ) {
-                       // LoginScreenRememberCredentialsCheckbox(
-                         //   isChecked = params.isCheckedRememberCredentials,
-                         //   onCheckedChange = params.onRememberCredentialsStateChanged
-                       // )
+                        // LoginScreenRememberCredentialsCheckbox(
+                        //   isChecked = params.isCheckedRememberCredentials,
+                        //   onCheckedChange = params.onRememberCredentialsStateChanged
+                        // )
                         LoginScreenForgotPasswordTextButton(
                             onClick = params.onForgotPasswordClicked,
                         )
@@ -194,23 +193,32 @@ fun LoginScreenContent(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
-                        if(params.isLoading){
+                        if (params.isLoading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.width(32.dp),
                                 color = harmonyHavenGreen,
                                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
                             )
 
-                        }else{
+                        } else {
                             //Buttons
                             LoginScreenLoginButton(
                                 onClick = params.onLoginButtonClicked
                             )
 
-                           // Spacer(modifier = Modifier.size(10.dp))
-                         //   LoginScreenGoogleSignInButton(
-                           //     onClick = {params.onLoginViaGoogleClicked}
-                          //  )
+                            Spacer(modifier = Modifier.size(25.dp))
+                            GoogleSignInButton(
+                                buttonText =
+                                "Google ile Giriş Yap",
+                                signInHandler ={
+                                    params.signInGoogleHandler(it)
+                                }
+                            )
+
+                            // Spacer(modifier = Modifier.size(10.dp))
+                            //   LoginScreenGoogleSignInButton(
+                            //     onClick = {params.onLoginViaGoogleClicked}
+                            //  )
 
                         }
 
@@ -239,9 +247,6 @@ fun LoginScreenContent(
 
 
             }
-
-
-
 
 
         }
@@ -296,6 +301,7 @@ fun LoginScreen(
         isLoading = viewModel.loginState.value.isLoading,
         isEmailValid = !viewModel.loginState.value.validationState.isEmailValid,
         isPasswordValid = !viewModel.loginState.value.validationState.isPasswordValid,
+        signInGoogleHandler = { viewModel.handleSignInWithGoogle(it)}
     )
 
     val context = LocalContext.current
@@ -330,7 +336,7 @@ fun LoginScreen(
 @Preview
 @Composable
 fun LoginScreenPreview() {
-LoginScreenContent(params = defaultLoginParams)
+    LoginScreenContent(params = defaultLoginParams)
 
 }
 
@@ -349,8 +355,9 @@ data class LoginScreenParams(
     val canNavigateToDashBoard: Boolean,
     val onCanNavigateToDashBoard: () -> Unit,
     val isLoading: Boolean,
-    val isEmailValid:Boolean = true,
-    val isPasswordValid:Boolean = true
+    val isEmailValid: Boolean = true,
+    val isPasswordValid: Boolean = true,
+    val signInGoogleHandler: (GetCredentialResponse) -> Unit
 )
 
 val defaultLoginParams = LoginScreenParams(
@@ -369,7 +376,10 @@ val defaultLoginParams = LoginScreenParams(
     onCanNavigateToDashBoard = {},
     isLoading = false,
     isEmailValid = true,
-    isPasswordValid = true
+    isPasswordValid = true,
+    signInGoogleHandler = {}
+
+
 )
 
 
