@@ -3,6 +3,7 @@ package com.erdemserhat.harmonyhaven
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -63,6 +64,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+
+
 
 
 
@@ -159,43 +162,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-}
 
-@Composable
-fun SetStatusBarAppearance(statusBarColor: Color, darkIcons: Boolean) {
-    val window = (LocalView.current.context as? ComponentActivity)?.window
-    window?.let {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            it.statusBarColor = statusBarColor.toArgb()
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val insetsController = WindowCompat.getInsetsController(window, window.decorView)
-            insetsController.isAppearanceLightStatusBars = darkIcons
-        }
-    }
-}
-
-@Composable
-fun SetSystemBarsAppearance(
-    statusBarColor: Color,
-    statusBarDarkIcons: Boolean,
-    navigationBarColor: Color,
-    navigationBarDarkIcons: Boolean
-) {
-    val window = (LocalView.current.context as? ComponentActivity)?.window
-    window?.let {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            it.statusBarColor = statusBarColor.toArgb()
-            it.navigationBarColor = navigationBarColor.toArgb()
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-            insetsController.isAppearanceLightStatusBars = statusBarDarkIcons
-            insetsController.isAppearanceLightNavigationBars = navigationBarDarkIcons
-        }
-    }
 }
 
 

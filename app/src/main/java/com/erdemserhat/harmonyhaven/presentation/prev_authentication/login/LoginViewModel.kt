@@ -59,7 +59,6 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             delay(400)
             val request = async {
-
                 userUseCases.authenticateUser.executeRequest(
                     UserAuthenticationRequest(
                         email = email,

@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.presentation.test.google_auth
+package com.erdemserhat.harmonyhaven.presentation.feature.google_auth
 
 import android.content.Context
 import android.content.Intent

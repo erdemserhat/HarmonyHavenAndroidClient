@@ -30,6 +30,8 @@ android {
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -41,13 +43,24 @@ android {
     }
 
     buildTypes {
+        //buildConfigField("String", "API_KEY", "\"your_actual_api_key_here\"")--> Use this to add new one
+
         release {
+            buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/v1/\"")
+
             isMinifyEnabled = true
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+
+        debug {
+            buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/v1/\"")
+            //buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/v1/\"")
+
+
         }
     }
 
@@ -62,6 +75,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions {
@@ -74,10 +88,7 @@ android {
         }
     }
     externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
-        }
+
     }
 }
 

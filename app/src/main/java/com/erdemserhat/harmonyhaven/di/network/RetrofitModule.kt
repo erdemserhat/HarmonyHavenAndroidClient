@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.di.network
 
+import com.erdemserhat.harmonyhaven.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +21,7 @@ import javax.inject.Singleton
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object xRetrofitModule {
+object RetrofitModule {
 
     /**
      * Provides a singleton instance of [OkHttpClient].
@@ -60,7 +61,7 @@ object xRetrofitModule {
         client: OkHttpClient
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(NetworkConstants.BASE_URL) // Base URL for API requests
+            .baseUrl(BuildConfig.SERVER_URL) // Base URL for API requests
             .client(client) // Sets the OkHttpClient instance
             .addConverterFactory(GsonConverterFactory.create()) // Adds Gson for JSON conversion
             .build()
