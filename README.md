@@ -1,48 +1,43 @@
 # **Harmony Haven Android Client**
 
-Harmony Haven, şu anda geliştirilmekte olan bir motivasyon uygulamasıdır. Uygulama, kullanıcılara özel olarak seçilmiş yazarların özlü sözlerini bir akış halinde sunarak, günlük yaşamlarına ilham katar. Ayrıca, çeşitli kategorilerden makaleler sunar ve yapay zeka kullanarak kişiselleştirilmiş bildirimler sağlar.
+Harmony Haven is a motivational application currently under development. The app provides users with a curated feed of quotes from selected authors to inspire their daily lives. Additionally, it offers articles from various categories and delivers personalized notifications using artificial intelligence.
 
-## Üretim Ortamında Görüntüle
+## View in Production Environment
 <div align="center">
     
 [![psico](https://github.com/user-attachments/assets/388b5df4-2096-4ced-a805-07550d46760d)](https://play.google.com/store/apps/details?id=com.erdemserhat.harmonyhaven)
 
-
 </div>
 
-## Sistem İşleyişi Genel Görünümü
+## General Overview of System Operation
 
 ![image](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/b02ad5f5-0154-48bf-a813-33b750f34397)
 
+## Technologies and Paradigms Used
 
-## Kullanılan Teknolojiler ve Paradigmalar
-
-- **MVVM (Model-View-ViewModel) mimarisi**: Mimari
-- **Clean Architecture**: Mimari
-- **SOLID prensipleri**: En İyi Uygulamalar
+- **MVVM (Model-View-ViewModel) Architecture**: Architecture
+- **Clean Architecture**: Architecture
+- **SOLID Principles**: Best Practices
 - **Jetpack Compose**: UI
-- **Dagger-Hilt (Bağımlılık Enjeksiyonu)**: DI
-- **Room Database**: Yerel Veritabanı
-- **Shared Preferences**: Güvenli Veri Saklama
-- **Retrofit & OKHttp (REST API)**: Ağ İletişimi
-- **Firebase (Analitik, Bulut Mesajlaşma)**: Analitik, Bildirimler
-- **Coroutines (Asenkron İletişim)**: Eşzamanlılık
-- **LiveData**: Reaktif UI
-- **Accompanist Pager**: UI Sayfalama
-- **Coil (Görsel Yükleme, GIF)**: Görsel Yükleme
+- **Dagger-Hilt (Dependency Injection)**: DI
+- **Room Database**: Local Database
+- **Shared Preferences**: Secure Data Storage
+- **Retrofit & OKHttp (REST API)**: Network Communication
+- **Firebase (Analytics, Cloud Messaging)**: Analytics, Notifications
+- **Coroutines (Asynchronous Communication)**: Concurrency
+- **LiveData**: Reactive UI
+- **Accompanist Pager**: UI Paging
+- **Coil (Image Loading, GIF)**: Image Loading
 - **Core Splash Screen API**: Splash Screen
 - **Compose Markdown**: Markdown Rendering
-- **Gson**: JSON Ayrıştırma
-- **Media3 ExoPlayer**: Video Oynatma
+- **Gson**: JSON Parsing
+- **Media3 ExoPlayer**: Video Playback
 
 ## Backend
-Uygulamanın backend tarafını incelemek isterseniz bu [repository'e](https://github.com/erdemserhat/HarmonyHavenKtorServer) göz atın.
-
-## Harmony Haven'i Tanıyalım
-![Group 26086179-min](https://github.com/user-attachments/assets/14595aba-69a8-4e9c-a3e0-9c2051d0d5e7)
+If you want to explore the backend side of the application, check out this [repository](https://github.com/erdemserhat/HarmonyHavenKtorServer).
 
 
-## Uygulama Ekranları
+## Application Screens
 
 ![1-min](https://github.com/erdemserhat/HarmonyHavenAndroidClient/assets/116950260/639a2683-11b1-4bce-8814-027d3adc837e)
 
