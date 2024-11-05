@@ -43,3 +43,13 @@
 
  # With R8 full mode generic signatures are stripped for classes that are not kept.
  -keep,allowobfuscation,allowshrinking class retrofit2.Response
+
+ # Keep Google Sign-In classes
+ -keep class com.google.android.gms.** { *; }
+ -keep class com.google.firebase.** { *; }
+ -keepattributes Signature,Annotation
+
+ # Keep safe for Gson (if you're using it)
+ -keepclassmembers class ** {
+     @com.google.gson.annotations.SerializedName <fields>;
+ }

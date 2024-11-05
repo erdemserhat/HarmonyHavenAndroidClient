@@ -237,6 +237,10 @@ class RegisterViewModel @Inject constructor(
                             )
 
                             jwtRepository.saveJwtToken(response?.jwt!!)
+                            getToken()
+                            val sharedPrefs = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                            val editor = sharedPrefs.edit()
+                            editor.putBoolean("isLoggedInBefore", true)
                             _registerState.value = _registerState.value.copy(
                                 isLoading = false,
                                 canNavigateTo = true
@@ -265,3 +269,5 @@ class RegisterViewModel @Inject constructor(
 
 
 }
+
+

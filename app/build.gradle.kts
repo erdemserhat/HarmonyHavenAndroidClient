@@ -24,9 +24,9 @@ android {
         applicationId = "com.erdemserhat.harmonyhaven"
         minSdk = 24
         targetSdk = 35
-        versionCode = 6
+        versionCode = 10
         multiDexEnabled =true
-        versionName = "1.0.3"
+        versionName = "1.0.8"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -57,7 +57,7 @@ android {
         }
 
         debug {
-            buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/v1/\"")
+            buildConfigField("String", "SERVER_URL", "\"http://192.168.137.203:5000/api/v1/\"")
             //buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/v1/\"")
 
 

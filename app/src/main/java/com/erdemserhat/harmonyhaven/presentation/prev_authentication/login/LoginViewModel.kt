@@ -173,6 +173,9 @@ class LoginViewModel @Inject constructor(
 
 
     fun handleSignInWithGoogle(result: GetCredentialResponse) {
+        _loginState.value = _loginState.value.copy(
+            isLoading = true,
+        )
         // Handle the successfully returned credential.
         val credential = result.credential
 
@@ -210,7 +213,13 @@ class LoginViewModel @Inject constructor(
                                 )
                             )
 
+
                             jwtRepository.saveJwtToken(response?.jwt!!)
+                            getToken()
+                            val sharedPrefs = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                            val editor = sharedPrefs.edit()
+                            editor.putBoolean("isLoggedInBefore", true)
+                            editor.apply()
                             _loginState.value = _loginState.value.copy(
                                 isLoading = false,
                                 canNavigateToDashBoard = true
@@ -218,6 +227,7 @@ class LoginViewModel @Inject constructor(
 
 
                         }
+
 
 
                     } catch (e: GoogleIdTokenParsingException) {

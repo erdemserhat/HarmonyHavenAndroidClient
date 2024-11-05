@@ -32,11 +32,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.DisableContentCapture
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.credentials.GetCredentialResponse
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,6 +54,9 @@ import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.compo
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.LoginScreenPasswordTextField
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.LoginScreenWarningText
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreenContent(
@@ -62,6 +67,12 @@ fun LoginScreenContent(
         params.onCanNavigateToDashBoard()
 
     }
+
+    var onGoogleWidgetLoading by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+
     //val shouldOpenAlertDialog = remember { mutableStateOf(false) }
 
     //Dialog Control
@@ -83,6 +94,24 @@ fun LoginScreenContent(
         contentAlignment = Alignment.Center
 
     ) {
+        if (onGoogleWidgetLoading) {
+            Box(
+                modifier = Modifier
+                    .zIndex(2f)
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.7f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.width(32.dp),
+                    color = harmonyHavenGreen,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+
+
+            }
+        }
+
 
         //Screen Background
         Image(
@@ -210,8 +239,13 @@ fun LoginScreenContent(
                             GoogleSignInButton(
                                 buttonText =
                                 "Google ile Giriş Yap",
-                                signInHandler ={
+                                signInHandler = {
+                                    onGoogleWidgetLoading = false
                                     params.signInGoogleHandler(it)
+
+                                },
+                                onLoadingReady = {
+                                    onGoogleWidgetLoading = !it
                                 }
                             )
 
@@ -301,7 +335,7 @@ fun LoginScreen(
         isLoading = viewModel.loginState.value.isLoading,
         isEmailValid = !viewModel.loginState.value.validationState.isEmailValid,
         isPasswordValid = !viewModel.loginState.value.validationState.isPasswordValid,
-        signInGoogleHandler = { viewModel.handleSignInWithGoogle(it)}
+        signInGoogleHandler = { viewModel.handleSignInWithGoogle(it) }
     )
 
     val context = LocalContext.current
