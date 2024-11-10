@@ -2,6 +2,7 @@ package com.erdemserhat.harmonyhaven.presentation.prev_authentication.login
 
 
 import android.app.Activity
+import android.view.Window
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,11 +59,14 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 
 @Composable
 fun LoginScreenContent(
     params: LoginScreenParams,
 ) {
+
+
     //Navigation control
     if (params.canNavigateToDashBoard) {
         params.onCanNavigateToDashBoard()
@@ -294,7 +299,7 @@ fun LoginScreenContent(
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: LoginViewModel = hiltViewModel(),
 
 ) {
     var email by rememberSaveable {
@@ -309,6 +314,7 @@ fun LoginScreen(
     var isCheckedRememberCredentials by rememberSaveable {
         mutableStateOf(false)
     }
+
 
 
     //val shouldOpenAlertDialog = remember { mutableStateOf(false) }
@@ -331,33 +337,19 @@ fun LoginScreen(
         onPasswordValueChanged = { password = it },
         warningText = viewModel.loginState.value.loginWarning,
         canNavigateToDashBoard = viewModel.loginState.value.canNavigateToDashBoard,
-        onCanNavigateToDashBoard = { navController.navigate(Screen.QuoteMain.route) },
+        onCanNavigateToDashBoard = {
+            navController.navigate(Screen.Main.route)
+
+
+        },
         isLoading = viewModel.loginState.value.isLoading,
         isEmailValid = !viewModel.loginState.value.validationState.isEmailValid,
         isPasswordValid = !viewModel.loginState.value.validationState.isPasswordValid,
         signInGoogleHandler = { viewModel.handleSignInWithGoogle(it) }
     )
 
-    val context = LocalContext.current
-    val activity = context as? Activity
-    val window = activity?.window
-    SideEffect {
-
-        window?.let {
-
-            WindowCompat.setDecorFitsSystemWindows(it, false)
-
-            it.statusBarColor = Color.Transparent.toArgb()
-            it.navigationBarColor = Color.Transparent.toArgb()
 
 
-            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-            insetsController.isAppearanceLightStatusBars = true
-            insetsController.isAppearanceLightNavigationBars = true
-
-        }
-
-    }
 
 
 

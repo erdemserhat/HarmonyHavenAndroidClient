@@ -241,6 +241,7 @@ class RegisterViewModel @Inject constructor(
                             val sharedPrefs = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
                             val editor = sharedPrefs.edit()
                             editor.putBoolean("isLoggedInBefore", true)
+                            editor.apply()
                             _registerState.value = _registerState.value.copy(
                                 isLoading = false,
                                 canNavigateTo = true

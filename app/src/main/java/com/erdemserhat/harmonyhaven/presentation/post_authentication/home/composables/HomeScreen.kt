@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -14,6 +15,7 @@ import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.domain.model.rest.toArticleResponseType
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeViewModel
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun HomeScreenNew(
     navController: NavController,
@@ -21,41 +23,23 @@ fun HomeScreenNew(
 ) {
     val homeState by homeViewModel.homeState.collectAsState()
 
-        val context = LocalContext.current
-        val activity = context as? Activity
-        val window = activity?.window
 
 
-        SideEffect {
-
-            window?.let {
-
-                WindowCompat.setDecorFitsSystemWindows(it, true)
-
-                it.statusBarColor = Color.White.toArgb()
-                it.navigationBarColor = Color.White.toArgb()
 
 
-                val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-                insetsController.isAppearanceLightStatusBars = true
-                insetsController.isAppearanceLightNavigationBars = true
-
-            }
-
+    HomeScreenContentNew(
+        isArticlesReady = homeState.isArticleReady,
+        isCategoryReady = homeState.isCategoryReady,
+        categories = homeState.categories,
+        navController = navController,
+        articles = homeState.categorizedArticles,
+        onCategorySelected = {
+            homeViewModel.getArticlesByCategoryId(it.id)
+        },
+        allArticles = homeState.allArticles.map {
+            it.toArticleResponseType(homeState.categories)
         }
-
-            HomeScreenContentNew(
-                categories = homeState.categories,
-                navController = navController,
-                articles =  homeState.categorizedArticles,
-                onCategorySelected = {
-                    homeViewModel.getArticlesByCategoryId(it.id)
-                },
-                allArticles = homeState.allArticles.map {
-                    it.toArticleResponseType(homeState.categories)
-                }
-            )
-
+    )
 
 
 }

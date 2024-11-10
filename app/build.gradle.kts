@@ -24,7 +24,7 @@ android {
         applicationId = "com.erdemserhat.harmonyhaven"
         minSdk = 24
         targetSdk = 35
-        versionCode = 10
+        versionCode = 11
         multiDexEnabled =true
         versionName = "1.0.8"
         multiDexEnabled = true
@@ -57,20 +57,21 @@ android {
         }
 
         debug {
-            buildConfigField("String", "SERVER_URL", "\"http://192.168.137.203:5000/api/v1/\"")
-            //buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/v1/\"")
+            //buildConfigField("String", "SERVER_URL", "\"http://192.168.137.203:5000/api/v1/\"")
+            buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/v1/\"")
 
 
         }
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"  // Update to JVM target 17 to match Java 17
+
     }
 
     buildFeatures {
@@ -94,7 +95,10 @@ android {
 
 kotlin {
     jvmToolchain(17)
+
 }
+
+
 
 dependencies {
     // Android Core Dependencies
@@ -117,7 +121,7 @@ dependencies {
 
     // Jetpack Compose Dependencies
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.activity:activity-compose:1.9.0")
+    implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation(platform("androidx.compose:compose-bom:2024.05.00"))
     implementation("androidx.compose.ui:ui")

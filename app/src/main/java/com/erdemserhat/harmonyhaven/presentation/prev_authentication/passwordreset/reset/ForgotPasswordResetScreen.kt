@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -110,6 +111,7 @@ private fun ColumnContent(
             onArrowBackButtonClicked()
         }
         */
+        Spacer(modifier = Modifier.size(35.dp))
 
         // Logo
         HarmonyHavenGreetingLogo(modifier = Modifier)
@@ -120,15 +122,16 @@ private fun ColumnContent(
         // Şifre alanları
         ResetPasswordTextFields(
             isPasswordVisible = isPasswordVisible,
-            placeHolder1 = "New Password",
+            placeHolder1 = "Yeni Şifre",
             password = password,
             onPasswordValueChanged = setPassword,
             onVisibilityIconClicked = { setPasswordVisible(!isPasswordVisible) },
             confirmPassword = confirmPassword,
             onConfirmPasswordValueChanged = setConfirmPassword,
-            placeHolder2 = "Confirm Password",
+            placeHolder2 = "Şifreyi Onayla",
             isError = viewModel.resetState.value.isError
         )
+        Spacer(modifier = Modifier.size(10.dp))
 
         Text(text = viewModel.resetState.value.resetWarning)
 
@@ -139,7 +142,7 @@ private fun ColumnContent(
         } else {
             Spacer(modifier = Modifier.size(20.dp))
             HarmonyHavenButton(
-                buttonText = "Reset Password",
+                buttonText = "Onayla",
                 onClick = onResetPasswordClicked ,
                 modifier = Modifier,
                 isEnabled = !viewModel.resetState.value.isLoading

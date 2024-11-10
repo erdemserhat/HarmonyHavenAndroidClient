@@ -27,7 +27,7 @@ class ForgotPasswordResetViewModel @Inject constructor(
         if(newPassword!=confirmPassword){
             _resetModel.value = _resetModel.value.copy(
                 isLoading = false,
-                resetWarning = "Passwords don't match",
+                resetWarning = "Şifreler uyuşmuyor",
                 canNavigateTo = false,
                 isError = true
             )

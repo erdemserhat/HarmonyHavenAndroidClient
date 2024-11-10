@@ -3,7 +3,9 @@ package com.erdemserhat.harmonyhaven.presentation.navigation
 import LocalGifImage
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.media.Image
 import android.os.Build
+import android.view.Window
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -11,20 +13,26 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Badge
@@ -41,8 +49,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,15 +66,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
+import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.AlertDialogBase
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.QuotesScreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenIndicatorColor
@@ -78,55 +91,15 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
-fun AppMainScreen(navController: NavController, params: MainScreenParams = MainScreenParams()) {
+fun AppMainScreen(
+    navController: NavController,
+    params: MainScreenParams = MainScreenParams(),
+    window: Window
+
+
+) {
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
-    val systemUiController = rememberSystemUiController()
-
-
- //   val context = LocalContext.current
-   // val activity = context as? Activity
-  //  val window = activity?.window
-
-   // window?.let {
-    //    WindowCompat.setDecorFitsSystemWindows(it, true)
-    //    it.setFlags(
-     //       WindowManager.LayoutParams.FLAG_SECURE,
-     //       WindowManager.LayoutParams.FLAG_SECURE
-     ///   )
-   // }
-
-  //  SetSystemBarsAppearance(
-    //    navigationBarColor = Color.White,
-    //    statusBarColor = Color.White,
-    //    navigationBarDarkIcons = true,
-    //    statusBarDarkIcons = true
-  //  )
-    val context = LocalContext.current
-    val activity = context as? Activity
-    val window = activity?.window
-
-
-    SideEffect {
-            window?.let {
-                WindowCompat.setDecorFitsSystemWindows(it, true)
-
-                it.statusBarColor = Color.White.toArgb()
-                it.navigationBarColor = Color.White.toArgb()
-
-
-
-                val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-                insetsController.isAppearanceLightStatusBars = true
-                insetsController.isAppearanceLightNavigationBars = true
-
-            }
-
-    }
-
-
-
-
 
 
 
@@ -135,42 +108,63 @@ fun AppMainScreen(navController: NavController, params: MainScreenParams = MainS
         if (params.screenNo != -1) {
             pagerState.scrollToPage(params.screenNo)
         }
+
+    }
+
+    window.let {
+
+        WindowCompat.setDecorFitsSystemWindows(it, true)
+
+
     }
 
 
+    //set status bar and system navbar color
+    if (pagerState.currentPage == 2) {
+        window.let {
 
-    // Observe page changes and update status bar color accordingly
-   // LaunchedEffect(pagerState.currentPage) {
-      //  snapshotFlow { pagerState.currentPage }.collectLatest { page ->
-         //   when (page) {
-          //      0, 1 -> systemUiController.setSystemBarsColor(color = Color.White, darkIcons = true)
-           //     2 -> systemUiController.setSystemBarsColor(color = Color.Black, darkIcons = false)
-           // }
-        //}
-   /// }
+            it.statusBarColor = Color.Black.toArgb()
+            it.navigationBarColor = Color.Black.toArgb()
+            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+            insetsController.isAppearanceLightStatusBars = false
+            insetsController.isAppearanceLightNavigationBars = false
+
+
+        }
+    } else {
+        window.let {
+            it.statusBarColor = Color.Black.toArgb()
+            it.navigationBarColor = Color.Black.toArgb()
+            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+            insetsController.isAppearanceLightStatusBars = false
+            insetsController.isAppearanceLightNavigationBars = false
+
+
+        }
+
+    }
+
 
     Scaffold(
         bottomBar = {
-            // Conditionally show or hide the NavigationBar based on the current page
-            // Hide NavigationBar on the third page
             NavigationBar(
-                containerColor = Color.White,
+
+                containerColor = if (pagerState.currentPage == 2) Color.Black else Color.White,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(45.dp)
 
 
-
-
             ) {
                 items.forEachIndexed { index, item ->
                     NavigationBarItem(
+
                         selected = pagerState.currentPage == index,
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = harmonyHavenSelectedNavigationBarItemColor,
+                            selectedIconColor = if (pagerState.currentPage == 2) Color.Black else Color.Black,
                             selectedTextColor = harmonyHavenSelectedNavigationBarItemColor,
-                            indicatorColor = harmonyHavenIndicatorColor,
-                            unselectedIconColor = harmonyHavenSelectedNavigationBarItemColor
+                            indicatorColor = Color.Transparent,
+                            unselectedIconColor = if (pagerState.currentPage == 2) Color.Black else Color.Black
                         ),
                         onClick = {
                             coroutineScope.launch {
@@ -190,11 +184,23 @@ fun AppMainScreen(navController: NavController, params: MainScreenParams = MainS
                                     }
                                 }
                             ) {
-                                Icon(
-                                    imageVector = if (pagerState.currentPage == index) item.selectedIcon else item.unSelectedIcon,
-                                    contentDescription = item.title
-                                )
+                                if (pagerState.currentPage == 2) {
+                                    Image(
+                                        modifier = Modifier.size(20.dp),
+                                        painter = painterResource(id = if (pagerState.currentPage == index) item.selectedIconDarkIcon else item.unSelectedIconDarkIcon),
+                                        contentDescription = null
+                                    )
+                                } else {
+                                    Image(
+                                        modifier = Modifier.size(20.dp),
+                                        painter = painterResource(id = if (pagerState.currentPage == index) item.selectedIconWhiteIcon else item.unSelectedIconWhiteIcon),
+                                        contentDescription = null
+                                    )
+
+
+                                }
                             }
+
                         },
                         label = {
                             //  Text(
@@ -222,13 +228,13 @@ fun AppMainScreen(navController: NavController, params: MainScreenParams = MainS
                         0 -> Color.White
                         1 -> Color.White
                         2 -> Color.White
-                        else -> Color.White
+                        else -> Color.White // do not laugh it will be a future :)
                     },
                     isMainScreen = pagerState.currentPage == 0
                 )
             }
         }
-    ) {padding->
+    ) { padding ->
         Box(modifier = Modifier.fillMaxSize()) {
             HorizontalPager(
                 state = pagerState,
@@ -236,11 +242,12 @@ fun AppMainScreen(navController: NavController, params: MainScreenParams = MainS
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
+                    .windowInsetsPadding(WindowInsets.systemBars)
             ) { page ->
                 when (page) {
                     0 -> HomeScreenNew(navController = navController)
                     1 -> NotificationScreen(navController)
-                    2 -> QuotesScreen()
+                    2 -> QuoteMainScreen(navController = navController)
                 }
             }
         }
@@ -292,29 +299,52 @@ fun AnimatedGif(
 
 private data class NavigationBarItem(
     val title: String,
-    val selectedIcon: ImageVector,
-    val unSelectedIcon: ImageVector,
     val hasNews: Boolean,
     val badgeCount: Int? = null,
-    val route: String)
+    val route: String,
+    val selectedIconDarkIcon: Int,
+    val selectedIconWhiteIcon: Int,
+    val unSelectedIconDarkIcon: Int,
+    val unSelectedIconWhiteIcon: Int
+
+)
 
 private val items = listOf(
     NavigationBarItem(
-        "İçerikler", Icons.Filled.Home, Icons.Outlined.Home, false, null,
-        Screen.Home.route
+        title = "İçerikler",
+        hasNews = false,
+        badgeCount = null,
+        route = Screen.Home.route,
+        selectedIconDarkIcon =R.drawable.homewhitefilled,
+        selectedIconWhiteIcon =R.drawable.homeblackfilled,
+        unSelectedIconDarkIcon = R.drawable.homewhiteunfilled,
+        unSelectedIconWhiteIcon =R.drawable.homeblackunfilled
+
     ),
     NavigationBarItem(
-        "Bildirimler", Icons.Filled.Notifications, Icons.Outlined.Notifications, false, null,
-        Screen.Notification.route
+        title = "Bildirimler",
+        hasNews = false,
+        badgeCount = null,
+        route = Screen.Notification.route,
+        selectedIconDarkIcon = R.drawable.notificationwhitefilled,
+        selectedIconWhiteIcon =R.drawable.notificationblackfilled,
+        unSelectedIconDarkIcon = R.drawable.notificationwhiteunfilled,
+        unSelectedIconWhiteIcon =R.drawable.notificationblackunfilled
     ),
-    //NavigationBarItem(
-    //    "Sözler", Icons.Filled.Favorite, Icons.Outlined.FavoriteBorder, false, null,
-     //   Screen.Quotes.route
-  //  ),
-    // NavigationBarItem(
-    //     "Profile", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle, false, null,
-    //       Screen.Settings.route
-    // )
+    NavigationBarItem(
+        title = "Sözler",
+        hasNews = false,
+        badgeCount = null,
+        Screen.Quotes.route,
+        selectedIconDarkIcon = R.drawable.quotewhitefilled,
+        selectedIconWhiteIcon =R.drawable.quoteblackfilled,
+        unSelectedIconDarkIcon =R.drawable.quotewhiteunfilled,
+        unSelectedIconWhiteIcon =R.drawable.quoteblackunfilled
+    ),
+// NavigationBarItem(
+//     "Profile", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle, false, null,
+//       Screen.Settings.route
+// )
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -363,18 +393,7 @@ fun MyAppBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = {
-                navController.navigate(Screen.QuoteMain.route){
 
-                }
-
-
-            }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
-                )
-            }
         },
 
         title = {
@@ -397,7 +416,7 @@ fun MyAppBar(
 
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor =topBarBackgroundColor
+            containerColor = topBarBackgroundColor
         ),
         actions = {
             IconButton(onClick = { expanded = !expanded }) {

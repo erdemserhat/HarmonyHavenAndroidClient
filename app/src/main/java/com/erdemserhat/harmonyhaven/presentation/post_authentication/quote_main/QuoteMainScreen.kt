@@ -71,22 +71,11 @@ fun QuoteMainScreen(
     navController: NavController,
     viewmodel: QuoteMainViewModel = hiltViewModel()
 ) {
-    val authStatus by viewmodel.authStatus.collectAsState()
 
-    when (authStatus) {
-        0 -> UxAuthHelper(modifier = modifier, onClick = { viewmodel.tryLoad() })
-        1 -> QuoteMainContent(
-            modifier = modifier,
-            navController = navController,
-            viewmodel = viewmodel
-        )
-
-        2 -> UxSessionExp(
-            modifier = modifier,
-            onClick = { navController.navigate(Screen.Login.route) })
-
-
-    }
+    QuoteMainContent(
+        modifier = modifier,
+        viewmodel = viewmodel
+    )
 
 
 }
@@ -94,7 +83,6 @@ fun QuoteMainScreen(
 @Composable
 fun QuoteMainContent(
     modifier: Modifier = Modifier,
-    navController: NavController,
     viewmodel: QuoteMainViewModel
 ) {
 
@@ -102,32 +90,9 @@ fun QuoteMainContent(
 
 
     val shouldShowUxDialog1 = viewmodel.shouldShowUxDialog1.collectAsState()
-    val shouldShowUxDialog2 = viewmodel.shouldShowUxDialog2.collectAsState()
 
     var permissionGranted by remember { mutableStateOf(viewmodel.isPermissionGranted()) }
 
-    val context = LocalContext.current
-    val activity = context as? Activity
-    val window = activity?.window
-    SideEffect {
-
-        window?.let {
-
-            WindowCompat.setDecorFitsSystemWindows(it, false)
-
-            it.statusBarColor = Color.Transparent.toArgb()
-            it.navigationBarColor = Color.Transparent.toArgb()
-
-
-            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-            insetsController.isAppearanceLightStatusBars = false
-            insetsController.isAppearanceLightNavigationBars = false
-            it.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-
-        }
-
-
-    }
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -153,7 +118,7 @@ fun QuoteMainContent(
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        QuoteVerticalList1(quoteList = quotes.value, modifier = Modifier,viewmodel)
+        QuoteVerticalList1(quoteList = quotes.value, modifier = Modifier, viewmodel)
         var isButtonClicked by remember { mutableStateOf(false) }
         if (shouldShowUxDialog1.value) {
 
@@ -164,27 +129,10 @@ fun QuoteMainContent(
                 })
 
         }
-        if(shouldShowUxDialog2.value && isButtonClicked){
-            LocalGifImageWithFilter(
-                resId = R.drawable.down_animated,
-                modifier = Modifier.padding(end = 0.dp, bottom = 130.dp).size(120.dp).align(Alignment.BottomEnd),
-                colorFilter = ColorFilter.tint(Color.White.copy(alpha = 0.9f)))
-
-
-            UxScrollInformer2(modifier = Modifier.zIndex(2f),
-                onClick = {
-                    viewmodel.setShouldShowUxDialog2(false)
-                })
 
 
 
-        }
-
-
-
-
-
-
+        /*
         ButtonSurface(modifier = Modifier.align(Alignment.BottomEnd), onClick = {
             window?.let {
                 WindowCompat.setDecorFitsSystemWindows(it, true)
@@ -197,6 +145,8 @@ fun QuoteMainContent(
 
         })
 
+         */
+
 
     }
 
@@ -205,7 +155,7 @@ fun QuoteMainContent(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun QuoteVerticalList1(
-    quoteList: List<Quote>, modifier: Modifier,viewmodel: QuoteMainViewModel
+    quoteList: List<Quote>, modifier: Modifier, viewmodel: QuoteMainViewModel
 ) {
     if (quoteList.isNotEmpty()) {
         val pagerState = rememberPagerState(pageCount = {
@@ -230,10 +180,10 @@ fun QuoteVerticalList1(
                     isVisible = isCurrentPageVisible || isPreviousPageVisible,
                     isCurrentPage = isCurrentPageVisible,
                     modifier = Modifier.zIndex(2f),
-                    onDeleteClicked = {viewmodel.deleteQuoteById(quote.id)}
+                    onDeleteClicked = { viewmodel.deleteQuoteById(quote.id) }
 
 
-                    )
+                )
             }
         }
     }
@@ -245,7 +195,7 @@ fun Quote(
     isVisible: Boolean, // Sayfanın görünür olup olmadığını kontrol eder
     isCurrentPage: Boolean, // Aktif sayfa olup olmadığını kontrol eder
     modifier: Modifier = Modifier,
-    onDeleteClicked:()->Unit
+    onDeleteClicked: () -> Unit
 ) {
     Box(
         modifier = modifier.fillMaxSize()
@@ -253,8 +203,6 @@ fun Quote(
         //Box(modifier = Modifier.align(Alignment.BottomStart).zIndex(2f)){
         //    ButtonSurface1(onClick = onDeleteClicked)
         //}
-
-
 
 
         if (!quote.imageUrl.endsWith(".mp4")) {
@@ -289,11 +237,8 @@ fun Quote(
                     .padding(0.dp) // İçerik için padding
             )
             {
-              //  Image(painter = painterResource(id = R.drawable.a1), contentDescription =null,modifier = Modifier.align(
+                //  Image(painter = painterResource(id = R.drawable.a1), contentDescription =null,modifier = Modifier.align(
                 //    Alignment.TopStart).padding(12.dp), colorFilter = ColorFilter.tint(Color.Gray.copy(alpha = 0.4f)))
-
-
-
 
 
                 Column(

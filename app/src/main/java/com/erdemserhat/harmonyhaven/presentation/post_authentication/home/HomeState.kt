@@ -11,4 +11,5 @@ data class HomeState(
     var recentArticles:List<ArticlePresentableUIModel> = listOf(),
     var isArticleReady:Boolean = false,
     var allArticles:List<Article> = listOf(),
+
 )

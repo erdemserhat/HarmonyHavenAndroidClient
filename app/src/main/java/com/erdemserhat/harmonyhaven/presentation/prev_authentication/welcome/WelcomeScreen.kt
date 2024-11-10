@@ -52,26 +52,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class, DelicateCoroutinesApi::class)
 @Composable
 fun WelcomeScreen(navHostController: NavHostController) {
-    val context = LocalContext.current
-    val activity = context as? Activity
-    val window = activity?.window
-    SideEffect {
 
-        window?.let {
-
-            WindowCompat.setDecorFitsSystemWindows(it, false)
-
-            it.statusBarColor = Color.Transparent.toArgb()
-            it.navigationBarColor = Color.Transparent.toArgb()
-
-
-            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-            insetsController.isAppearanceLightStatusBars = true
-            insetsController.isAppearanceLightNavigationBars = true
-
-        }
-
-    }
 
     // Display 3 items
     val pagerState: PagerState = rememberPagerState(pageCount = {
