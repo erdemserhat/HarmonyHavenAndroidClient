@@ -10,14 +10,19 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
@@ -28,10 +33,15 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.cards.ArticleCard
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.cards.ArticleSearchBarCard
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.placeholder
+import com.google.accompanist.placeholder.shimmer
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HomeScreenContentNew(
+    isCategoryReady:Boolean,
+    isArticlesReady:Boolean,
     navController: NavController,
     articles: List<ArticlePresentableUIModel>,
     categories: List<Category>,
@@ -161,29 +171,38 @@ fun HomeScreenContentNew(
                         onCategorySelected(category)
                         selectedCategoryId.intValue = category.id
 
-                    }
+                    },
+                    isReady = isCategoryReady,
 
                 )
             }
 
-            items(articles) { article ->
-                ArticleCard(
-                    article,
-                    onReadButtonClicked = {
-                        //normal parcelable data
-                        val bundle = Bundle()
-                        bundle.putParcelable("article", article)
-                        navController.navigate(
-                            route = Screen.Article.route,
-                            args = bundle
-                        )
+            if(isArticlesReady){
+                items(articles) { article ->
+                    ArticleCard(
+                        article,
+                        onReadButtonClicked = {
+                            //normal parcelable data
+                            val bundle = Bundle()
+                            bundle.putParcelable("article", article)
+                            navController.navigate(
+                                route = Screen.Article.route,
+                                args = bundle
+                            )
 
-                    }
+                        }
 
-                )
+                    )
 
+
+                }
+            }else{
+                items(10){
+                    ShimmerArticleCard()
+                }
 
             }
+
 
 
         }
@@ -194,7 +213,27 @@ fun HomeScreenContentNew(
 }
 
 
-
-
+@Composable
+fun ShimmerArticleCard(onItemClick: () -> Unit={}) {
+    Card(
+        modifier = Modifier
+            .padding(bottom = 30.dp)
+            .fillMaxWidth(0.9f)
+            .height(350.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .clickable { onItemClick() }
+            .placeholder(
+                visible = true,
+                color = Color.LightGray,  // Base color of the shimmer effect
+                shape = RoundedCornerShape(10.dp),  // Match the shape of the card
+                highlight = PlaceholderHighlight.shimmer(
+                    highlightColor = Color.White  // Color of the shimmer highlight
+                )
+            ),
+        elevation = CardDefaults.cardElevation(4.dp)  // Use CardDefaults to specify elevation
+    ) {
+        // Content of the card can be added here if needed
+    }
+}
 
 

@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
                 SetupNavGraph(
                     navController = navController,
                     startDestination =when(isLoggedInBefore){
-                        true -> Screen.QuoteMain.route
+                        true -> Screen.Main.route
                         false-> if (isFirstLaunch) Screen.Welcome.route else Screen.Login.route
                     },
                     modifier = Modifier,

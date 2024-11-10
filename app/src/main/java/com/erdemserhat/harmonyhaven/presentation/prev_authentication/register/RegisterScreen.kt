@@ -333,26 +333,7 @@ fun RegisterScreen(
     navController: NavController
 
 ) {
-    val context = LocalContext.current
-    val activity = context as? Activity
-    val window = activity?.window
-    SideEffect {
 
-        window?.let {
-
-            WindowCompat.setDecorFitsSystemWindows(it, false)
-
-            it.statusBarColor = Color.Transparent.toArgb()
-            it.navigationBarColor = Color.Transparent.toArgb()
-
-
-            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-            insetsController.isAppearanceLightStatusBars = true
-            insetsController.isAppearanceLightNavigationBars = true
-
-        }
-
-    }
 
 
     var name by rememberSaveable {
@@ -418,7 +399,7 @@ fun RegisterScreen(
         isLoading = registerViewModel.registerState.value.isLoading,
         shouldNavigateTo = registerViewModel.registerState.value.canNavigateTo,
         onShouldNavigateTo = {
-            navController.navigate(Screen.QuoteMain.route)
+            navController.navigate(Screen.Main.route)
 
                              },
         isNameValid = !registerViewModel.registerState.value.registerValidationState.isNameValid,

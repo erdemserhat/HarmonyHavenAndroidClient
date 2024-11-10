@@ -143,12 +143,12 @@ fun ForgotPasswordAuthScreenContent(
         Column(
             Modifier
                 .fillMaxSize()
-                .padding(top = 20.dp)
+                .padding(top = 5.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
             ArrowBackButtonDev(
                 modifier = Modifier
-                    .padding(10.dp),
+                    .padding(5.dp),
                 onClick = onArrowBackButtonClicked
             )
 
@@ -168,7 +168,7 @@ fun ForgotPasswordAuthScreenContent(
                 HarmonyHavenTextField(
                     text = code,
                     onValueChanged = onCodeValueChanged,
-                    placeHolderText = "6-Digit Code",
+                    placeHolderText = "6 Haneli Kodu Giriniz",
                     isEnabled = !isLoading,
                     isError = isError,
                     keyBoardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
@@ -192,7 +192,7 @@ fun ForgotPasswordAuthScreenContent(
                 } else {
                     Spacer(modifier = Modifier.size(20.dp))
                     HarmonyHavenButton(
-                        buttonText = "Confirm",
+                        buttonText = "Onayla",
                         onClick = onSendCodeClicked,
                         modifier = Modifier,
                         isEnabled = !isLoading

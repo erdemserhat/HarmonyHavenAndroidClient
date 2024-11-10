@@ -89,29 +89,6 @@ fun NotificationScreen(
     val notifications by viewModel.notifications.collectAsState()
     var permissionGranted by remember { mutableStateOf(viewModel.isPermissionGranted()) }
 
-    val context = LocalContext.current
-    val activity = context as? Activity
-    val window = activity?.window
-
-    SideEffect {
-
-        window?.let {
-
-            WindowCompat.setDecorFitsSystemWindows(it, true)
-
-            it.statusBarColor = Color.White.toArgb()
-            it.navigationBarColor = Color.White.toArgb()
-
-
-
-            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-            insetsController.isAppearanceLightStatusBars = true
-            insetsController.isAppearanceLightNavigationBars = true
-
-        }
-
-    }
-
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
@@ -120,6 +97,8 @@ fun NotificationScreen(
 
         }
     )
+
+
     LaunchedEffect(Unit) {
         viewModel.loadNotifications()
         notificationPermissionLauncher.launch(

@@ -1,6 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.navigation
 
 import AccountInformationScreen
+import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -12,7 +13,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
@@ -42,8 +48,9 @@ fun SetupNavGraph(
     navController: NavHostController,
     startDestination: String,
     modifier: Modifier = Modifier,
-    window: Window
+    window :Window
 ) {
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -54,22 +61,88 @@ fun SetupNavGraph(
 
 
         composable(route = Screen.Welcome.route) {
+            window.let {
+
+                WindowCompat.setDecorFitsSystemWindows(it, true)
+
+                it.statusBarColor = Color.Black.toArgb()
+                it.navigationBarColor = Color.Black.toArgb()
+
+
+                val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+                insetsController.isAppearanceLightStatusBars = false
+                insetsController.isAppearanceLightNavigationBars = false
+
+            }
+
+
             WelcomeScreen(navHostController = navController)
+
+
         }
 
         composable(route = Screen.Login.route) {
-            LoginScreen(navController = navController)
+
+            window.let {
+
+
+                WindowCompat.setDecorFitsSystemWindows(it, true)
+
+                it.statusBarColor = Color.Black.toArgb()
+                it.navigationBarColor = Color.Black.toArgb()
+
+
+                val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+                insetsController.isAppearanceLightStatusBars = false
+                insetsController.isAppearanceLightNavigationBars = false
+
+
+            }
+
+
+
+
+            LoginScreen(
+                navController = navController,
+            )
 
         }
 
         composable(route = Screen.Register.route) {
-            //RegisterScreen(navController = navController)
+            window.let {
+
+                WindowCompat.setDecorFitsSystemWindows(it, true)
+
+                it.statusBarColor = Color.Black.toArgb()
+                it.navigationBarColor = Color.Black.toArgb()
+
+
+                val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+                insetsController.isAppearanceLightStatusBars = false
+                insetsController.isAppearanceLightNavigationBars = false
+
+            }
+
             RegisterScreen(navController = navController)
 
         }
 
 
         composable(route = Screen.ForgotPasswordMail.route) {
+            window.let {
+
+                WindowCompat.setDecorFitsSystemWindows(it, true)
+
+                it.statusBarColor = Color.Black.toArgb()
+                it.navigationBarColor = Color.Black.toArgb()
+
+
+                val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+                insetsController.isAppearanceLightStatusBars = false
+                insetsController.isAppearanceLightNavigationBars = false
+
+            }
+
             ForgotPasswordMailScreen(navController)
 
         }
@@ -164,11 +237,13 @@ fun SetupNavGraph(
             }
 
 
-
             if(params==null){
-                AppMainScreen(navController)
+
+                AppMainScreen(navController =navController,window = window)
+
             }else{
-                AppMainScreen(navController,params)
+                AppMainScreen(navController,params,window)
+
             }
 
 

@@ -7,6 +7,7 @@
         kotlin("jvm") version "1.4.21"
         kotlin("plugin.serialization") version "1.4.21"
 
+
         //KSP
         //id("com.google.devtools.ksp") version "1.9.0-1.0.11" apply false
 
