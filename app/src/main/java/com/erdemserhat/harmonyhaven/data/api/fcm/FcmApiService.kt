@@ -18,7 +18,7 @@ interface FcmApiService {
      * @return A [Response] object with no content (Void), which can be checked to ensure
      *         that the request was successful.
      */
-    @POST("user/fcm-enrolment")
+    @POST("v1/user/fcm-enrolment")
     suspend fun updateFcmId(
         @Body fcmSetup: FcmSetupRequest // The request body containing the FCM token details
     ): Response<Void>

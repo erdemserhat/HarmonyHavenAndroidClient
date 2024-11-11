@@ -2,7 +2,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erdemserhat.harmonyhaven.domain.usecase.GetQuotesUseCase
+import com.erdemserhat.harmonyhaven.domain.usecase.quote.GetQuotesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -186,13 +186,13 @@ fun AppMainScreen(
                             ) {
                                 if (pagerState.currentPage == 2) {
                                     Image(
-                                        modifier = Modifier.size(20.dp),
+                                        modifier = Modifier.size(23.dp),
                                         painter = painterResource(id = if (pagerState.currentPage == index) item.selectedIconDarkIcon else item.unSelectedIconDarkIcon),
                                         contentDescription = null
                                     )
                                 } else {
                                     Image(
-                                        modifier = Modifier.size(20.dp),
+                                        modifier = Modifier.size(23.dp),
                                         painter = painterResource(id = if (pagerState.currentPage == index) item.selectedIconWhiteIcon else item.unSelectedIconWhiteIcon),
                                         contentDescription = null
                                     )

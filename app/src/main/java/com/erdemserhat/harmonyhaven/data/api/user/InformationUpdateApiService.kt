@@ -18,7 +18,7 @@ interface InformationUpdateApiService {
      * @param updatePasswordDto The [UpdatePasswordDto] object containing the new password and validation details.
      * @return A [Response] containing a [ValidationResult] object that provides information on the success or failure of the update.
      */
-    @PATCH("user/update-password")
+    @PATCH("v1/user/update-password")
     suspend fun updatePassword(@Body updatePasswordDto: UpdatePasswordDto): Response<ValidationResult>
 
     /**
@@ -30,6 +30,6 @@ interface InformationUpdateApiService {
      * @param updateNameDto The [UpdateNameDto] object containing the new name information.
      * @return A [Response] containing a [ValidationResult] object that provides information on the success or failure of the update.
      */
-    @PATCH("user/update-name")
+    @PATCH("v1/user/update-name")
     suspend fun updateName(@Body updateNameDto: UpdateNameDto): Response<ValidationResult>
 }

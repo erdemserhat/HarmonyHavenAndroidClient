@@ -19,10 +19,10 @@ interface UserAuthenticationApiService {
      * @param userAuthRequest The [UserAuthenticationRequest] object containing the user's credentials (e.g., username, password).
      * @return A [Response] containing an [AuthenticationResponse] object with the result of the authentication attempt.
      */
-    @POST("user/authenticate")
+    @POST("v1/user/authenticate")
     suspend fun authenticateUser(@Body userAuthRequest: UserAuthenticationRequest): Response<AuthenticationResponse>
 
-    @POST("user/authenticate-google")
+    @POST("v1/user/authenticate-google")
     suspend fun authenticateUserViaGoogle(@Body userAuthRequest: GoogleAuthenticationRequest): Response<GoogleAuthenticationResponse>
 
 

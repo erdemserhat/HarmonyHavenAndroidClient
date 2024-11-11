@@ -14,6 +14,6 @@ interface UserInformationApiService {
      *
      * @return A [Response] containing a [UserInformationDto] object with the user's information.
      */
-    @GET("user/get-information")
+    @GET("v1/user/get-information")
     suspend fun getUserInformation(): Response<UserInformationDto>
 }

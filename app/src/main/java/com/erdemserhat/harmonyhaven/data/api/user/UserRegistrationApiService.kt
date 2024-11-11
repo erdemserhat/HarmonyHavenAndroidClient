@@ -18,6 +18,6 @@ interface UserRegistrationApiService {
      * @param userInformationSchema The [UserInformationSchema] object containing the user's registration details (e.g., username, password, email).
      * @return A [Response] containing a [RegistrationResponse] object with the result of the registration attempt.
      */
-    @POST("user/register")
+    @POST("v1/user/register")
     suspend fun registerUser(@Body userInformationSchema: UserInformationSchema): Response<RegistrationResponse>
 }

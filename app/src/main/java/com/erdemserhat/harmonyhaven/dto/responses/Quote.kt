@@ -7,5 +7,7 @@ data class Quote(
     val id:Int,
     val quote:String,
     val writer:String,
-    val imageUrl:String
+    val imageUrl:String,
+    val quoteCategory: Int = 1,
+    val isLiked: Boolean
 )

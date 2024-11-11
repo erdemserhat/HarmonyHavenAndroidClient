@@ -8,8 +8,7 @@ import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erdemserhat.harmonyhaven.domain.usecase.DeleteQuoteByIdUseCase
-import com.erdemserhat.harmonyhaven.domain.usecase.GetQuotesUseCase
+import com.erdemserhat.harmonyhaven.domain.usecase.quote.QuoteUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
 import com.google.android.gms.tasks.Task
 import com.google.firebase.ktx.Firebase
@@ -29,8 +28,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuoteMainViewModel @Inject constructor(
-    private val getQuotesUseCase: GetQuotesUseCase,
-    private val deleteQuoteByIdUseCase: DeleteQuoteByIdUseCase,
+    private val quoteUseCases: QuoteUseCases,
     @ApplicationContext private val context: Context,
     private val userUseCases: UserUseCases
 ) : ViewModel() {
@@ -84,7 +82,29 @@ class QuoteMainViewModel @Inject constructor(
     fun deleteQuoteById(id: Int) {
         viewModelScope.launch {
             try {
-                deleteQuoteByIdUseCase.executeRequest(id)
+                quoteUseCases.deleteQuoteById.executeRequest(id)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+    }
+
+    fun likeQuote(quoteId: Int) {
+        viewModelScope.launch {
+            try {
+                quoteUseCases.likeQuote.executeRequest(quoteId)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+    }
+
+    fun removeLikeQuote(quoteId: Int) {
+        viewModelScope.launch {
+            try {
+                quoteUseCases.removeLike.executeRequest(quoteId)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -97,7 +117,8 @@ class QuoteMainViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _quotes.value =
-                    getQuotesUseCase.executeRequest()
+                    quoteUseCases.getQuote.executeRequest()
+
 
             } catch (e: Exception) {
                 e.printStackTrace()

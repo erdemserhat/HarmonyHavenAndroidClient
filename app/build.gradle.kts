@@ -26,7 +26,7 @@ android {
         targetSdk = 35
         versionCode = 11
         multiDexEnabled =true
-        versionName = "1.0.8"
+        versionName = "1.0.11"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -46,7 +46,7 @@ android {
         //buildConfigField("String", "API_KEY", "\"your_actual_api_key_here\"")--> Use this to add new one
 
         release {
-            buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/v1/\"")
+            buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/\"")
 
             isMinifyEnabled = true
 
@@ -57,8 +57,8 @@ android {
         }
 
         debug {
-            //buildConfigField("String", "SERVER_URL", "\"http://192.168.137.203:5000/api/v1/\"")
-            buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/v1/\"")
+            buildConfigField("String", "SERVER_URL", "\"http://192.168.137.232:5000/api/\"")
+            //buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/\"")
 
 
         }
