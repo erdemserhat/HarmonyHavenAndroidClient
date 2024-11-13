@@ -24,6 +24,8 @@
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
+        android:overScrollMode="never"
+        android:fadingEdge="none"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/objects"

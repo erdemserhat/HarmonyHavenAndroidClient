@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class DeleteQuoteByIdUseCase @Inject constructor(
+class DeleteQuoteById @Inject constructor(
     private val quotesApiService: QuoteApiService
 ) {
     suspend fun executeRequest(id:Int): Boolean {

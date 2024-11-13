@@ -2,7 +2,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erdemserhat.harmonyhaven.domain.usecase.quote.GetQuotesUseCase
+import com.erdemserhat.harmonyhaven.domain.usecase.quote.GetQuotes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuotesViewModel @Inject constructor(
-    private val getQuotesUseCase: GetQuotesUseCase,
+    private val getQuotes: GetQuotes,
 ) : ViewModel() {
     private val _quotes =
         MutableStateFlow<List<com.erdemserhat.harmonyhaven.dto.responses.Quote>>(emptyList())
@@ -27,7 +27,7 @@ class QuotesViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _quotes.value =
-                    getQuotesUseCase.executeRequest()
+                    getQuotes.executeRequest()
 
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -1,8 +1,9 @@
 package com.erdemserhat.harmonyhaven.domain.usecase.quote
 
 class QuoteUseCases(
-    val deleteQuoteById: DeleteQuoteByIdUseCase,
-    val getQuote: GetQuotesUseCase,
-    val likeQuote: LikeQuoteUseCase,
-    val removeLike: RemoveLikeQuoteUseCase,
+    val deleteQuoteById: DeleteQuoteById,
+    val getQuote: GetQuotes,
+    val likeQuote: LikeQuote,
+    val removeLike: RemoveLikeQuote,
+    val getLikedQuotes: GetLikedQuotes,
 )

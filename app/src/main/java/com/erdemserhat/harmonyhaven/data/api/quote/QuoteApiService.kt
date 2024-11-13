@@ -24,6 +24,9 @@ interface QuoteApiService {
     @POST("v1/remove-like-quote/{quoteId}")
     suspend fun removeLike(@Path("quoteId") quoteId: Int):Response<Unit>
 
+    @GET("v1/get-liked-quotes")
+    suspend fun getAllLikedQuotes():Response<List<Quote>>
+
 
 
     /**
