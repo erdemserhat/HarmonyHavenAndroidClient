@@ -36,11 +36,12 @@ class QuoteMainViewModel @Inject constructor(
     private val _quotes =
         MutableStateFlow<List<com.erdemserhat.harmonyhaven.dto.responses.Quote>>(emptyList())
     val quotes: StateFlow<List<com.erdemserhat.harmonyhaven.dto.responses.Quote>> = _quotes
-    lateinit var allQuotes: List<Quote>
+    private var allQuotes: List<Quote> = emptyList()
 
     // StateFlow ile UX Dialog gösterecek mi
     private val _shouldShowUxDialog1 = MutableStateFlow(true)
     private val _shouldShowUxDialog2 = MutableStateFlow(true)
+    var isLikedListEmpty = MutableStateFlow(true)
     val shouldShowUxDialog1: StateFlow<Boolean> = _shouldShowUxDialog1
     val shouldShowUxDialog2: StateFlow<Boolean> = _shouldShowUxDialog2
 
@@ -62,6 +63,7 @@ class QuoteMainViewModel @Inject constructor(
         initializeUxDialogState()
         initializeUxDialogState2()
         checkConnection()
+        isLikedListEmpty()
 
 
     }
@@ -96,6 +98,7 @@ class QuoteMainViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 quoteUseCases.likeQuote.executeRequest(quoteId)
+                markAsLikedInternally(quoteId)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -127,7 +130,10 @@ class QuoteMainViewModel @Inject constructor(
     }
 
 
-    fun filterQuotes(categorySelectionModel: CategorySelectionModel) {
+    fun filterQuotes(
+        categorySelectionModel: CategorySelectionModel,
+        shouldShuffle: Boolean = true
+    ) {
         val categoryMap = mapOf(
             1 to "Genel",
             2 to "Kendin Ol",
@@ -146,7 +152,9 @@ class QuoteMainViewModel @Inject constructor(
             16 to "Toksik İlişkiler"
         )
 
-        val filteredQuotes: MutableList<Quote> = mutableListOf()
+        val filteredQuotes: MutableSet<Quote> = mutableSetOf()
+        _quotes.value = filteredQuotes.toList()
+
 
         if (categorySelectionModel.isGeneralSelected) {
             _quotes.value = allQuotes
@@ -220,6 +228,12 @@ class QuoteMainViewModel @Inject constructor(
             }
         }
 
+        if (categorySelectionModel.isLikedSelected) {
+            allQuotes.filter { it.isLiked }.forEach {
+                filteredQuotes.add(it)
+            }
+        }
+
         if (categorySelectionModel.isHeartBrokenSelected) {
             allQuotes.filter { it.quoteCategory == 14 }.forEach {
                 filteredQuotes.add(it)
@@ -238,145 +252,227 @@ class QuoteMainViewModel @Inject constructor(
             }
         }
 
-        Log.d("dsasdfdsfds", filteredQuotes.toString())
 
-        _quotes.value = filteredQuotes.shuffled()
-
+        _quotes.value = if (shouldShuffle) filteredQuotes.shuffled() else filteredQuotes.toList()
 
 
-}
+    }
 
-//load notification via offset
-private fun loadQuotes() {
-    viewModelScope.launch {
+    private fun markAsLikedInternally(quoteId: Int) {
+        viewModelScope.launch {
+            try {
+                _quotes.value.find { it.id == quoteId }!!.isLiked = true
+                allQuotes.find { it.id == quoteId }!!.isLiked = true
+                isLikedListEmpty.value = false
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+            }
+        }
+    }
+
+
+    fun removeLikedInternally(quoteId: Int) {
+        viewModelScope.launch {
+            try {
+                _quotes.value.find { it.id == quoteId }!!.isLiked = false
+                allQuotes.find { it.id == quoteId }!!.isLiked = false
+                if(allQuotes.none { it.isLiked }) isLikedListEmpty.value = true
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+            }
+        }
+    }
+
+    //load notification via offset
+    private fun loadQuotes() {
+        viewModelScope.launch {
+            try {
+                _quotes.value =
+                    quoteUseCases.getQuote.executeRequest()
+
+                allQuotes = _quotes.value
+
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+
+            }
+        }
+    }
+
+
+    private fun initializeUxDialogState() {
+        val sharedPreferences: SharedPreferences =
+            context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val showDialog = sharedPreferences.getBoolean("shouldShowUxDialog1", true)
+        _shouldShowUxDialog1.value = showDialog
+    }
+
+    private fun initializeUxDialogState2() {
+        val sharedPreferences: SharedPreferences =
+            context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val showDialog = sharedPreferences.getBoolean("shouldShowUxDialog2", true)
+        _shouldShowUxDialog2.value = showDialog
+    }
+
+    fun setShouldShowUxDialog1(show: Boolean) {
+        _shouldShowUxDialog1.value = show
+        val sharedPreferences: SharedPreferences =
+            context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit().putBoolean("shouldShowUxDialog1", show).apply()
+        initializeUxDialogState()
+
+    }
+
+    fun setShouldShowUxDialog2(show: Boolean) {
+        _shouldShowUxDialog1.value = show
+        val sharedPreferences: SharedPreferences =
+            context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit().putBoolean("shouldShowUxDialog2", show).apply()
+        initializeUxDialogState2()
+
+    }
+
+    //Permission operations
+    private val sharedPreferences =
+        context.getSharedPreferences("PermissionPreferences", Context.MODE_PRIVATE)
+
+    private val sharedPreferencesForCategorySelection =
+        context.getSharedPreferences("CategorySelection", Context.MODE_PRIVATE)
+
+
+    fun saveCategorySelection(model: CategorySelectionModel) {
+        sharedPreferencesForCategorySelection.edit().apply {
+            putBoolean("isGeneralSelected", model.isGeneralSelected)
+            putBoolean("isLikedSelected", model.isLikedSelected)
+            putBoolean("isBeYourselfSelected", model.isBeYourselfSelected)
+            putBoolean("isConfidenceSelected", model.isConfidenceSelected)
+            putBoolean("isShortQuotesSelected", model.isShortQuotesSelected)
+            putBoolean("isSelfImprovementSelected", model.isSelfImprovementSelected)
+            putBoolean("isLifeSelected", model.isLifeSelected)
+            putBoolean("isStrengthSelected", model.isStrengthSelected)
+            putBoolean("isPositivitySelected", model.isPositivitySelected)
+            putBoolean("isAnxietySelected", model.isAnxietySelected)
+            putBoolean("isSelfEsteemSelected", model.isSelfEsteemSelected)
+            putBoolean("isSelfLoveSelected", model.isSelfLoveSelected)
+            putBoolean("isSadnessSelected", model.isSadnessSelected)
+            putBoolean("isHeartBrokenSelected", model.isHeartBrokenSelected)
+            putBoolean("isWorkSelected", model.isWorkSelected)
+            putBoolean("isToxicRelationshipsSelected", model.isToxicRelationshipsSelected)
+            apply()
+        }
+    }
+
+
+    fun getCategorySelection(): CategorySelectionModel {
+        return CategorySelectionModel(
+            isGeneralSelected = sharedPreferencesForCategorySelection.getBoolean("isGeneralSelected", true),
+            isLikedSelected = sharedPreferencesForCategorySelection.getBoolean("isLikedSelected", false),
+            isBeYourselfSelected = sharedPreferencesForCategorySelection.getBoolean("isBeYourselfSelected", false),
+            isConfidenceSelected = sharedPreferencesForCategorySelection.getBoolean("isConfidenceSelected", false),
+            isShortQuotesSelected = sharedPreferencesForCategorySelection.getBoolean("isShortQuotesSelected", false),
+            isSelfImprovementSelected = sharedPreferencesForCategorySelection.getBoolean("isSelfImprovementSelected", false),
+            isLifeSelected = sharedPreferencesForCategorySelection.getBoolean("isLifeSelected", false),
+            isStrengthSelected = sharedPreferencesForCategorySelection.getBoolean("isStrengthSelected", false),
+            isPositivitySelected = sharedPreferencesForCategorySelection.getBoolean("isPositivitySelected", false),
+            isAnxietySelected = sharedPreferencesForCategorySelection.getBoolean("isAnxietySelected", false),
+            isSelfEsteemSelected = sharedPreferencesForCategorySelection.getBoolean("isSelfEsteemSelected", false),
+            isSelfLoveSelected = sharedPreferencesForCategorySelection.getBoolean("isSelfLoveSelected", false),
+            isSadnessSelected = sharedPreferencesForCategorySelection.getBoolean("isSadnessSelected", false),
+            isHeartBrokenSelected = sharedPreferencesForCategorySelection.getBoolean("isHeartBrokenSelected", false),
+            isWorkSelected = sharedPreferencesForCategorySelection.getBoolean("isWorkSelected", false),
+            isToxicRelationshipsSelected = sharedPreferencesForCategorySelection.getBoolean("isToxicRelationshipsSelected", false)
+        )
+    }
+
+
+    private fun isLikedListEmpty(): Boolean {
+        isLikedListEmpty.value = allQuotes.none { it.isLiked }
+        return isLikedListEmpty.value
+
+    }
+
+
+    fun updatePermissionStatus(value: Boolean = false) {
+        val key: String = "notificationPref"
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                sharedPreferences.edit().putBoolean(key, value).apply()
+            }
+        }
+    }
+
+    fun isPermissionGranted(): Boolean {
+        val key: String = "notificationPref"
+        return sharedPreferences.getBoolean(key, false)
+    }
+
+    // Belirli aralıklarla internet bağlantısını kontrol et
+    private fun startPeriodicConnectionCheck() {
+        viewModelScope.launch(Dispatchers.IO) {
+            while (true) { // Sonsuz döngü
+                checkConnection() // Bağlantıyı kontrol et
+                delay(30000) // 30 saniye bekle (30000 milisaniye)
+            }
+        }
+    }
+
+    fun isInternetAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val activeNetwork =
+                connectivityManager.getNetworkCapabilities(network) ?: return false
+            return when {
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                else -> false
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            val networkInfo = connectivityManager.activeNetworkInfo ?: return false
+            @Suppress("DEPRECATION")
+            return networkInfo.isConnected
+        }
+    }
+
+    private fun updateFcmToken() {
         try {
-            _quotes.value =
-                quoteUseCases.getQuote.executeRequest()
+            viewModelScope.launch(Dispatchers.IO) {
+                FirebaseMessaging.getInstance().subscribeToTopic("everyone")
+                    .addOnCompleteListener { task: Task<Void?> ->
+                        Log.d("erdem", task.result.toString())
+                        if (task.isSuccessful) {
+                            Log.d("spec1", "Successfully subscribed to topic")
+                        } else {
+                            Log.e("spec1", "Failed to subscribe to topic", task.exception)
+                        }
+                    }
+                val localToken = Firebase.messaging.token.await()
+                //send your fcm id to server
+                Log.d("erdem1212", localToken.toString())
+                val fcmToken = localToken.toString()
 
-            allQuotes = _quotes.value
+                val response = userUseCases.fcmEnrolment.executeRequest(fcmToken)
 
+                Log.d("fcmtestResults", response.message)
+
+
+            }
 
         } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-
-        }
-    }
-}
-
-
-private fun initializeUxDialogState() {
-    val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-    val showDialog = sharedPreferences.getBoolean("shouldShowUxDialog1", true)
-    _shouldShowUxDialog1.value = showDialog
-}
-
-private fun initializeUxDialogState2() {
-    val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-    val showDialog = sharedPreferences.getBoolean("shouldShowUxDialog2", true)
-    _shouldShowUxDialog2.value = showDialog
-}
-
-fun setShouldShowUxDialog1(show: Boolean) {
-    _shouldShowUxDialog1.value = show
-    val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-    sharedPreferences.edit().putBoolean("shouldShowUxDialog1", show).apply()
-    initializeUxDialogState()
-
-}
-
-fun setShouldShowUxDialog2(show: Boolean) {
-    _shouldShowUxDialog1.value = show
-    val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-    sharedPreferences.edit().putBoolean("shouldShowUxDialog2", show).apply()
-    initializeUxDialogState2()
-
-}
-
-//Permission operations
-private val sharedPreferences =
-    context.getSharedPreferences("PermissionPreferences", Context.MODE_PRIVATE)
-
-
-fun updatePermissionStatus(value: Boolean = false) {
-    val key: String = "notificationPref"
-    viewModelScope.launch {
-        withContext(Dispatchers.IO) {
-            sharedPreferences.edit().putBoolean(key, value).apply()
-        }
-    }
-}
-
-fun isPermissionGranted(): Boolean {
-    val key: String = "notificationPref"
-    return sharedPreferences.getBoolean(key, false)
-}
-
-// Belirli aralıklarla internet bağlantısını kontrol et
-private fun startPeriodicConnectionCheck() {
-    viewModelScope.launch(Dispatchers.IO) {
-        while (true) { // Sonsuz döngü
-            checkConnection() // Bağlantıyı kontrol et
-            delay(30000) // 30 saniye bekle (30000 milisaniye)
-        }
-    }
-}
-
-fun isInternetAvailable(context: Context): Boolean {
-    val connectivityManager =
-        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        val network = connectivityManager.activeNetwork ?: return false
-        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
-        return when {
-            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-            else -> false
-        }
-    } else {
-        @Suppress("DEPRECATION")
-        val networkInfo = connectivityManager.activeNetworkInfo ?: return false
-        @Suppress("DEPRECATION")
-        return networkInfo.isConnected
-    }
-}
-
-private fun updateFcmToken() {
-    try {
-        viewModelScope.launch(Dispatchers.IO) {
-            FirebaseMessaging.getInstance().subscribeToTopic("everyone")
-                .addOnCompleteListener { task: Task<Void?> ->
-                    Log.d("erdem", task.result.toString())
-                    if (task.isSuccessful) {
-                        Log.d("spec1", "Successfully subscribed to topic")
-                    } else {
-                        Log.e("spec1", "Failed to subscribe to topic", task.exception)
-                    }
-                }
-            val localToken = Firebase.messaging.token.await()
-            //send your fcm id to server
-            Log.d("erdem1212", localToken.toString())
-            val fcmToken = localToken.toString()
-
-            val response = userUseCases.fcmEnrolment.executeRequest(fcmToken)
-
-            Log.d("fcmtestResults", response.message)
-
 
         }
 
-    } catch (e: Exception) {
 
     }
-
-
-}
 
 
 }

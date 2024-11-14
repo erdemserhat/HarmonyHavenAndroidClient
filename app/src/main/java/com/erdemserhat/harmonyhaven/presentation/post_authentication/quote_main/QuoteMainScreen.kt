@@ -3,9 +3,11 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -13,13 +15,16 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -51,6 +56,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -59,7 +65,9 @@ import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.FullScreenImage
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenProgressIndicator
 import com.erdemserhat.harmonyhaven.ui.theme.georgiaFont
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -133,6 +141,7 @@ fun QuoteMainContent(
 
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun QuoteVerticalList1(
@@ -143,6 +152,7 @@ fun QuoteVerticalList1(
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val coroutineScope = rememberCoroutineScope()
 
+
     if (quoteList.isNotEmpty()) {
         val pagerState = rememberPagerState(pageCount = {
             quoteList.size
@@ -150,46 +160,122 @@ fun QuoteVerticalList1(
 
         Box(modifier = modifier) {
 
-            CategoryPickerModalBottomSheet(
-                sheetState = sheetState,
-                onShouldFilterQuotes = {
-                    viewmodel.filterQuotes(it)
+            val isLikedListEmpty by viewmodel.isLikedListEmpty.collectAsState()
+            var categoryPicker by rememberSaveable(stateSaver = categorySelectionSaver) {
+                mutableStateOf(CategorySelectionModel())
+            }
+            LaunchedEffect(Unit) {
+                coroutineScope.launch {
+                    categoryPicker = viewmodel.getCategorySelection()
 
                 }
+            }
+
+
+            CategoryPickerModalBottomSheet(
+                sheetState = sheetState,
+                onShouldFilterQuotes = {category,shouldShuffle->
+                    viewmodel.filterQuotes(category,shouldShuffle)
+
+                },
+                onSaveCategorySelection = {
+                    viewmodel.saveCategorySelection(it)
+
+                },
+                isLikedListEmpty =  isLikedListEmpty,
+                onGetCategorySelectionModel = viewmodel.getCategorySelection()
 
 
             )
 
-            VerticalPager(
-                userScrollEnabled = true,
 
+            /*
+
+            LaunchedEffect(key1 = pagerState.currentPage) {
+                if (pagerState.currentPage >= pagerState.pageCount - 1) {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(
+                            0,
+                            animationSpec = tween(durationMillis = 1000)
+                        )
+                    }
+
+                }
+            }
+
+
+
+
+
+            LaunchedEffect(key1 = quoteList) {
+                    coroutineScope.launch {
+                        if(!pagerState.isScrollInProgress){
+                            pagerState.animateScrollToPage(
+                                0,
+                                animationSpec = tween(durationMillis = 1000)
+                            )
+
+                        }
+
+                        // Animasyon tamamlandığında bayrağı false yapıyoruz
+                    }
+
+            }
+
+
+             */
+
+
+
+
+
+            VerticalPager(
                 modifier = Modifier
                     .fillMaxSize()
                     .align(Alignment.Center),
                 state = pagerState
             ) { page ->
-                val quote = quoteList[page]
 
                 // Aktif ve önceki sayfanın görünürlüğünü kontrol edelim
                 val isCurrentPageVisible = pagerState.currentPage == page
                 val isPreviousPageVisible = pagerState.currentPage == page + 1
 
-                Quote(
-                    quote = quote,
-                    isVisible = isCurrentPageVisible || isPreviousPageVisible,
-                    isCurrentPage = isCurrentPageVisible,
-                    modifier = Modifier.zIndex(2f),
-                    viewmodel = viewmodel,
-                    onCommentClicked = {
-                        coroutineScope.launch {
-                            sheetState.show()
 
-                        }
-                    }
-                )
+                Crossfade(targetState = quoteList[page], label = "") { quote ->
+                    Quote(
+                        quote = quote,
+                        isVisible = isCurrentPageVisible || isPreviousPageVisible,
+                        isCurrentPage = isCurrentPageVisible,
+                        modifier = Modifier.zIndex(2f),
+                        viewmodel = viewmodel,
+                        onCommentClicked = {
+                            coroutineScope.launch {
+                                sheetState.show()
+                            }
+                        },
+                        onReachedToLastPage = {
+                            if(pagerState.currentPage == pagerState.pageCount - 1){
+                                    coroutineScope.launch {
+                                        pagerState.animateScrollToPage(
+                                            0,
+                                            animationSpec = tween(durationMillis = 1000)
+                                        )
+                                    }
+                                }
+
+
+                        },
+                    )
+                }
 
 
             }
+        }
+    }else{
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+
+            HarmonyHavenProgressIndicator()
+
         }
     }
 }
@@ -203,13 +289,34 @@ fun Quote(
     isCurrentPage: Boolean, // Aktif sayfa olup olmadığını kontrol eder
     modifier: Modifier = Modifier,
     viewmodel: QuoteMainViewModel,
-    onCommentClicked:()->Unit
+    onCommentClicked: () -> Unit,
+    onReachedToLastPage: () -> Unit
 ) {
-    var isQuoteLiked by rememberSaveable { mutableStateOf(quote.isLiked) }
+    var isQuoteLiked by remember { mutableStateOf(quote.isLiked) }
     var isVisibleLikeAnimation by remember { mutableStateOf(false) }
     var shouldAnimateLikeButton by remember { mutableStateOf(false) }
     var categoryPageVisible by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+
+
+    LaunchedEffect(quote) {
+        coroutineScope.launch {
+            delay(1500)
+            onReachedToLastPage()
+        }
+
+
+
+    }
+
+
+
+
+
+    LaunchedEffect(quote.isLiked) {
+        isQuoteLiked = quote.isLiked
+    }
+
 
 
     Box(
@@ -218,13 +325,17 @@ fun Quote(
             .pointerInput(Unit) {
                 detectTapGestures(
                     onDoubleTap = {
+
                         isQuoteLiked = true
                         isVisibleLikeAnimation = true
                         viewmodel.likeQuote(quote.id)
                         shouldAnimateLikeButton = true
 
-                    }
-                )
+                    },
+
+                    )
+
+
             }
     ) {
         //Box(modifier = Modifier.align(Alignment.BottomStart).zIndex(2f)){
@@ -262,10 +373,14 @@ fun Quote(
                 onLikeClicked = {
                     shouldAnimateLikeButton = true
                     isQuoteLiked = it
-                    if (isQuoteLiked)
+                    if (isQuoteLiked) {
                         viewmodel.likeQuote(quote.id)
-                    else
+                    } else {
                         viewmodel.removeLikeQuote(quote.id)
+                        viewmodel.removeLikedInternally(quote.id)
+
+
+                    }
 
                 },
                 onAnimationEnd = { shouldAnimateLikeButton = false }
@@ -470,6 +585,7 @@ fun LikeAnimationWithClickEffect(
 
     // Tıklama efektini başlat
     LaunchedEffect(isQuoteLiked) {
+
         coroutineScope.launch {
             if (shouldAnimate) {
                 // Tıklandığında büyüme animasyonu
@@ -532,6 +648,41 @@ private fun sfsdf() {
     //     .background(Color.Red)) {
     //     BottomSheetExample()
     // }
+
+
+
+}
+
+
+@Composable
+fun ShakingComponent(content: @Composable (Dp) -> Unit) {
+    // Titreme efektini kontrol etmek için bir animasyon durumu oluşturuyoruz
+    val shakeAnim = remember { Animatable(0f) }
+
+    // Titreme animasyonunu başlatmak için bir LaunchedEffect bloğu kullanıyoruz
+    LaunchedEffect(Unit) {
+        repeat(5) { // Titreme hareketini 5 kez tekrarlayacak
+            shakeAnim.animateTo(
+                targetValue = 1f, // Sağ tarafa hareket
+                animationSpec = tween(durationMillis = 100)
+            )
+            shakeAnim.animateTo(
+                targetValue = -1f, // Sol tarafa hareket
+                animationSpec = tween(durationMillis = 100)
+            )
+        }
+
+
+
+        shakeAnim.animateTo(
+            targetValue = 0f, // Bileşeni orijinal konumuna geri döndür
+            animationSpec = tween(durationMillis = 100)
+        )
+    }
+
+    content(shakeAnim.value.dp)
+
+
 
 }
 

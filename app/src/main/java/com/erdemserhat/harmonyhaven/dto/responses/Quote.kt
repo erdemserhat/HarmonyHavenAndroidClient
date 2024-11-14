@@ -9,5 +9,5 @@ data class Quote(
     val writer:String,
     val imageUrl:String,
     val quoteCategory:Int,
-    val isLiked: Boolean
-)
+    var isLiked: Boolean
+){}

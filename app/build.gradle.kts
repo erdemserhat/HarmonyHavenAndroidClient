@@ -57,7 +57,7 @@ android {
         }
 
         debug {
-            buildConfigField("String", "SERVER_URL", "\"http://192.168.137.232:5000/api/\"")
+            buildConfigField("String", "SERVER_URL", "\"http://192.168.137.126:5000/api/\"")
             //buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/\"")
 
 

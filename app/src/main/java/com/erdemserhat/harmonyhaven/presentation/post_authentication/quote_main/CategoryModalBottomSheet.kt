@@ -1,6 +1,8 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
 
+import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -28,7 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -36,37 +39,38 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenIndicatorColor
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 // Define the Saver
 val categorySelectionSaver = Saver<CategorySelectionModel, List<Boolean>>(
-    save = { listOf(
-        it.isGeneralSelected,
-        it.isLikedSelected,
-        it.isBeYourselfSelected,
-        it.isConfidenceSelected,
-        it.isShortQuotesSelected,
-        it.isSelfImprovementSelected,
-        it.isLifeSelected,
-        it.isStrengthSelected,
-        it.isPositivitySelected,
-        it.isAnxietySelected,
-        it.isSelfEsteemSelected,
-        it.isSelfLoveSelected,
-        it.isSadnessSelected,
-        it.isHeartBrokenSelected,
-        it.isWorkSelected,
-        it.isToxicRelationshipsSelected
-    ) },
+    save = {
+        listOf(
+            it.isGeneralSelected,
+            it.isLikedSelected,
+            it.isBeYourselfSelected,
+            it.isConfidenceSelected,
+            it.isShortQuotesSelected,
+            it.isSelfImprovementSelected,
+            it.isLifeSelected,
+            it.isStrengthSelected,
+            it.isPositivitySelected,
+            it.isAnxietySelected,
+            it.isSelfEsteemSelected,
+            it.isSelfLoveSelected,
+            it.isSadnessSelected,
+            it.isHeartBrokenSelected,
+            it.isWorkSelected,
+            it.isToxicRelationshipsSelected
+        )
+    },
     restore = {
         CategorySelectionModel(
             isGeneralSelected = it[0],
@@ -90,7 +94,6 @@ val categorySelectionSaver = Saver<CategorySelectionModel, List<Boolean>>(
 )
 
 
-
 data class CategorySelectionModel(
     var isGeneralSelected: Boolean = true,
     var isLikedSelected: Boolean = false,
@@ -109,29 +112,111 @@ data class CategorySelectionModel(
     var isWorkSelected: Boolean = false,
     var isToxicRelationshipsSelected: Boolean = false,
 
-    ){
+    ) {
+    fun nothingSelected(): Boolean {
+        return !isGeneralSelected &&
+                !isLikedSelected &&
+                !isBeYourselfSelected &&
+                !isConfidenceSelected &&
+                !isShortQuotesSelected &&
+                !isSelfImprovementSelected &&
+                !isLifeSelected &&
+                !isStrengthSelected &&
+                !isPositivitySelected &&
+                !isAnxietySelected &&
+                !isSelfEsteemSelected &&
+                !isSelfLoveSelected &&
+                !isSadnessSelected &&
+                !isHeartBrokenSelected &&
+                !isWorkSelected &&
+                !isToxicRelationshipsSelected
+    }
+
+    fun isOnlyGeneralSelected(): Boolean {
+        return isGeneralSelected &&
+                !isLikedSelected &&
+                !isBeYourselfSelected &&
+                !isConfidenceSelected &&
+                !isShortQuotesSelected &&
+                !isSelfImprovementSelected &&
+                !isLifeSelected &&
+                !isStrengthSelected &&
+                !isPositivitySelected &&
+                !isAnxietySelected &&
+                !isSelfEsteemSelected &&
+                !isSelfLoveSelected &&
+                !isSadnessSelected &&
+                !isHeartBrokenSelected &&
+                !isWorkSelected &&
+                !isToxicRelationshipsSelected
+    }
+
+    fun deselectGeneralIfOtherSelected() {
+        if (isGeneralSelected &&
+            (isLikedSelected || isBeYourselfSelected || isConfidenceSelected || isShortQuotesSelected ||
+                    isSelfImprovementSelected || isLifeSelected || isStrengthSelected || isPositivitySelected ||
+                    isAnxietySelected || isSelfEsteemSelected || isSelfLoveSelected || isSadnessSelected ||
+                    isHeartBrokenSelected || isWorkSelected || isToxicRelationshipsSelected)
+        ) {
+            if (isLikedSelected) {
+                isGeneralSelected = false
+
+            }
+        }
+    }
 
 }
+
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun CategoryPickerModalBottomSheet(
     sheetState: ModalBottomSheetState,
-    onShouldFilterQuotes:(CategorySelectionModel)->Unit
+    onShouldFilterQuotes: (CategorySelectionModel,Boolean) -> Unit,
+    onSaveCategorySelection: (CategorySelectionModel) -> Unit,
+    onGetCategorySelectionModel: CategorySelectionModel,
+    isLikedListEmpty: Boolean = false
 
 ) {
-
     var categoryPicker by rememberSaveable(stateSaver = categorySelectionSaver) {
         mutableStateOf(CategorySelectionModel())
     }
 
-    LaunchedEffect(categoryPicker){
-        Log.d("dsadsa", categoryPicker.toString())
+    val context = LocalContext.current
 
-        onShouldFilterQuotes(categoryPicker)
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            categoryPicker = onGetCategorySelectionModel
+
+        }
+    }
+
+    val updateList = {
+        coroutineScope.launch {
+            if (categoryPicker.nothingSelected()) {
+                categoryPicker.isGeneralSelected = true
+            }
+
+            onSaveCategorySelection(categoryPicker)
+            onShouldFilterQuotes(categoryPicker,true)
+
+
+        }
+    }
+
+    LaunchedEffect(categoryPicker.isGeneralSelected) {
+        if(categoryPicker.isGeneralSelected){
+            categoryPicker = CategorySelectionModel()
+        }
+
 
     }
+
+
+
+
 
 
 
@@ -193,9 +278,15 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.spiritual,
                             isSelected = categoryPicker.isGeneralSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isGeneralSelected = !categoryPicker.isGeneralSelected
-                                )
+                                if (!categoryPicker.isOnlyGeneralSelected()) {
+                                    categoryPicker = categoryPicker.copy(
+                                        isGeneralSelected = !categoryPicker.isGeneralSelected
+                                    )
+                                }
+
+                                updateList()
+
+
                             }
                         )
 
@@ -204,9 +295,32 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.favorites,
                             isSelected = categoryPicker.isLikedSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isLikedSelected = !categoryPicker.isLikedSelected
-                                )
+                                if(categoryPicker.isLikedSelected){
+                                    categoryPicker = categoryPicker.copy(
+                                        isLikedSelected = false,
+                                        isGeneralSelected = categoryPicker.isGeneralSelected
+
+                                    )
+
+
+                                    updateList()
+                                    return@QuoteCategory
+
+                                }
+
+
+                                if(!isLikedListEmpty){
+                                    categoryPicker = categoryPicker.copy(
+                                        isLikedSelected = !categoryPicker.isLikedSelected,
+                                        isGeneralSelected = if (!categoryPicker.isLikedSelected) false else categoryPicker.isGeneralSelected
+
+                                    )
+                                    updateList()
+                                }else{
+                                    Toast.makeText(context,"Beğendiğiniz Gönderi Bulunmuyor.",Toast.LENGTH_SHORT).show()
+                                }
+
+
                             }
                         )
                     }
@@ -216,16 +330,21 @@ fun CategoryPickerModalBottomSheet(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        QuoteCategory(
-                            title = "Kendin Ol",
-                            icon = R.drawable.beyourself,
-                            isSelected = categoryPicker.isBeYourselfSelected,
-                            onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isBeYourselfSelected = !categoryPicker.isBeYourselfSelected
-                                )
-                            }
-                        )
+
+                            QuoteCategory(
+                                title = "Kendin Ol",
+                                icon = R.drawable.beyourself,
+                                isSelected = categoryPicker.isBeYourselfSelected,
+                                onClick = {
+                                    categoryPicker = categoryPicker.copy(
+                                        isBeYourselfSelected = !categoryPicker.isBeYourselfSelected,
+                                        isGeneralSelected = if (!categoryPicker.isBeYourselfSelected) false else categoryPicker.isGeneralSelected
+                                    )
+                                    updateList()
+                                }
+                            )
+
+
 
                         QuoteCategory(
                             title = "Özgüven",
@@ -233,8 +352,12 @@ fun CategoryPickerModalBottomSheet(
                             isSelected = categoryPicker.isConfidenceSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isConfidenceSelected = !categoryPicker.isConfidenceSelected
+                                    isConfidenceSelected = !categoryPicker.isConfidenceSelected,
+                                    isGeneralSelected = if (!categoryPicker.isConfidenceSelected) false else categoryPicker.isGeneralSelected
+
+
                                 )
+                                updateList()
                             }
                         )
                     }
@@ -250,8 +373,12 @@ fun CategoryPickerModalBottomSheet(
                             isSelected = categoryPicker.isShortQuotesSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isShortQuotesSelected = !categoryPicker.isShortQuotesSelected
+                                    isShortQuotesSelected = !categoryPicker.isShortQuotesSelected,
+                                    isGeneralSelected = if (!categoryPicker.isShortQuotesSelected) false else categoryPicker.isGeneralSelected
+
+
                                 )
+                                updateList()
                             }
                         )
 
@@ -261,8 +388,11 @@ fun CategoryPickerModalBottomSheet(
                             isSelected = categoryPicker.isSelfImprovementSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isSelfImprovementSelected = !categoryPicker.isSelfImprovementSelected
+                                    isSelfImprovementSelected = !categoryPicker.isSelfImprovementSelected,
+                                    isGeneralSelected = if (!categoryPicker.isSelfImprovementSelected) false else categoryPicker.isGeneralSelected
+
                                 )
+                                updateList()
                             }
                         )
                     }
@@ -278,8 +408,11 @@ fun CategoryPickerModalBottomSheet(
                             isSelected = categoryPicker.isLifeSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isLifeSelected = !categoryPicker.isLifeSelected
+                                    isLifeSelected = !categoryPicker.isLifeSelected,
+                                    isGeneralSelected = if (!categoryPicker.isLifeSelected) false else categoryPicker.isGeneralSelected
+
                                 )
+                                updateList()
                             }
                         )
 
@@ -289,8 +422,11 @@ fun CategoryPickerModalBottomSheet(
                             isSelected = categoryPicker.isStrengthSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isStrengthSelected = !categoryPicker.isStrengthSelected
+                                    isStrengthSelected = !categoryPicker.isStrengthSelected,
+                                    isGeneralSelected = if (!categoryPicker.isStrengthSelected) false else categoryPicker.isGeneralSelected
+
                                 )
+                                updateList()
                             }
                         )
                     }
@@ -306,8 +442,11 @@ fun CategoryPickerModalBottomSheet(
                             isSelected = categoryPicker.isPositivitySelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isPositivitySelected = !categoryPicker.isPositivitySelected
+                                    isPositivitySelected = !categoryPicker.isPositivitySelected,
+                                    isGeneralSelected = if (!categoryPicker.isPositivitySelected) false else categoryPicker.isGeneralSelected
+
                                 )
+                                updateList()
                             }
                         )
 
@@ -317,8 +456,11 @@ fun CategoryPickerModalBottomSheet(
                             isSelected = categoryPicker.isAnxietySelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isAnxietySelected = !categoryPicker.isAnxietySelected
+                                    isAnxietySelected = !categoryPicker.isAnxietySelected,
+                                    isGeneralSelected = if (!categoryPicker.isAnxietySelected) false else categoryPicker.isGeneralSelected
+
                                 )
+                                updateList()
                             }
                         )
                     }
@@ -334,8 +476,11 @@ fun CategoryPickerModalBottomSheet(
                             isSelected = categoryPicker.isSelfEsteemSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isSelfEsteemSelected = !categoryPicker.isSelfEsteemSelected
+                                    isSelfEsteemSelected = !categoryPicker.isSelfEsteemSelected,
+                                    isGeneralSelected = if (!categoryPicker.isSelfEsteemSelected) false else categoryPicker.isGeneralSelected
+
                                 )
+                                updateList()
                             }
                         )
 
@@ -345,8 +490,11 @@ fun CategoryPickerModalBottomSheet(
                             isSelected = categoryPicker.isSelfLoveSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isSelfLoveSelected = !categoryPicker.isSelfLoveSelected
+                                    isSelfLoveSelected = !categoryPicker.isSelfLoveSelected,
+                                    isGeneralSelected = if (!categoryPicker.isSelfLoveSelected) false else categoryPicker.isGeneralSelected
+
                                 )
+                                updateList()
                             }
                         )
                     }
@@ -362,8 +510,11 @@ fun CategoryPickerModalBottomSheet(
                             isSelected = categoryPicker.isSadnessSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isSadnessSelected = !categoryPicker.isSadnessSelected
+                                    isSadnessSelected = !categoryPicker.isSadnessSelected,
+                                    isGeneralSelected = if (!categoryPicker.isSadnessSelected) false else categoryPicker.isGeneralSelected
+
                                 )
+                                updateList()
                             }
                         )
 
@@ -373,8 +524,11 @@ fun CategoryPickerModalBottomSheet(
                             isSelected = categoryPicker.isHeartBrokenSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isHeartBrokenSelected = !categoryPicker.isHeartBrokenSelected
+                                    isHeartBrokenSelected = !categoryPicker.isHeartBrokenSelected,
+                                    isGeneralSelected = if (!categoryPicker.isHeartBrokenSelected) false else categoryPicker.isGeneralSelected
+
                                 )
+                                updateList()
                             }
                         )
                     }
@@ -390,8 +544,11 @@ fun CategoryPickerModalBottomSheet(
                             isSelected = categoryPicker.isWorkSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isWorkSelected = !categoryPicker.isWorkSelected
+                                    isWorkSelected = !categoryPicker.isWorkSelected,
+                                    isGeneralSelected = if (!categoryPicker.isWorkSelected) false else categoryPicker.isGeneralSelected
+
                                 )
+                                updateList()
                             }
                         )
 
@@ -401,8 +558,11 @@ fun CategoryPickerModalBottomSheet(
                             isSelected = categoryPicker.isToxicRelationshipsSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isToxicRelationshipsSelected = !categoryPicker.isToxicRelationshipsSelected
+                                    isToxicRelationshipsSelected = !categoryPicker.isToxicRelationshipsSelected,
+                                    isGeneralSelected = if (!categoryPicker.isToxicRelationshipsSelected) false else categoryPicker.isGeneralSelected
+
                                 )
+                                updateList()
                             }
                         )
                     }
