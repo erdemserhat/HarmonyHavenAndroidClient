@@ -361,7 +361,7 @@ fun Quote(
             modifier = Modifier
                 .padding(10.dp)
                 .align(Alignment.BottomEnd)
-                .zIndex(2f),
+                .zIndex(4f),
             horizontalAlignment = Alignment.CenterHorizontally
 
         ) {

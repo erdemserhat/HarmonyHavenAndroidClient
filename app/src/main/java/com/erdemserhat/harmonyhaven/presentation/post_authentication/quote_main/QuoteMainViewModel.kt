@@ -97,8 +97,9 @@ class QuoteMainViewModel @Inject constructor(
     fun likeQuote(quoteId: Int) {
         viewModelScope.launch {
             try {
-                quoteUseCases.likeQuote.executeRequest(quoteId)
                 markAsLikedInternally(quoteId)
+                quoteUseCases.likeQuote.executeRequest(quoteId)
+
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -109,6 +110,7 @@ class QuoteMainViewModel @Inject constructor(
     fun removeLikeQuote(quoteId: Int) {
         viewModelScope.launch {
             try {
+                removeLikedInternally(quoteId)
                 quoteUseCases.removeLike.executeRequest(quoteId)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -254,6 +256,14 @@ class QuoteMainViewModel @Inject constructor(
 
 
         _quotes.value = if (shouldShuffle) filteredQuotes.shuffled() else filteredQuotes.toList()
+        _quotes.value.forEach{
+            if(it.isLiked){
+                isLikedListEmpty.value = false
+                return@forEach
+
+            }
+
+        }
 
 
     }
@@ -294,6 +304,12 @@ class QuoteMainViewModel @Inject constructor(
                     quoteUseCases.getQuote.executeRequest()
 
                 allQuotes = _quotes.value
+                allQuotes.forEach {
+                    if(it.isLiked){
+                        isLikedListEmpty.value = false
+                        return@forEach
+                    }
+                }
 
 
             } catch (e: Exception) {

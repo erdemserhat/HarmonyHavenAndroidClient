@@ -182,16 +182,9 @@ fun CategoryPickerModalBottomSheet(
     var categoryPicker by rememberSaveable(stateSaver = categorySelectionSaver) {
         mutableStateOf(CategorySelectionModel())
     }
+    val coroutineScope = rememberCoroutineScope()
 
     val context = LocalContext.current
-
-    val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(Unit) {
-        coroutineScope.launch {
-            categoryPicker = onGetCategorySelectionModel
-
-        }
-    }
 
     val updateList = {
         coroutineScope.launch {
@@ -205,6 +198,23 @@ fun CategoryPickerModalBottomSheet(
 
         }
     }
+
+
+
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            categoryPicker = onGetCategorySelectionModel
+            if(categoryPicker.isLikedSelected){
+                if(isLikedListEmpty){
+                    categoryPicker.isLikedSelected = false
+                }
+            }
+            updateList()
+
+        }
+    }
+
 
     LaunchedEffect(categoryPicker.isGeneralSelected) {
         if(categoryPicker.isGeneralSelected){
@@ -222,7 +232,7 @@ fun CategoryPickerModalBottomSheet(
 
     ModalBottomSheetLayout(
         modifier = Modifier
-            .zIndex(3f)
+            .zIndex(4f)
             .background(Color.Transparent),
         sheetBackgroundColor = Color.Transparent,
         scrimColor = Color.Black.copy(alpha = 0.4f),
@@ -295,6 +305,7 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.favorites,
                             isSelected = categoryPicker.isLikedSelected,
                             onClick = {
+                                updateList()
                                 if(categoryPicker.isLikedSelected){
                                     categoryPicker = categoryPicker.copy(
                                         isLikedSelected = false,
@@ -303,10 +314,12 @@ fun CategoryPickerModalBottomSheet(
                                     )
 
 
-                                    updateList()
+
                                     return@QuoteCategory
 
                                 }
+
+                                Log.d("dsadsadsa",isLikedListEmpty.toString())
 
 
                                 if(!isLikedListEmpty){
