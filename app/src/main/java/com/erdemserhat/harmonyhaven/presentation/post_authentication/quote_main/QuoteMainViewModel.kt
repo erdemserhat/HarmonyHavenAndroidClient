@@ -136,23 +136,6 @@ class QuoteMainViewModel @Inject constructor(
         categorySelectionModel: CategorySelectionModel,
         shouldShuffle: Boolean = true
     ) {
-        val categoryMap = mapOf(
-            1 to "Genel",
-            2 to "Kendin Ol",
-            3 to "Özgüven",
-            5 to "Kısa Alıntılar",
-            6 to "Kişisel Gelişim",
-            7 to "Yaşam",
-            8 to "Güç",
-            9 to "Pozitif Düşünmek",
-            10 to "Kaygıyla Başetme",
-            11 to "Öz Saygı",
-            12 to "İzzetinefis",
-            13 to "Üzüntü",
-            14 to "Kalbi Kırık",
-            15 to "İş",
-            16 to "Toksik İlişkiler"
-        )
 
         val filteredQuotes: MutableSet<Quote> = mutableSetOf()
         _quotes.value = filteredQuotes.toList()
@@ -176,11 +159,6 @@ class QuoteMainViewModel @Inject constructor(
             }
         }
 
-        if (categorySelectionModel.isShortQuotesSelected) {
-            allQuotes.filter { it.quoteCategory == 5 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
 
         if (categorySelectionModel.isSelfImprovementSelected) {
             allQuotes.filter { it.quoteCategory == 6 }.forEach {
@@ -218,12 +196,6 @@ class QuoteMainViewModel @Inject constructor(
             }
         }
 
-        if (categorySelectionModel.isSelfLoveSelected) {
-            allQuotes.filter { it.quoteCategory == 12 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
         if (categorySelectionModel.isSadnessSelected) {
             allQuotes.filter { it.quoteCategory == 13 }.forEach {
                 filteredQuotes.add(it)
@@ -236,11 +208,12 @@ class QuoteMainViewModel @Inject constructor(
             }
         }
 
-        if (categorySelectionModel.isHeartBrokenSelected) {
+        if (categorySelectionModel.isContinuingLifeSelected) {
             allQuotes.filter { it.quoteCategory == 14 }.forEach {
                 filteredQuotes.add(it)
             }
         }
+
 
         if (categorySelectionModel.isWorkSelected) {
             allQuotes.filter { it.quoteCategory == 15 }.forEach {
@@ -248,8 +221,34 @@ class QuoteMainViewModel @Inject constructor(
             }
         }
 
+
         if (categorySelectionModel.isToxicRelationshipsSelected) {
             allQuotes.filter { it.quoteCategory == 16 }.forEach {
+                filteredQuotes.add(it)
+            }
+        }
+
+        if (categorySelectionModel.isSeparationSelected) {
+            allQuotes.filter { it.quoteCategory == 17 }.forEach {
+                filteredQuotes.add(it)
+            }
+        }
+
+
+        if (categorySelectionModel.isCourageSelected) {
+            allQuotes.filter { it.quoteCategory == 18 }.forEach {
+                filteredQuotes.add(it)
+            }
+        }
+        if (categorySelectionModel.isSportSelected) {
+            allQuotes.filter { it.quoteCategory == 19 }.forEach {
+                filteredQuotes.add(it)
+            }
+        }
+
+
+        if (categorySelectionModel.isLoveSelected) {
+            allQuotes.filter { it.quoteCategory == 20 }.forEach {
                 filteredQuotes.add(it)
             }
         }
@@ -363,45 +362,54 @@ class QuoteMainViewModel @Inject constructor(
 
     fun saveCategorySelection(model: CategorySelectionModel) {
         sharedPreferencesForCategorySelection.edit().apply {
-            putBoolean("isGeneralSelected", model.isGeneralSelected)
-            putBoolean("isLikedSelected", model.isLikedSelected)
-            putBoolean("isBeYourselfSelected", model.isBeYourselfSelected)
-            putBoolean("isConfidenceSelected", model.isConfidenceSelected)
-            putBoolean("isShortQuotesSelected", model.isShortQuotesSelected)
-            putBoolean("isSelfImprovementSelected", model.isSelfImprovementSelected)
-            putBoolean("isLifeSelected", model.isLifeSelected)
-            putBoolean("isStrengthSelected", model.isStrengthSelected)
-            putBoolean("isPositivitySelected", model.isPositivitySelected)
-            putBoolean("isAnxietySelected", model.isAnxietySelected)
-            putBoolean("isSelfEsteemSelected", model.isSelfEsteemSelected)
-            putBoolean("isSelfLoveSelected", model.isSelfLoveSelected)
-            putBoolean("isSadnessSelected", model.isSadnessSelected)
-            putBoolean("isHeartBrokenSelected", model.isHeartBrokenSelected)
-            putBoolean("isWorkSelected", model.isWorkSelected)
-            putBoolean("isToxicRelationshipsSelected", model.isToxicRelationshipsSelected)
+            val selectionMap = mapOf(
+                "isGeneralSelected" to model.isGeneralSelected,
+                "isLikedSelected" to model.isLikedSelected,
+                "isBeYourselfSelected" to model.isBeYourselfSelected,
+                "isConfidenceSelected" to model.isConfidenceSelected,
+                "isSelfImprovementSelected" to model.isSelfImprovementSelected,
+                "isLifeSelected" to model.isLifeSelected,
+                "isStrengthSelected" to model.isStrengthSelected,
+                "isPositivitySelected" to model.isPositivitySelected,
+                "isAnxietySelected" to model.isAnxietySelected,
+                "isSelfEsteemSelected" to model.isSelfEsteemSelected,
+                "isSadnessSelected" to model.isSadnessSelected,
+                "isWorkSelected" to model.isWorkSelected,
+                "isToxicRelationshipsSelected" to model.isToxicRelationshipsSelected,
+                "isContinuingLifeSelected" to model.isContinuingLifeSelected,
+                "isSeparationSelected" to model.isSeparationSelected,
+                "isCourageSelected" to model.isCourageSelected,
+                "isSportSelected" to model.isSportSelected,
+                "isLoveSelected" to model.isLoveSelected
+            )
+            selectionMap.forEach { (key, value) -> putBoolean(key, value) }
             apply()
         }
     }
 
 
     fun getCategorySelection(): CategorySelectionModel {
+        val defaultValues = CategorySelectionModel() // Use the default values from the data class
+
         return CategorySelectionModel(
-            isGeneralSelected = sharedPreferencesForCategorySelection.getBoolean("isGeneralSelected", true),
-            isLikedSelected = sharedPreferencesForCategorySelection.getBoolean("isLikedSelected", false),
-            isBeYourselfSelected = sharedPreferencesForCategorySelection.getBoolean("isBeYourselfSelected", false),
-            isConfidenceSelected = sharedPreferencesForCategorySelection.getBoolean("isConfidenceSelected", false),
-            isShortQuotesSelected = sharedPreferencesForCategorySelection.getBoolean("isShortQuotesSelected", false),
-            isSelfImprovementSelected = sharedPreferencesForCategorySelection.getBoolean("isSelfImprovementSelected", false),
-            isLifeSelected = sharedPreferencesForCategorySelection.getBoolean("isLifeSelected", false),
-            isStrengthSelected = sharedPreferencesForCategorySelection.getBoolean("isStrengthSelected", false),
-            isPositivitySelected = sharedPreferencesForCategorySelection.getBoolean("isPositivitySelected", false),
-            isAnxietySelected = sharedPreferencesForCategorySelection.getBoolean("isAnxietySelected", false),
-            isSelfEsteemSelected = sharedPreferencesForCategorySelection.getBoolean("isSelfEsteemSelected", false),
-            isSelfLoveSelected = sharedPreferencesForCategorySelection.getBoolean("isSelfLoveSelected", false),
-            isSadnessSelected = sharedPreferencesForCategorySelection.getBoolean("isSadnessSelected", false),
-            isHeartBrokenSelected = sharedPreferencesForCategorySelection.getBoolean("isHeartBrokenSelected", false),
-            isWorkSelected = sharedPreferencesForCategorySelection.getBoolean("isWorkSelected", false),
-            isToxicRelationshipsSelected = sharedPreferencesForCategorySelection.getBoolean("isToxicRelationshipsSelected", false)
+            isGeneralSelected = sharedPreferencesForCategorySelection.getBoolean("isGeneralSelected", defaultValues.isGeneralSelected),
+            isLikedSelected = sharedPreferencesForCategorySelection.getBoolean("isLikedSelected", defaultValues.isLikedSelected),
+            isBeYourselfSelected = sharedPreferencesForCategorySelection.getBoolean("isBeYourselfSelected", defaultValues.isBeYourselfSelected),
+            isConfidenceSelected = sharedPreferencesForCategorySelection.getBoolean("isConfidenceSelected", defaultValues.isConfidenceSelected),
+            isSelfImprovementSelected = sharedPreferencesForCategorySelection.getBoolean("isSelfImprovementSelected", defaultValues.isSelfImprovementSelected),
+            isLifeSelected = sharedPreferencesForCategorySelection.getBoolean("isLifeSelected", defaultValues.isLifeSelected),
+            isStrengthSelected = sharedPreferencesForCategorySelection.getBoolean("isStrengthSelected", defaultValues.isStrengthSelected),
+            isPositivitySelected = sharedPreferencesForCategorySelection.getBoolean("isPositivitySelected", defaultValues.isPositivitySelected),
+            isAnxietySelected = sharedPreferencesForCategorySelection.getBoolean("isAnxietySelected", defaultValues.isAnxietySelected),
+            isSelfEsteemSelected = sharedPreferencesForCategorySelection.getBoolean("isSelfEsteemSelected", defaultValues.isSelfEsteemSelected),
+            isSadnessSelected = sharedPreferencesForCategorySelection.getBoolean("isSadnessSelected", defaultValues.isSadnessSelected),
+            isContinuingLifeSelected = sharedPreferencesForCategorySelection.getBoolean("isContinuingLifeSelected", defaultValues.isContinuingLifeSelected),
+            isWorkSelected = sharedPreferencesForCategorySelection.getBoolean("isWorkSelected", defaultValues.isWorkSelected),
+            isToxicRelationshipsSelected = sharedPreferencesForCategorySelection.getBoolean("isToxicRelationshipsSelected", defaultValues.isToxicRelationshipsSelected),
+            isSeparationSelected = sharedPreferencesForCategorySelection.getBoolean("isSeparationSelected", defaultValues.isSeparationSelected),
+            isCourageSelected = sharedPreferencesForCategorySelection.getBoolean("isCourageSelected", defaultValues.isCourageSelected),
+            isSportSelected = sharedPreferencesForCategorySelection.getBoolean("isSportSelected", defaultValues.isSportSelected),
+            isLoveSelected = sharedPreferencesForCategorySelection.getBoolean("isLoveSelected", defaultValues.isLoveSelected)
         )
     }
 

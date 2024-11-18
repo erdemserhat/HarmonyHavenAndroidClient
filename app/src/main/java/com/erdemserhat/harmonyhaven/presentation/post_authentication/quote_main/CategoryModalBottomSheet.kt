@@ -1,6 +1,5 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
 
-import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -46,10 +44,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 // Define the Saver
+// Updated Saver
 val categorySelectionSaver = Saver<CategorySelectionModel, List<Boolean>>(
     save = {
         listOf(
@@ -57,18 +55,20 @@ val categorySelectionSaver = Saver<CategorySelectionModel, List<Boolean>>(
             it.isLikedSelected,
             it.isBeYourselfSelected,
             it.isConfidenceSelected,
-            it.isShortQuotesSelected,
             it.isSelfImprovementSelected,
             it.isLifeSelected,
             it.isStrengthSelected,
             it.isPositivitySelected,
             it.isAnxietySelected,
             it.isSelfEsteemSelected,
-            it.isSelfLoveSelected,
             it.isSadnessSelected,
-            it.isHeartBrokenSelected,
             it.isWorkSelected,
-            it.isToxicRelationshipsSelected
+            it.isToxicRelationshipsSelected,
+            it.isContinuingLifeSelected,
+            it.isSeparationSelected,
+            it.isCourageSelected,
+            it.isSportSelected,
+            it.isLoveSelected
         )
     },
     restore = {
@@ -77,40 +77,44 @@ val categorySelectionSaver = Saver<CategorySelectionModel, List<Boolean>>(
             isLikedSelected = it[1],
             isBeYourselfSelected = it[2],
             isConfidenceSelected = it[3],
-            isShortQuotesSelected = it[4],
-            isSelfImprovementSelected = it[5],
-            isLifeSelected = it[6],
-            isStrengthSelected = it[7],
-            isPositivitySelected = it[8],
-            isAnxietySelected = it[9],
-            isSelfEsteemSelected = it[10],
-            isSelfLoveSelected = it[11],
-            isSadnessSelected = it[12],
-            isHeartBrokenSelected = it[13],
-            isWorkSelected = it[14],
-            isToxicRelationshipsSelected = it[15]
+            isSelfImprovementSelected = it[4],
+            isLifeSelected = it[5],
+            isStrengthSelected = it[6],
+            isPositivitySelected = it[7],
+            isAnxietySelected = it[8],
+            isSelfEsteemSelected = it[9],
+            isSadnessSelected = it[10],
+            isWorkSelected = it[11],
+            isToxicRelationshipsSelected = it[12],
+            isContinuingLifeSelected = it[13],
+            isSeparationSelected = it[14],
+            isCourageSelected = it[15],
+            isSportSelected = it[16],
+            isLoveSelected = it[17]
         )
     }
 )
-
 
 data class CategorySelectionModel(
     var isGeneralSelected: Boolean = true,
     var isLikedSelected: Boolean = false,
     var isBeYourselfSelected: Boolean = false,
     var isConfidenceSelected: Boolean = false,
-    var isShortQuotesSelected: Boolean = false,
     var isSelfImprovementSelected: Boolean = false,
     var isLifeSelected: Boolean = false,
     var isStrengthSelected: Boolean = false,
     var isPositivitySelected: Boolean = false,
     var isAnxietySelected: Boolean = false,
     var isSelfEsteemSelected: Boolean = false,
-    var isSelfLoveSelected: Boolean = false,
     var isSadnessSelected: Boolean = false,
-    var isHeartBrokenSelected: Boolean = false,
+    var isContinuingLifeSelected: Boolean = false,
     var isWorkSelected: Boolean = false,
     var isToxicRelationshipsSelected: Boolean = false,
+    var isSeparationSelected: Boolean = false,
+    var isCourageSelected: Boolean = false,
+    var isSportSelected: Boolean = false,
+    var isLoveSelected: Boolean = false,
+
 
     ) {
     fun nothingSelected(): Boolean {
@@ -118,45 +122,44 @@ data class CategorySelectionModel(
                 !isLikedSelected &&
                 !isBeYourselfSelected &&
                 !isConfidenceSelected &&
-                !isShortQuotesSelected &&
                 !isSelfImprovementSelected &&
                 !isLifeSelected &&
                 !isStrengthSelected &&
                 !isPositivitySelected &&
                 !isAnxietySelected &&
                 !isSelfEsteemSelected &&
-                !isSelfLoveSelected &&
                 !isSadnessSelected &&
-                !isHeartBrokenSelected &&
                 !isWorkSelected &&
-                !isToxicRelationshipsSelected
+                !isToxicRelationshipsSelected &&
+                !isContinuingLifeSelected &&
+                !isSeparationSelected &&
+                !isCourageSelected &&
+                !isSportSelected &&
+                !isLoveSelected
     }
 
     fun isOnlyGeneralSelected(): Boolean {
-        return isGeneralSelected &&
+        return  isGeneralSelected &&
                 !isLikedSelected &&
                 !isBeYourselfSelected &&
                 !isConfidenceSelected &&
-                !isShortQuotesSelected &&
                 !isSelfImprovementSelected &&
                 !isLifeSelected &&
                 !isStrengthSelected &&
                 !isPositivitySelected &&
                 !isAnxietySelected &&
                 !isSelfEsteemSelected &&
-                !isSelfLoveSelected &&
                 !isSadnessSelected &&
-                !isHeartBrokenSelected &&
                 !isWorkSelected &&
                 !isToxicRelationshipsSelected
     }
 
     fun deselectGeneralIfOtherSelected() {
         if (isGeneralSelected &&
-            (isLikedSelected || isBeYourselfSelected || isConfidenceSelected || isShortQuotesSelected ||
+            (isLikedSelected || isBeYourselfSelected || isConfidenceSelected ||
                     isSelfImprovementSelected || isLifeSelected || isStrengthSelected || isPositivitySelected ||
-                    isAnxietySelected || isSelfEsteemSelected || isSelfLoveSelected || isSadnessSelected ||
-                    isHeartBrokenSelected || isWorkSelected || isToxicRelationshipsSelected)
+                    isAnxietySelected || isSelfEsteemSelected  || isSadnessSelected
+                    || isWorkSelected || isToxicRelationshipsSelected)
         ) {
             if (isLikedSelected) {
                 isGeneralSelected = false
@@ -285,7 +288,7 @@ fun CategoryPickerModalBottomSheet(
                     ) {
                         QuoteCategory(
                             title = "Genel",
-                            icon = R.drawable.spiritual,
+                            icon = R.drawable.chat,
                             isSelected = categoryPicker.isGeneralSelected,
                             onClick = {
                                 if (!categoryPicker.isOnlyGeneralSelected()) {
@@ -302,7 +305,7 @@ fun CategoryPickerModalBottomSheet(
 
                         QuoteCategory(
                             title = "Beğendiklerim",
-                            icon = R.drawable.favorites,
+                            icon = R.drawable.loved,
                             isSelected = categoryPicker.isLikedSelected,
                             onClick = {
                                 updateList()
@@ -318,8 +321,6 @@ fun CategoryPickerModalBottomSheet(
                                     return@QuoteCategory
 
                                 }
-
-                                Log.d("dsadsadsa",isLikedListEmpty.toString())
 
 
                                 if(!isLikedListEmpty){
@@ -345,8 +346,8 @@ fun CategoryPickerModalBottomSheet(
                     ) {
 
                             QuoteCategory(
-                                title = "Kendin Ol",
-                                icon = R.drawable.beyourself,
+                                title = "Kendini Sevmek",
+                                icon = R.drawable.love_yourself,
                                 isSelected = categoryPicker.isBeYourselfSelected,
                                 onClick = {
                                     categoryPicker = categoryPicker.copy(
@@ -361,7 +362,7 @@ fun CategoryPickerModalBottomSheet(
 
                         QuoteCategory(
                             title = "Özgüven",
-                            icon = R.drawable.confidence,
+                            icon = R.drawable.self_confidence,
                             isSelected = categoryPicker.isConfidenceSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
@@ -381,13 +382,13 @@ fun CategoryPickerModalBottomSheet(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         QuoteCategory(
-                            title = "Kısa Alıntılar",
-                            icon = R.drawable.short_quotes,
-                            isSelected = categoryPicker.isShortQuotesSelected,
+                            title = "Aşk",
+                            icon = R.drawable.dove,
+                            isSelected = categoryPicker.isLoveSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isShortQuotesSelected = !categoryPicker.isShortQuotesSelected,
-                                    isGeneralSelected = if (!categoryPicker.isShortQuotesSelected) false else categoryPicker.isGeneralSelected
+                                    isLoveSelected = !categoryPicker.isLoveSelected,
+                                    isGeneralSelected = if (!categoryPicker.isLoveSelected) false else categoryPicker.isGeneralSelected
 
 
                                 )
@@ -397,7 +398,7 @@ fun CategoryPickerModalBottomSheet(
 
                         QuoteCategory(
                             title = "Kişisel Gelişim",
-                            icon = R.drawable.self_improvement,
+                            icon = R.drawable.experience,
                             isSelected = categoryPicker.isSelfImprovementSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
@@ -417,7 +418,7 @@ fun CategoryPickerModalBottomSheet(
                     ) {
                         QuoteCategory(
                             title = "Yaşam",
-                            icon = R.drawable.life,
+                            icon = R.drawable.wellness,
                             isSelected = categoryPicker.isLifeSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
@@ -431,7 +432,7 @@ fun CategoryPickerModalBottomSheet(
 
                         QuoteCategory(
                             title = "Güç",
-                            icon = R.drawable.strength,
+                            icon = R.drawable.protest,
                             isSelected = categoryPicker.isStrengthSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
@@ -451,7 +452,7 @@ fun CategoryPickerModalBottomSheet(
                     ) {
                         QuoteCategory(
                             title = "Pozitif Düşünmek",
-                            icon = R.drawable.positivity,
+                            icon = R.drawable.positive_thinking,
                             isSelected = categoryPicker.isPositivitySelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
@@ -465,7 +466,7 @@ fun CategoryPickerModalBottomSheet(
 
                         QuoteCategory(
                             title = "Kaygıyla Başetme",
-                            icon = R.drawable.anxiety,
+                            icon = R.drawable.dementia,
                             isSelected = categoryPicker.isAnxietySelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
@@ -485,7 +486,7 @@ fun CategoryPickerModalBottomSheet(
                     ) {
                         QuoteCategory(
                             title = "Öz Saygı",
-                            icon = R.drawable.selfesteem,
+                            icon = R.drawable.self_motivation,
                             isSelected = categoryPicker.isSelfEsteemSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
@@ -498,13 +499,13 @@ fun CategoryPickerModalBottomSheet(
                         )
 
                         QuoteCategory(
-                            title = "İzzetinefis",
-                            icon = R.drawable.selflove,
-                            isSelected = categoryPicker.isSelfLoveSelected,
+                            title = "Cesaret",
+                            icon = R.drawable.reward,
+                            isSelected = categoryPicker.isCourageSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isSelfLoveSelected = !categoryPicker.isSelfLoveSelected,
-                                    isGeneralSelected = if (!categoryPicker.isSelfLoveSelected) false else categoryPicker.isGeneralSelected
+                                    isCourageSelected = !categoryPicker.isCourageSelected,
+                                    isGeneralSelected = if (!categoryPicker.isCourageSelected) false else categoryPicker.isGeneralSelected
 
                                 )
                                 updateList()
@@ -519,7 +520,7 @@ fun CategoryPickerModalBottomSheet(
                     ) {
                         QuoteCategory(
                             title = "Üzüntü",
-                            icon = R.drawable.sadness,
+                            icon = R.drawable.sad,
                             isSelected = categoryPicker.isSadnessSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
@@ -532,13 +533,13 @@ fun CategoryPickerModalBottomSheet(
                         )
 
                         QuoteCategory(
-                            title = "Kalbi Kırık",
-                            icon = R.drawable.heartbroken,
-                            isSelected = categoryPicker.isHeartBrokenSelected,
+                            title = "Spor",
+                            icon = R.drawable.barbell,
+                            isSelected = categoryPicker.isSportSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isHeartBrokenSelected = !categoryPicker.isHeartBrokenSelected,
-                                    isGeneralSelected = if (!categoryPicker.isHeartBrokenSelected) false else categoryPicker.isGeneralSelected
+                                    isSportSelected = !categoryPicker.isSportSelected,
+                                    isGeneralSelected = if (!categoryPicker.isSportSelected) false else categoryPicker.isGeneralSelected
 
                                 )
                                 updateList()
@@ -567,7 +568,7 @@ fun CategoryPickerModalBottomSheet(
 
                         QuoteCategory(
                             title = "Toksik İlişkiler",
-                            icon = R.drawable.toxicrelationships,
+                            icon = R.drawable.toxic,
                             isSelected = categoryPicker.isToxicRelationshipsSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
@@ -578,6 +579,41 @@ fun CategoryPickerModalBottomSheet(
                                 updateList()
                             }
                         )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        QuoteCategory(
+                            title = "Ayrılık",
+                            icon = R.drawable.hearts,
+                            isSelected = categoryPicker.isSeparationSelected,
+                            onClick = {
+                                categoryPicker = categoryPicker.copy(
+                                    isSeparationSelected = !categoryPicker.isSeparationSelected,
+                                    isGeneralSelected = if (!categoryPicker.isSeparationSelected) false else categoryPicker.isGeneralSelected
+
+                                )
+                                updateList()
+                            }
+                        )
+
+                        QuoteCategory(
+                            title = "Kendine Gel",
+                            icon = R.drawable.roundabout,
+                            isSelected = categoryPicker.isContinuingLifeSelected,
+                            onClick = {
+                                categoryPicker = categoryPicker.copy(
+                                    isContinuingLifeSelected = !categoryPicker.isContinuingLifeSelected,
+                                    isGeneralSelected = if (!categoryPicker.isContinuingLifeSelected) false else categoryPicker.isGeneralSelected
+
+                                )
+                                updateList()
+                            }
+                        )
+
                     }
                 }
 

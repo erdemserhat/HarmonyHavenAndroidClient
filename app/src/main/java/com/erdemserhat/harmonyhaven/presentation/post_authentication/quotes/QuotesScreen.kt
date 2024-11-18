@@ -1,8 +1,10 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -27,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -86,34 +89,43 @@ fun QuotesContent(quote: List<Quote>) {
 }
 
 
-val imageUrls = arrayOf(
-    "https://fotolifeakademi.com/uploads/2020/04/manzara-fotografi-cekmek.jpg",
-    "https://images.pexels.com/photos/1172064/pexels-photo-1172064.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-    "https://media.istockphoto.com/id/1297349747/tr/foto%C4%9Fraf/t%C3%BCrkiyede-botan-kanyonu-%C3%BCzerinde-u%C3%A7an-s%C4%B1cak-hava-balonlar%C4%B1.jpg?s=612x612&w=0&k=20&c=cB1OwAy1ndPfcjp_Mt7n0rLub2hiSzgMj-qBXHSrprU="
-)
-
 
 @Composable
 fun FullScreenImage(imageUrl: String, modifier: Modifier) {
-    var isLoading by remember { mutableStateOf(true) } // Yüklenme durumunu takip edin
+    var isLoading by remember { mutableStateOf(true) } // Track loading state
+    var scale by remember { mutableStateOf(1f) } // For zoom-in effect
+    val scaleAnimation by animateFloatAsState(
+        targetValue = if (isLoading) 1.1f else 1f, // Zoom in while loading
+        animationSpec = tween(
+            durationMillis = 20000, // Animation duration
+            easing = FastOutSlowInEasing
+        )
+    )
 
     AsyncImage(
         model = imageUrl,
         contentDescription = "Full screen image",
-        modifier = modifier.fillMaxSize().placeholder(
-            visible = isLoading,
-            highlight = PlaceholderHighlight.shimmer(
-                highlightColor = Color.White.copy(0.08f),
-                animationSpec = InfiniteRepeatableSpec(
-                    animation = tween(durationMillis = 4000),
-                    repeatMode = RepeatMode.Restart
-                )
-            ), // Shimmer efekti
-            color = Color.Black // Shimmer efekti için arka plan rengi
-        ),
+        modifier = modifier
+            .fillMaxSize()
+            .graphicsLayer(
+                scaleX = scaleAnimation,
+                scaleY = scaleAnimation,
+                alpha = if (isLoading) 0.7f else 1f // Fade effect while loading
+            )
+            .placeholder(
+                visible = isLoading,
+                highlight = PlaceholderHighlight.shimmer(
+                    highlightColor = Color.White.copy(0.08f),
+                    animationSpec = InfiniteRepeatableSpec(
+                        animation = tween(durationMillis = 4000),
+                        repeatMode = RepeatMode.Restart
+                    )
+                ),
+                color = Color.Black
+            ),
         contentScale = ContentScale.Crop,
-        onSuccess = { isLoading = false }, // Yükleme başarılı olursa shimmer efektini kaldır
-        onError = { isLoading = false } // Yükleme başarısız olursa da shimmer efektini kaldır
+        onSuccess = { isLoading = false }, // Stop animations on success
+        onError = { isLoading = false } // Stop animations on error
     )
 }
 

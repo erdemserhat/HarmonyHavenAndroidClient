@@ -348,6 +348,7 @@ fun Quote(
                 .fillMaxSize()
                 .align(Alignment.Center)
                 .zIndex(3f),
+
             contentAlignment = Alignment.Center
         ) {
             if (isVisibleLikeAnimation)
@@ -359,7 +360,7 @@ fun Quote(
 
         Column(
             modifier = Modifier
-                .padding(10.dp)
+                .padding(bottom = 100.dp, end = 2.dp)
                 .align(Alignment.BottomEnd)
                 .zIndex(4f),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -402,12 +403,15 @@ fun Quote(
                     contentDescription = null
 
                 )
-                Text("Favor...", color = Color.White, fontSize = 10.sp)
+                Text("Kategori", color = Color.White, fontSize = 10.sp)
 
             }
 
 
 
+
+
+            /*
             Column(
                 modifier = Modifier.padding(bottom = 25.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -423,8 +427,11 @@ fun Quote(
 
             }
 
+             */
 
 
+
+            /*
 
             Image(
                 modifier = Modifier
@@ -443,6 +450,8 @@ fun Quote(
                 contentDescription = null
 
             )
+
+             */
 
             //Spacer(modifier = Modifier.height(10.dp))
 
