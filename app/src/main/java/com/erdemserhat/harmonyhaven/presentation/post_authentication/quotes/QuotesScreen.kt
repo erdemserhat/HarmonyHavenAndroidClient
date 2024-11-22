@@ -91,7 +91,7 @@ fun QuotesContent(quote: List<Quote>) {
 
 
 @Composable
-fun FullScreenImage(imageUrl: String, modifier: Modifier) {
+fun FullScreenImage(imageUrl: String, modifier: Modifier,shouldAnimate:Boolean = true) {
     var isLoading by remember { mutableStateOf(true) } // Track loading state
     var scale by remember { mutableStateOf(1f) } // For zoom-in effect
     val scaleAnimation by animateFloatAsState(
@@ -108,8 +108,8 @@ fun FullScreenImage(imageUrl: String, modifier: Modifier) {
         modifier = modifier
             .fillMaxSize()
             .graphicsLayer(
-                scaleX = scaleAnimation,
-                scaleY = scaleAnimation,
+                scaleX = if(shouldAnimate)scaleAnimation else 1f,
+                scaleY = if(shouldAnimate)scaleAnimation else 1f,
                 alpha = if (isLoading) 0.7f else 1f // Fade effect while loading
             )
             .placeholder(
@@ -123,6 +123,10 @@ fun FullScreenImage(imageUrl: String, modifier: Modifier) {
                 ),
                 color = Color.Black
             ),
+
+
+
+
         contentScale = ContentScale.Crop,
         onSuccess = { isLoading = false }, // Stop animations on success
         onError = { isLoading = false } // Stop animations on error

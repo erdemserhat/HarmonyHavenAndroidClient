@@ -15,6 +15,11 @@
 
     <uses-permission android:name="android.permission.CREDENTIAL_MANAGER_GET_CREDENTIALS" />
     <uses-permission android:name="android.permission.CREDENTIAL_MANAGER_SET_ORIGIN" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+
+
+
 
 
 
@@ -22,6 +27,7 @@
 
 
     <application
+        android:hardwareAccelerated="true"
         android:name=".MyApplication"
         android:allowBackup="true"
         android:overScrollMode="never"
@@ -35,8 +41,20 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.erdemserhat.harmonyhaven.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+
 
         <activity
+            android:hardwareAccelerated="true"
             android:name=".MainActivity"
             android:configChanges = "orientation"
             android:screenOrientation = "portrait"
@@ -88,6 +106,9 @@
         <meta-data
             android:name="com.google.android.gms.client_id"
             android:value="@string/default_web_client_id" />
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_paths" />
 
 
     </application>

@@ -15,6 +15,10 @@ plugins {
 }
 
 android {
+
+
+
+
     namespace = "com.erdemserhat.harmonyhaven"
     compileSdk = 35
 
@@ -57,8 +61,9 @@ android {
         }
 
         debug {
-            buildConfigField("String", "SERVER_URL", "\"http://192.168.137.42:5000/api/\"")
+            buildConfigField("String", "SERVER_URL", "\"http://192.168.137.214:5000/api/\"")
             //buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/\"")
+            isMinifyEnabled = false
 
 
         }
@@ -91,6 +96,8 @@ android {
     externalNativeBuild {
 
     }
+
+
 }
 
 kotlin {
@@ -180,6 +187,10 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    implementation ("com.github.SmartToolFactory:Compose-Screenshot:1.0.3")
+
+    implementation ("dev.shreyaspatil:capturable:2.1.0")
+
 }
 
 // Allow references to generated code

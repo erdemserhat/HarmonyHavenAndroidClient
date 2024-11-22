@@ -6,6 +6,9 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.domain.usecase.quote.QuoteUseCases
@@ -21,6 +24,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import androidx.compose.runtime.State
+import com.erdemserhat.harmonyhaven.dto.responses.QuoteForOrderModel
+import com.erdemserhat.harmonyhaven.dto.responses.toQuote
+
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -44,6 +51,8 @@ class QuoteMainViewModel @Inject constructor(
     var isLikedListEmpty = MutableStateFlow(true)
     val shouldShowUxDialog1: StateFlow<Boolean> = _shouldShowUxDialog1
     val shouldShowUxDialog2: StateFlow<Boolean> = _shouldShowUxDialog2
+    private var _selectedQuote = mutableStateOf(QuoteForOrderModel())
+    val selectedQuote: State<QuoteForOrderModel> get() = _selectedQuote
 
 
     private val _authState = MutableStateFlow(1)
@@ -56,6 +65,10 @@ class QuoteMainViewModel @Inject constructor(
     init {
         tryLoad()
         updateFcmToken()
+    }
+
+    fun updateSelectedQuote(selectedQuoteArg: QuoteForOrderModel) {
+        _selectedQuote.value = selectedQuoteArg
     }
 
     fun tryLoad() {
@@ -134,8 +147,11 @@ class QuoteMainViewModel @Inject constructor(
 
     fun filterQuotes(
         categorySelectionModel: CategorySelectionModel,
-        shouldShuffle: Boolean = true
+        shouldShuffle: Boolean = true,
+        currentPage:Int = 0
     ) {
+
+        Log.d("dsdsdsdadsa", "filtered again")
 
         val filteredQuotes: MutableSet<Quote> = mutableSetOf()
         _quotes.value = filteredQuotes.toList()
@@ -246,6 +262,12 @@ class QuoteMainViewModel @Inject constructor(
             }
         }
 
+        if (categorySelectionModel.isShortVideosSelected) {
+            allQuotes.filter { it.quoteCategory == 21 }.forEach {
+                filteredQuotes.add(it)
+            }
+        }
+
 
         if (categorySelectionModel.isLoveSelected) {
             allQuotes.filter { it.quoteCategory == 20 }.forEach {
@@ -254,9 +276,19 @@ class QuoteMainViewModel @Inject constructor(
         }
 
 
-        _quotes.value = if (shouldShuffle) filteredQuotes.shuffled() else filteredQuotes.toList()
-        _quotes.value.forEach{
-            if(it.isLiked){
+
+        var reorderedQuotes: MutableList<Quote> = filteredQuotes.toMutableList()
+        reorderedQuotes= if (shouldShuffle) reorderedQuotes.shuffled().toMutableList() else reorderedQuotes
+
+        if (_selectedQuote.value.id != -1) {
+            reorderedQuotes.add(_selectedQuote.value.currentPage, _selectedQuote.value.toQuote())
+
+        }
+
+        _quotes.value = reorderedQuotes
+        _selectedQuote.value = QuoteForOrderModel()
+        _quotes.value.forEach {
+            if (it.isLiked) {
                 isLikedListEmpty.value = false
                 return@forEach
 
@@ -286,7 +318,7 @@ class QuoteMainViewModel @Inject constructor(
             try {
                 _quotes.value.find { it.id == quoteId }!!.isLiked = false
                 allQuotes.find { it.id == quoteId }!!.isLiked = false
-                if(allQuotes.none { it.isLiked }) isLikedListEmpty.value = true
+                if (allQuotes.none { it.isLiked }) isLikedListEmpty.value = true
 
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -304,7 +336,7 @@ class QuoteMainViewModel @Inject constructor(
 
                 allQuotes = _quotes.value
                 allQuotes.forEach {
-                    if(it.isLiked){
+                    if (it.isLiked) {
                         isLikedListEmpty.value = false
                         return@forEach
                     }
@@ -380,7 +412,8 @@ class QuoteMainViewModel @Inject constructor(
                 "isSeparationSelected" to model.isSeparationSelected,
                 "isCourageSelected" to model.isCourageSelected,
                 "isSportSelected" to model.isSportSelected,
-                "isLoveSelected" to model.isLoveSelected
+                "isLoveSelected" to model.isLoveSelected,
+                "isShortVideosSelected" to model.isShortVideosSelected
             )
             selectionMap.forEach { (key, value) -> putBoolean(key, value) }
             apply()
@@ -392,24 +425,82 @@ class QuoteMainViewModel @Inject constructor(
         val defaultValues = CategorySelectionModel() // Use the default values from the data class
 
         return CategorySelectionModel(
-            isGeneralSelected = sharedPreferencesForCategorySelection.getBoolean("isGeneralSelected", defaultValues.isGeneralSelected),
-            isLikedSelected = sharedPreferencesForCategorySelection.getBoolean("isLikedSelected", defaultValues.isLikedSelected),
-            isBeYourselfSelected = sharedPreferencesForCategorySelection.getBoolean("isBeYourselfSelected", defaultValues.isBeYourselfSelected),
-            isConfidenceSelected = sharedPreferencesForCategorySelection.getBoolean("isConfidenceSelected", defaultValues.isConfidenceSelected),
-            isSelfImprovementSelected = sharedPreferencesForCategorySelection.getBoolean("isSelfImprovementSelected", defaultValues.isSelfImprovementSelected),
-            isLifeSelected = sharedPreferencesForCategorySelection.getBoolean("isLifeSelected", defaultValues.isLifeSelected),
-            isStrengthSelected = sharedPreferencesForCategorySelection.getBoolean("isStrengthSelected", defaultValues.isStrengthSelected),
-            isPositivitySelected = sharedPreferencesForCategorySelection.getBoolean("isPositivitySelected", defaultValues.isPositivitySelected),
-            isAnxietySelected = sharedPreferencesForCategorySelection.getBoolean("isAnxietySelected", defaultValues.isAnxietySelected),
-            isSelfEsteemSelected = sharedPreferencesForCategorySelection.getBoolean("isSelfEsteemSelected", defaultValues.isSelfEsteemSelected),
-            isSadnessSelected = sharedPreferencesForCategorySelection.getBoolean("isSadnessSelected", defaultValues.isSadnessSelected),
-            isContinuingLifeSelected = sharedPreferencesForCategorySelection.getBoolean("isContinuingLifeSelected", defaultValues.isContinuingLifeSelected),
-            isWorkSelected = sharedPreferencesForCategorySelection.getBoolean("isWorkSelected", defaultValues.isWorkSelected),
-            isToxicRelationshipsSelected = sharedPreferencesForCategorySelection.getBoolean("isToxicRelationshipsSelected", defaultValues.isToxicRelationshipsSelected),
-            isSeparationSelected = sharedPreferencesForCategorySelection.getBoolean("isSeparationSelected", defaultValues.isSeparationSelected),
-            isCourageSelected = sharedPreferencesForCategorySelection.getBoolean("isCourageSelected", defaultValues.isCourageSelected),
-            isSportSelected = sharedPreferencesForCategorySelection.getBoolean("isSportSelected", defaultValues.isSportSelected),
-            isLoveSelected = sharedPreferencesForCategorySelection.getBoolean("isLoveSelected", defaultValues.isLoveSelected)
+            isGeneralSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isGeneralSelected",
+                defaultValues.isGeneralSelected
+            ),
+            isLikedSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isLikedSelected",
+                defaultValues.isLikedSelected
+            ),
+            isBeYourselfSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isBeYourselfSelected",
+                defaultValues.isBeYourselfSelected
+            ),
+            isConfidenceSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isConfidenceSelected",
+                defaultValues.isConfidenceSelected
+            ),
+            isSelfImprovementSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isSelfImprovementSelected",
+                defaultValues.isSelfImprovementSelected
+            ),
+            isLifeSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isLifeSelected",
+                defaultValues.isLifeSelected
+            ),
+            isStrengthSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isStrengthSelected",
+                defaultValues.isStrengthSelected
+            ),
+            isPositivitySelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isPositivitySelected",
+                defaultValues.isPositivitySelected
+            ),
+            isAnxietySelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isAnxietySelected",
+                defaultValues.isAnxietySelected
+            ),
+            isSelfEsteemSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isSelfEsteemSelected",
+                defaultValues.isSelfEsteemSelected
+            ),
+            isSadnessSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isSadnessSelected",
+                defaultValues.isSadnessSelected
+            ),
+            isContinuingLifeSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isContinuingLifeSelected",
+                defaultValues.isContinuingLifeSelected
+            ),
+            isWorkSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isWorkSelected",
+                defaultValues.isWorkSelected
+            ),
+            isToxicRelationshipsSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isToxicRelationshipsSelected",
+                defaultValues.isToxicRelationshipsSelected
+            ),
+            isSeparationSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isSeparationSelected",
+                defaultValues.isSeparationSelected
+            ),
+            isCourageSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isCourageSelected",
+                defaultValues.isCourageSelected
+            ),
+            isSportSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isSportSelected",
+                defaultValues.isSportSelected
+            ),
+            isLoveSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isLoveSelected",
+                defaultValues.isLoveSelected
+            ),
+            isShortVideosSelected = sharedPreferencesForCategorySelection.getBoolean(
+                "isShortVideosSelected",
+                defaultValues.isShortVideosSelected
+            )
         )
     }
 

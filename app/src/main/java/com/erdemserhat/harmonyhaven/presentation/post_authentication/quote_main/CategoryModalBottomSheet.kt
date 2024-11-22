@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -68,7 +69,8 @@ val categorySelectionSaver = Saver<CategorySelectionModel, List<Boolean>>(
             it.isSeparationSelected,
             it.isCourageSelected,
             it.isSportSelected,
-            it.isLoveSelected
+            it.isLoveSelected,
+            it.isShortVideosSelected
         )
     },
     restore = {
@@ -90,7 +92,8 @@ val categorySelectionSaver = Saver<CategorySelectionModel, List<Boolean>>(
             isSeparationSelected = it[14],
             isCourageSelected = it[15],
             isSportSelected = it[16],
-            isLoveSelected = it[17]
+            isLoveSelected = it[17],
+            isShortVideosSelected = it[18]
         )
     }
 )
@@ -114,6 +117,7 @@ data class CategorySelectionModel(
     var isCourageSelected: Boolean = false,
     var isSportSelected: Boolean = false,
     var isLoveSelected: Boolean = false,
+    var isShortVideosSelected:Boolean = false
 
 
     ) {
@@ -135,7 +139,8 @@ data class CategorySelectionModel(
                 !isSeparationSelected &&
                 !isCourageSelected &&
                 !isSportSelected &&
-                !isLoveSelected
+                !isLoveSelected &&
+                !isShortVideosSelected
     }
 
     fun isOnlyGeneralSelected(): Boolean {
@@ -151,12 +156,13 @@ data class CategorySelectionModel(
                 !isSelfEsteemSelected &&
                 !isSadnessSelected &&
                 !isWorkSelected &&
-                !isToxicRelationshipsSelected
+                !isToxicRelationshipsSelected  &&
+                !isShortVideosSelected
     }
 
     fun deselectGeneralIfOtherSelected() {
         if (isGeneralSelected &&
-            (isLikedSelected || isBeYourselfSelected || isConfidenceSelected ||
+            (isLikedSelected || isBeYourselfSelected || isConfidenceSelected || isShortVideosSelected ||
                     isSelfImprovementSelected || isLifeSelected || isStrengthSelected || isPositivitySelected ||
                     isAnxietySelected || isSelfEsteemSelected  || isSadnessSelected
                     || isWorkSelected || isToxicRelationshipsSelected)
@@ -345,19 +351,19 @@ fun CategoryPickerModalBottomSheet(
                         horizontalArrangement = Arrangement.Center
                     ) {
 
-                            QuoteCategory(
-                                title = "Kendini Sevmek",
-                                icon = R.drawable.love_yourself,
-                                isSelected = categoryPicker.isBeYourselfSelected,
-                                onClick = {
-                                    categoryPicker = categoryPicker.copy(
-                                        isBeYourselfSelected = !categoryPicker.isBeYourselfSelected,
-                                        isGeneralSelected = if (!categoryPicker.isBeYourselfSelected) false else categoryPicker.isGeneralSelected
-                                    )
-                                    updateList()
-                                }
-                            )
+                        QuoteCategory(
+                            title = "Kısa Videolar",
+                            icon = R.drawable.reels_2,
+                            isSelected = categoryPicker.isShortVideosSelected,
+                            onClick = {
+                                categoryPicker = categoryPicker.copy(
+                                    isShortVideosSelected = !categoryPicker.isShortVideosSelected,
+                                    isGeneralSelected = if (!categoryPicker.isShortVideosSelected) false else categoryPicker.isGeneralSelected
 
+                                )
+                                updateList()
+                            }
+                        )
 
 
                         QuoteCategory(
@@ -613,6 +619,36 @@ fun CategoryPickerModalBottomSheet(
                                 updateList()
                             }
                         )
+
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+
+                        QuoteCategory(
+                            title = "Kendini Sevmek",
+                            icon = R.drawable.love_yourself,
+                            isSelected = categoryPicker.isBeYourselfSelected,
+                            onClick = {
+                                categoryPicker = categoryPicker.copy(
+                                    isBeYourselfSelected = !categoryPicker.isBeYourselfSelected,
+                                    isGeneralSelected = if (!categoryPicker.isBeYourselfSelected) false else categoryPicker.isGeneralSelected
+                                )
+                                updateList()
+                            }
+                        )
+
+
+
+                        Box(modifier = Modifier.width(180.dp)
+                           .height(80.dp)
+                           .padding(8.dp)
+
+                       )
+
 
                     }
                 }

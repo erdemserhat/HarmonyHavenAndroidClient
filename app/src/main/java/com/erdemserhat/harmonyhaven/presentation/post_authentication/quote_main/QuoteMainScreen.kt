@@ -3,6 +3,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,27 +16,21 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,16 +40,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -64,11 +57,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.FullScreenImage
+import com.erdemserhat.harmonyhaven.dto.responses.QuoteForOrderModel
+import com.erdemserhat.harmonyhaven.presentation.navigation.MainScreenParams
+import com.erdemserhat.harmonyhaven.presentation.navigation.QuoteShareScreenParams
+import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenProgressIndicator
-import com.erdemserhat.harmonyhaven.ui.theme.georgiaFont
+import com.smarttoolfactory.screenshot.rememberScreenshotState
+import dev.shreyaspatil.capturable.capturable
+import dev.shreyaspatil.capturable.controller.rememberCaptureController
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -80,7 +82,8 @@ fun QuoteMainScreen(
 
     QuoteMainContent(
         modifier = modifier,
-        viewmodel = viewmodel
+        viewmodel = viewmodel,
+        navController = navController
     )
 
 
@@ -89,7 +92,8 @@ fun QuoteMainScreen(
 @Composable
 fun QuoteMainContent(
     modifier: Modifier = Modifier,
-    viewmodel: QuoteMainViewModel
+    viewmodel: QuoteMainViewModel,
+    navController: NavController? = null
 ) {
 
     val quotes = viewmodel.quotes.collectAsState()
@@ -124,7 +128,12 @@ fun QuoteMainContent(
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        QuoteVerticalList1(quoteList = quotes.value, modifier = Modifier, viewmodel)
+        QuoteVerticalList1(
+            quoteList = quotes.value,
+            modifier = Modifier,
+            viewmodel = viewmodel,
+            navController = navController
+        )
         var isButtonClicked by remember { mutableStateOf(false) }
         if (shouldShowUxDialog1.value) {
 
@@ -147,10 +156,20 @@ fun QuoteMainContent(
 fun QuoteVerticalList1(
     quoteList: List<Quote>,
     modifier: Modifier,
-    viewmodel: QuoteMainViewModel
+    viewmodel: QuoteMainViewModel,
+    navController: NavController? = null,
+
 ) {
-    val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val categorySheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val shareQuoteSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+    )
     val coroutineScope = rememberCoroutineScope()
+    var quoteShareScreenParams by rememberSaveable {
+        mutableStateOf(QuoteShareScreenParams())
+    }
+
 
 
     if (quoteList.isNotEmpty()) {
@@ -165,68 +184,25 @@ fun QuoteVerticalList1(
                 mutableStateOf(CategorySelectionModel())
             }
             LaunchedEffect(Unit) {
-                coroutineScope.launch {
-                    categoryPicker = viewmodel.getCategorySelection()
 
-                }
             }
 
 
             CategoryPickerModalBottomSheet(
-                sheetState = sheetState,
-                onShouldFilterQuotes = {category,shouldShuffle->
-                    viewmodel.filterQuotes(category,shouldShuffle)
+                sheetState = categorySheetState,
+                onShouldFilterQuotes = { category, shouldShuffle ->
+                    viewmodel.filterQuotes(category, shouldShuffle)
 
                 },
                 onSaveCategorySelection = {
                     viewmodel.saveCategorySelection(it)
 
                 },
-                isLikedListEmpty =  isLikedListEmpty,
+                isLikedListEmpty = isLikedListEmpty,
                 onGetCategorySelectionModel = viewmodel.getCategorySelection()
 
 
             )
-
-
-            /*
-
-            LaunchedEffect(key1 = pagerState.currentPage) {
-                if (pagerState.currentPage >= pagerState.pageCount - 1) {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(
-                            0,
-                            animationSpec = tween(durationMillis = 1000)
-                        )
-                    }
-
-                }
-            }
-
-
-
-
-
-            LaunchedEffect(key1 = quoteList) {
-                    coroutineScope.launch {
-                        if(!pagerState.isScrollInProgress){
-                            pagerState.animateScrollToPage(
-                                0,
-                                animationSpec = tween(durationMillis = 1000)
-                            )
-
-                        }
-
-                        // Animasyon tamamlandığında bayrağı false yapıyoruz
-                    }
-
-            }
-
-
-             */
-
-
-
 
 
             VerticalPager(
@@ -242,37 +218,60 @@ fun QuoteVerticalList1(
 
 
                 Crossfade(targetState = quoteList[page], label = "") { quote ->
+
                     Quote(
                         quote = quote,
+                        currentScreen = pagerState.currentPage,
                         isVisible = isCurrentPageVisible || isPreviousPageVisible,
                         isCurrentPage = isCurrentPageVisible,
                         modifier = Modifier.zIndex(2f),
                         viewmodel = viewmodel,
-                        onCommentClicked = {
+                        onShareQuoteClicked = {
                             coroutineScope.launch {
-                                sheetState.show()
+                                shareQuoteSheetState.show()
+                            }
+
+                        },
+                        onCategoryClicked = {
+                            coroutineScope.launch {
+                                categorySheetState.show()
                             }
                         },
                         onReachedToLastPage = {
-                            if(pagerState.currentPage == pagerState.pageCount - 1){
-                                    coroutineScope.launch {
-                                        pagerState.animateScrollToPage(
-                                            0,
-                                            animationSpec = tween(durationMillis = 1000)
-                                        )
-                                    }
+                            if (pagerState.currentPage == pagerState.pageCount - 1) {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(
+                                        0,
+                                        animationSpec = tween(durationMillis = 1000)
+                                    )
                                 }
+                            }
 
 
                         },
+                        navController = navController
                     )
+
+                    LaunchedEffect(pagerState.currentPage) {
+                        val quoteURL = quoteList[pagerState.currentPage].imageUrl
+                        val quoteSentence = quoteList[pagerState.currentPage].quote
+                        val writer = quoteList[pagerState.currentPage].writer
+
+                        quoteShareScreenParams = QuoteShareScreenParams(
+                            quote = quoteSentence,
+                            quoteUrl = quoteURL,
+                            author = writer
+                        )
+
+
+                    }
                 }
 
 
             }
         }
-    }else{
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+    } else {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 
             HarmonyHavenProgressIndicator()
 
@@ -280,23 +279,36 @@ fun QuoteVerticalList1(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(
+    ExperimentalMaterialApi::class, ExperimentalCoroutinesApi::class,
+    ExperimentalComposeUiApi::class, ExperimentalComposeApi::class
+)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun Quote(
     quote: Quote,
+    currentScreen:Int,
     isVisible: Boolean, // Sayfanın görünür olup olmadığını kontrol eder
     isCurrentPage: Boolean, // Aktif sayfa olup olmadığını kontrol eder
     modifier: Modifier = Modifier,
     viewmodel: QuoteMainViewModel,
-    onCommentClicked: () -> Unit,
-    onReachedToLastPage: () -> Unit
+    onCategoryClicked: () -> Unit,
+    onShareQuoteClicked: () -> Unit,
+    onReachedToLastPage: () -> Unit,
+    navController: NavController? = null
 ) {
     var isQuoteLiked by remember { mutableStateOf(quote.isLiked) }
     var isVisibleLikeAnimation by remember { mutableStateOf(false) }
     var shouldAnimateLikeButton by remember { mutableStateOf(false) }
     var categoryPageVisible by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val screenshotState = rememberScreenshotState()
+    var shouldScreenBeClear by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val capturableController = rememberCaptureController()
+
 
 
     LaunchedEffect(quote) {
@@ -306,17 +318,11 @@ fun Quote(
         }
 
 
-
     }
-
-
-
-
 
     LaunchedEffect(quote.isLiked) {
         isQuoteLiked = quote.isLiked
     }
-
 
 
     Box(
@@ -338,9 +344,6 @@ fun Quote(
 
             }
     ) {
-        //Box(modifier = Modifier.align(Alignment.BottomStart).zIndex(2f)){
-        //    ButtonSurface1(onClick = onDeleteClicked)
-        //}
 
 
         Box(
@@ -357,176 +360,158 @@ fun Quote(
                 })
         }
 
-
-        Column(
-            modifier = Modifier
-                .padding(bottom = 100.dp, end = 2.dp)
-                .align(Alignment.BottomEnd)
-                .zIndex(4f),
-            horizontalAlignment = Alignment.CenterHorizontally
-
-        ) {
-
-
-            LikeAnimationWithClickEffect(
-                isQuoteLiked = isQuoteLiked,
-                shouldAnimate = shouldAnimateLikeButton,
-                onLikeClicked = {
-                    shouldAnimateLikeButton = true
-                    isQuoteLiked = it
-                    if (isQuoteLiked) {
-                        viewmodel.likeQuote(quote.id)
-                    } else {
-                        viewmodel.removeLikeQuote(quote.id)
-                        viewmodel.removeLikedInternally(quote.id)
-
-
-                    }
-
-                },
-                onAnimationEnd = { shouldAnimateLikeButton = false }
-
-            )
+        if (!shouldScreenBeClear) {
 
             Column(
                 modifier = Modifier
-                    .padding(bottom = 25.dp)
-                    .clickable() {
-                        onCommentClicked()
+                    .padding(bottom = 100.dp, end = 2.dp)
+                    .align(Alignment.BottomEnd)
+                    .zIndex(4f),
+                horizontalAlignment = Alignment.CenterHorizontally
+
+            ) {
+
+
+                LikeAnimationWithClickEffect(
+                    isQuoteLiked = isQuoteLiked,
+                    shouldAnimate = shouldAnimateLikeButton,
+                    onLikeClicked = {
+                        shouldAnimateLikeButton = true
+                        isQuoteLiked = it
+                        if (isQuoteLiked) {
+                            viewmodel.likeQuote(quote.id)
+                        } else {
+                            viewmodel.removeLikeQuote(quote.id)
+                            viewmodel.removeLikedInternally(quote.id)
+
+
+                        }
+
                     },
-                horizontalAlignment = Alignment.CenterHorizontally
-
-            ) {
-                Image(
-                    modifier = Modifier.size(30.dp),
-                    painter = painterResource(R.drawable.category),
-                    contentDescription = null
+                    onAnimationEnd = { shouldAnimateLikeButton = false }
 
                 )
-                Text("Kategori", color = Color.White, fontSize = 10.sp)
+
+                Column(
+                    modifier = Modifier
+                        .padding(bottom = 25.dp)
+                        .clickable() {
+                            onCategoryClicked()
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally
+
+                ) {
+                    Image(
+                        modifier = Modifier.size(30.dp),
+                        painter = painterResource(R.drawable.category),
+                        contentDescription = null
+
+                    )
+                    Text("Kategori", color = Color.White, fontSize = 10.sp)
+
+                }
+
+
+
+
+
+
+                Column(
+                    modifier = Modifier
+                        .padding(bottom = 25.dp)
+                        .clickable {
+                            coroutineScope.launch {
+                                launch(Dispatchers.IO) {
+                                    onShareQuoteClicked()
+                                    val bundle = Bundle()
+                                    bundle.putParcelable("params", QuoteShareScreenParams(
+                                        quoteUrl = quote.imageUrl,
+                                        quote = quote.quote,
+                                        author = quote.writer
+
+                                    ))
+
+                                    viewmodel.updateSelectedQuote(QuoteForOrderModel(
+                                        id = quote.id,
+                                        quote = quote.quote,
+                                        writer = quote.writer,
+                                        imageUrl = quote.imageUrl,
+                                        currentPage = currentScreen
+                                    )
+
+
+                                    )
+
+                                    withContext(Dispatchers.Main){
+                                        navController!!.navigate(
+                                            route = Screen.QuoteShareScreen.route,
+                                            args = bundle
+
+
+                                        )
+                                    }
+
+                                }
+                            }
+
+
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+
+                    ) {
+                    Image(
+                        modifier = Modifier.size(35.dp),
+                        painter = painterResource(R.drawable.share__3_),
+                        contentDescription = null
+
+                    )
+                    Text("Paylaş", color = Color.White, fontSize = 10.sp)
+
+                }
+
 
             }
-
-
-
-
-
-            /*
-            Column(
-                modifier = Modifier.padding(bottom = 25.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-
-            ) {
-                Image(
-                    modifier = Modifier.size(30.dp),
-                    painter = painterResource(R.drawable.comments),
-                    contentDescription = null
-
-                )
-                Text("123", color = Color.White, fontSize = 10.sp)
-
-            }
-
-             */
-
-
-
-            /*
-
-            Image(
-                modifier = Modifier
-                    .padding(bottom = 25.dp)
-                    .size(28.dp),
-                painter = painterResource(R.drawable.sendwhiteunfilled),
-                contentDescription = null
-
-            )
-
-            Image(
-                modifier = Modifier
-                    .padding(bottom = 30.dp)
-                    .size(28.dp),
-                painter = painterResource(R.drawable.threedot),
-                contentDescription = null
-
-            )
-
-             */
-
-            //Spacer(modifier = Modifier.height(10.dp))
-
 
         }
+
+
+
+
+
 
 
 
 
 
         if (!quote.imageUrl.endsWith(".mp4")) {
-            FullScreenImage(
-                quote.imageUrl,
-                modifier = Modifier
+
+            ImageQuote(
+                modifier = Modifier.align(Alignment.Center),
+                quoteWriter = quote.writer,
+                quoteSentence = quote.quote,
+                quoteURL = quote.imageUrl
+
+
             )
+
+
         } else {
             VideoPlayer(
                 videoUrl = quote.imageUrl,
                 isPlaying = isCurrentPage, // Sadece aktif sayfa oynatılır
                 prepareOnly = isVisible, // Görünür olan ancak aktif olmayan sayfa hazırlanır,
             )
-        }
 
-        if (quote.quote != "") {
-            Box(
-                modifier = modifier
-                    .padding(15.dp)
-                    .wrapContentSize()
-                    .align(Alignment.Center)
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                Color.Black.copy(alpha = 0.8f),
-                                Color.Gray.copy(alpha = 0.5f)
-                            )
-                        ),
-                        shape = RoundedCornerShape(16.dp)
+            if (quote.quote != "") {
+                ImageQuote(
+                    modifier = Modifier.align(Alignment.Center),
+                    quoteWriter = quote.writer,
+                    quoteSentence = quote.quote,
+                    quoteURL = quote.imageUrl,
+
+
                     )
-
-                    .padding(0.dp) // İçerik için padding
-            )
-            {
-                //  Image(painter = painterResource(id = R.drawable.a1), contentDescription =null,modifier = Modifier.align(
-                //    Alignment.TopStart).padding(12.dp), colorFilter = ColorFilter.tint(Color.Gray.copy(alpha = 0.4f)))
-
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.wrapContentSize()
-                ) {
-                    Text(
-                        color = Color.White.copy(0.9f),
-                        text = quote.quote,
-                        modifier = Modifier.padding(15.dp),
-                        fontSize = 20.sp,
-                        fontStyle = FontStyle.Italic,
-                        textAlign = TextAlign.Center,
-                        fontFamily = FontFamily.Serif,
-                        lineHeight = 30.sp // Satır yüksekliğini ayarlama
-                    )
-
-                    Text(
-                        color = Color.White.copy(0.7f),
-                        text = quote.writer,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center,
-                        fontFamily = georgiaFont
-                    )
-
-                    Spacer(modifier = Modifier.size(15.dp))
-                }
             }
-
-
         }
 
 
@@ -659,7 +644,6 @@ private fun sfsdf() {
     // }
 
 
-
 }
 
 
@@ -690,7 +674,6 @@ fun ShakingComponent(content: @Composable (Dp) -> Unit) {
     }
 
     content(shakeAnim.value.dp)
-
 
 
 }
