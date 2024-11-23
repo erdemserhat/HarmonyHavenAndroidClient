@@ -190,6 +190,8 @@ dependencies {
     implementation ("com.github.SmartToolFactory:Compose-Screenshot:1.0.3")
 
     implementation ("dev.shreyaspatil:capturable:2.1.0")
+    implementation ("com.arthenica:ffmpeg-kit-full:5.1")
+
 
 }
 

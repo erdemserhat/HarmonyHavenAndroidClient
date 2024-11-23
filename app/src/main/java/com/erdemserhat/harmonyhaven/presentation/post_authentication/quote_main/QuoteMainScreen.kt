@@ -4,6 +4,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -30,6 +32,7 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -62,6 +65,7 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.MainScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.QuoteShareScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.ScreenshotObserver
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenProgressIndicator
 import com.smarttoolfactory.screenshot.rememberScreenshotState
 import dev.shreyaspatil.capturable.capturable
@@ -85,6 +89,10 @@ fun QuoteMainScreen(
         viewmodel = viewmodel,
         navController = navController
     )
+    val context = LocalContext.current
+
+
+
 
 
 }
@@ -205,6 +213,7 @@ fun QuoteVerticalList1(
             )
 
 
+
             VerticalPager(
                 modifier = Modifier
                     .fillMaxSize()
@@ -266,6 +275,8 @@ fun QuoteVerticalList1(
 
                     }
                 }
+
+
 
 
             }
@@ -410,6 +421,9 @@ fun Quote(
                     Text("Kategori", color = Color.White, fontSize = 10.sp)
 
                 }
+
+
+
 
 
 
@@ -615,14 +629,14 @@ fun LikeAnimationWithClickEffect(
         Image(
             modifier = Modifier
                 .size(28.dp)
-                .scale(scale.value) // Animasyonlu boyut
+                .scale(scale.value)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() }, // Etkileşim kaynağını özelleştiriyoruz
                     indication = null
 
                 ) {
 
-                    // Tıklandığında animasyonu tetikle
+
                     onLikeClicked(!isQuoteLiked)
                 },
             painter = if (isQuoteLiked) painterResource(R.drawable.likedredfilled) else painterResource(
@@ -656,11 +670,11 @@ fun ShakingComponent(content: @Composable (Dp) -> Unit) {
     LaunchedEffect(Unit) {
         repeat(5) { // Titreme hareketini 5 kez tekrarlayacak
             shakeAnim.animateTo(
-                targetValue = 1f, // Sağ tarafa hareket
+                targetValue = 1f, //
                 animationSpec = tween(durationMillis = 100)
             )
             shakeAnim.animateTo(
-                targetValue = -1f, // Sol tarafa hareket
+                targetValue = -1f,
                 animationSpec = tween(durationMillis = 100)
             )
         }
@@ -668,7 +682,7 @@ fun ShakingComponent(content: @Composable (Dp) -> Unit) {
 
 
         shakeAnim.animateTo(
-            targetValue = 0f, // Bileşeni orijinal konumuna geri döndür
+            targetValue = 0f,
             animationSpec = tween(durationMillis = 100)
         )
     }
