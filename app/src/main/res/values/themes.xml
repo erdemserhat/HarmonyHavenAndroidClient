@@ -7,8 +7,6 @@
         <item name="postSplashScreenTheme">@style/Theme.HarmonyHaven</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowDisablePreview">true</item>
-
 
 
 
