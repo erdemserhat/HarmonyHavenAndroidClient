@@ -187,10 +187,10 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    implementation ("com.github.SmartToolFactory:Compose-Screenshot:1.0.3")
+    //implementation ("com.github.SmartToolFactory:Compose-Screenshot:1.0.3")
 
     implementation ("dev.shreyaspatil:capturable:2.1.0")
-    implementation ("com.arthenica:ffmpeg-kit-full:5.1")
+    //implementation ("com.arthenica:ffmpeg-kit-full:5.1")
 
 
 }

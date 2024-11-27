@@ -208,36 +208,41 @@ fun QuoteShareScreen(
 
             }
 
-            ShareItem(
-                painterId = R.drawable.instagram_share_story_icon,
-                text = "Instagram \n Hikaye"
-            ) {
-                if (!isLoading) {
+            if(!isVideo){
+                ShareItem(
+                    painterId = R.drawable.instagram_share_story_icon,
+                    text = "Instagram \n Hikaye"
+                ) {
+                    if (!isLoading) {
 
-                    coroutineScope.launch {
-                        val fileAsync = async {
-                            if (isVideo) {
-                                onSaveVideoFile()
-                            } else {
-                                onSaveImageFile()
+                        coroutineScope.launch {
+                            val fileAsync = async {
+                                if (isVideo) {
+                                    onSaveVideoFile()
+                                } else {
+                                    onSaveImageFile()
+                                }
                             }
-                        }
-                        val file = fileAsync.await()
-                        if (file != null) {
-                            if (isVideo) {
-                                shareToInstagram1(context, file)
-                            } else {
-                                shareToInstagramStory(context, file)
+                            val file = fileAsync.await()
+                            if (file != null) {
+                                if (isVideo) {
+                                    shareToInstagram1(context, file)
+                                } else {
+                                    shareToInstagramStory(context, file)
+                                }
+
+
                             }
 
 
                         }
-
-
                     }
+
                 }
 
-            }
+        }
+
+
 
             ShareItem(painterId = R.drawable.facebook_icon, text = "Facebook") {
                 if (!isLoading) {

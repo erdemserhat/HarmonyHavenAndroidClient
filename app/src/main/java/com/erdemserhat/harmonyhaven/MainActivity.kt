@@ -54,18 +54,20 @@ class MainActivity : ComponentActivity() {
 
 
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         val extraData = intent.getStringExtra("data")
 
-        installSplashScreen()
+
 
         val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val isFirstLaunch = sharedPrefs.getBoolean("isFirstLaunch", true)
         val isLoggedInBefore = sharedPrefs.getBoolean("isLoggedInBefore", false)
+
 
         setContent {
 

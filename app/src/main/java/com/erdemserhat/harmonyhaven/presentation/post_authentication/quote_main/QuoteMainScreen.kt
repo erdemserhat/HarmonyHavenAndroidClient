@@ -65,9 +65,7 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.MainScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.QuoteShareScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.ScreenshotObserver
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenProgressIndicator
-import com.smarttoolfactory.screenshot.rememberScreenshotState
 import dev.shreyaspatil.capturable.capturable
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.Dispatchers
@@ -314,7 +312,6 @@ fun Quote(
     var categoryPageVisible by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
-    val screenshotState = rememberScreenshotState()
     var shouldScreenBeClear by rememberSaveable {
         mutableStateOf(false)
     }
