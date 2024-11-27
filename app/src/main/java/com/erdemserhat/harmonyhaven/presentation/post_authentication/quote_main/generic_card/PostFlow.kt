@@ -1,0 +1,120 @@
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card
+
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
+import androidx.navigation.NavController
+import com.erdemserhat.harmonyhaven.dto.responses.Quote
+import com.erdemserhat.harmonyhaven.presentation.navigation.QuoteShareScreenParams
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.CategoryPickerModalBottomSheet
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenProgressIndicator
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@Composable
+fun PostFlow(
+    quoteList: List<Quote>,
+    modifier: Modifier,
+    viewmodel: QuoteMainViewModel,
+    navController: NavController? = null
+) {
+    val categorySheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val shareQuoteSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+    )
+    val coroutineScope = rememberCoroutineScope()
+
+    var quoteShareScreenParams by rememberSaveable { mutableStateOf(QuoteShareScreenParams()) }
+    val isLikedListEmpty by viewmodel.isLikedListEmpty.collectAsState()
+
+    if (quoteList.isNotEmpty()) {
+        val pagerState = rememberPagerState { quoteList.size }
+
+        Box(modifier = modifier) {
+
+
+            // Bottom Sheet for Category Picker
+            CategoryPickerModalBottomSheet(
+                sheetState = categorySheetState,
+                onShouldFilterQuotes = { category, shouldShuffle ->
+                    viewmodel.filterQuotes(category, shouldShuffle)
+                },
+                onSaveCategorySelection = {
+                    viewmodel.saveCategorySelection(it)
+                },
+                isLikedListEmpty = isLikedListEmpty,
+                onGetCategorySelectionModel = viewmodel.getCategorySelection()
+            )
+
+            // Vertical Pager
+            VerticalPager(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.Center),
+                state = pagerState
+            ) { page ->
+                val isCurrentPageVisible = pagerState.currentPage == page
+                val isPreviousPageVisible = pagerState.currentPage == page + 1
+
+                Crossfade(targetState = quoteList[page], label = "") { quote ->
+                    Quote(
+                        quote = quote,
+                        currentScreen = pagerState.currentPage,
+                        isVisible = isCurrentPageVisible || isPreviousPageVisible,
+                        isCurrentPage = isCurrentPageVisible,
+                        modifier = Modifier.zIndex(2f),
+                        viewmodel = viewmodel,
+                        onShareQuoteClicked = {
+                            coroutineScope.launch { shareQuoteSheetState.show() }
+                        },
+                        onCategoryClicked = {
+                            coroutineScope.launch { categorySheetState.show() }
+                        },
+                        onReachedToLastPage = {
+                            if (pagerState.currentPage == pagerState.pageCount - 1) {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(
+                                        page = 0,
+                                        animationSpec = tween(durationMillis = 1000)
+                                    )
+                                }
+                            }
+                        },
+                        navController = navController
+                    )
+
+                    LaunchedEffect(pagerState.currentPage) {
+                        val currentQuote = quoteList[pagerState.currentPage]
+                        quoteShareScreenParams = QuoteShareScreenParams(
+                            quote = currentQuote.quote,
+                            quoteUrl = currentQuote.imageUrl,
+                            author = currentQuote.writer
+                        )
+                    }
+                }
+            }
+        }
+    } else {
+        // Loading Indicator when the quote list is empty
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            HarmonyHavenProgressIndicator()
+        }
+    }
+}

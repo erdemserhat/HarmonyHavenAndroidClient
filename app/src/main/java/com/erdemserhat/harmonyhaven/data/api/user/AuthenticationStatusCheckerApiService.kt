@@ -13,6 +13,6 @@ interface AuthenticationStatusCheckerApiService {
      *
      * @return A [Response] containing a [Unit] object. The response status code will reflect the authentication status.
      */
-    @GET("check-auth-status")
+    @GET("v1/check-auth-status")
     suspend fun checkAuthenticationStatus(): Response<Unit>
 }

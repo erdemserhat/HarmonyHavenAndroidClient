@@ -1,7 +1,9 @@
 package com.erdemserhat.harmonyhaven.presentation.navigation
 
 import AccountInformationScreen
-import android.app.Activity
+import QuoteShareScreen
+import android.graphics.Bitmap
+import android.media.Image
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -12,12 +14,13 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -34,31 +37,28 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.Set
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.about_us.AboutUsScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles.SavedArticlesScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.QuotesScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.LoginScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.passwordreset.mail.ForgotPasswordMailScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.RegisterScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.welcome.WelcomeScreen
 import kotlinx.parcelize.Parcelize
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun SetupNavGraph(
     navController: NavHostController,
     startDestination: String,
     modifier: Modifier = Modifier,
-    window :Window
+    window: Window
 ) {
 
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        modifier = modifier // Modifier'ı burada kullanın
+        modifier = modifier.background(Color.Black) // Modifier'ı burada kullanın
 
     ) {
-
-
 
         composable(route = Screen.Welcome.route) {
             window.let {
@@ -178,7 +178,6 @@ fun SetupNavGraph(
             popExitTransition = { fadeOut(animationSpec = tween(100)) }
 
 
-
         ) {
             NotificationScreen(navController = navController)
 
@@ -199,7 +198,7 @@ fun SetupNavGraph(
             popEnterTransition = { fadeIn(animationSpec = tween(100)) },
             popExitTransition = { fadeOut(animationSpec = tween(100)) }
         ) {
-            QuotesScreen()
+            //QuotesScreen()
 
         }
 
@@ -214,7 +213,7 @@ fun SetupNavGraph(
             }
             article?.let {
 
-                ArticleScreen(article,navController)
+                ArticleScreen(article, navController)
             }
         }
 
@@ -222,10 +221,16 @@ fun SetupNavGraph(
         composable(
             route = Screen.Main.route,
             enterTransition = {
-                slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Up, animationSpec = tween(700))
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up,
+                    animationSpec = tween(700)
+                )
             },
             exitTransition = {
-                slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Down, animationSpec = tween(700))
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down,
+                    animationSpec = tween(700)
+                )
             }
         ) { backStackEntry ->
 
@@ -237,12 +242,12 @@ fun SetupNavGraph(
             }
 
 
-            if(params==null){
+            if (params == null) {
 
-                AppMainScreen(navController =navController,window = window)
+                AppMainScreen(navController = navController, window = window)
 
-            }else{
-                AppMainScreen(navController,params,window)
+            } else {
+                AppMainScreen(navController, params, window)
 
             }
 
@@ -265,8 +270,47 @@ fun SetupNavGraph(
             TestScreen(navController = navController)
         }
 
+        composable(
+            route = Screen.QuoteShareScreen.route,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up, // Ekranın altından yukarı
+                    animationSpec = tween(700) // 700 ms animasyon süresi
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down, // Ekranın altına kayarak çıkış
+                    animationSpec = tween(700) // 700 ms animasyon süresi
+                )
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up, // Geri dönüşte yukarıdan kayarak giriş
+                    animationSpec = tween(700)
+                )
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down, // Geri dönüşte aşağıya kayarak çıkış
+                    animationSpec = tween(700)
+                )
+            }
+        ) { backStackEntry ->
+            val bundle = backStackEntry.arguments
+            val params = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                bundle?.getParcelable("params", QuoteShareScreenParams::class.java)
+            } else {
+                bundle?.getParcelable("params") as? QuoteShareScreenParams
+            }
 
+            QuoteShareScreen(
+                navController = navController,
+                params = params!!,
+                modifier = Modifier
+            )
 
+        }
 
 
 
@@ -289,6 +333,14 @@ fun NavController.navigate(
 
 @Parcelize
 data class MainScreenParams(
-    var screenNo:Int=-1,
-    val articleId:Int =0
+    var screenNo: Int = -1,
+    val articleId: Int = 0
+) : Parcelable
+
+@Parcelize
+data class QuoteShareScreenParams(
+    var quote: String = "",
+    var author:String ="",
+    val quoteUrl: String = "",
+    val bitmap: Bitmap? = null
 ) : Parcelable

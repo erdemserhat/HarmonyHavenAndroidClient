@@ -14,7 +14,7 @@ interface NotificationApiService {
      * @param size The number of notifications to retrieve per page.
      * @return A [Response] containing a list of [NotificationDto] objects.
      */
-    @GET("user/get-notifications")
+    @GET("v1/user/get-notifications")
     suspend fun getNotifications(
         @Query("page") page: Int,  // The page number of notifications to retrieve.
         @Query("size") size: Int   // The number of notifications per page.

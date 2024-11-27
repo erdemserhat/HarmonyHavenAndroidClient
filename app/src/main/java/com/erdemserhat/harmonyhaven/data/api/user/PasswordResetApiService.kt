@@ -22,7 +22,7 @@ interface PasswordResetApiService {
      * @param mail The [PasswordResetMailerRequest] object containing the email address where the reset code should be sent.
      * @return A [Response] containing a [PasswordResetMailerResponse] object with details of the reset code request.
      */
-    @POST("user/forgot-password/mailer")
+    @POST("v1/user/forgot-password/mailer")
     suspend fun sendPasswordResetCode(@Body mail: PasswordResetMailerRequest): Response<PasswordResetMailerResponse>
 
     /**
@@ -34,7 +34,7 @@ interface PasswordResetApiService {
      * @param auth The [PasswordResetAuthenticateRequest] object containing the reset code and any additional authentication details.
      * @return A [Response] containing a [PasswordResetAuthenticateResponse] object with details of the authentication attempt.
      */
-    @POST("user/forgot-password/auth")
+    @POST("v1/user/forgot-password/auth")
     suspend fun authenticateAttempt(@Body auth: PasswordResetAuthenticateRequest): Response<PasswordResetAuthenticateResponse>
 
     /**
@@ -46,6 +46,6 @@ interface PasswordResetApiService {
      * @param finalRequest The [PasswordResetFinalRequest] object containing the new password and any required details.
      * @return A [Response] containing a [PasswordResetFinalResponse] object indicating the success or failure of the password reset.
      */
-    @PATCH("user/forgot-password/reset-password")
+    @PATCH("v1/user/forgot-password/reset-password")
     suspend fun completePasswordResetAttempt(@Body finalRequest: PasswordResetFinalRequest): Response<PasswordResetFinalResponse>
 }
