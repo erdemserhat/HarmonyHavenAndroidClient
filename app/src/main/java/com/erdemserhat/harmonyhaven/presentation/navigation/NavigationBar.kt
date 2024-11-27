@@ -78,7 +78,6 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.compos
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.AlertDialogBase
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.QuotesScreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenIndicatorColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenSelectedNavigationBarItemColor

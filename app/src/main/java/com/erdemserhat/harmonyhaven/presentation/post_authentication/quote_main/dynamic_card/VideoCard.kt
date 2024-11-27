@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card
 
 import android.app.Activity
 import android.view.ViewGroup
@@ -28,16 +28,14 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.erdemserhat.harmonyhaven.AppLifecycleObserver
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
 import com.google.accompanist.placeholder.PlaceholderHighlight
 
 import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.placeholder.shimmer
 
 @OptIn(UnstableApi::class)
 @Composable
-fun VideoPlayer(
+fun VideoCard(
     videoUrl: String,
     isPlaying: Boolean, // Aktif sayfa mı?
     prepareOnly: Boolean, // Görünür sayfa mı?

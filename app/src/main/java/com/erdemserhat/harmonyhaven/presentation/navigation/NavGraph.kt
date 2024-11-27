@@ -37,7 +37,6 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.Set
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.about_us.AboutUsScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles.SavedArticlesScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.QuotesScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.LoginScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.passwordreset.mail.ForgotPasswordMailScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.RegisterScreen
@@ -199,7 +198,7 @@ fun SetupNavGraph(
             popEnterTransition = { fadeIn(animationSpec = tween(100)) },
             popExitTransition = { fadeOut(animationSpec = tween(100)) }
         ) {
-            QuotesScreen()
+            //QuotesScreen()
 
         }
 

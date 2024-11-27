@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import androidx.compose.runtime.State
 import com.erdemserhat.harmonyhaven.dto.responses.QuoteForOrderModel
 import com.erdemserhat.harmonyhaven.dto.responses.toQuote
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.CategorySelectionModel
 
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

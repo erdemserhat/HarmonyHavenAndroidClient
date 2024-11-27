@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,11 +24,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import com.erdemserhat.harmonyhaven.ui.theme.georgiaFont
 
 @Composable
-fun QuoteSentence(
+fun QuoteCard(
     modifier: Modifier = Modifier,
     quote: String,
     quoteWriter: String,
@@ -47,58 +46,60 @@ fun QuoteSentence(
                 ),
                 shape = RoundedCornerShape(16.dp)
             )
-
-            .padding(0.dp) // İçerik için padding
-    )
-    {
-        //  Image(painter = painterResource(id = R.drawable.a1), contentDescription =null,modifier = Modifier.align(
-        //    Alignment.TopStart).padding(12.dp), colorFilter = ColorFilter.tint(Color.Gray.copy(alpha = 0.4f)))
-
-
+            .padding(15.dp) // Padding for content
+    ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.wrapContentSize()
         ) {
+            // Display the quote text
             Text(
-                color = Color.White.copy(0.9f),
                 text = quote,
-                modifier = Modifier.padding(15.dp),
+                color = Color.White.copy(alpha = 0.9f),
                 fontSize = 20.sp,
                 fontStyle = FontStyle.Italic,
                 textAlign = TextAlign.Center,
                 fontFamily = FontFamily.Serif,
-                lineHeight = 30.sp // Satır yüksekliğini ayarlama
+                lineHeight = 30.sp,
+                modifier = Modifier.padding(bottom = 10.dp) // Add spacing
             )
 
-            if(quoteWriter != ""){
+            // Display the quote writer if available
+            if (quoteWriter.isNotBlank()) {
                 Text(
-                    color = Color.White.copy(0.7f),
                     text = quoteWriter,
+                    color = Color.White.copy(alpha = 0.7f),
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
                     fontFamily = georgiaFont
                 )
-
-
+                Spacer(modifier = Modifier.size(10.dp)) // Add spacing
             }
-            Spacer(modifier = Modifier.size(10.dp))
 
-
+            // Display the firm logo if enabled
             if (isFirmLogoVisible) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(painter = painterResource(id = R.drawable.harmony_haven_icon),
-                        contentDescription =null, modifier = Modifier.padding(5.dp).size(20.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.harmony_haven_icon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(5.dp)
+                            .size(20.dp)
+                    )
 
-                    Text("harmonyinhaven", color = Color.White, fontFamily = FontFamily.Serif, fontSize = 15.sp)
+                    Text(
+                        text = "harmonyinhaven",
+                        color = Color.White,
+                        fontFamily = FontFamily.Serif,
+                        fontSize = 15.sp
+                    )
                 }
-                Spacer(modifier = Modifier.size(10.dp))
-
+                Spacer(modifier = Modifier.size(10.dp)) // Add spacing
             }
         }
     }
-
 }

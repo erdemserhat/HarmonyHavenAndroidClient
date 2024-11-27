@@ -32,27 +32,21 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.navigation.QuoteShareScreenParams
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.ImageQuote
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.VideoPlayer
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteCard
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VideoCard
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.downloadVideo
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.saveBitmapToFile
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareImage
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareToFacebook
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareToFacebookStory
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareToInstagram
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareToInstagram1
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareToInstagramStory
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareToInstagramStoryTRY
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareToWhatsApp
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareToX
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareVideo
 import dev.shreyaspatil.capturable.capturable
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 
 @OptIn(
@@ -151,14 +145,14 @@ fun QuoteShareScreen(
         ) {
 
             if (isVideo) {
-                VideoPlayer(
+                VideoCard(
                     videoUrl = params.quoteUrl,
                     isPlaying = true,
                     prepareOnly = true,
                 )
 
             } else {
-                ImageQuote(
+                QuoteCard(
                     modifier = Modifier,
                     quoteWriter = params.author,
                     shouldAnimate = false,
@@ -366,7 +360,7 @@ fun QuoteShareScreen(
 
 
     //Original Screen Shot
-    ImageQuote(
+    QuoteCard(
         modifier = Modifier
             .offset(x = 5000.dp, y = 5000.dp)
             .capturable(capturableController),

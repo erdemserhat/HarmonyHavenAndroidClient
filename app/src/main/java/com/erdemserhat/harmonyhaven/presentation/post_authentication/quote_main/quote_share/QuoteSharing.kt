@@ -1,6 +1,5 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -31,9 +30,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
-import com.erdemserhat.harmonyhaven.BuildConfig
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quotes.FullScreenImage
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteTextCardBackground
 import com.erdemserhat.harmonyhaven.ui.theme.georgiaFont
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -49,7 +47,7 @@ fun ScreenShotQuote(quote: Quote) {
 
     Box {
 
-        FullScreenImage(
+        QuoteTextCardBackground(
             quote.imageUrl,
             modifier = Modifier
         )
@@ -72,8 +70,6 @@ fun ScreenShotQuote(quote: Quote) {
                 .padding(0.dp) // İçerik için padding
         )
         {
-            //  Image(painter = painterResource(id = R.drawable.a1), contentDescription =null,modifier = Modifier.align(
-            //    Alignment.TopStart).padding(12.dp), colorFilter = ColorFilter.tint(Color.Gray.copy(alpha = 0.4f)))
 
 
             Column(
@@ -108,15 +104,6 @@ fun ScreenShotQuote(quote: Quote) {
     }
 
 
-}
-
-fun saveBitmapToFile(context: Context, bitmap: Bitmap) {
-    // Save Bitmap to file
-    val file = File(context.filesDir, "screenshot.png")
-    FileOutputStream(file).use { out ->
-        bitmap.compress(Bitmap.CompressFormat.PNG, 10, out) // Compression with quality 10
-    }
-    Log.d("23esdsadsa", "Screenshot saved: ${file.absolutePath}")
 }
 
 
@@ -154,6 +141,7 @@ fun shareImage(context: Context, file: File) {
     // Paylaşım ekranını başlat
     context.startActivity(Intent.createChooser(shareIntent, "Share Image"))
 }
+
 fun shareToInstagramStory(context: Context, file: File) {
 
     val uri: Uri = FileProvider.getUriForFile(
@@ -229,7 +217,8 @@ fun shareToWhatsApp(context: Context, file: File) {
         context.startActivity(intent)
     } catch (e: PackageManager.NameNotFoundException) {
         // If WhatsApp is not installed, notify the user
-        Toast.makeText(context, "WhatsApp is not installed on this device.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "WhatsApp is not installed on this device.", Toast.LENGTH_SHORT)
+            .show()
     } catch (e: IllegalArgumentException) {
         Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
     } catch (e: Exception) {
@@ -245,8 +234,6 @@ fun shareToInstagram(context: Context, file: File) {
         val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
 
 
-
-
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "image/jpeg"
             putExtra(Intent.EXTRA_STREAM, uri)
@@ -258,10 +245,12 @@ fun shareToInstagram(context: Context, file: File) {
         context.startActivity(intent)
     } catch (e: PackageManager.NameNotFoundException) {
         // Instagram yüklü değilse kullanıcıya bilgi ver
-        Toast.makeText(context, "Instagram is not installed on this device.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Instagram is not installed on this device.", Toast.LENGTH_SHORT)
+            .show()
     } catch (e: Exception) {
         // Diğer hatalar için kullanıcıya bilgi ver
-        Toast.makeText(context, "Failed to share on Instagram: ${e.message}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Failed to share on Instagram: ${e.message}", Toast.LENGTH_SHORT)
+            .show()
     }
 }
 
@@ -319,7 +308,10 @@ fun shareToFacebookStory(context: Context, file: File) {
         // Facebook hikayesine paylaşım intenti
         val intent = Intent("com.facebook.stories.ADD_TO_STORY").apply {
             type = "image/jpeg" // Görüntü MIME tipi
-            putExtra("com.facebook.platform.extra.APPLICATION_ID", "1573810886567149") // Facebook App ID
+            putExtra(
+                "com.facebook.platform.extra.APPLICATION_ID",
+                "1573810886567149"
+            ) // Facebook App ID
             putExtra(Intent.EXTRA_STREAM, uri) // Resim URI
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // URI izni
         }
@@ -343,9 +335,6 @@ fun shareToFacebookStory(context: Context, file: File) {
     }
 }
 
-fun resizeBitmap(original: Bitmap, targetWidth: Int, targetHeight: Int): Bitmap {
-    return Bitmap.createScaledBitmap(original, targetWidth, targetHeight, false)
-}
 
 fun shareToX(context: Context, file: File?, text: String = "") {
     try {
@@ -411,8 +400,6 @@ fun shareToXWeb(context: Context, text: String) {
 }
 
 
-
-
 suspend fun downloadVideo(context: Context, videoUrl: String): File? {
     return withContext(Dispatchers.IO) {
         val client = OkHttpClient()
@@ -440,8 +427,6 @@ suspend fun downloadVideo(context: Context, videoUrl: String): File? {
         }
     }
 }
-
-
 
 
 fun shareVideo(context: Context, videoFile: File) {
@@ -493,144 +478,18 @@ fun shareToInstagram1(context: Context, file: File) {
         context.startActivity(intent)
     } catch (e: PackageManager.NameNotFoundException) {
         // Instagram is not installed
-        Toast.makeText(context, "Instagram is not installed on this device.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Instagram is not installed on this device.", Toast.LENGTH_SHORT)
+            .show()
     } catch (e: IllegalArgumentException) {
         // Unsupported file type
-        Toast.makeText(context, "Unsupported file type: ${file.extension}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Unsupported file type: ${file.extension}", Toast.LENGTH_SHORT)
+            .show()
     } catch (e: Exception) {
         // Handle other exceptions
-        Toast.makeText(context, "Failed to share on Instagram: ${e.message}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Failed to share on Instagram: ${e.message}", Toast.LENGTH_SHORT)
+            .show()
     }
 }
-
-fun shareToInstagramStory1(context: Context, file: File) {
-    try {
-        // Generate URI for the file
-        val uri: Uri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            file
-        )
-        Log.d("FileProvider", "Generated URI: $uri")
-        Log.d("FileProvider", "File Path: ${file.absolutePath}")
-        Log.d("FileProvider", "File Size: ${file.length()}")
-
-        // Determine the MIME type based on the file extension
-        val mimeType = when (file.extension.lowercase()) {
-            "jpg", "jpeg", "png" -> "image/jpeg" // For image files
-            "mp4" -> "video/mp4" // For video files
-            else -> throw IllegalArgumentException("Unsupported file type") // Unsupported type
-        }
-
-        // Create Instagram Story Intent
-        val storyIntent = Intent("com.instagram.share.ADD_TO_STORY").apply {
-            type = mimeType // Set the MIME type dynamically
-            putExtra("interactive_asset_uri", uri) // Attach the file URI
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Grant URI permission
-        }
-
-        // Grant URI permission to Instagram
-        context.grantUriPermission(
-            "com.instagram.android",
-            uri,
-            Intent.FLAG_GRANT_READ_URI_PERMISSION
-        )
-
-        // Check if Instagram is installed
-        val packageManager = context.packageManager
-        val isInstagramInstalled = try {
-            packageManager.getPackageInfo("com.instagram.android", 0)
-            true
-        } catch (e: PackageManager.NameNotFoundException) {
-            false
-        }
-
-        if (isInstagramInstalled) {
-            context.startActivity(storyIntent)
-        } else {
-            Toast.makeText(context, "Instagram is not installed.", Toast.LENGTH_SHORT).show()
-        }
-    } catch (e: IllegalArgumentException) {
-        Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
-    } catch (e: Exception) {
-        Log.e("InstagramStory", "Error sharing to Instagram story: ${e.message}")
-        Toast.makeText(context, "Failed to share to Instagram story.", Toast.LENGTH_SHORT).show()
-    }
-}
-
-
-fun shareToInstagramStoryx(context: Context, file: File) {
-    try {
-        val uri: Uri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            file
-        )
-
-        // Verify file format
-        val mimeType = "video/*"
-
-        val storyIntent = Intent("com.instagram.share.ADD_TO_STORY").apply {
-            type = mimeType
-            putExtra("interactive_asset_uri", uri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-
-            // Grant URI permission to Instagram
-            context.grantUriPermission(
-                "com.instagram.android",
-                uri,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION
-            )
-        }
-
-        // Check if Instagram is installed
-        context.packageManager.getPackageInfo("com.instagram.android", 0)
-
-        // Launch Instagram Stories
-        context.startActivity(storyIntent)
-    } catch (e: PackageManager.NameNotFoundException) {
-        Toast.makeText(context, "Instagram is not installed.", Toast.LENGTH_SHORT).show()
-    } catch (e: Exception) {
-        Log.e("InstagramStory", "Error sharing to Instagram story: ${e.message}")
-        Toast.makeText(context, "Failed to share to Instagram story.", Toast.LENGTH_SHORT).show()
-    }
-}
-
-
-fun shareVideo(activity: Context, sharedImgPath: String, pkgName: String) {
-    val list = ArrayList<Uri>()
-    list.add(
-        FileProvider.getUriForFile(
-            activity,
-            BuildConfig.APPLICATION_ID + ".provider",
-            File(sharedImgPath.replace("file://", "").trim { it <= ' ' })
-        )
-    )
-
-    val intentImage = Intent(Intent.ACTION_SEND)
-    intentImage.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    intentImage.putExtra(
-        Intent.EXTRA_STREAM,
-        FileProvider.getUriForFile(
-            activity,
-            BuildConfig.APPLICATION_ID + ".provider",
-            File(sharedImgPath.replace("file://", "").trim { it <= ' ' })
-        )
-    )
-    intentImage.setType("video/*")
-
-    if (pkgName.length > 0) {
-        intentImage.setPackage(pkgName)
-    }
-    activity.startActivity(intentImage)
-}
-
-
-
-
-
-
-
 
 
 
