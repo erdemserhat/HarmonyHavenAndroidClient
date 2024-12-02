@@ -7,8 +7,11 @@ import androidx.annotation.OptIn
 import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -19,12 +22,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.erdemserhat.harmonyhaven.AppLifecycleObserver
@@ -43,20 +50,33 @@ fun VideoCard(
     val context = LocalContext.current
     var isLoading by remember { mutableStateOf(true) } // Yüklenme durumunu takip edin
 
-    val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
-            setMediaItem(MediaItem.fromUri(videoUrl))
-            prepare()
-            repeatMode = ExoPlayer.REPEAT_MODE_ALL
+    // Cache Oluşturma
+    val cache = CacheManager.getCache(context)
 
-            addListener(object : Player.Listener {
-                override fun onPlaybackStateChanged(state: Int) {
-                    if (state == ExoPlayer.STATE_READY) {
-                        isLoading = false // Video hazır olduğunda shimmer efektini kaldır
+    val dataSourceFactory = DefaultDataSource.Factory(context)
+    val cacheDataSourceFactory = CacheDataSource.Factory()
+        .setCache(cache)
+        .setUpstreamDataSourceFactory(dataSourceFactory)
+        .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+
+    val exoPlayer = remember(videoUrl) {
+        ExoPlayer.Builder(context)
+            .setMediaSourceFactory(DefaultMediaSourceFactory(cacheDataSourceFactory))
+            .build().apply {
+                setMediaItem(MediaItem.fromUri(videoUrl))
+                prepare()
+                playWhenReady = true
+
+                repeatMode = ExoPlayer.REPEAT_MODE_ALL
+
+                addListener(object : Player.Listener {
+                    override fun onPlaybackStateChanged(state: Int) {
+                        if (state == ExoPlayer.STATE_READY) {
+                            isLoading = false
+                        }
                     }
-                }
-            })
-        }
+                })
+            }
     }
 
     // LifecycleObserver için bir uygulama yaşam döngüsü gözlemcisi ekle
@@ -100,7 +120,8 @@ fun VideoCard(
                         color = Color.Black // Shimmer efekti için arka plan rengi
                     ),
                 factory = {
-                    PlayerView(context).apply {
+                    PlayerView(context)
+                        .apply {
                         useController = false
                         player = exoPlayer
                         resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM

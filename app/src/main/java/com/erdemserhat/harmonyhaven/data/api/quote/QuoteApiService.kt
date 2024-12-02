@@ -6,6 +6,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Streaming
 
 
 interface QuoteApiService {
@@ -15,6 +16,7 @@ interface QuoteApiService {
      *
      * @return A [Response] containing a list of [Quote] objects.
      */
+    @Streaming
     @GET("v2/get-quotes")
     suspend fun getQuotes(): Response<List<Quote>>
 

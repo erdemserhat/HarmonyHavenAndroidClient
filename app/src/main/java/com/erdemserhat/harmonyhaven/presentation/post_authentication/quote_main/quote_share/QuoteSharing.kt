@@ -30,6 +30,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
+import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.ReturnCode
+import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteTextCardBackground
 import com.erdemserhat.harmonyhaven.ui.theme.georgiaFont
@@ -342,12 +345,22 @@ fun shareToXWeb(context: Context, text: String) {
         Toast.makeText(context, "Failed to share to X web.", Toast.LENGTH_SHORT).show()
     }
 }
+fun getDrawableFilePath(context: Context, drawableId: Int): String {
+    val inputStream = context.resources.openRawResource(drawableId)
+    val file = File(context.cacheDir, "overlay.png") // Geçici dosya oluştur
+    file.outputStream().use { outputStream ->
+        inputStream.copyTo(outputStream) // Drawable içeriğini dosyaya yaz
+    }
+    return file.absolutePath // Geçici dosyanın tam yolunu döndür
+}
 
 
 suspend fun downloadVideo(context: Context, videoUrl: String): File? {
     return withContext(Dispatchers.IO) {
+        val overlayPath: String = getDrawableFilePath(context, R.drawable.filigran)
         val client = OkHttpClient()
-        val videoFile = File(context.filesDir, "shared_video.mp4")
+        val downloadedVideoFile = File(context.filesDir, "shared_video.mp4")
+        val processedVideoFile = File(context.filesDir, "processed_video.mp4")
 
         val request = Request.Builder()
             .url(videoUrl)
@@ -357,9 +370,33 @@ suspend fun downloadVideo(context: Context, videoUrl: String): File? {
             val response = client.newCall(request).execute()
             if (response.isSuccessful) {
                 response.body?.let { responseBody ->
-                    videoFile.outputStream().use { it.write(responseBody.bytes()) }
-                    Log.d("VideoDownload", "Video saved to: ${videoFile.absolutePath}")
-                    return@withContext videoFile
+                    downloadedVideoFile.outputStream().use { it.write(responseBody.bytes()) }
+                    Log.d("VideoDownload", "Video saved to: ${downloadedVideoFile.absolutePath}")
+
+                    // FFmpeg işlemi başlat
+                    val command = arrayOf(
+                        "-y",                              // Mevcut dosyayı üzerine yazmayı zorla
+                        "-i", downloadedVideoFile.absolutePath, // Girdi video
+                        "-i", overlayPath,                        // Girdi simge
+                        "-filter_complex", "overlay=(W-w)/2:H-h-30", // Alt merkez
+                        "-c:v", "mpeg4",                   // Alternatif codec
+                        "-q:v", "1",                       // Video kalitesi (1 = en iyi, 31 = en kötü)
+                        "-c:a", "aac",                     // Ses codec
+                        "-b:a", "192k",                    // Ses bitrate
+                        processedVideoFile.absolutePath    // Çıkış video dosyası
+                    )
+
+
+
+                    // FFmpegKit kullanarak işlemi yürüt
+                    val session = FFmpegKit.execute(command.joinToString(" "))
+                    if (ReturnCode.isSuccess(session.returnCode)) {
+                        Log.d("FFmpeg", "Overlay added successfully!")
+                        return@withContext processedVideoFile
+                    } else {
+                        Log.e("FFmpeg", "FFmpeg failed: ${session.failStackTrace}")
+                        return@withContext null
+                    }
                 }
             } else {
                 Log.e("VideoDownload", "Server returned error: ${response.code}")

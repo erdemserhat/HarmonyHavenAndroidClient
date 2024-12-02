@@ -141,6 +141,7 @@ dependencies {
     // Media Playback
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
+    implementation(libs.arthenica.ffmpeg)
 
     // Additional Dependencies
     implementation(libs.material)
@@ -169,3 +170,5 @@ dependencies {
 kapt {
     correctErrorTypes = true
 }
+
+
