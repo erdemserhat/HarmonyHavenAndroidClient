@@ -42,70 +42,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 
-@Composable
-fun ScreenShotQuote(quote: Quote) {
-
-    Box {
-
-        QuoteTextCardBackground(
-            quote.imageUrl,
-            modifier = Modifier
-        )
-
-        Box(
-            modifier = Modifier
-                .padding(15.dp)
-                .wrapContentSize()
-                .align(Alignment.Center)
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            Color.Black.copy(alpha = 0.8f),
-                            Color.Gray.copy(alpha = 0.5f)
-                        )
-                    ),
-                    shape = RoundedCornerShape(16.dp)
-                )
-
-                .padding(0.dp) // İçerik için padding
-        )
-        {
-
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.wrapContentSize()
-            ) {
-                Text(
-                    color = Color.White.copy(0.9f),
-                    text = quote.quote,
-                    modifier = Modifier.padding(15.dp),
-                    fontSize = 20.sp,
-                    fontStyle = FontStyle.Italic,
-                    textAlign = TextAlign.Center,
-                    fontFamily = FontFamily.Serif,
-                    lineHeight = 30.sp // Satır yüksekliğini ayarlama
-                )
-
-                Text(
-                    color = Color.White.copy(0.7f),
-                    text = quote.writer,
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Center,
-                    fontFamily = georgiaFont
-                )
-
-                Spacer(modifier = Modifier.size(15.dp))
-            }
-        }
-
-
-    }
-
-
-}
-
 
 fun saveBitmapToFile(context: Context, imageBitmap: ImageBitmap): File? {
     return try {
@@ -143,43 +79,51 @@ fun shareImage(context: Context, file: File) {
 }
 
 fun shareToInstagramStory(context: Context, file: File) {
+    try{
 
-    val uri: Uri = FileProvider.getUriForFile(
-        context,
-        "${context.packageName}.fileprovider",
-        file
-    )
-    Log.d("FileProvider", "Generated URI: $uri")
-
-
-    val storyIntent = Intent("com.instagram.share.ADD_TO_STORY").apply {
-        type = "image/jpeg"
-        putExtra("interactive_asset_uri", uri)
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
-
-        // Instagram'a URI izni ver
-        context.grantUriPermission(
-            "com.instagram.android",
-            uri,
-            Intent.FLAG_GRANT_READ_URI_PERMISSION,
+        val uri: Uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            file
         )
-    }
+        Log.d("FileProvider", "Generated URI: $uri")
 
-    // Instagram'ın yüklü olup olmadığını kontrol edin
-    val packageManager = context.packageManager
-    val isInstagramInstalled = try {
-        packageManager.getPackageInfo("com.instagram.android", 0)
-        true
-    } catch (e: PackageManager.NameNotFoundException) {
-        false
-    }
 
-    if (isInstagramInstalled) {
+        val storyIntent = Intent("com.instagram.share.ADD_TO_STORY").apply {
+            type = "image/jpeg"
+            putExtra("interactive_asset_uri", uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
+
+            // Instagram'a URI izni ver
+            context.grantUriPermission(
+                "com.instagram.android",
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION,
+            )
+        }
+
+        // Instagram'ın yüklü olup olmadığını kontrol edin
+        //val packageManager = context.packageManager
+        // val isInstagramInstalled = try {
+        //    packageManager.getPackageInfo("com.instagram.android", 0)
+        //    true
+        // } catch (e: PackageManager.NameNotFoundException) {
+        //      false
+        // }
+
+        //  if (isInstagramInstalled) {
+
+        //  } else {
+        //     Toast.makeText(context, "Instagram is not installed.", Toast.LENGTH_SHORT).show()
+        //  }
+
         context.startActivity(storyIntent)
-    } else {
-        Toast.makeText(context, "Instagram is not installed.", Toast.LENGTH_SHORT).show()
+
+    }catch (e:Exception){
+
     }
+
 }
 
 
@@ -189,7 +133,7 @@ fun shareToWhatsApp(context: Context, file: File) {
 
     try {
         // Check if WhatsApp is installed
-        packageManager.getPackageInfo(whatsappPackage, 0)
+        //packageManager.getPackageInfo(whatsappPackage, 0)
 
         // Generate URI for the file
         val uri = FileProvider.getUriForFile(
@@ -279,7 +223,7 @@ fun shareToFacebook(context: Context, file: File) {
         }
 
         // Check if Facebook is installed
-        context.packageManager.getPackageInfo("com.facebook.katana", 0)
+        //context.packageManager.getPackageInfo("com.facebook.katana", 0)
 
         // Start the intent
         context.startActivity(intent)
@@ -293,7 +237,7 @@ fun shareToFacebook(context: Context, file: File) {
     }
 }
 
-
+//unused
 fun shareToFacebookStory(context: Context, file: File) {
     try {
         // FileProvider ile URI oluştur

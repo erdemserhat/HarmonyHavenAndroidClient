@@ -1,15 +1,23 @@
 package com.erdemserhat.harmonyhaven.di.network
 
+import android.content.Context
 import com.erdemserhat.harmonyhaven.BuildConfig
+import com.erdemserhat.harmonyhaven.R
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.CertificatePinner
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.InputStream
+import java.security.KeyStore
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 
 /**
@@ -23,38 +31,28 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RetrofitModule {
 
-    /**
-     * Provides a singleton instance of [OkHttpClient].
-     *
-     * This method creates an instance of [OkHttpClient] with specific configurations, including
-     * timeouts and interceptors. The [JwtInterceptor] is added to handle JWT authentication for
-     * network requests.
-     *
-     * @param jwtInterceptor An instance of [JwtInterceptor] for adding JWT tokens to requests.
-     * @return A singleton instance of [OkHttpClient] configured with timeouts and interceptors.
-     */
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        jwtInterceptor: JwtInterceptor
+        jwtInterceptor: JwtInterceptor,
+        context: Context
     ): OkHttpClient {
+        // Configure CertificatePinner with the SHA-256 fingerprint
+        val certificatePinner = CertificatePinner.Builder()
+            .add(BuildConfig.SERVER_MAIN_PATTERN, BuildConfig.SSL_CERTIFICATE) // Use the updated fingerprint
+            .build()
+        // Build and return the OkHttpClient
         return OkHttpClient.Builder()
-            .connectTimeout(1, TimeUnit.MINUTES) // Sets the timeout for connecting to the server
-            .readTimeout(45, TimeUnit.SECONDS) // Sets the timeout for reading data from the server
-            .writeTimeout(30, TimeUnit.SECONDS) // Sets the timeout for writing data to the server
-            .addInterceptor(jwtInterceptor) // Adds the JWT interceptor for authentication
+            .certificatePinner(certificatePinner)
+            .connectTimeout(1, TimeUnit.MINUTES) // Connection timeout
+            .readTimeout(45, TimeUnit.SECONDS) // Read timeout
+            .writeTimeout(30, TimeUnit.SECONDS) // Write timeout
+            .addInterceptor(jwtInterceptor) // Add JWT interceptor for authentication
             .build()
     }
 
-    /**
-     * Provides a singleton instance of [Retrofit].
-     *
-     * This method creates an instance of [Retrofit] configured with the base URL and the [OkHttpClient].
-     * It also adds a [GsonConverterFactory] for JSON serialization and deserialization.
-     *
-     * @param client An instance of [OkHttpClient] used for network operations.
-     * @return A singleton instance of [Retrofit] configured with the provided client and base URL.
-     */
+
+
     @Provides
     @Singleton
     fun provideRetrofit(

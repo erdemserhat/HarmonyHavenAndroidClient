@@ -14,7 +14,6 @@ import java.io.File
 fun shareToInstagramStoryTRY(context: Context, file: File) {
 
 
-    Log.d("followdsadsadsa","${context.packageName}")
 
     val uri: Uri = FileProvider.getUriForFile(
         context,
@@ -30,8 +29,6 @@ fun shareToInstagramStoryTRY(context: Context, file: File) {
         )
 
 
-    Log.d("followdsadsadsa", "Real Path: ${file.absolutePath}")
-    Log.d("followdsadsadsa", "Generated URI: $uri")
 
     val storyIntent = Intent("com.instagram.share.ADD_TO_STORY").apply {
         type = "video/mp4"
@@ -48,10 +45,6 @@ fun shareToInstagramStoryTRY(context: Context, file: File) {
         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
 
 
-
-
-        Log.d("followdsadsadsa", "Generated URI: $uri")
-        Log.d("followdsadsadsa", "File Path: ${file.absolutePath}")
 
 
 
@@ -99,21 +92,18 @@ fun shareToInstagramStoryTRY(context: Context, file: File) {
     storyIntent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
 
     val uriFromIntent = storyIntent.getParcelableExtra<Uri>("interactive_asset_uri")
-    Log.d("followdsadsadsa", uriFromIntent.toString())
 
 
 
     val inputStream = context.contentResolver.openInputStream(uri)
     if (inputStream != null) {
-        Log.d("followdsadsadsa", "Successfully accessed the file via URI")
         inputStream.close()
     } else {
-        Log.e("followdsadsadsa", "Failed to access the file via URI")
+        Log.e("error", "Failed to access the file via URI")
     }
 
 
 
-    // Instagram'ın yüklü olup olmadığını kontrol edin
     val packageManager = context.packageManager
     val isInstagramInstalled = try {
         packageManager.getPackageInfo("com.instagram.android", 0)

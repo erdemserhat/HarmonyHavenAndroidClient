@@ -1,5 +1,4 @@
 package com.erdemserhat.harmonyhaven.data.api.article
-
 import com.erdemserhat.harmonyhaven.domain.model.rest.Article
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category

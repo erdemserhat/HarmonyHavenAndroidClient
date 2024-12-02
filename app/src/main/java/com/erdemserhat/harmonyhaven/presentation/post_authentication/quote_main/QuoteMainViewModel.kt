@@ -149,7 +149,6 @@ class QuoteMainViewModel @Inject constructor(
     fun filterQuotes(
         categorySelectionModel: CategorySelectionModel,
         shouldShuffle: Boolean = true,
-        currentPage:Int = 0
     ) {
 
         Log.d("dsdsdsdadsa", "filtered again")
@@ -332,16 +331,17 @@ class QuoteMainViewModel @Inject constructor(
     private fun loadQuotes() {
         viewModelScope.launch {
             try {
-                _quotes.value =
+                allQuotes =
                     quoteUseCases.getQuote.executeRequest()
 
-                allQuotes = _quotes.value
                 allQuotes.forEach {
                     if (it.isLiked) {
                         isLikedListEmpty.value = false
                         return@forEach
                     }
                 }
+
+                filterQuotes(getCategorySelection(), shouldShuffle = true)
 
 
             } catch (e: Exception) {

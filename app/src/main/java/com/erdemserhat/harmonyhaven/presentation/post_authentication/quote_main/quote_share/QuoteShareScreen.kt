@@ -1,9 +1,11 @@
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
@@ -49,6 +51,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.io.File
 
+@SuppressLint("UnrememberedMutableInteractionSource")
 @OptIn(
     ExperimentalComposeUiApi::class, ExperimentalComposeApi::class,
     ExperimentalMaterialApi::class
@@ -126,7 +129,10 @@ fun QuoteShareScreen(
                 modifier = Modifier
                     .padding(top = 25.dp, start = 15.dp)
                     .size(20.dp)
-                    .clickable {
+                    .clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = null
+                    ) {
                         coroutineScope.launch {
                             navController.popBackStack()
                         }
@@ -379,10 +385,13 @@ fun QuoteShareScreen(
 fun ShareItem(modifier: Modifier = Modifier, painterId: Int, text: String, onClick: () -> Unit) {
 
     Column(modifier = modifier
+        .clip(RoundedCornerShape(15.dp))
         .clickable {
             onClick()
         }
-        .padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        .padding(12.dp)
+        , horizontalAlignment = Alignment.CenterHorizontally)
+    {
 
         Image(
             modifier = Modifier.size(64.dp),

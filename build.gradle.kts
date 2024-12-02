@@ -1,32 +1,12 @@
-    // Top-level build file where you can add configuration options common to all sub-projects/modules.
-    plugins {
-        id("com.android.library") version "8.1.4" apply false
-        id("com.android.application") version "8.1.2" apply false
-        //stable version of kotlin
-        id("org.jetbrains.kotlin.android") version "1.9.0" apply false
-        kotlin("jvm") version "1.4.21"
-        kotlin("plugin.serialization") version "1.4.21"
-
-
-        //KSP
-        //id("com.google.devtools.ksp") version "1.9.0-1.0.11" apply false
-
-        //Hilt
-        id("com.google.dagger.hilt.android") version "2.50" apply false
-
-        // Add the dependency for the Google services Gradle plugin
-        id("com.google.gms.google-services") version "4.4.1" apply false
-
-
-
-
-
-
-
-
-
-
-
-
-    }
-
+// "PROJECT LEVEL" build.gradle.kts file
+// false means -> do not apply this for all modules
+// true means -> apply all modules to this plugin
+plugins {
+   alias(libs.plugins.android.library) apply false
+   alias(libs.plugins.android.application) apply false
+   alias(libs.plugins.kotlin.android) apply false
+   alias(libs.plugins.kotlin.jvm)
+   alias(libs.plugins.kotlin.serialization)
+   alias(libs.plugins.hilt) apply false
+   alias(libs.plugins.google.services) apply false
+}

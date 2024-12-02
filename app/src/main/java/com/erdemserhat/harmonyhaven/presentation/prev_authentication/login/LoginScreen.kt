@@ -338,7 +338,7 @@ fun LoginScreen(
         warningText = viewModel.loginState.value.loginWarning,
         canNavigateToDashBoard = viewModel.loginState.value.canNavigateToDashBoard,
         onCanNavigateToDashBoard = {
-            navController.navigate(Screen.Main.route)
+            navController.navigate(Screen.Main.route){}
 
 
         },

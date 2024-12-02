@@ -41,6 +41,7 @@ class JwtInterceptor @Inject constructor(
             // Build the new request with the JWT token added to the Authorization header
             val request = chain.request().newBuilder()
                 .addHeader("Authorization", "Bearer $jwtToken")
+                .addHeader("harmonyhavenapikey", BuildConfig.API_KEY)
                 .build()
 
             // Proceed with the request and return the response

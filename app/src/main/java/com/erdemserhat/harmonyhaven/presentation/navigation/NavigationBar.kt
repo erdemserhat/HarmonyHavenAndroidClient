@@ -100,8 +100,6 @@ fun AppMainScreen(
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
 
-
-
     // Scroll to the initial page if provided
     LaunchedEffect(params.screenNo) {
         if (params.screenNo != -1) {
@@ -119,7 +117,7 @@ fun AppMainScreen(
 
 
     //set status bar and system navbar color
-    if (pagerState.currentPage == 2) {
+    if (pagerState.currentPage == 0) {
         window.let {
 
             it.statusBarColor = Color.Black.toArgb()
@@ -148,7 +146,7 @@ fun AppMainScreen(
         bottomBar = {
             NavigationBar(
 
-                containerColor = if (pagerState.currentPage == 2) Color.Black else Color.White,
+                containerColor = if (pagerState.currentPage == 0) Color.Black else Color.White,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(45.dp)
@@ -160,10 +158,10 @@ fun AppMainScreen(
 
                         selected = pagerState.currentPage == index,
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = if (pagerState.currentPage == 2) Color.Black else Color.Black,
+                            selectedIconColor = if (pagerState.currentPage == 0) Color.Black else Color.Black,
                             selectedTextColor = harmonyHavenSelectedNavigationBarItemColor,
                             indicatorColor = Color.Transparent,
-                            unselectedIconColor = if (pagerState.currentPage == 2) Color.Black else Color.Black
+                            unselectedIconColor = if (pagerState.currentPage == 0) Color.Black else Color.Black
                         ),
                         onClick = {
                             coroutineScope.launch {
@@ -183,7 +181,7 @@ fun AppMainScreen(
                                     }
                                 }
                             ) {
-                                if (pagerState.currentPage == 2) {
+                                if (pagerState.currentPage == 0) {
                                     Image(
                                         modifier = Modifier.size(23.dp),
                                         painter = painterResource(id = if (pagerState.currentPage == index) item.selectedIconDarkIcon else item.unSelectedIconDarkIcon),
@@ -213,20 +211,20 @@ fun AppMainScreen(
 
         },
         topBar = {
-            if (pagerState.currentPage != 2) {
+            if (pagerState.currentPage != 0) {
                 MyAppBar(
                     modifier = Modifier.zIndex(1f),
                     navController = navController,
                     title = when (pagerState.currentPage) {
-                        0 -> "Harmony Haven"
+                        2 -> "Harmony Haven"
                         1 -> "Bildirimler"
-                        2 -> "Söz Akışı"
+                        0 -> "Söz Akışı"
                         else -> "Default Title"
                     },
                     topBarBackgroundColor = when (pagerState.currentPage) {
-                        0 -> Color.White
-                        1 -> Color.White
                         2 -> Color.White
+                        1 -> Color.White
+                        0 -> Color.White
                         else -> Color.White // do not laugh it will be a future :)
                     },
                     isMainScreen = pagerState.currentPage == 0
@@ -244,9 +242,9 @@ fun AppMainScreen(
                     .windowInsetsPadding(WindowInsets.systemBars)
             ) { page ->
                 when (page) {
-                    0 -> HomeScreenNew(navController = navController)
+                    2 -> HomeScreenNew(navController = navController)
                     1 -> NotificationScreen(navController)
-                    2 -> QuoteMainScreen(navController = navController)
+                    0 -> QuoteMainScreen(navController = navController)
                 }
             }
         }
@@ -309,16 +307,16 @@ private data class NavigationBarItem(
 )
 
 private val items = listOf(
+
     NavigationBarItem(
-        title = "İçerikler",
+        title = "Sözler",
         hasNews = false,
         badgeCount = null,
-        route = Screen.Home.route,
-        selectedIconDarkIcon =R.drawable.homewhitefilled,
-        selectedIconWhiteIcon =R.drawable.homeblackfilled,
-        unSelectedIconDarkIcon = R.drawable.homewhiteunfilled,
-        unSelectedIconWhiteIcon =R.drawable.homeblackunfilled
-
+        Screen.Quotes.route,
+        selectedIconDarkIcon = R.drawable.quotewhitefilled,
+        selectedIconWhiteIcon =R.drawable.quoteblackfilled,
+        unSelectedIconDarkIcon =R.drawable.quotewhiteunfilled,
+        unSelectedIconWhiteIcon =R.drawable.quoteblackunfilled
     ),
     NavigationBarItem(
         title = "Bildirimler",
@@ -331,15 +329,17 @@ private val items = listOf(
         unSelectedIconWhiteIcon =R.drawable.notificationblackunfilled
     ),
     NavigationBarItem(
-        title = "Sözler",
+        title = "İçerikler",
         hasNews = false,
         badgeCount = null,
-        Screen.Quotes.route,
-        selectedIconDarkIcon = R.drawable.quotewhitefilled,
-        selectedIconWhiteIcon =R.drawable.quoteblackfilled,
-        unSelectedIconDarkIcon =R.drawable.quotewhiteunfilled,
-        unSelectedIconWhiteIcon =R.drawable.quoteblackunfilled
-    ),
+        route = Screen.Home.route,
+        selectedIconDarkIcon =R.drawable.homewhitefilled,
+        selectedIconWhiteIcon =R.drawable.homeblackfilled,
+        unSelectedIconDarkIcon = R.drawable.homewhiteunfilled,
+        unSelectedIconWhiteIcon =R.drawable.homeblackunfilled
+
+    )
+
 // NavigationBarItem(
 //     "Profile", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle, false, null,
 //       Screen.Settings.route

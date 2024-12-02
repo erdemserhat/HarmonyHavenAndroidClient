@@ -48,7 +48,6 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import kotlinx.coroutines.launch
 
 
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun CategoryPickerModalBottomSheet(
@@ -69,45 +68,30 @@ fun CategoryPickerModalBottomSheet(
     val updateList = {
         coroutineScope.launch {
             if (categoryPicker.nothingSelected()) {
-                categoryPicker.isGeneralSelected = true
+                categoryPicker.isShortVideosSelected = true
             }
 
             onSaveCategorySelection(categoryPicker)
-            onShouldFilterQuotes(categoryPicker,true)
+            onShouldFilterQuotes(categoryPicker, true)
 
 
         }
     }
-
-
 
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
             categoryPicker = onGetCategorySelectionModel
-            if(categoryPicker.isLikedSelected){
-                if(isLikedListEmpty){
+            if (categoryPicker.isLikedSelected) {
+                if (isLikedListEmpty) {
                     categoryPicker.isLikedSelected = false
+
                 }
             }
-            updateList()
+            //updateList()
 
         }
     }
-
-
-    LaunchedEffect(categoryPicker.isGeneralSelected) {
-        if(categoryPicker.isGeneralSelected){
-            categoryPicker = CategorySelectionModel()
-        }
-
-
-    }
-
-
-
-
-
 
 
     ModalBottomSheetLayout(
@@ -164,52 +148,52 @@ fun CategoryPickerModalBottomSheet(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         CategorySelectionMiniCard(
-                            title = "Genel",
-                            icon = R.drawable.chat,
-                            isSelected = categoryPicker.isGeneralSelected,
+                            title = "Kısa Videolar",
+                            icon = R.drawable.reels_2,
+                            isSelected = categoryPicker.isShortVideosSelected,
                             onClick = {
-                                if (!categoryPicker.isOnlyGeneralSelected()) {
-                                    categoryPicker = categoryPicker.copy(
-                                        isGeneralSelected = !categoryPicker.isGeneralSelected
-                                    )
-                                }
-
+                                categoryPicker = categoryPicker.copy(
+                                    isShortVideosSelected = !categoryPicker.isShortVideosSelected,
+                                )
                                 updateList()
-
-
                             }
                         )
+
 
                         CategorySelectionMiniCard(
                             title = "Beğendiklerim",
                             icon = R.drawable.loved,
                             isSelected = categoryPicker.isLikedSelected,
                             onClick = {
-                                updateList()
-                                if(categoryPicker.isLikedSelected){
+                                //If category is liked and user clicks again, it will be unliked
+                                if (categoryPicker.isLikedSelected) {
                                     categoryPicker = categoryPicker.copy(
                                         isLikedSelected = false,
-                                        isGeneralSelected = categoryPicker.isGeneralSelected
-
                                     )
-
-
-
                                     return@CategorySelectionMiniCard
 
+                                    //If category is unliked and user clicks again
+                                } else {
+                                    //and if liked list is not empty, it will be liked
+                                    if (!isLikedListEmpty) {
+                                        categoryPicker = categoryPicker.copy(
+                                            isLikedSelected = true,
+
+                                            )
+                                        //but if liked list is empty
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Beğendiğiniz Gönderi Bulunmuyor.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+
                                 }
+                                updateList()
 
 
-                                if(!isLikedListEmpty){
-                                    categoryPicker = categoryPicker.copy(
-                                        isLikedSelected = !categoryPicker.isLikedSelected,
-                                        isGeneralSelected = if (!categoryPicker.isLikedSelected) false else categoryPicker.isGeneralSelected
 
-                                    )
-                                    updateList()
-                                }else{
-                                    Toast.makeText(context,"Beğendiğiniz Gönderi Bulunmuyor.",Toast.LENGTH_SHORT).show()
-                                }
 
 
                             }
@@ -223,16 +207,16 @@ fun CategoryPickerModalBottomSheet(
                     ) {
 
                         CategorySelectionMiniCard(
-                            title = "Kısa Videolar",
-                            icon = R.drawable.reels_2,
-                            isSelected = categoryPicker.isShortVideosSelected,
+                            title = "Genel",
+                            icon = R.drawable.chat,
+                            isSelected = categoryPicker.isGeneralSelected,
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
-                                    isShortVideosSelected = !categoryPicker.isShortVideosSelected,
-                                    isGeneralSelected = if (!categoryPicker.isShortVideosSelected) false else categoryPicker.isGeneralSelected
-
+                                    isGeneralSelected = !categoryPicker.isGeneralSelected
                                 )
                                 updateList()
+
+
                             }
                         )
 
@@ -244,111 +228,6 @@ fun CategoryPickerModalBottomSheet(
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
                                     isConfidenceSelected = !categoryPicker.isConfidenceSelected,
-                                    isGeneralSelected = if (!categoryPicker.isConfidenceSelected) false else categoryPicker.isGeneralSelected
-
-
-                                )
-                                updateList()
-                            }
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        CategorySelectionMiniCard(
-                            title = "Aşk",
-                            icon = R.drawable.dove,
-                            isSelected = categoryPicker.isLoveSelected,
-                            onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isLoveSelected = !categoryPicker.isLoveSelected,
-                                    isGeneralSelected = if (!categoryPicker.isLoveSelected) false else categoryPicker.isGeneralSelected
-
-
-                                )
-                                updateList()
-                            }
-                        )
-
-                        CategorySelectionMiniCard(
-                            title = "Kişisel Gelişim",
-                            icon = R.drawable.experience,
-                            isSelected = categoryPicker.isSelfImprovementSelected,
-                            onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isSelfImprovementSelected = !categoryPicker.isSelfImprovementSelected,
-                                    isGeneralSelected = if (!categoryPicker.isSelfImprovementSelected) false else categoryPicker.isGeneralSelected
-
-                                )
-                                updateList()
-                            }
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        CategorySelectionMiniCard(
-                            title = "Yaşam",
-                            icon = R.drawable.wellness,
-                            isSelected = categoryPicker.isLifeSelected,
-                            onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isLifeSelected = !categoryPicker.isLifeSelected,
-                                    isGeneralSelected = if (!categoryPicker.isLifeSelected) false else categoryPicker.isGeneralSelected
-
-                                )
-                                updateList()
-                            }
-                        )
-
-                        CategorySelectionMiniCard(
-                            title = "Güç",
-                            icon = R.drawable.protest,
-                            isSelected = categoryPicker.isStrengthSelected,
-                            onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isStrengthSelected = !categoryPicker.isStrengthSelected,
-                                    isGeneralSelected = if (!categoryPicker.isStrengthSelected) false else categoryPicker.isGeneralSelected
-
-                                )
-                                updateList()
-                            }
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        CategorySelectionMiniCard(
-                            title = "Pozitif Düşünmek",
-                            icon = R.drawable.positive_thinking,
-                            isSelected = categoryPicker.isPositivitySelected,
-                            onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isPositivitySelected = !categoryPicker.isPositivitySelected,
-                                    isGeneralSelected = if (!categoryPicker.isPositivitySelected) false else categoryPicker.isGeneralSelected
-
-                                )
-                                updateList()
-                            }
-                        )
-
-                        CategorySelectionMiniCard(
-                            title = "Kaygıyla Başetme",
-                            icon = R.drawable.dementia,
-                            isSelected = categoryPicker.isAnxietySelected,
-                            onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isAnxietySelected = !categoryPicker.isAnxietySelected,
-                                    isGeneralSelected = if (!categoryPicker.isAnxietySelected) false else categoryPicker.isGeneralSelected
 
                                 )
                                 updateList()
@@ -368,12 +247,110 @@ fun CategoryPickerModalBottomSheet(
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
                                     isSelfEsteemSelected = !categoryPicker.isSelfEsteemSelected,
-                                    isGeneralSelected = if (!categoryPicker.isSelfEsteemSelected) false else categoryPicker.isGeneralSelected
+
+                                    )
+                                updateList()
+                            }
+                        )
+
+                        CategorySelectionMiniCard(
+                            title = "Kişisel Gelişim",
+                            icon = R.drawable.experience,
+                            isSelected = categoryPicker.isSelfImprovementSelected,
+                            onClick = {
+                                categoryPicker = categoryPicker.copy(
+                                    isSelfImprovementSelected = !categoryPicker.isSelfImprovementSelected,
 
                                 )
                                 updateList()
                             }
                         )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        CategorySelectionMiniCard(
+                            title = "Yaşam",
+                            icon = R.drawable.wellness,
+                            isSelected = categoryPicker.isLifeSelected,
+                            onClick = {
+                                categoryPicker = categoryPicker.copy(
+                                    isLifeSelected = !categoryPicker.isLifeSelected,
+
+                                )
+                                updateList()
+                            }
+                        )
+
+                        CategorySelectionMiniCard(
+                            title = "Güç",
+                            icon = R.drawable.protest,
+                            isSelected = categoryPicker.isStrengthSelected,
+                            onClick = {
+                                categoryPicker = categoryPicker.copy(
+                                    isStrengthSelected = !categoryPicker.isStrengthSelected,
+
+                                )
+                                updateList()
+                            }
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        CategorySelectionMiniCard(
+                            title = "Pozitif Düşünmek",
+                            icon = R.drawable.positive_thinking,
+                            isSelected = categoryPicker.isPositivitySelected,
+                            onClick = {
+                                categoryPicker = categoryPicker.copy(
+                                    isPositivitySelected = !categoryPicker.isPositivitySelected,
+
+                                )
+                                updateList()
+                            }
+                        )
+
+                        CategorySelectionMiniCard(
+                            title = "Kaygıyla Başetme",
+                            icon = R.drawable.dementia,
+                            isSelected = categoryPicker.isAnxietySelected,
+                            onClick = {
+                                categoryPicker = categoryPicker.copy(
+                                    isAnxietySelected = !categoryPicker.isAnxietySelected,
+
+                                )
+                                updateList()
+                            }
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        /////
+                        CategorySelectionMiniCard(
+                            title = "Aşk",
+                            icon = R.drawable.dove,
+                            isSelected = categoryPicker.isLoveSelected,
+                            onClick = {
+                                categoryPicker = categoryPicker.copy(
+                                    isLoveSelected = !categoryPicker.isLoveSelected,
+
+
+                                    )
+                                updateList()
+                            }
+                        )
+
 
                         CategorySelectionMiniCard(
                             title = "Cesaret",
@@ -382,7 +359,6 @@ fun CategoryPickerModalBottomSheet(
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
                                     isCourageSelected = !categoryPicker.isCourageSelected,
-                                    isGeneralSelected = if (!categoryPicker.isCourageSelected) false else categoryPicker.isGeneralSelected
 
                                 )
                                 updateList()
@@ -402,7 +378,6 @@ fun CategoryPickerModalBottomSheet(
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
                                     isSadnessSelected = !categoryPicker.isSadnessSelected,
-                                    isGeneralSelected = if (!categoryPicker.isSadnessSelected) false else categoryPicker.isGeneralSelected
 
                                 )
                                 updateList()
@@ -416,7 +391,6 @@ fun CategoryPickerModalBottomSheet(
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
                                     isSportSelected = !categoryPicker.isSportSelected,
-                                    isGeneralSelected = if (!categoryPicker.isSportSelected) false else categoryPicker.isGeneralSelected
 
                                 )
                                 updateList()
@@ -436,7 +410,6 @@ fun CategoryPickerModalBottomSheet(
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
                                     isWorkSelected = !categoryPicker.isWorkSelected,
-                                    isGeneralSelected = if (!categoryPicker.isWorkSelected) false else categoryPicker.isGeneralSelected
 
                                 )
                                 updateList()
@@ -450,7 +423,6 @@ fun CategoryPickerModalBottomSheet(
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
                                     isToxicRelationshipsSelected = !categoryPicker.isToxicRelationshipsSelected,
-                                    isGeneralSelected = if (!categoryPicker.isToxicRelationshipsSelected) false else categoryPicker.isGeneralSelected
 
                                 )
                                 updateList()
@@ -470,7 +442,6 @@ fun CategoryPickerModalBottomSheet(
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
                                     isSeparationSelected = !categoryPicker.isSeparationSelected,
-                                    isGeneralSelected = if (!categoryPicker.isSeparationSelected) false else categoryPicker.isGeneralSelected
 
                                 )
                                 updateList()
@@ -484,7 +455,6 @@ fun CategoryPickerModalBottomSheet(
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
                                     isContinuingLifeSelected = !categoryPicker.isContinuingLifeSelected,
-                                    isGeneralSelected = if (!categoryPicker.isContinuingLifeSelected) false else categoryPicker.isGeneralSelected
 
                                 )
                                 updateList()
@@ -506,7 +476,6 @@ fun CategoryPickerModalBottomSheet(
                             onClick = {
                                 categoryPicker = categoryPicker.copy(
                                     isBeYourselfSelected = !categoryPicker.isBeYourselfSelected,
-                                    isGeneralSelected = if (!categoryPicker.isBeYourselfSelected) false else categoryPicker.isGeneralSelected
                                 )
                                 updateList()
                             }
@@ -514,11 +483,13 @@ fun CategoryPickerModalBottomSheet(
 
 
 
-                        Box(modifier = Modifier.width(180.dp)
-                           .height(80.dp)
-                           .padding(8.dp)
+                        Box(
+                            modifier = Modifier
+                                .width(180.dp)
+                                .height(80.dp)
+                                .padding(8.dp)
 
-                       )
+                        )
 
 
                     }

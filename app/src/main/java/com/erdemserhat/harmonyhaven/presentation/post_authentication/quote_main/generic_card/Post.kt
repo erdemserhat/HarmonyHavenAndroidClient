@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -145,14 +146,7 @@ fun Quote(
                 isPlaying = isCurrentPage,
                 prepareOnly = isVisible
             )
-            if (quote.quote.isNotEmpty()) {
-                QuoteCard(
-                    modifier = Modifier.align(Alignment.Center),
-                    quoteWriter = quote.writer,
-                    quoteSentence = quote.quote,
-                    quoteURL = quote.imageUrl
-                )
-            }
+
         }
     }
 }
@@ -191,6 +185,7 @@ private fun BottomControls(
     }
 }
 
+@SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
 private fun IconTextButton(
     iconRes: Int,
@@ -200,7 +195,11 @@ private fun IconTextButton(
     Column(
         modifier = Modifier
             .padding(bottom = 25.dp)
-            .clickable(onClick = onClick),
+            .clickable(
+                interactionSource = MutableInteractionSource(),
+                indication = null,
+                onClick = onClick
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(

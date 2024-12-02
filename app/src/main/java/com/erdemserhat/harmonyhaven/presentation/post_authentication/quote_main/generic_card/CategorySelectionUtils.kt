@@ -52,7 +52,7 @@ val categorySelectionSaver = Saver<CategorySelectionModel, List<Boolean>>(
 )
 
 data class CategorySelectionModel(
-    var isGeneralSelected: Boolean = true,
+    var isGeneralSelected: Boolean = false,
     var isLikedSelected: Boolean = false,
     var isBeYourselfSelected: Boolean = false,
     var isConfidenceSelected: Boolean = false,
@@ -70,7 +70,7 @@ data class CategorySelectionModel(
     var isCourageSelected: Boolean = false,
     var isSportSelected: Boolean = false,
     var isLoveSelected: Boolean = false,
-    var isShortVideosSelected:Boolean = false
+    var isShortVideosSelected:Boolean = true
 
 
 ) {

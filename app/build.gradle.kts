@@ -1,71 +1,45 @@
 plugins {
-    id("com.android.application")
-    id("com.google.gms.google-services")
-    id("com.google.dagger.hilt.android")
-    id ("kotlin-parcelize")
-
-    id("org.jetbrains.kotlin.android")
-    //id("com.google.devtools.ksp")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.android)
+    id("kotlin-parcelize")
     kotlin("kapt")
 
-
-
-    // id ("dagger.hilt.android.plugin")
-    //id ("kotlin-android-extensions")
 }
 
 android {
-
-
-
-
     namespace = "com.erdemserhat.harmonyhaven"
     compileSdk = 35
-
-
 
     defaultConfig {
         applicationId = "com.erdemserhat.harmonyhaven"
         minSdk = 24
         targetSdk = 35
-        versionCode = 11
-        multiDexEnabled =true
-        versionName = "1.0.11"
+        versionCode = project.findProperty("VERSION_CODE")?.toString()?.toInt() ?: 1
+        versionName = project.findProperty("VERSION_NAME")?.toString() ?: "1.0.0"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+
+        buildConfigField("String", "SSL_CERTIFICATE", "\"${project.findProperty("SSL_PINNING_CERTIFICATE")}\"")
+        buildConfigField("String", "SERVER_MAIN_PATTERN", "\"${project.findProperty("SERVER_MAIN_PATTERN")}\"")
 
 
-
-        vectorDrawables {
-            useSupportLibrary = true
-        }
-        externalNativeBuild {
-            cmake {
-                cppFlags += ""
-            }
-        }
     }
-
     buildTypes {
-        //buildConfigField("String", "API_KEY", "\"your_actual_api_key_here\"")--> Use this to add new one
 
         release {
-            buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/\"")
-
             isMinifyEnabled = true
-
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            buildConfigField("String", "API_KEY", "\"${project.findProperty("API_KEY_PRODUCTION")}\"")
+            buildConfigField("String", "SERVER_URL", "\"${project.findProperty("SERVER_URL_PRODUCTION")}\"")
         }
 
         debug {
-            buildConfigField("String", "SERVER_URL", "\"http://192.168.137.214:5000/api/\"")
-            //buildConfigField("String", "SERVER_URL", "\"http://51.20.136.184:5000/api/\"")
             isMinifyEnabled = false
-
-
+            buildConfigField("String", "API_KEY", "\"${project.findProperty("API_KEY_DEVELOPMENT")}\"")
+            buildConfigField("String", "SERVER_URL", "\"${project.findProperty("SERVER_URL_DEVELOPMENT")}\"")
         }
     }
 
@@ -75,7 +49,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "17"  // Update to JVM target 17 to match Java 17
+        jvmTarget = "17"
 
     }
 
@@ -84,8 +58,9 @@ android {
         buildConfig = true
     }
 
+    //This version 1.5.15 targeting kotlin 1.9.25 please consider version compatibility before migration
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
 
     packaging {
@@ -108,92 +83,87 @@ kotlin {
 
 
 dependencies {
-    // Android Core Dependencies
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.lifecycle:lifecycle-process:2.8.4")
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    // Core Dependencies
+    implementation(libs.appcompat)
+    implementation(libs.core.ktx)
+    implementation(libs.lifecycle.process)
+    implementation(libs.splashscreen)
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
-    implementation("com.google.firebase:firebase-analytics")
-    //implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-messaging-ktx:23.4.1")
-    implementation("com.google.firebase:protolite-well-known-types:18.0.0")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.protolite)
 
-    // Dagger-Hilt
-    implementation("com.google.dagger:hilt-android:2.50")
-    kapt("com.google.dagger:hilt-android-compiler:2.50")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    // Dependency Injection (Hilt)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation(libs.hilt.navigation)
 
-    // Jetpack Compose Dependencies
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.activity:activity-compose:1.9.3")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation(platform("androidx.compose:compose-bom:2024.05.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    // Jetpack Compose
+    implementation(libs.androidx.material3)
+    implementation(libs.activity.compose)
+    implementation(libs.androidx.lifecycle.runtime.ktx.v287)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
+    androidTestImplementation(platform(libs.compose.bom.test))
+    implementation(libs.navigation.compose)
 
-    // Paging Dependencies
-    implementation("androidx.paging:paging-common-android:3.3.0")
-    implementation("com.google.accompanist:accompanist-pager:0.24.7-alpha")
-    implementation("com.google.accompanist:accompanist-pager-indicators:0.24.7-alpha")
+    // Paging
+    implementation(libs.paging.common)
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.indicators)
 
     // Room Database
-    val room_version = "2.6.1"
-    implementation("androidx.room:room-runtime:$room_version")
-    kapt("androidx.room:room-compiler:$room_version")
-    implementation("androidx.room:room-ktx:$room_version")
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
+    implementation(libs.room.ktx)
 
-    // Retrofit and Serialization
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    // Networking and Serialization
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.kotlinx)
+    implementation(libs.okhttp)
+    implementation(libs.serialization.json)
+    implementation(libs.retrofit.gson)
 
     // Image Loading
-    implementation("io.coil-kt:coil-compose:2.6.0")
-    implementation("io.coil-kt:coil-gif:2.0.0")
+    implementation(libs.coil.compose)
+    implementation(libs.coil.gif)
 
     // Coroutines and Lifecycle
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
-    implementation("androidx.compose.runtime:runtime-livedata:1.6.6")
+    implementation(libs.coroutines.core)
+    implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.runtime.livedata)
 
     // Media Playback
-    implementation("androidx.media3:media3-exoplayer:1.0.0")
-    implementation("androidx.media3:media3-ui:1.0.0")
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
 
     // Additional Dependencies
-    implementation("com.google.android.material:material:1.12.0")
-    implementation("com.github.jeziellago:compose-markdown:0.5.0")
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
-    implementation("com.google.accompanist:accompanist-navigation-animation:0.28.0")
-    implementation("com.google.accompanist:accompanist-placeholder-material:0.31.2-alpha")
-
-
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
-    implementation("androidx.credentials:credentials:1.3.0") //1
-    implementation("androidx.credentials:credentials-play-services-auth:1.3.0") //2
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation(libs.material)
+    implementation(libs.compose.markdown)
+    implementation(libs.accompanist.systemui)
+    implementation(libs.accompanist.animation)
+    implementation(libs.accompanist.placeholder)
+    implementation(libs.play.services.auth)
+    implementation(libs.credentials)
+    implementation(libs.credentials.play)
+    implementation(libs.google.id)
+    implementation(libs.dotenv)
 
     // Testing Dependencies
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    //implementation ("com.github.SmartToolFactory:Compose-Screenshot:1.0.3")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
 
-    implementation ("dev.shreyaspatil:capturable:2.1.0")
-    //implementation ("com.arthenica:ffmpeg-kit-full:5.1")
-
-
+    // Capturable Library
+    implementation(libs.capturable)
 }
+
 
 // Allow references to generated code
 kapt {
