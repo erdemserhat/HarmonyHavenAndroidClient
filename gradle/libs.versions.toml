@@ -35,7 +35,6 @@ lifecycleCompose = "2.7.0"
 runtimeLivedata = "1.6.6"
 composeBomTest = "2023.08.00"
 dotenv ="6.4.2"
-ffmpeg ="5.1"
 
 
 
@@ -97,7 +96,6 @@ espresso-core = { module = "androidx.test.espresso:espresso-core", version = "3.
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 compose-bom-test = { module = "androidx.compose:compose-bom", version.ref = "composeBomTest" }
 dotenv = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenv" }
-arthenica-ffmpeg = {module = "com.arthenica:ffmpeg-kit-full",version.ref ="ffmpeg"}
 
 
 [plugins]
