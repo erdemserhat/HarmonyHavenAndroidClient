@@ -2,12 +2,16 @@ package com.erdemserhat.harmonyhaven.di.database
 
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import com.erdemserhat.harmonyhaven.data.local.AppDatabase
+import com.erdemserhat.harmonyhaven.test.SessionManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 import javax.inject.Singleton
 
 
@@ -62,4 +66,5 @@ object RoomDatabaseModule {
             .fallbackToDestructiveMigration() // Fallback to destructive migration if the schema is not compatible
             .build()
     }
+
 }

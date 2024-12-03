@@ -74,6 +74,33 @@ data class CategorySelectionModel(
 
 
 ) {
+
+    // Returns a list of selected category IDs
+    fun convertToIdListModel(): List<Int> {
+        val idList = mutableListOf<Int>()
+        if (isGeneralSelected) idList.add(1)
+        if (isLikedSelected) idList.add(-1)
+        if (isBeYourselfSelected) idList.add(2)
+        if (isConfidenceSelected) idList.add(3)
+        if (isSelfImprovementSelected) idList.add(6)
+        if (isLifeSelected) idList.add(7)
+        if (isStrengthSelected) idList.add(8)
+        if (isPositivitySelected) idList.add(9)
+        if (isAnxietySelected) idList.add(10)
+        if (isSelfEsteemSelected) idList.add(11)
+        if (isSadnessSelected) idList.add(13)
+        if (isContinuingLifeSelected) idList.add(14)
+        if (isWorkSelected) idList.add(15)
+        if (isToxicRelationshipsSelected) idList.add(16)
+        if (isSeparationSelected) idList.add(17)
+        if (isCourageSelected) idList.add(18)
+        if (isSportSelected) idList.add(19)
+        if (isLoveSelected) idList.add(20)
+        if (isShortVideosSelected) idList.add(21)
+        return idList
+    }
+
+
     fun nothingSelected(): Boolean {
         return !isGeneralSelected &&
                 !isLikedSelected &&
@@ -126,5 +153,4 @@ data class CategorySelectionModel(
             }
         }
     }
-
 }

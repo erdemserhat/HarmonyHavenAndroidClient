@@ -115,7 +115,6 @@ fun Quote(
                         viewmodel.likeQuote(quote.id)
                     } else {
                         viewmodel.removeLikeQuote(quote.id)
-                        viewmodel.removeLikedInternally(quote.id)
                     }
                 },
                 onCategoryClicked = onCategoryClicked,

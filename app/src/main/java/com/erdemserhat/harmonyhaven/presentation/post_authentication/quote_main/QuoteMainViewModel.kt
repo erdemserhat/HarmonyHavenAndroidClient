@@ -6,11 +6,10 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.erdemserhat.harmonyhaven.data.local.repository.QuoteRepository
 import com.erdemserhat.harmonyhaven.domain.usecase.quote.QuoteUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
@@ -24,60 +23,71 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import androidx.compose.runtime.State
+import com.erdemserhat.harmonyhaven.domain.model.rest.FilteredQuoteRequest
 import com.erdemserhat.harmonyhaven.dto.responses.QuoteForOrderModel
-import com.erdemserhat.harmonyhaven.dto.responses.toQuote
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.CategorySelectionModel
+import com.erdemserhat.harmonyhaven.test.SessionManager
 
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Named
+import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class QuoteMainViewModel @Inject constructor(
     private val quoteUseCases: QuoteUseCases,
     @ApplicationContext private val context: Context,
-    private val userUseCases: UserUseCases
+    private val userUseCases: UserUseCases,
+    private val sessionManager: SessionManager,
+    @Named("CategorySelection") private val categoryPreferences: SharedPreferences,
+    @Named("Permission") private val permissionPreferences: SharedPreferences,
+    @Named("UserTutorial") private val userTutorialPreferences: SharedPreferences,
+    private var quoteRepository: QuoteRepository
 ) : ViewModel() {
-    private val _quotes =
-        MutableStateFlow<List<com.erdemserhat.harmonyhaven.dto.responses.Quote>>(emptyList())
-    val quotes: StateFlow<List<com.erdemserhat.harmonyhaven.dto.responses.Quote>> = _quotes
-    private var allQuotes: List<Quote> = emptyList()
 
-    // StateFlow ile UX Dialog gösterecek mi
+
+    private val _quotes =
+        MutableStateFlow<List<Quote>>(mutableListOf())
+    val quotes: StateFlow<List<Quote>> = _quotes
+
+    private val _cachedQuotes = MutableStateFlow<List<Quote>>(emptyList())
+    val cachedQuotes: StateFlow<List<Quote>> = _cachedQuotes
+
+
+
+    //user tutorial
     private val _shouldShowUxDialog1 = MutableStateFlow(true)
     private val _shouldShowUxDialog2 = MutableStateFlow(true)
-    var isLikedListEmpty = MutableStateFlow(true)
     val shouldShowUxDialog1: StateFlow<Boolean> = _shouldShowUxDialog1
-    val shouldShowUxDialog2: StateFlow<Boolean> = _shouldShowUxDialog2
+
+    var isLikedListEmpty = MutableStateFlow(true)
     private var _selectedQuote = mutableStateOf(QuoteForOrderModel())
-    val selectedQuote: State<QuoteForOrderModel> get() = _selectedQuote
-
-
     private val _authState = MutableStateFlow(1)
-    val authStatus = _authState
-    //1 successfully
-    //2 should re login
-    //0 internet connection error
+
+    //For pagination
+    private val _page = MutableStateFlow(1)
+    private val _pageSize = 20
+    private var _seed = sessionManager.getSeed()
 
 
     init {
         tryLoad()
         updateFcmToken()
+
+
     }
 
     fun updateSelectedQuote(selectedQuoteArg: QuoteForOrderModel) {
         _selectedQuote.value = selectedQuoteArg
     }
 
-    fun tryLoad() {
-        loadQuotes()
-        initializeUxDialogState()
-        initializeUxDialogState2()
+    private fun tryLoad() {
+        prepareList()
+        initializeScrollTutorial()
         checkConnection()
-        isLikedListEmpty()
 
 
     }
@@ -111,7 +121,6 @@ class QuoteMainViewModel @Inject constructor(
     fun likeQuote(quoteId: Int) {
         viewModelScope.launch {
             try {
-                markAsLikedInternally(quoteId)
                 quoteUseCases.likeQuote.executeRequest(quoteId)
 
             } catch (e: Exception) {
@@ -124,7 +133,6 @@ class QuoteMainViewModel @Inject constructor(
     fun removeLikeQuote(quoteId: Int) {
         viewModelScope.launch {
             try {
-                removeLikedInternally(quoteId)
                 quoteUseCases.removeLike.executeRequest(quoteId)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -134,267 +142,112 @@ class QuoteMainViewModel @Inject constructor(
     }
 
 
-    fun getLikedQuotes() {
+    fun loadCategorizedQuotes() {
         viewModelScope.launch {
             try {
-                val list = quoteUseCases.getLikedQuotes.executeRequest()
-                Log.d("dsadsafgsdf", list.toString())
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
+                _quotes.value = listOf()
+                sessionManager.resetSeed()
+                _seed = sessionManager.getSeed()
+                _page.value = 1
+                val categories = getCategorySelection().convertToIdListModel()
+                //load quotes with pagination from default page
+                val requestedQuotes = quoteUseCases.getQuote.executeRequest2(
+                    filteredQuoteRequest = FilteredQuoteRequest(
+                        categories = categories,
+                        page = _page.value,
+                        pageSize = _pageSize,
+                        seed = _seed
+                    )
+                )
 
+                _quotes.value.map {
+                    requestedQuotes.toMutableList().remove(it)
+                }
+                _quotes.value += requestedQuotes
 
-    fun filterQuotes(
-        categorySelectionModel: CategorySelectionModel,
-        shouldShuffle: Boolean = true,
-    ) {
+                withContext(Dispatchers.IO){
+                    quoteRepository.clearCachedQuotes()
+                    quoteRepository.addCachedQuotes(requestedQuotes.takeLast(10).map { it.convertToEntity() })
 
-        Log.d("dsdsdsdadsa", "filtered again")
-
-        val filteredQuotes: MutableSet<Quote> = mutableSetOf()
-        _quotes.value = filteredQuotes.toList()
-
-
-        if (categorySelectionModel.isGeneralSelected) {
-            _quotes.value = allQuotes
-            return
-        }
-
-        if (categorySelectionModel.isBeYourselfSelected) {
-            allQuotes.filter { it.quoteCategory == 2 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-        // Diğer kategoriler için filtreleme
-        if (categorySelectionModel.isConfidenceSelected) {
-            allQuotes.filter { it.quoteCategory == 3 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-
-        if (categorySelectionModel.isSelfImprovementSelected) {
-            allQuotes.filter { it.quoteCategory == 6 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-        if (categorySelectionModel.isLifeSelected) {
-            allQuotes.filter { it.quoteCategory == 7 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-        if (categorySelectionModel.isStrengthSelected) {
-            allQuotes.filter { it.quoteCategory == 8 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-        if (categorySelectionModel.isPositivitySelected) {
-            allQuotes.filter { it.quoteCategory == 9 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-        if (categorySelectionModel.isAnxietySelected) {
-            allQuotes.filter { it.quoteCategory == 10 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-        if (categorySelectionModel.isSelfEsteemSelected) {
-            allQuotes.filter { it.quoteCategory == 11 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-        if (categorySelectionModel.isSadnessSelected) {
-            allQuotes.filter { it.quoteCategory == 13 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-        if (categorySelectionModel.isLikedSelected) {
-            allQuotes.filter { it.isLiked }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-        if (categorySelectionModel.isContinuingLifeSelected) {
-            allQuotes.filter { it.quoteCategory == 14 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-
-        if (categorySelectionModel.isWorkSelected) {
-            allQuotes.filter { it.quoteCategory == 15 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-
-        if (categorySelectionModel.isToxicRelationshipsSelected) {
-            allQuotes.filter { it.quoteCategory == 16 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-        if (categorySelectionModel.isSeparationSelected) {
-            allQuotes.filter { it.quoteCategory == 17 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-
-        if (categorySelectionModel.isCourageSelected) {
-            allQuotes.filter { it.quoteCategory == 18 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-        if (categorySelectionModel.isSportSelected) {
-            allQuotes.filter { it.quoteCategory == 19 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-        if (categorySelectionModel.isShortVideosSelected) {
-            allQuotes.filter { it.quoteCategory == 21 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-
-        if (categorySelectionModel.isLoveSelected) {
-            allQuotes.filter { it.quoteCategory == 20 }.forEach {
-                filteredQuotes.add(it)
-            }
-        }
-
-
-
-        var reorderedQuotes: MutableList<Quote> = filteredQuotes.toMutableList()
-        reorderedQuotes= if (shouldShuffle) reorderedQuotes.shuffled().toMutableList() else reorderedQuotes
-
-        if (_selectedQuote.value.id != -1) {
-            reorderedQuotes.add(_selectedQuote.value.currentPage, _selectedQuote.value.toQuote())
-
-        }
-
-        _quotes.value = reorderedQuotes
-        _selectedQuote.value = QuoteForOrderModel()
-        _quotes.value.forEach {
-            if (it.isLiked) {
-                isLikedListEmpty.value = false
-                return@forEach
-
-            }
-
-        }
-
-
-    }
-
-    private fun markAsLikedInternally(quoteId: Int) {
-        viewModelScope.launch {
-            try {
-                _quotes.value.find { it.id == quoteId }!!.isLiked = true
-                allQuotes.find { it.id == quoteId }!!.isLiked = true
-                isLikedListEmpty.value = false
-            } catch (e: Exception) {
-                e.printStackTrace()
-
-            }
-        }
-    }
-
-
-    fun removeLikedInternally(quoteId: Int) {
-        viewModelScope.launch {
-            try {
-                _quotes.value.find { it.id == quoteId }!!.isLiked = false
-                allQuotes.find { it.id == quoteId }!!.isLiked = false
-                if (allQuotes.none { it.isLiked }) isLikedListEmpty.value = true
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-
-            }
-        }
-    }
-
-    //load notification via offset
-    private fun loadQuotes() {
-        viewModelScope.launch {
-            try {
-                allQuotes =
-                    quoteUseCases.getQuote.executeRequest()
-
-                allQuotes.forEach {
-                    if (it.isLiked) {
-                        isLikedListEmpty.value = false
-                        return@forEach
-                    }
                 }
 
-                filterQuotes(getCategorySelection(), shouldShuffle = true)
 
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
+            } catch (_: Exception) {
 
             }
+
+        }
+
+
+    }
+
+
+    //load notification via offset
+    private fun prepareList() {
+        Log.d("PrepareFirstInit","Application Launched")
+
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                val ellapsedTime = measureTimeMillis{
+                    Log.d("PrepareFirstInit","Pushed Cache")
+                    val cachedQuotes = quoteRepository.getCachedQuotes()
+                    _quotes.value = cachedQuotes.map { it.convertToQuote() }
+                    Log.d("PrepareFirstInit",cachedQuotes.toString())
+                }
+                Log.d("PrepareFirstInit", "Cache pushed in $ellapsedTime ms")
+
+
+            }
+
+            Log.d( "Quote-Loading-Log121212s", cachedQuotes.toString())
+            val elapsedTime = measureTimeMillis {
+                try {
+                    Log.d("PrepareFirstInit","Api request started...")
+                    val categories = getCategorySelection().convertToIdListModel()
+                    val requestedQuotes = quoteUseCases.getQuote.executeRequest2(
+                        filteredQuoteRequest = FilteredQuoteRequest(
+                            categories = categories,
+                            page = _page.value,
+                            pageSize = _pageSize,
+                            seed = _seed
+                        )
+                    )
+                    Log.d("PrepareFirstInit","Api request finished...")
+                    _quotes.value += requestedQuotes
+
+                    withContext(Dispatchers.IO){
+                        Log.d("PrepareFirstInit","Cache cleared and refreshed")
+                        quoteRepository.clearCachedQuotes()
+                        quoteRepository.addCachedQuotes(requestedQuotes.takeLast(10).map { it.convertToEntity() })
+
+                    }
+
+
+
+                    Log.d("Quote-Loading-Logs", requestedQuotes.toString())
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            Log.d("PrepareFirstInit", "Operation completed in $elapsedTime ms")
         }
     }
 
 
-    private fun initializeUxDialogState() {
-        val sharedPreferences: SharedPreferences =
-            context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        val showDialog = sharedPreferences.getBoolean("shouldShowUxDialog1", true)
+    private fun initializeScrollTutorial() {
+        val showDialog = userTutorialPreferences.getBoolean("shouldShowScrollTutorial", true)
         _shouldShowUxDialog1.value = showDialog
     }
 
-    private fun initializeUxDialogState2() {
-        val sharedPreferences: SharedPreferences =
-            context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        val showDialog = sharedPreferences.getBoolean("shouldShowUxDialog2", true)
-        _shouldShowUxDialog2.value = showDialog
+
+    fun markScrollTutorialDone(show: Boolean) {
+        userTutorialPreferences.edit().putBoolean("shouldShowScrollTutorial", show).apply()
+        initializeScrollTutorial()
     }
-
-    fun setShouldShowUxDialog1(show: Boolean) {
-        _shouldShowUxDialog1.value = show
-        val sharedPreferences: SharedPreferences =
-            context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        sharedPreferences.edit().putBoolean("shouldShowUxDialog1", show).apply()
-        initializeUxDialogState()
-
-    }
-
-    fun setShouldShowUxDialog2(show: Boolean) {
-        _shouldShowUxDialog1.value = show
-        val sharedPreferences: SharedPreferences =
-            context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        sharedPreferences.edit().putBoolean("shouldShowUxDialog2", show).apply()
-        initializeUxDialogState2()
-
-    }
-
-    //Permission operations
-    private val sharedPreferences =
-        context.getSharedPreferences("PermissionPreferences", Context.MODE_PRIVATE)
-
-    private val sharedPreferencesForCategorySelection =
-        context.getSharedPreferences("CategorySelection", Context.MODE_PRIVATE)
 
 
     fun saveCategorySelection(model: CategorySelectionModel) {
-        sharedPreferencesForCategorySelection.edit().apply {
+        categoryPreferences.edit().apply {
             val selectionMap = mapOf(
                 "isGeneralSelected" to model.isGeneralSelected,
                 "isLikedSelected" to model.isLikedSelected,
@@ -426,79 +279,79 @@ class QuoteMainViewModel @Inject constructor(
         val defaultValues = CategorySelectionModel() // Use the default values from the data class
 
         return CategorySelectionModel(
-            isGeneralSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isGeneralSelected = categoryPreferences.getBoolean(
                 "isGeneralSelected",
                 defaultValues.isGeneralSelected
             ),
-            isLikedSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isLikedSelected = categoryPreferences.getBoolean(
                 "isLikedSelected",
                 defaultValues.isLikedSelected
             ),
-            isBeYourselfSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isBeYourselfSelected = categoryPreferences.getBoolean(
                 "isBeYourselfSelected",
                 defaultValues.isBeYourselfSelected
             ),
-            isConfidenceSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isConfidenceSelected = categoryPreferences.getBoolean(
                 "isConfidenceSelected",
                 defaultValues.isConfidenceSelected
             ),
-            isSelfImprovementSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isSelfImprovementSelected = categoryPreferences.getBoolean(
                 "isSelfImprovementSelected",
                 defaultValues.isSelfImprovementSelected
             ),
-            isLifeSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isLifeSelected = categoryPreferences.getBoolean(
                 "isLifeSelected",
                 defaultValues.isLifeSelected
             ),
-            isStrengthSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isStrengthSelected = categoryPreferences.getBoolean(
                 "isStrengthSelected",
                 defaultValues.isStrengthSelected
             ),
-            isPositivitySelected = sharedPreferencesForCategorySelection.getBoolean(
+            isPositivitySelected = categoryPreferences.getBoolean(
                 "isPositivitySelected",
                 defaultValues.isPositivitySelected
             ),
-            isAnxietySelected = sharedPreferencesForCategorySelection.getBoolean(
+            isAnxietySelected = categoryPreferences.getBoolean(
                 "isAnxietySelected",
                 defaultValues.isAnxietySelected
             ),
-            isSelfEsteemSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isSelfEsteemSelected = categoryPreferences.getBoolean(
                 "isSelfEsteemSelected",
                 defaultValues.isSelfEsteemSelected
             ),
-            isSadnessSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isSadnessSelected = categoryPreferences.getBoolean(
                 "isSadnessSelected",
                 defaultValues.isSadnessSelected
             ),
-            isContinuingLifeSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isContinuingLifeSelected = categoryPreferences.getBoolean(
                 "isContinuingLifeSelected",
                 defaultValues.isContinuingLifeSelected
             ),
-            isWorkSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isWorkSelected = categoryPreferences.getBoolean(
                 "isWorkSelected",
                 defaultValues.isWorkSelected
             ),
-            isToxicRelationshipsSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isToxicRelationshipsSelected = categoryPreferences.getBoolean(
                 "isToxicRelationshipsSelected",
                 defaultValues.isToxicRelationshipsSelected
             ),
-            isSeparationSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isSeparationSelected = categoryPreferences.getBoolean(
                 "isSeparationSelected",
                 defaultValues.isSeparationSelected
             ),
-            isCourageSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isCourageSelected = categoryPreferences.getBoolean(
                 "isCourageSelected",
                 defaultValues.isCourageSelected
             ),
-            isSportSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isSportSelected = categoryPreferences.getBoolean(
                 "isSportSelected",
                 defaultValues.isSportSelected
             ),
-            isLoveSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isLoveSelected = categoryPreferences.getBoolean(
                 "isLoveSelected",
                 defaultValues.isLoveSelected
             ),
-            isShortVideosSelected = sharedPreferencesForCategorySelection.getBoolean(
+            isShortVideosSelected = categoryPreferences.getBoolean(
                 "isShortVideosSelected",
                 defaultValues.isShortVideosSelected
             )
@@ -506,25 +359,18 @@ class QuoteMainViewModel @Inject constructor(
     }
 
 
-    private fun isLikedListEmpty(): Boolean {
-        isLikedListEmpty.value = allQuotes.none { it.isLiked }
-        return isLikedListEmpty.value
-
-    }
-
-
     fun updatePermissionStatus(value: Boolean = false) {
         val key: String = "notificationPref"
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                sharedPreferences.edit().putBoolean(key, value).apply()
+                permissionPreferences.edit().putBoolean(key, value).apply()
             }
         }
     }
 
     fun isPermissionGranted(): Boolean {
         val key: String = "notificationPref"
-        return sharedPreferences.getBoolean(key, false)
+        return permissionPreferences.getBoolean(key, false)
     }
 
     // Belirli aralıklarla internet bağlantısını kontrol et

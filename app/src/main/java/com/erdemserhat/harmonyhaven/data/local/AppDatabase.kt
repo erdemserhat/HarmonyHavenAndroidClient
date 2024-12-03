@@ -6,10 +6,12 @@ import com.erdemserhat.harmonyhaven.data.local.dao.ArticleDao
 import com.erdemserhat.harmonyhaven.data.local.dao.CategoryDao
 import com.erdemserhat.harmonyhaven.data.local.dao.JwtTokenDao
 import com.erdemserhat.harmonyhaven.data.local.dao.NotificationDao
+import com.erdemserhat.harmonyhaven.data.local.dao.QuoteDao
 import com.erdemserhat.harmonyhaven.data.local.entities.ArticleEntity
 import com.erdemserhat.harmonyhaven.data.local.entities.CategoryEntity
 import com.erdemserhat.harmonyhaven.data.local.entities.JwtTokenEntity
 import com.erdemserhat.harmonyhaven.data.local.entities.NotificationEntity
+import com.erdemserhat.harmonyhaven.data.local.entities.QuoteEntity
 
 /**
  * Abstract class representing the Room database for the application.
@@ -25,9 +27,10 @@ import com.erdemserhat.harmonyhaven.data.local.entities.NotificationEntity
         JwtTokenEntity::class,
         NotificationEntity::class,
         ArticleEntity::class,
-        CategoryEntity::class
+        CategoryEntity::class,
+        QuoteEntity::class
     ],
-    version = 5
+    version = 6
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -58,4 +61,6 @@ abstract class AppDatabase : RoomDatabase() {
      * @return An instance of [CategoryDao] for managing category records.
      */
     abstract fun categoryDao(): CategoryDao
+
+    abstract fun quoteDao(): QuoteDao
 }

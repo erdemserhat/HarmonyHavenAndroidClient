@@ -2,6 +2,7 @@ package com.erdemserhat.harmonyhaven.di.database
 
 import com.erdemserhat.harmonyhaven.data.local.AppDatabase
 import com.erdemserhat.harmonyhaven.data.local.repository.NotificationRepository
+import com.erdemserhat.harmonyhaven.data.local.repository.QuoteRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,5 +37,15 @@ object NotificationDatabaseModule {
         appDatabase: AppDatabase
     ): NotificationRepository {
         return NotificationRepository(appDatabase.notificationDao())
+    }
+
+
+    //refactor.
+    @Provides
+    @Singleton
+    fun provideQuotesRepository(
+        appDatabase: AppDatabase
+    ): QuoteRepository {
+        return QuoteRepository(appDatabase.quoteDao())
     }
 }

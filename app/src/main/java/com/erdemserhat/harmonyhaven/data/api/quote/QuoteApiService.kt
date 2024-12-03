@@ -1,7 +1,9 @@
 package com.erdemserhat.harmonyhaven.data.api.quote
 
+import com.erdemserhat.harmonyhaven.domain.model.rest.FilteredQuoteRequest
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -19,6 +21,11 @@ interface QuoteApiService {
     @Streaming
     @GET("v2/get-quotes")
     suspend fun getQuotes(): Response<List<Quote>>
+
+    @POST("v3/get-quotes")
+    suspend fun getQuotesV3(
+        @Body filter: FilteredQuoteRequest
+    ): Response<List<Quote>>
 
     @POST("v1/like-quote/{quoteId}")
     suspend fun likeQuote(@Path("quoteId") quoteId: Int):Response<Unit>
