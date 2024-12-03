@@ -33,4 +33,5 @@ object QuoteNetworkModule {
     fun provideQuoteApiService(retrofit: Retrofit): QuoteApiService {
         return retrofit.create(QuoteApiService::class.java)
     }
+
 }

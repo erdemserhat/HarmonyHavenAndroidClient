@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -65,6 +66,10 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenButton
 import com.erdemserhat.harmonyhaven.ui.theme.customFontInter
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
+import com.google.accompanist.placeholder.shimmer
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
@@ -152,16 +157,12 @@ fun NotificationScreen(
         } else {
             if (notifications.isEmpty()) {
                 Spacer(modifier = Modifier.size(20.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.no_mail),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.size(10.dp))
-                Text(
-                    text = "Henüz bir bildirim yok, en kısa sürede bildirim almaya başlayacaksınız.",
-                    textAlign = TextAlign.Center
 
-                )
+                Column {
+                    repeat(5){
+                            NotificationContentShimmer()
+                        }
+                    }
 
 
             } else {
@@ -329,4 +330,95 @@ fun unixToDateTime(unixTimestamp: Long, pattern: String = "yyyy-MM-dd HH:mm:ss")
     val dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
     val formatter = DateTimeFormatter.ofPattern(pattern)
     return formatter.format(dateTime)
+}
+@Composable
+fun NotificationContentShimmer() {
+    val baseColor = Color.LightGray // Base shimmer color
+    val highlightColor = Color.White // Highlight shimmer color
+
+    Column(
+        modifier = Modifier
+            .padding(10.dp)
+    ) {
+        // Timestamp shimmer
+        Box(
+            modifier = Modifier
+                .height(20.dp)
+                .fillMaxWidth(0.3f) // Simulates a shorter timestamp text
+                .clip(RoundedCornerShape(4.dp))
+                .placeholder(
+                    visible = true,
+                    color = baseColor,
+                    highlight = PlaceholderHighlight.shimmer(
+                        highlightColor = highlightColor
+                    )
+                )
+        )
+
+        Spacer(modifier = Modifier.height(5.dp))
+
+        Box(
+            modifier = Modifier
+                .width(380.dp)
+                .defaultMinSize(minHeight = 100.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .placeholder(
+                    visible = true,
+                    color = baseColor,
+                    highlight = PlaceholderHighlight.shimmer(
+                        highlightColor = highlightColor
+                    )
+                )
+        ) {
+            Column {
+                // Title shimmer
+                Box(
+                    modifier = Modifier
+                        .height(20.dp)
+                        .fillMaxWidth(0.6f) // Simulates a shorter title text
+                        .padding(start = 10.dp, top = 5.dp, bottom = 10.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .placeholder(
+                            visible = true,
+                            color = baseColor,
+                            highlight = PlaceholderHighlight.shimmer(
+                                highlightColor = highlightColor
+                            )
+                        )
+                )
+
+                // Content shimmer
+                Box(
+                    modifier = Modifier
+                        .height(60.dp)
+                        .fillMaxWidth(0.9f)
+                        .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .placeholder(
+                            visible = true,
+                            color = baseColor,
+                            highlight = PlaceholderHighlight.shimmer(
+                                highlightColor = highlightColor
+                            )
+                        )
+                )
+            }
+
+            // Icon shimmer (Top-End)
+            Box(
+                modifier = Modifier
+                    .size(35.dp)
+                    .padding(10.dp)
+                    .align(Alignment.TopEnd)
+                    .clip(RoundedCornerShape(50))
+                    .placeholder(
+                        visible = true,
+                        color = baseColor,
+                        highlight = PlaceholderHighlight.shimmer(
+                            highlightColor = highlightColor
+                        )
+                    )
+            )
+        }
+    }
 }

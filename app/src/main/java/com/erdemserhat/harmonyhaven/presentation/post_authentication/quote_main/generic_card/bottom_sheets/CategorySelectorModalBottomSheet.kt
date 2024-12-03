@@ -52,46 +52,38 @@ import kotlinx.coroutines.launch
 @Composable
 fun CategoryPickerModalBottomSheet(
     sheetState: ModalBottomSheetState,
-    onShouldFilterQuotes: (CategorySelectionModel, Boolean) -> Unit,
+    onShouldFilterQuotes: (CategorySelectionModel) -> Unit,
     onSaveCategorySelection: (CategorySelectionModel) -> Unit,
-    onGetCategorySelectionModel: CategorySelectionModel,
-    isLikedListEmpty: Boolean = false
-
+    onGetCategorySelectionModel: CategorySelectionModel
 ) {
     var categoryPicker by rememberSaveable(stateSaver = categorySelectionSaver) {
         mutableStateOf(CategorySelectionModel())
     }
     val coroutineScope = rememberCoroutineScope()
-
     val context = LocalContext.current
+
+    //load category preferences.
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            categoryPicker = onGetCategorySelectionModel
+
+        }
+    }
 
     val updateList = {
         coroutineScope.launch {
             if (categoryPicker.nothingSelected()) {
                 categoryPicker.isShortVideosSelected = true
             }
-
             onSaveCategorySelection(categoryPicker)
-            onShouldFilterQuotes(categoryPicker, true)
+            onShouldFilterQuotes(categoryPicker)
 
 
         }
     }
 
 
-    LaunchedEffect(Unit) {
-        coroutineScope.launch {
-            categoryPicker = onGetCategorySelectionModel
-            if (categoryPicker.isLikedSelected) {
-                if (isLikedListEmpty) {
-                    categoryPicker.isLikedSelected = false
 
-                }
-            }
-            //updateList()
-
-        }
-    }
 
 
     ModalBottomSheetLayout(
@@ -165,38 +157,13 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.loved,
                             isSelected = categoryPicker.isLikedSelected,
                             onClick = {
-                                //If category is liked and user clicks again, it will be unliked
-                                if (categoryPicker.isLikedSelected) {
-                                    categoryPicker = categoryPicker.copy(
-                                        isLikedSelected = false,
-                                    )
-                                    return@CategorySelectionMiniCard
-
-                                    //If category is unliked and user clicks again
-                                } else {
-                                    //and if liked list is not empty, it will be liked
-                                    if (!isLikedListEmpty) {
-                                        categoryPicker = categoryPicker.copy(
-                                            isLikedSelected = true,
-
-                                            )
-                                        //but if liked list is empty
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            "Beğendiğiniz Gönderi Bulunmuyor.",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-
-                                }
+                                categoryPicker = categoryPicker.copy(
+                                    isLikedSelected = !categoryPicker.isLikedSelected,
+                                )
                                 updateList()
-
-
-
-
-
                             }
+
+
                         )
                     }
 
@@ -229,7 +196,7 @@ fun CategoryPickerModalBottomSheet(
                                 categoryPicker = categoryPicker.copy(
                                     isConfidenceSelected = !categoryPicker.isConfidenceSelected,
 
-                                )
+                                    )
                                 updateList()
                             }
                         )
@@ -261,7 +228,7 @@ fun CategoryPickerModalBottomSheet(
                                 categoryPicker = categoryPicker.copy(
                                     isSelfImprovementSelected = !categoryPicker.isSelfImprovementSelected,
 
-                                )
+                                    )
                                 updateList()
                             }
                         )
@@ -280,7 +247,7 @@ fun CategoryPickerModalBottomSheet(
                                 categoryPicker = categoryPicker.copy(
                                     isLifeSelected = !categoryPicker.isLifeSelected,
 
-                                )
+                                    )
                                 updateList()
                             }
                         )
@@ -293,7 +260,7 @@ fun CategoryPickerModalBottomSheet(
                                 categoryPicker = categoryPicker.copy(
                                     isStrengthSelected = !categoryPicker.isStrengthSelected,
 
-                                )
+                                    )
                                 updateList()
                             }
                         )
@@ -312,7 +279,7 @@ fun CategoryPickerModalBottomSheet(
                                 categoryPicker = categoryPicker.copy(
                                     isPositivitySelected = !categoryPicker.isPositivitySelected,
 
-                                )
+                                    )
                                 updateList()
                             }
                         )
@@ -325,7 +292,7 @@ fun CategoryPickerModalBottomSheet(
                                 categoryPicker = categoryPicker.copy(
                                     isAnxietySelected = !categoryPicker.isAnxietySelected,
 
-                                )
+                                    )
                                 updateList()
                             }
                         )
@@ -360,7 +327,7 @@ fun CategoryPickerModalBottomSheet(
                                 categoryPicker = categoryPicker.copy(
                                     isCourageSelected = !categoryPicker.isCourageSelected,
 
-                                )
+                                    )
                                 updateList()
                             }
                         )
@@ -379,7 +346,7 @@ fun CategoryPickerModalBottomSheet(
                                 categoryPicker = categoryPicker.copy(
                                     isSadnessSelected = !categoryPicker.isSadnessSelected,
 
-                                )
+                                    )
                                 updateList()
                             }
                         )
@@ -392,7 +359,7 @@ fun CategoryPickerModalBottomSheet(
                                 categoryPicker = categoryPicker.copy(
                                     isSportSelected = !categoryPicker.isSportSelected,
 
-                                )
+                                    )
                                 updateList()
                             }
                         )
@@ -411,7 +378,7 @@ fun CategoryPickerModalBottomSheet(
                                 categoryPicker = categoryPicker.copy(
                                     isWorkSelected = !categoryPicker.isWorkSelected,
 
-                                )
+                                    )
                                 updateList()
                             }
                         )
@@ -424,7 +391,7 @@ fun CategoryPickerModalBottomSheet(
                                 categoryPicker = categoryPicker.copy(
                                     isToxicRelationshipsSelected = !categoryPicker.isToxicRelationshipsSelected,
 
-                                )
+                                    )
                                 updateList()
                             }
                         )
@@ -443,7 +410,7 @@ fun CategoryPickerModalBottomSheet(
                                 categoryPicker = categoryPicker.copy(
                                     isSeparationSelected = !categoryPicker.isSeparationSelected,
 
-                                )
+                                    )
                                 updateList()
                             }
                         )
@@ -456,7 +423,7 @@ fun CategoryPickerModalBottomSheet(
                                 categoryPicker = categoryPicker.copy(
                                     isContinuingLifeSelected = !categoryPicker.isContinuingLifeSelected,
 
-                                )
+                                    )
                                 updateList()
                             }
                         )

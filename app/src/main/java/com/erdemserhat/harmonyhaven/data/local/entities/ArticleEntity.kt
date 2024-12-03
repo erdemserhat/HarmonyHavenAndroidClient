@@ -30,6 +30,7 @@ data class ArticleEntity(
     val imagePath: String
 )
 
+
 /**
  * Extension function to convert an [ArticleEntity] to an [Article].
  *
