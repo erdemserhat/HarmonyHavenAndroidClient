@@ -70,7 +70,7 @@ data class CategorySelectionModel(
     var isCourageSelected: Boolean = false,
     var isSportSelected: Boolean = false,
     var isLoveSelected: Boolean = false,
-    var isShortVideosSelected:Boolean = true
+    var isShortVideosSelected: Boolean = true
 
 
 ) {
@@ -124,7 +124,7 @@ data class CategorySelectionModel(
     }
 
     fun isOnlyGeneralSelected(): Boolean {
-        return  isGeneralSelected &&
+        return isGeneralSelected &&
                 !isLikedSelected &&
                 !isBeYourselfSelected &&
                 !isConfidenceSelected &&
@@ -136,7 +136,24 @@ data class CategorySelectionModel(
                 !isSelfEsteemSelected &&
                 !isSadnessSelected &&
                 !isWorkSelected &&
-                !isToxicRelationshipsSelected  &&
+                !isToxicRelationshipsSelected &&
+                !isShortVideosSelected
+    }
+
+    fun isOnlyLikedSelected(): Boolean {
+        return  isLikedSelected &&
+                !isGeneralSelected &&
+                !isBeYourselfSelected &&
+                !isConfidenceSelected &&
+                !isSelfImprovementSelected &&
+                !isLifeSelected &&
+                !isStrengthSelected &&
+                !isPositivitySelected &&
+                !isAnxietySelected &&
+                !isSelfEsteemSelected &&
+                !isSadnessSelected &&
+                !isWorkSelected &&
+                !isToxicRelationshipsSelected &&
                 !isShortVideosSelected
     }
 
@@ -144,7 +161,7 @@ data class CategorySelectionModel(
         if (isGeneralSelected &&
             (isLikedSelected || isBeYourselfSelected || isConfidenceSelected || isShortVideosSelected ||
                     isSelfImprovementSelected || isLifeSelected || isStrengthSelected || isPositivitySelected ||
-                    isAnxietySelected || isSelfEsteemSelected  || isSadnessSelected
+                    isAnxietySelected || isSelfEsteemSelected || isSadnessSelected
                     || isWorkSelected || isToxicRelationshipsSelected)
         ) {
             if (isLikedSelected) {

@@ -28,7 +28,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -45,6 +47,8 @@ import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.CategorySelectionModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.categorySelectionSaver
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -59,6 +63,7 @@ fun CategoryPickerModalBottomSheet(
     var categoryPicker by rememberSaveable(stateSaver = categorySelectionSaver) {
         mutableStateOf(CategorySelectionModel())
     }
+
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -69,6 +74,10 @@ fun CategoryPickerModalBottomSheet(
 
         }
     }
+
+    var lastSelectedState by remember { mutableStateOf(categoryPicker) }
+
+    var debounceJob: Job? = null
 
     val updateList = {
         coroutineScope.launch {
@@ -82,7 +91,15 @@ fun CategoryPickerModalBottomSheet(
         }
     }
 
-
+    fun handleCategorySelection(updatedCategoryPicker: CategorySelectionModel) {
+        categoryPicker = updatedCategoryPicker
+        lastSelectedState = updatedCategoryPicker
+        debounceJob?.cancel() // Önceki gecikmeyi iptal et
+        debounceJob = coroutineScope.launch {
+            delay(500L) // 500ms gecikme
+            updateList() //
+        }
+    }
 
 
 
@@ -144,10 +161,13 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.reels_2,
                             isSelected = categoryPicker.isShortVideosSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isShortVideosSelected = !categoryPicker.isShortVideosSelected,
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isShortVideosSelected = !categoryPicker.isShortVideosSelected,
+                                    )
                                 )
-                                updateList()
+
+                                //updateList()
                             }
                         )
 
@@ -157,13 +177,12 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.loved,
                             isSelected = categoryPicker.isLikedSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isLikedSelected = !categoryPicker.isLikedSelected,
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isLikedSelected = !categoryPicker.isLikedSelected,
+                                    )
                                 )
-                                updateList()
                             }
-
-
                         )
                     }
 
@@ -178,10 +197,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.chat,
                             isSelected = categoryPicker.isGeneralSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isGeneralSelected = !categoryPicker.isGeneralSelected
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isGeneralSelected = !categoryPicker.isGeneralSelected,
+                                    )
                                 )
-                                updateList()
 
 
                             }
@@ -193,11 +213,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.self_confidence,
                             isSelected = categoryPicker.isConfidenceSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isConfidenceSelected = !categoryPicker.isConfidenceSelected,
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isConfidenceSelected = !categoryPicker.isConfidenceSelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
                     }
@@ -212,11 +232,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.self_motivation,
                             isSelected = categoryPicker.isSelfEsteemSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isSelfEsteemSelected = !categoryPicker.isSelfEsteemSelected,
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isSelfEsteemSelected = !categoryPicker.isSelfEsteemSelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
 
@@ -225,11 +245,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.experience,
                             isSelected = categoryPicker.isSelfImprovementSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isSelfImprovementSelected = !categoryPicker.isSelfImprovementSelected,
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isSelfImprovementSelected = !categoryPicker.isSelfImprovementSelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
                     }
@@ -244,11 +264,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.wellness,
                             isSelected = categoryPicker.isLifeSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isLifeSelected = !categoryPicker.isLifeSelected,
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isLifeSelected = !categoryPicker.isLifeSelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
 
@@ -257,11 +277,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.protest,
                             isSelected = categoryPicker.isStrengthSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isStrengthSelected = !categoryPicker.isStrengthSelected,
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isStrengthSelected = !categoryPicker.isStrengthSelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
                     }
@@ -276,11 +296,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.positive_thinking,
                             isSelected = categoryPicker.isPositivitySelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isPositivitySelected = !categoryPicker.isPositivitySelected,
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isPositivitySelected = !categoryPicker.isPositivitySelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
 
@@ -289,11 +309,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.dementia,
                             isSelected = categoryPicker.isAnxietySelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isAnxietySelected = !categoryPicker.isAnxietySelected,
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isAnxietySelected = !categoryPicker.isAnxietySelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
                     }
@@ -309,12 +329,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.dove,
                             isSelected = categoryPicker.isLoveSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isLoveSelected = !categoryPicker.isLoveSelected,
-
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isLoveSelected = !categoryPicker.isLoveSelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
 
@@ -324,11 +343,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.reward,
                             isSelected = categoryPicker.isCourageSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isCourageSelected = !categoryPicker.isCourageSelected,
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isCourageSelected = !categoryPicker.isCourageSelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
                     }
@@ -343,11 +362,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.sad,
                             isSelected = categoryPicker.isSadnessSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isSadnessSelected = !categoryPicker.isSadnessSelected,
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isSadnessSelected = !categoryPicker.isSadnessSelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
 
@@ -356,11 +375,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.barbell,
                             isSelected = categoryPicker.isSportSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isSportSelected = !categoryPicker.isSportSelected,
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isSportSelected = !categoryPicker.isSportSelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
                     }
@@ -375,11 +394,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.work,
                             isSelected = categoryPicker.isWorkSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isWorkSelected = !categoryPicker.isWorkSelected,
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isWorkSelected = !categoryPicker.isWorkSelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
 
@@ -388,11 +407,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.toxic,
                             isSelected = categoryPicker.isToxicRelationshipsSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isToxicRelationshipsSelected = !categoryPicker.isToxicRelationshipsSelected,
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isToxicRelationshipsSelected = !categoryPicker.isToxicRelationshipsSelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
                     }
@@ -407,11 +426,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.hearts,
                             isSelected = categoryPicker.isSeparationSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isSeparationSelected = !categoryPicker.isSeparationSelected,
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isSeparationSelected = !categoryPicker.isSeparationSelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
 
@@ -420,11 +439,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.roundabout,
                             isSelected = categoryPicker.isContinuingLifeSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isContinuingLifeSelected = !categoryPicker.isContinuingLifeSelected,
-
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isContinuingLifeSelected = !categoryPicker.isContinuingLifeSelected,
                                     )
-                                updateList()
+                                )
                             }
                         )
 
@@ -441,10 +460,11 @@ fun CategoryPickerModalBottomSheet(
                             icon = R.drawable.love_yourself,
                             isSelected = categoryPicker.isBeYourselfSelected,
                             onClick = {
-                                categoryPicker = categoryPicker.copy(
-                                    isBeYourselfSelected = !categoryPicker.isBeYourselfSelected,
+                                handleCategorySelection(
+                                    categoryPicker.copy(
+                                        isBeYourselfSelected = !categoryPicker.isBeYourselfSelected,
+                                    )
                                 )
-                                updateList()
                             }
                         )
 
@@ -480,6 +500,9 @@ fun CategorySelectionMiniCard(
     isSelected: Boolean = false,
     onClick: () -> Unit = {}
 ) {
+    var lastClickTime by remember { mutableLongStateOf(0L) } // Son tıklama zamanını takip et
+    val debounceTime = 500L // Gecikme süresi (ms)
+
     Card(
         modifier = modifier
             .width(180.dp)
@@ -487,7 +510,11 @@ fun CategorySelectionMiniCard(
             .padding(8.dp)
             .clip(RoundedCornerShape(15.dp))
             .clickable {
-                onClick()
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - lastClickTime > debounceTime) { // Gecikmeyi kontrol et
+                    lastClickTime = currentTime // Son tıklama zamanını güncelle
+                    onClick()
+                }
             },
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) harmonyHavenGreen else Color.DarkGray.copy(alpha = 0.5f),

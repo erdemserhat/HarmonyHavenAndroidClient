@@ -53,7 +53,7 @@ fun Quote(
     currentScreen: Int,
     isVisible: Boolean,
     isCurrentPage: Boolean,
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     viewmodel: QuoteMainViewModel,
     onCategoryClicked: () -> Unit,
     onShareQuoteClicked: () -> Unit,
