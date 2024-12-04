@@ -49,7 +49,7 @@ fun PostFlow(
             CategoryPickerModalBottomSheet(
                 sheetState = categorySheetState,
                 onShouldFilterQuotes = { selectedCategories ->
-                    viewmodel.loadCategorizedQuotes()
+                    viewmodel.loadCategorizedQuotes(selectedCategories)
                 },
                 onSaveCategorySelection = {
                     viewmodel.saveCategorySelection(it)

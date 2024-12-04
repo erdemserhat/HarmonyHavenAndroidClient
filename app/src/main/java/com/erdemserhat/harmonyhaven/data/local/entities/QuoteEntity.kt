@@ -9,11 +9,11 @@ import com.erdemserhat.harmonyhaven.dto.responses.Quote
 data class QuoteEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
-    val quote: String,
-    val writer: String,
-    val imageUrl: String,
-    val quoteCategory: Int,
-    val isLiked: Boolean
+    val quote: String="",
+    val writer: String="",
+    val imageUrl: String="",
+    val quoteCategory: Int=21,
+    val isLiked: Boolean=false
 ){
     fun convertToQuote(): Quote {
         return Quote(

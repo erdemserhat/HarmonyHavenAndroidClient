@@ -14,6 +14,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -22,7 +23,9 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.erdemserhat.harmonyhaven.data.local.entities.QuoteEntity
 import com.erdemserhat.harmonyhaven.data.local.repository.JwtTokenRepository
+import com.erdemserhat.harmonyhaven.data.local.repository.QuoteRepository
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
@@ -36,6 +39,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 
@@ -52,6 +56,8 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var articleUseCases: ArticleUseCases
 
+    @Inject
+    lateinit var quoteRepository: QuoteRepository
 
 
     @SuppressLint("NewApi")
@@ -63,25 +69,43 @@ class MainActivity : ComponentActivity() {
         val extraData = intent.getStringExtra("data")
 
 
-
         val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val isFirstLaunch = sharedPrefs.getBoolean("isFirstLaunch", true)
         val isLoggedInBefore = sharedPrefs.getBoolean("isLoggedInBefore", false)
 
 
         setContent {
+            val scope = rememberCoroutineScope()
+
+            LaunchedEffect(Unit) {
+                scope.launch(Dispatchers.IO) {
+                    if (isFirstLaunch) {
+                        quoteRepository.addCachedQuotes(
+                            listOf(
+                                QuoteEntity(
+                                    imageUrl = "https://harmonyhaven.erdemserhat.com/sources/quote_assets/30112024/kitabakacis/kitabakacis-20241130-0006.mp4"
+                                )
+                            )
+
+                        )
+
+                    }
+                }
+
+            }
+
+
+
 
             HarmonyHavenTheme {
                 navController = rememberNavController()
                 window
 
-
-
                 SetupNavGraph(
                     navController = navController,
-                    startDestination =when(isLoggedInBefore){
+                    startDestination = when (isLoggedInBefore) {
                         true -> Screen.Main.route
-                        false-> if (isFirstLaunch) Screen.Welcome.route else Screen.Login.route
+                        false -> if (isFirstLaunch) Screen.Welcome.route else Screen.Login.route
                     },
                     modifier = Modifier,
                     window = window
@@ -146,8 +170,37 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+}
+
+fun clearAppData(context: Context) {
+    try {
+
+        val cacheDir = context.cacheDir
+        if (cacheDir.isDirectory) {
+            cacheDir.deleteRecursively()
+        }
 
 
+        val sharedPrefsDir = File(context.filesDir.parent, "shared_prefs")
+        if (sharedPrefsDir.isDirectory) {
+            sharedPrefsDir.listFiles()?.forEach { it.delete() }
+        }
+
+
+
+        val databasesDir = File(context.filesDir.parent, "databases")
+        if (databasesDir.isDirectory) {
+            databasesDir.listFiles()?.forEach { it.delete() }
+        }
+
+        // Diğer dosyaları temizle
+        val filesDir = context.filesDir
+        if (filesDir.isDirectory) {
+            filesDir.deleteRecursively()
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
 }
 
 

@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.erdemserhat.harmonyhaven.data.local.repository.QuoteRepository
 import com.erdemserhat.harmonyhaven.domain.usecase.quote.QuoteUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
@@ -85,9 +86,11 @@ class QuoteMainViewModel @Inject constructor(
     }
 
     private fun tryLoad() {
+        checkConnection()
         prepareList()
         initializeScrollTutorial()
-        checkConnection()
+
+
 
 
     }
@@ -142,14 +145,14 @@ class QuoteMainViewModel @Inject constructor(
     }
 
 
-    fun loadCategorizedQuotes() {
+    fun loadCategorizedQuotes(selectedCategories: CategorySelectionModel) {
         viewModelScope.launch {
             try {
                 _quotes.value = listOf()
                 sessionManager.resetSeed()
                 _seed = sessionManager.getSeed()
                 _page.value = 1
-                val categories = getCategorySelection().convertToIdListModel()
+                val categories = selectedCategories.convertToIdListModel()
                 //load quotes with pagination from default page
                 val requestedQuotes = quoteUseCases.getQuote.executeRequest2(
                     filteredQuoteRequest = FilteredQuoteRequest(
@@ -165,12 +168,13 @@ class QuoteMainViewModel @Inject constructor(
                 }
                 _quotes.value += requestedQuotes
 
+
                 withContext(Dispatchers.IO){
                     quoteRepository.clearCachedQuotes()
                     quoteRepository.addCachedQuotes(requestedQuotes.takeLast(10).map { it.convertToEntity() })
 
                 }
-
+                checkLikedList()
 
             } catch (_: Exception) {
 
@@ -178,6 +182,33 @@ class QuoteMainViewModel @Inject constructor(
 
         }
 
+
+    }
+
+    private fun checkLikedList(){
+        viewModelScope.launch(Dispatchers.IO) {
+                val categoryPreferences = getCategorySelection()
+            Log.d("dsadas",categoryPreferences.isOnlyLikedSelected().toString())
+
+                if(categoryPreferences.isOnlyLikedSelected() && _quotes.value.isEmpty()){
+                    Log.d("dsadas","dsdsadsadsaadsa")
+
+                    withContext(Dispatchers.Main){
+                        _quotes.value = listOf(
+                            Quote(
+                                quote = "Beğendiğiniz Herhangi Bir Gönderi Bulunmuyor",
+                                isLiked = false,
+                                quoteCategory = -1
+                            )
+                        )
+                    }
+
+
+                }
+
+
+
+        }
 
     }
 
@@ -214,6 +245,7 @@ class QuoteMainViewModel @Inject constructor(
                     )
                     Log.d("PrepareFirstInit","Api request finished...")
                     _quotes.value += requestedQuotes
+                    checkLikedList()
 
                     withContext(Dispatchers.IO){
                         Log.d("PrepareFirstInit","Cache cleared and refreshed")
