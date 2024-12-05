@@ -70,6 +70,12 @@ fun PostFlow(
                     val isNextPageVisible = pagerState.currentPage == page - 1
                     val isPageVisible = isCurrentPageVisible || isPreviousPageVisible || isNextPageVisible
 
+                    LaunchedEffect(page) {
+                        if (page == quoteList1.value.size - 5) {
+                            viewmodel.loadMoreQuote()
+                        }
+                    }
+
                     Crossfade(targetState = quoteList1.value[page], label = "") { quote ->
                         Quote(
                             quote = quote,

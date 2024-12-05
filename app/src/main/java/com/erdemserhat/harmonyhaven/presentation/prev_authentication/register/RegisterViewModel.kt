@@ -155,7 +155,9 @@ class RegisterViewModel @Inject constructor(
                 editor.apply()
 
                 _registerState.value = _registerState.value.copy(
-                    canNavigateTo = true
+                    isLoading = false,
+                    canNavigateTo = true,
+                    registerWarning ="✅"
                 )
 
 
@@ -244,7 +246,8 @@ class RegisterViewModel @Inject constructor(
                             editor.apply()
                             _registerState.value = _registerState.value.copy(
                                 isLoading = false,
-                                canNavigateTo = true
+                                canNavigateTo = true,
+                                registerWarning ="✅"
                             )
 
 

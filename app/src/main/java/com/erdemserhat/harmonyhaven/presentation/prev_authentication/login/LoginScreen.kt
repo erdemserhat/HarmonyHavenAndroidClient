@@ -2,6 +2,7 @@ package com.erdemserhat.harmonyhaven.presentation.prev_authentication.login
 
 
 import android.app.Activity
+import android.util.Log
 import android.view.Window
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -338,6 +339,7 @@ fun LoginScreen(
         warningText = viewModel.loginState.value.loginWarning,
         canNavigateToDashBoard = viewModel.loginState.value.canNavigateToDashBoard,
         onCanNavigateToDashBoard = {
+            Log.d("debugDelayRender","ready to navigate")
             navController.navigate(Screen.Main.route){}
 
 

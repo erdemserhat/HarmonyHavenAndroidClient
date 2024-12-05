@@ -63,7 +63,7 @@ object RoomDatabaseModule {
             AppDatabase::class.java,
             "harmony-haven-database" // Database name
         )
-            .fallbackToDestructiveMigration() // Fallback to destructive migration if the schema is not compatible
+            .addMigrations(AppDatabase.MIGRATION_5_6,AppDatabase.MIGRATION_6_7) // Add migrations
             .build()
     }
 

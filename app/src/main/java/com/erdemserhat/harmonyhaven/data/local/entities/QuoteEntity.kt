@@ -9,6 +9,7 @@ import com.erdemserhat.harmonyhaven.dto.responses.Quote
 data class QuoteEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
+    val quoteId: Int=0,
     val quote: String="",
     val writer: String="",
     val imageUrl: String="",
@@ -17,7 +18,7 @@ data class QuoteEntity(
 ){
     fun convertToQuote(): Quote {
         return Quote(
-            id = id.toInt(),
+            id = quoteId,
             quote = quote,
             writer = writer,
             imageUrl = imageUrl,

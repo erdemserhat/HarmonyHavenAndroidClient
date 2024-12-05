@@ -14,6 +14,7 @@ data class Quote(
 ){
     fun convertToEntity(): QuoteEntity {
         return QuoteEntity(
+            quoteId = id,
             quote = quote,
             writer = writer,
             imageUrl = imageUrl,

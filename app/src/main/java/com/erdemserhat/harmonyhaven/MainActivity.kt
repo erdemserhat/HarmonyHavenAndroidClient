@@ -3,24 +3,18 @@ package com.erdemserhat.harmonyhaven
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
-import android.os.Build
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.data.local.entities.QuoteEntity
@@ -29,18 +23,18 @@ import com.erdemserhat.harmonyhaven.data.local.repository.QuoteRepository
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
-import com.erdemserhat.harmonyhaven.dto.requests.GoogleAuthenticationRequest
 import com.erdemserhat.harmonyhaven.presentation.common.HarmonyHavenTheme
 import com.erdemserhat.harmonyhaven.presentation.navigation.MainScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.SetupNavGraph
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
+import javax.inject.Named
 
 
 @AndroidEntryPoint
@@ -48,16 +42,14 @@ class MainActivity : ComponentActivity() {
     private lateinit var navController: NavHostController
 
     @Inject
-    lateinit var jwtTokenRepository: JwtTokenRepository
-
-    @Inject
-    lateinit var userUseCases: UserUseCases
-
-    @Inject
-    lateinit var articleUseCases: ArticleUseCases
-
-    @Inject
     lateinit var quoteRepository: QuoteRepository
+
+
+    @Inject
+    @Named("FirstInstallingExperience")
+    lateinit var firstInstallingExperiencePreferences:SharedPreferences
+
+
 
 
     @SuppressLint("NewApi")
@@ -69,34 +61,12 @@ class MainActivity : ComponentActivity() {
         val extraData = intent.getStringExtra("data")
 
 
-        val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        val isFirstLaunch = sharedPrefs.getBoolean("isFirstLaunch", true)
-        val isLoggedInBefore = sharedPrefs.getBoolean("isLoggedInBefore", false)
+        val isFirstLaunch = firstInstallingExperiencePreferences.getBoolean("isFirstLaunch", true)
+        val isLoggedInBefore = firstInstallingExperiencePreferences.getBoolean("isLoggedInBefore", false)
 
 
         setContent {
-            val scope = rememberCoroutineScope()
-
-            LaunchedEffect(Unit) {
-                scope.launch(Dispatchers.IO) {
-                    if (isFirstLaunch) {
-                        quoteRepository.addCachedQuotes(
-                            listOf(
-                                QuoteEntity(
-                                    imageUrl = "https://harmonyhaven.erdemserhat.com/sources/quote_assets/30112024/kitabakacis/kitabakacis-20241130-0006.mp4"
-                                )
-                            )
-
-                        )
-
-                    }
-                }
-
-            }
-
-
-
-
+            val vm = hiltViewModel<QuoteMainViewModel>()
             HarmonyHavenTheme {
                 navController = rememberNavController()
                 window
@@ -108,7 +78,7 @@ class MainActivity : ComponentActivity() {
                         false -> if (isFirstLaunch) Screen.Welcome.route else Screen.Login.route
                     },
                     modifier = Modifier,
-                    window = window
+                    window = window,
 
                 )
 
@@ -153,7 +123,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 LaunchedEffect(key1 = Unit) {
-                    sharedPrefs.edit().putBoolean("isFirstLaunch", false).apply()
+                    firstInstallingExperiencePreferences.edit().putBoolean("isFirstLaunch", false).apply()
                 }
 
 
@@ -171,36 +141,4 @@ class MainActivity : ComponentActivity() {
     }
 
 }
-
-fun clearAppData(context: Context) {
-    try {
-
-        val cacheDir = context.cacheDir
-        if (cacheDir.isDirectory) {
-            cacheDir.deleteRecursively()
-        }
-
-
-        val sharedPrefsDir = File(context.filesDir.parent, "shared_prefs")
-        if (sharedPrefsDir.isDirectory) {
-            sharedPrefsDir.listFiles()?.forEach { it.delete() }
-        }
-
-
-
-        val databasesDir = File(context.filesDir.parent, "databases")
-        if (databasesDir.isDirectory) {
-            databasesDir.listFiles()?.forEach { it.delete() }
-        }
-
-        // Diğer dosyaları temizle
-        val filesDir = context.filesDir
-        if (filesDir.isDirectory) {
-            filesDir.deleteRecursively()
-        }
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-}
-
 

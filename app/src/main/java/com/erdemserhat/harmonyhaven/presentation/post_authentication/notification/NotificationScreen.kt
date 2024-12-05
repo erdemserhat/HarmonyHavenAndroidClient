@@ -103,6 +103,8 @@ fun NotificationScreen(
         }
     )
 
+    val isLoading= viewModel.isLoading.collectAsState()
+
 
     LaunchedEffect(Unit) {
         viewModel.loadNotifications()
@@ -155,8 +157,9 @@ fun NotificationScreen(
             }
 
         } else {
-            if (notifications.isEmpty()) {
+            if (notifications.isEmpty() && isLoading.value) {
                 Spacer(modifier = Modifier.size(20.dp))
+                viewModel.loadNotifications()
 
                 Column {
                     repeat(5){
@@ -165,7 +168,21 @@ fun NotificationScreen(
                     }
 
 
-            } else {
+            }else if (notifications.isEmpty()){
+                Spacer(modifier = Modifier.size(20.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.no_mail),
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.size(10.dp))
+                Text(
+                    text = "Henüz bir bildirim yok, en kısa sürede bildirim almaya başlayacaksınız.",
+                    textAlign = TextAlign.Center
+
+                )
+            }
+
+            else {
                 val scrollState = rememberLazyListState()
                 LazyColumn(state = scrollState) {
                     items(notifications) {it
@@ -174,9 +191,9 @@ fun NotificationScreen(
 
                     // Loading indicator or more items
                     item {
-                        if (viewModel.isLoading) {
+                        if (isLoading.value) {
                             // Show loading indicator
-                            Text(text = "Loading...", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                            Text(text = "...", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                         }
                     }
 
@@ -187,7 +204,7 @@ fun NotificationScreen(
                     snapshotFlow { scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
                         .collect { lastVisibleIndex ->
                             if (lastVisibleIndex != null) {
-                                if (lastVisibleIndex >= notifications.size - 1 && !viewModel.isLoading && viewModel.hasMoreData) {
+                                if (lastVisibleIndex >= notifications.size - 1 && !isLoading.value && viewModel.hasMoreData) {
                                     viewModel.loadNotifications()
                                 }
                             }

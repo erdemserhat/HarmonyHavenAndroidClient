@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.media.Image
 import android.os.Build
+import android.util.Log
 import android.view.Window
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.LinearEasing
@@ -65,6 +66,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -240,6 +242,9 @@ fun AppMainScreen(
                     .fillMaxSize()
                     .padding(padding)
                     .windowInsetsPadding(WindowInsets.systemBars)
+                    .onGloballyPositioned {
+                        Log.d("debugDelayRender","ready")
+                    }
             ) { page ->
                 when (page) {
                     2 -> HomeScreenNew(navController = navController)

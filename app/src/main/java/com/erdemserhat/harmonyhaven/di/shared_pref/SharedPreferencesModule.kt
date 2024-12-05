@@ -43,4 +43,12 @@ object SharedPreferencesModule {
         return context.getSharedPreferences("UserTutorial", Context.MODE_PRIVATE)
 
     }
+
+    @Provides
+    @Singleton
+    @Named("FirstInstallingExperience")
+    fun provideFirstInstallingExperiencePreference(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
+    }
 }
