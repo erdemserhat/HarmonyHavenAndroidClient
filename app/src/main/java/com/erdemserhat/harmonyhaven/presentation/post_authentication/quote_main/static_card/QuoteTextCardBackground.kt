@@ -38,9 +38,7 @@ fun QuoteTextCardBackground(imageUrl: String, modifier: Modifier, shouldAnimate:
         modifier = modifier
             .fillMaxSize()
             .graphicsLayer(
-                scaleX = if(shouldAnimate)scaleAnimation else 1f,
-                scaleY = if(shouldAnimate)scaleAnimation else 1f,
-                alpha = if (isLoading) 0.7f else 1f // Fade effect while loading
+                alpha = if (isLoading) 0.7f else 1f
             )
             .placeholder(
                 visible = isLoading,

@@ -39,7 +39,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VideoCard
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLike
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLikeBottomControlButton
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteCard
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteText
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -133,7 +133,7 @@ fun Quote(
 
         // Display quote as an image or video
         if (!quote.imageUrl.endsWith(".mp4")) {
-            QuoteCard(
+            QuoteText(
                 modifier = Modifier.align(Alignment.Center),
                 quoteWriter = quote.writer,
                 quoteSentence = quote.quote,

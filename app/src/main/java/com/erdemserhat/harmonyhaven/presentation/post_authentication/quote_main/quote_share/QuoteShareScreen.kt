@@ -34,7 +34,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.navigation.QuoteShareScreenParams
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteCard
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteText
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VideoCard
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.downloadVideo
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.saveBitmapToFile
@@ -158,7 +158,7 @@ fun QuoteShareScreen(
                 )
 
             } else {
-                QuoteCard(
+                QuoteText(
                     modifier = Modifier,
                     quoteWriter = params.author,
                     shouldAnimate = false,
@@ -366,7 +366,7 @@ fun QuoteShareScreen(
 
 
     //Original Screen Shot
-    QuoteCard(
+    QuoteText(
         modifier = Modifier
             .offset(x = 5000.dp, y = 5000.dp)
             .capturable(capturableController),

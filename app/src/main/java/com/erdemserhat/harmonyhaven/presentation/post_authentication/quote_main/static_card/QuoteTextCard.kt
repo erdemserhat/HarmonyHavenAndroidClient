@@ -1,12 +1,12 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -15,19 +15,23 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.ui.theme.georgiaFont
 
 @Composable
-fun QuoteCard(
+fun QuoteText(
     modifier: Modifier = Modifier,
     quote: String,
     quoteWriter: String,
@@ -36,70 +40,72 @@ fun QuoteCard(
     Box(
         modifier = modifier
             .padding(15.dp)
-            .wrapContentSize()
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color.Black.copy(alpha = 0.8f),
-                        Color.Gray.copy(alpha = 0.5f)
-                    )
-                ),
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(15.dp) // Padding for content
+            .zIndex(2f)
+            .fillMaxSize()
+            .padding(15.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.wrapContentSize()
+            modifier = Modifier.wrapContentSize().align(Alignment.Center)
         ) {
             // Display the quote text
             Text(
                 text = quote,
-                color = Color.White.copy(alpha = 0.9f),
-                fontSize = 20.sp,
-                fontStyle = FontStyle.Italic,
-                textAlign = TextAlign.Center,
-                fontFamily = FontFamily.Serif,
-                lineHeight = 30.sp,
-                modifier = Modifier.padding(bottom = 10.dp) // Add spacing
+                color = Color.White.copy(alpha = 0.9f), // Hafif şeffaf beyaz
+                fontSize = 25.sp, // Orta büyüklükte
+                fontWeight = FontWeight.Light, // Hafif yazı ağırlığı
+                fontStyle = FontStyle.Italic, // İtalik görünüm
+                textAlign = TextAlign.Center, // Ortalanmış metin
+                fontFamily = FontFamily.Serif, // Şık bir Serif yazı tipi
+                lineHeight = 32.sp, // Satırlar arası boşluk
+                modifier = Modifier
+                    .padding(16.dp) // Kenarlardan boşluk
+
             )
 
             // Display the quote writer if available
-            if (quoteWriter.isNotBlank()) {
-                Text(
-                    text = quoteWriter,
-                    color = Color.White.copy(alpha = 0.7f),
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Center,
-                    fontFamily = georgiaFont
+
+        }
+        if (quoteWriter.isNotBlank()) {
+            Text(
+                text = quoteWriter,
+                color = Color.White.copy(alpha = 0.7f),
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                fontFamily = georgiaFont
+            )
+            Spacer(modifier = Modifier.size(10.dp)) // Add spacing
+        }
+
+        // Display the firm logo if enabled
+        if (isFirmLogoVisible) {
+
+            Row(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Siyah-beyaz logo
+                Image(
+                    painter = painterResource(id = R.drawable.harmony_haven_icon),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .graphicsLayer(alpha = 0.4f)
+                        .size(25.dp),
                 )
-                Spacer(modifier = Modifier.size(10.dp)) // Add spacing
+
+                // Yazı: Belirsiz ve şeffaf
+                Text(
+                    text = "harmonyinhaven",
+                    color = Color.White.copy(alpha = 0.6f), // Şeffaf beyaz
+                    fontFamily = FontFamily.Serif,
+                    fontSize = 15.sp,
+                    modifier = Modifier.padding(start = 8.dp) // Logo ve yazı arasında boşluk
+                )
             }
 
-            // Display the firm logo if enabled
-            if (isFirmLogoVisible) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.harmony_haven_icon),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(5.dp)
-                            .size(20.dp)
-                    )
-
-                    Text(
-                        text = "harmonyinhaven",
-                        color = Color.White,
-                        fontFamily = FontFamily.Serif,
-                        fontSize = 15.sp
-                    )
-                }
-                Spacer(modifier = Modifier.size(10.dp)) // Add spacing
-            }
+            Spacer(modifier = Modifier.size(10.dp)) // Add spacing
         }
     }
 }
