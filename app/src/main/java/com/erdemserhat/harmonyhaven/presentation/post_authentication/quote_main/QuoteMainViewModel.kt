@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.erdemserhat.harmonyhaven.data.local.entities.QuoteEntity
 import com.erdemserhat.harmonyhaven.data.local.repository.QuoteRepository
 import com.erdemserhat.harmonyhaven.domain.usecase.quote.QuoteUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
@@ -46,17 +47,15 @@ class QuoteMainViewModel @Inject constructor(
     @Named("CategorySelection") private val categoryPreferences: SharedPreferences,
     @Named("Permission") private val permissionPreferences: SharedPreferences,
     @Named("UserTutorial") private val userTutorialPreferences: SharedPreferences,
-    private var quoteRepository: QuoteRepository
+    private var quoteRepository: QuoteRepository,
+    @Named("DefaultQuoteCache")
+    private var defaultCachedQuotes: List<QuoteEntity>
 ) : ViewModel() {
 
 
     private val _quotes =
         MutableStateFlow<List<Quote>>(mutableListOf())
     val quotes: StateFlow<List<Quote>> = _quotes
-
-    private val _cachedQuotes = MutableStateFlow<List<Quote>>(emptyList())
-    val cachedQuotes: StateFlow<List<Quote>> = _cachedQuotes
-
 
 
     //user tutorial
@@ -70,15 +69,13 @@ class QuoteMainViewModel @Inject constructor(
 
     //For pagination
     private val _page = MutableStateFlow(1)
-    private val _pageSize = 20
+    private val _pageSize = 21
     private var _seed = sessionManager.getSeed()
 
 
     init {
         tryLoad()
         updateFcmToken()
-
-
     }
 
     fun updateSelectedQuote(selectedQuoteArg: QuoteForOrderModel) {
@@ -89,8 +86,6 @@ class QuoteMainViewModel @Inject constructor(
         checkConnection()
         prepareList()
         initializeScrollTutorial()
-
-
 
 
     }
@@ -163,15 +158,14 @@ class QuoteMainViewModel @Inject constructor(
                     )
                 )
 
-                _quotes.value.map {
-                    requestedQuotes.toMutableList().remove(it)
-                }
-                _quotes.value += requestedQuotes
 
 
-                withContext(Dispatchers.IO){
+                _quotes.value = requestedQuotes
+
+                withContext(Dispatchers.IO) {
                     quoteRepository.clearCachedQuotes()
-                    quoteRepository.addCachedQuotes(requestedQuotes.takeLast(10).map { it.convertToEntity() })
+                    quoteRepository.addCachedQuotes(
+                        requestedQuotes.takeLast(4).map { it.convertToEntity() })
 
                 }
                 checkLikedList()
@@ -185,27 +179,71 @@ class QuoteMainViewModel @Inject constructor(
 
     }
 
-    private fun checkLikedList(){
-        viewModelScope.launch(Dispatchers.IO) {
-                val categoryPreferences = getCategorySelection()
-            Log.d("dsadas",categoryPreferences.isOnlyLikedSelected().toString())
+    fun loadMoreQuote() {
+        viewModelScope.launch {
+            try {
+                _page.value++
+                val categories = getCategorySelection().convertToIdListModel()
+                //load quotes with pagination from default page
 
-                if(categoryPreferences.isOnlyLikedSelected() && _quotes.value.isEmpty()){
-                    Log.d("dsadas","dsdsadsadsaadsa")
+                val requestedQuotes = quoteUseCases.getQuote.executeRequest2(
+                    filteredQuoteRequest = FilteredQuoteRequest(
+                        categories = categories,
+                        page = _page.value,
+                        pageSize = _pageSize,
+                        seed = _seed
+                    )
+                )
 
-                    withContext(Dispatchers.Main){
-                        _quotes.value = listOf(
-                            Quote(
-                                quote = "Beğendiğiniz Herhangi Bir Gönderi Bulunmuyor",
-                                isLiked = false,
-                                quoteCategory = -1
-                            )
-                        )
-                    }
+                _quotes.value.map {
+                    requestedQuotes.toMutableList().remove(it)
+                }
+                //Log.d("loadQuotesStat","requestedQuotes:${requestedQuotes.map { it.id }.toString()}")
+
+                _quotes.value += requestedQuotes
+
+
+                //Log.d("loadQuotesStat","after operation total:${_quotes.value.map { it.id }.toString()}")
+
+                withContext(Dispatchers.IO) {
+                    quoteRepository.clearCachedQuotes()
+                    quoteRepository.addCachedQuotes(
+                        requestedQuotes.takeLast(4).map { it.convertToEntity() })
+                    //Log.d("loadQuotesStat","cache updated:${quoteRepository.getCachedQuotes().map { it.quoteId }.toString()}")
 
 
                 }
+                checkLikedList()
 
+            } catch (_: Exception) {
+
+            }
+
+        }
+
+
+    }
+
+    private fun checkLikedList() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val categoryPreferences = getCategorySelection()
+            //Log.d("dsadas",categoryPreferences.isOnlyLikedSelected().toString())
+
+            if (categoryPreferences.isOnlyLikedSelected() && _quotes.value.isEmpty()) {
+                //Log.d("dsadas","dsdsadsadsaadsa")
+
+                withContext(Dispatchers.Main) {
+                    _quotes.value = listOf(
+                        Quote(
+                            quote = "Beğendiğiniz Herhangi Bir Gönderi Bulunmuyor",
+                            isLiked = false,
+                            quoteCategory = -1
+                        )
+                    )
+                }
+
+
+            }
 
 
         }
@@ -215,53 +253,44 @@ class QuoteMainViewModel @Inject constructor(
 
     //load notification via offset
     private fun prepareList() {
-        Log.d("PrepareFirstInit","Application Launched")
+        //Log.d("PrepareFirstInit","Application Launched")
 
         viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                val ellapsedTime = measureTimeMillis{
-                    Log.d("PrepareFirstInit","Pushed Cache")
-                    val cachedQuotes = quoteRepository.getCachedQuotes()
-                    _quotes.value = cachedQuotes.map { it.convertToQuote() }
-                    Log.d("PrepareFirstInit",cachedQuotes.toString())
-                }
-                Log.d("PrepareFirstInit", "Cache pushed in $ellapsedTime ms")
-
+            withContext(Dispatchers.IO) {
+                val cachedQuotes = quoteRepository.getCachedQuotes().ifEmpty { defaultCachedQuotes }
+                _quotes.value = cachedQuotes.map { it.convertToQuote() }
 
             }
-
-            Log.d( "Quote-Loading-Log121212s", cachedQuotes.toString())
-            val elapsedTime = measureTimeMillis {
-                try {
-                    Log.d("PrepareFirstInit","Api request started...")
-                    val categories = getCategorySelection().convertToIdListModel()
-                    val requestedQuotes = quoteUseCases.getQuote.executeRequest2(
-                        filteredQuoteRequest = FilteredQuoteRequest(
-                            categories = categories,
-                            page = _page.value,
-                            pageSize = _pageSize,
-                            seed = _seed
-                        )
+            try {
+                val categories = getCategorySelection().convertToIdListModel()
+                val requestedQuotes = quoteUseCases.getQuote.executeRequest2(
+                    filteredQuoteRequest = FilteredQuoteRequest(
+                        categories = categories,
+                        page = _page.value,
+                        pageSize = _pageSize,
+                        seed = _seed
                     )
-                    Log.d("PrepareFirstInit","Api request finished...")
-                    _quotes.value += requestedQuotes
-                    checkLikedList()
+                )
 
-                    withContext(Dispatchers.IO){
-                        Log.d("PrepareFirstInit","Cache cleared and refreshed")
-                        quoteRepository.clearCachedQuotes()
-                        quoteRepository.addCachedQuotes(requestedQuotes.takeLast(10).map { it.convertToEntity() })
-
-                    }
-
-
-
-                    Log.d("Quote-Loading-Logs", requestedQuotes.toString())
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                _quotes.value.map {
+                    requestedQuotes.toMutableList().remove(it)
                 }
+
+                _quotes.value += requestedQuotes
+                checkLikedList()
+
+                withContext(Dispatchers.IO) {
+                    quoteRepository.clearCachedQuotes()
+                    quoteRepository.addCachedQuotes(
+                        requestedQuotes.takeLast(4).map { it.convertToEntity() })
+
+                }
+
+
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-            Log.d("PrepareFirstInit", "Operation completed in $elapsedTime ms")
+
         }
     }
 
@@ -305,7 +334,6 @@ class QuoteMainViewModel @Inject constructor(
             apply()
         }
     }
-
 
     fun getCategorySelection(): CategorySelectionModel {
         val defaultValues = CategorySelectionModel() // Use the default values from the data class
@@ -390,7 +418,6 @@ class QuoteMainViewModel @Inject constructor(
         )
     }
 
-
     fun updatePermissionStatus(value: Boolean = false) {
         val key: String = "notificationPref"
         viewModelScope.launch {
@@ -405,37 +432,6 @@ class QuoteMainViewModel @Inject constructor(
         return permissionPreferences.getBoolean(key, false)
     }
 
-    // Belirli aralıklarla internet bağlantısını kontrol et
-    private fun startPeriodicConnectionCheck() {
-        viewModelScope.launch(Dispatchers.IO) {
-            while (true) { // Sonsuz döngü
-                checkConnection() // Bağlantıyı kontrol et
-                delay(30000) // 30 saniye bekle (30000 milisaniye)
-            }
-        }
-    }
-
-    fun isInternetAvailable(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val network = connectivityManager.activeNetwork ?: return false
-            val activeNetwork =
-                connectivityManager.getNetworkCapabilities(network) ?: return false
-            return when {
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-                else -> false
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            val networkInfo = connectivityManager.activeNetworkInfo ?: return false
-            @Suppress("DEPRECATION")
-            return networkInfo.isConnected
-        }
-    }
 
     private fun updateFcmToken() {
         try {

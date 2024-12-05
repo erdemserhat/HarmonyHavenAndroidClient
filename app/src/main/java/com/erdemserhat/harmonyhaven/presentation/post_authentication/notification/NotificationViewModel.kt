@@ -2,12 +2,16 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.notificati
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.erdemserhat.harmonyhaven.domain.usecase.notification.NotificationUseCases
 import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,16 +27,26 @@ class NotificationViewModel @Inject constructor(
     private val _notifications = MutableStateFlow<List<NotificationDto>>(emptyList())
     val notifications: StateFlow<List<NotificationDto>> = _notifications
 
+    init {
+        viewModelScope.launch {
+            while (true){
+                delay(5_000)
+                loadNotifications()
+            }
+        }
+    }
+
     // Offset variables
     private var currentPage = 1
     private val pageSize = 5
-    var isLoading = false
+
     var hasMoreData = true
+    val isLoading = MutableStateFlow(false)
 
     //load notification via offset
     fun loadNotifications() {
-        if (isLoading || !hasMoreData) return
-        isLoading = true
+        if (isLoading.value || !hasMoreData) return
+        isLoading.value = true
         viewModelScope.launch {
             try {
                 val newNotifications =
@@ -46,7 +60,7 @@ class NotificationViewModel @Inject constructor(
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
-                isLoading = false
+                isLoading.value = false
             }
         }
 

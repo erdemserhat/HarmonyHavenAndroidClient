@@ -19,7 +19,7 @@ object CacheManager {
             val databaseProvider = ExoDatabaseProvider(context)
             cache = SimpleCache(
                 cacheDir,
-                LeastRecentlyUsedCacheEvictor(200 * 1024 * 1024), // 200 MB
+                LeastRecentlyUsedCacheEvictor(100 * 1024 * 1024), // 100 MB
                 databaseProvider
             )
         }

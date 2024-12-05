@@ -154,7 +154,7 @@ class LoginViewModel @Inject constructor(
             _loginState.value = _loginState.value.copy(
                 isLoading = false,
                 canNavigateToDashBoard = true,
-                loginWarning = "Hoş Geldin  ${userUseCases.getUserInformation.executeRequest().name} :)"
+                loginWarning = "✅"
             )
             //if login is successfully then save the fcm id
 
@@ -220,9 +220,11 @@ class LoginViewModel @Inject constructor(
                             val editor = sharedPrefs.edit()
                             editor.putBoolean("isLoggedInBefore", true)
                             editor.apply()
+
                             _loginState.value = _loginState.value.copy(
                                 isLoading = false,
-                                canNavigateToDashBoard = true
+                                canNavigateToDashBoard = true,
+                                loginWarning = "✅"
                             )
 
 
