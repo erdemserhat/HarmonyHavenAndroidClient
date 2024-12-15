@@ -86,6 +86,7 @@ fun Quote(
             .pointerInput(Unit) {
                 detectTapGestures(
                     onDoubleTap = {
+                        quote.isLiked = true
                         isQuoteLiked = true
                         isVisibleLikeAnimation = true
                         viewmodel.likeQuote(quote.id)
@@ -113,8 +114,10 @@ fun Quote(
                     shouldAnimateLikeButton = true
                     if (it) {
                         viewmodel.likeQuote(quote.id)
+                        quote.isLiked = true
                     } else {
                         viewmodel.removeLikeQuote(quote.id)
+                        quote.isLiked = false
                     }
                 },
                 onCategoryClicked = onCategoryClicked,

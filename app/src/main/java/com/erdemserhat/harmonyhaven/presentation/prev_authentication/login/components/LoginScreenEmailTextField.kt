@@ -15,27 +15,29 @@ import com.erdemserhat.harmonyhaven.R
 @Composable
 fun LoginScreenEmailTextField(
     placeholderText: String = stringResource(R.string.e_mail),
-    email:String,
-    onValueChanged:(String)->Unit,
-    isError:Boolean=false
+    email: String,
+    onValueChanged: (String) -> Unit,
+    isError: Boolean = false
 ) {
-
     OutlinedTextField(
         singleLine = true,
         modifier = Modifier
             .size(width = 370.dp, height = 60.dp),
         value = email,
-        onValueChange = {onValueChanged(it)},
-        label = { Text(text = placeholderText) },
+        onValueChange = { onValueChanged(it) },
+        placeholder = {
+            Text(
+                text = placeholderText,
+                color = Color.Gray
+            )
+        }, // Use placeholder instead of label
         shape = RoundedCornerShape(10.dp),
         colors = TextFieldDefaults.colors(
             unfocusedContainerColor = Color.White,
             focusedContainerColor = Color.White,
-            focusedIndicatorColor = Color.Black,
-            focusedLabelColor = Color.Black
-
+            focusedIndicatorColor = Color.Gray,
+            focusedLabelColor = Color.Gray
         ),
         isError = isError
-
     )
 }

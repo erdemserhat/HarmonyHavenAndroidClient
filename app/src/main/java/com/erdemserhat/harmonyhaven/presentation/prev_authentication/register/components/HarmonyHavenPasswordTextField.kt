@@ -53,11 +53,11 @@ fun HarmonyHavenPasswordTextField(
         colors = TextFieldDefaults.colors(
             unfocusedContainerColor = Color.White,
             focusedContainerColor = Color.White,
-            focusedIndicatorColor = Color.Black,
-            focusedLabelColor = Color.Black
+            focusedIndicatorColor = Color.Gray,
+            focusedLabelColor = Color.Gray
         ),
         singleLine = true,
-        label = { Text(text = placeHolderText) },
+        placeholder = { Text(text = placeHolderText) },
         visualTransformation =
         if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),

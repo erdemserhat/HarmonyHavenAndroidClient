@@ -85,6 +85,8 @@ fun VideoCard(
         val observer = AppLifecycleObserver(context, exoPlayer)
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
+            exoPlayer.stop()
+            exoPlayer.release()
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
@@ -147,6 +149,8 @@ fun VideoCard(
 
     DisposableEffect(Unit) {
         onDispose {
+            exoPlayer.stop()
+            exoPlayer.release()
             activity?.let {
                 it.window.setFlags(
                     originalWindowFlags,

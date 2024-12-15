@@ -304,7 +304,7 @@ fun LoginScreen(
 
 ) {
     var email by rememberSaveable {
-        mutableStateOf(viewModel.getEmailIfExist())
+        mutableStateOf("")
     }
 
     var password by rememberSaveable {

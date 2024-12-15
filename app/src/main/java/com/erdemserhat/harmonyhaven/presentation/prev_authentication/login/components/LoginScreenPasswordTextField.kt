@@ -51,11 +51,13 @@ fun LoginScreenPasswordTextField(
         colors = TextFieldDefaults.colors(
             unfocusedContainerColor = Color.White,
             focusedContainerColor = Color.White,
-            focusedIndicatorColor = Color.Black,
-            focusedLabelColor = Color.Black
+            focusedIndicatorColor = Color.Gray,
+            focusedLabelColor = Color.Gray
         ),
         singleLine = true,
-        label = { Text(text = label) },
+        placeholder = { // Use label for the floating placeholder behavior
+            Text(text = label)
+        },
         visualTransformation =
         if (isPasswordHidden) PasswordVisualTransformation() else VisualTransformation.None,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),

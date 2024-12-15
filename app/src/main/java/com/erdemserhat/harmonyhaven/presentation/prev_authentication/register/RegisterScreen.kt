@@ -176,8 +176,10 @@ fun RegisterScreenContent(
                         placeHolderText = stringResource(R.string.name),
                         isError = params.isNameValid
                     )
+                    Spacer(modifier = Modifier.size(5.dp))
 
-                   // HarmonyHavenTextField(
+
+                    // HarmonyHavenTextField(
                      //   text = params.surname,
                      //   onValueChanged = params.onSurnameValueChanged,
                       //  placeHolderText = stringResource(R.string.surname),
@@ -191,6 +193,8 @@ fun RegisterScreenContent(
                         isError = params.isEmailValid,
 
                     )
+                    Spacer(modifier = Modifier.size(5.dp))
+
 
                     HarmonyHavenPasswordTextField(
                         placeHolderText = stringResource(R.string.password),
@@ -199,6 +203,7 @@ fun RegisterScreenContent(
                         isError = params.isPasswordValid,
                         modifier = Modifier.imePadding()
                     )
+
                     /*
 
                     HarmonyHavenPasswordTextField(

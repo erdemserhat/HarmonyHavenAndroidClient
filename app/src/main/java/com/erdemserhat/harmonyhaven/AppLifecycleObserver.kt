@@ -14,9 +14,7 @@ class AppLifecycleObserver(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onAppBackgrounded() {
-        if (exoPlayer.isPlaying) {
-            exoPlayer.pause()
-        }
+        exoPlayer.pause()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)

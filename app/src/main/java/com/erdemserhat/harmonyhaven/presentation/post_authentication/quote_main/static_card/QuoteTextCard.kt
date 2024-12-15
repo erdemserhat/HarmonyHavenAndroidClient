@@ -91,7 +91,7 @@ fun QuoteText(
                     painter = painterResource(id = R.drawable.harmony_haven_icon),
                     contentDescription = null,
                     modifier = Modifier
-                        .graphicsLayer(alpha = 0.4f)
+                        .graphicsLayer(alpha = 0.8f)
                         .size(25.dp),
                 )
 

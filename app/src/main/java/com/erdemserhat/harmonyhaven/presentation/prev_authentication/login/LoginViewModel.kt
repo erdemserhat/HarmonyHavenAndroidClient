@@ -1,6 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.prev_authentication.login
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -31,13 +32,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import javax.inject.Named
 
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
     private val jwtRepository: JwtTokenRepository,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    @Named("FirstInstallingExperience")
+    private val firstInstallingExperiencePreferences: SharedPreferences
 ) : ViewModel() {
 
     //Encapsulation principle
@@ -151,6 +155,7 @@ class LoginViewModel @Inject constructor(
             Log.d("AuthenticationTests", "jwt saved as :" + jwtRepository.getJwtToken())
             ///Redirect the user main page...
 
+
             _loginState.value = _loginState.value.copy(
                 isLoading = false,
                 canNavigateToDashBoard = true,
@@ -164,8 +169,7 @@ class LoginViewModel @Inject constructor(
             editor.putBoolean("isLoggedInBefore", true)
             editor.apply()
 
-
-
+            firstInstallingExperiencePreferences.edit().putBoolean("isJwtExists", true).apply()
 
 
         }
@@ -216,10 +220,12 @@ class LoginViewModel @Inject constructor(
 
                             jwtRepository.saveJwtToken(response?.jwt!!)
                             getToken()
-                            val sharedPrefs = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                            val sharedPrefs =
+                                context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
                             val editor = sharedPrefs.edit()
                             editor.putBoolean("isLoggedInBefore", true)
                             editor.apply()
+                            firstInstallingExperiencePreferences.edit().putBoolean("isJwtExists", true).apply()
 
                             _loginState.value = _loginState.value.copy(
                                 isLoading = false,
@@ -229,7 +235,6 @@ class LoginViewModel @Inject constructor(
 
 
                         }
-
 
 
                     } catch (e: GoogleIdTokenParsingException) {
@@ -272,15 +277,6 @@ class LoginViewModel @Inject constructor(
 
         }
 
-    }
-
-    fun getEmailIfExist(): String {
-        val savedEmail = sharedPrefs.getString("email", "")
-        if (savedEmail == "" || savedEmail == null) {
-            return ""
-        } else {
-            return savedEmail
-        }
     }
 
 

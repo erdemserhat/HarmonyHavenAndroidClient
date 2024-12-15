@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
@@ -31,6 +32,7 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
@@ -47,9 +49,10 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     @Named("FirstInstallingExperience")
-    lateinit var firstInstallingExperiencePreferences:SharedPreferences
+    lateinit var firstInstallingExperiencePreferences: SharedPreferences
 
-
+    @Inject
+    lateinit var jwtRepository: JwtTokenRepository
 
 
     @SuppressLint("NewApi")
@@ -59,14 +62,16 @@ class MainActivity : ComponentActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         val extraData = intent.getStringExtra("data")
-
-
         val isFirstLaunch = firstInstallingExperiencePreferences.getBoolean("isFirstLaunch", true)
-        val isLoggedInBefore = firstInstallingExperiencePreferences.getBoolean("isLoggedInBefore", false)
+        val isLoggedInBefore =
+            firstInstallingExperiencePreferences.getBoolean("isLoggedInBefore", false)
+        val isJwtExists = firstInstallingExperiencePreferences.getBoolean("isJwtExists", false)
+
+
 
 
         setContent {
-            val vm = hiltViewModel<QuoteMainViewModel>()
+
             HarmonyHavenTheme {
                 navController = rememberNavController()
                 window
@@ -74,13 +79,13 @@ class MainActivity : ComponentActivity() {
                 SetupNavGraph(
                     navController = navController,
                     startDestination = when (isLoggedInBefore) {
-                        true -> Screen.Main.route
+                        true -> if (isJwtExists) Screen.Main.route else Screen.Login.route
                         false -> if (isFirstLaunch) Screen.Welcome.route else Screen.Login.route
                     },
                     modifier = Modifier,
                     window = window,
 
-                )
+                    )
 
                 extraData?.let {
                     val bundleArticle = Bundle()
@@ -123,20 +128,71 @@ class MainActivity : ComponentActivity() {
                 }
 
                 LaunchedEffect(key1 = Unit) {
-                    firstInstallingExperiencePreferences.edit().putBoolean("isFirstLaunch", false).apply()
+                    handleDeepLink(intent)
+                    firstInstallingExperiencePreferences.edit().putBoolean("isFirstLaunch", false)
+                        .apply()
                 }
 
 
             }
         }
+
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         // Yeni gelen intent'i işle
         Log.d("testIntentt", "newIntent called")
+
+        handleDeepLink(intent)
         intent.getStringExtra("data")?.let { data ->
             navController.navigate(data)
+        }
+
+    }
+
+    // Deep Link'i işleyen fonksiyon
+    private fun handleDeepLink(intent: Intent?) {
+        Log.d("dsadsadsa", "linkintn")
+        val data: Uri? = intent?.data
+        data?.let {
+            Log.d("dsadsadsa", it.toString())
+            // URI bilgilerini al
+            val path = it.path // Örnek: "/article/123"
+            Log.d("dsadsadsa", path.toString())
+
+            val queryParams = it.query // Sorgu parametreleri (eğer varsa)
+
+
+            when {
+                path?.startsWith("/article") == true -> {
+                    val articleId = it.lastPathSegment
+                    val bundleArticle = Bundle()
+
+                    if (articleId != null) {
+                        bundleArticle.putParcelable(
+                            "article",
+                            ArticlePresentableUIModel(
+                                id = articleId.toInt()
+                            )
+                        )
+                    }
+
+
+                    navController.navigate(
+                        route = Screen.Article.route,
+                        args = bundleArticle
+                    )
+                }
+
+                path == "/quote" -> {
+
+                }
+
+                path == "/home" -> {
+                    //navigateToHomeScreen()
+                }
+            }
         }
     }
 
