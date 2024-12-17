@@ -74,9 +74,12 @@ fun PostFlow(
                         if (page == quoteList1.value.size - 5) {
                             viewmodel.loadMoreQuote()
                         }
+                        if(page==pagerState.pageCount){
+                            viewmodel.loadMoreQuote()
+                        }
                     }
 
-                    Crossfade(targetState = quoteList1.value[page], label = "") { quote ->
+                    Crossfade(targetState = quoteList1.value.toList()[page], label = "") { quote ->
                         Quote(
                             quote = quote,
                             currentScreen = pagerState.currentPage,
@@ -89,16 +92,6 @@ fun PostFlow(
                             },
                             onCategoryClicked = {
                                 coroutineScope.launch { categorySheetState.show() }
-                            },
-                            onReachedToLastPage = {
-                                if (pagerState.currentPage == pagerState.pageCount - 1) {
-                                    coroutineScope.launch {
-                                        pagerState.animateScrollToPage(
-                                            page = 0,
-                                            animationSpec = tween(durationMillis = 1000)
-                                        )
-                                    }
-                                }
                             },
                             navController = navController
                         )

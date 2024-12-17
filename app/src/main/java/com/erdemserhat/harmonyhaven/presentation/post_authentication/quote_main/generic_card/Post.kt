@@ -40,6 +40,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLike
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLikeBottomControlButton
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteCard
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteText
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -57,7 +58,6 @@ fun Quote(
     viewmodel: QuoteMainViewModel,
     onCategoryClicked: () -> Unit,
     onShareQuoteClicked: () -> Unit,
-    onReachedToLastPage: () -> Unit,
     navController: NavController? = null
 ) {
     var isQuoteLiked by remember { mutableStateOf(quote.isLiked) }
@@ -67,13 +67,6 @@ fun Quote(
     val coroutineScope = rememberCoroutineScope()
     val capturableController = rememberCaptureController()
 
-    // Triggers when the page is reached
-    LaunchedEffect(quote) {
-        coroutineScope.launch {
-            delay(1500)
-            onReachedToLastPage()
-        }
-    }
 
     // Syncs the liked state with the quote data
     LaunchedEffect(quote.isLiked) {
@@ -86,6 +79,7 @@ fun Quote(
             .pointerInput(Unit) {
                 detectTapGestures(
                     onDoubleTap = {
+                        quote.isLiked = true
                         isQuoteLiked = true
                         isVisibleLikeAnimation = true
                         viewmodel.likeQuote(quote.id)
@@ -113,8 +107,10 @@ fun Quote(
                     shouldAnimateLikeButton = true
                     if (it) {
                         viewmodel.likeQuote(quote.id)
+                        quote.isLiked = true
                     } else {
                         viewmodel.removeLikeQuote(quote.id)
+                        quote.isLiked = false
                     }
                 },
                 onCategoryClicked = onCategoryClicked,
@@ -137,7 +133,7 @@ fun Quote(
                 modifier = Modifier.align(Alignment.Center),
                 quoteWriter = quote.writer,
                 quoteSentence = quote.quote,
-                quoteURL = quote.imageUrl
+                 quoteURL = quote.imageUrl
             )
         } else {
             VideoCard(

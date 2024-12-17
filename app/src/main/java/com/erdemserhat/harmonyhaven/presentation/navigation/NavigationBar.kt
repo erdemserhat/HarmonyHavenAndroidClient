@@ -68,12 +68,14 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
@@ -95,12 +97,15 @@ import kotlinx.coroutines.launch
 fun AppMainScreen(
     navController: NavController,
     params: MainScreenParams = MainScreenParams(),
-    window: Window
+    window: Window,
+    viewModel: SharedViewModel = hiltViewModel()
 
 
 ) {
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
+
 
     // Scroll to the initial page if provided
     LaunchedEffect(params.screenNo) {
@@ -167,6 +172,7 @@ fun AppMainScreen(
                         ),
                         onClick = {
                             coroutineScope.launch {
+                                keyboardController?.hide() // Klavyeyi kapatır
                                 pagerState.scrollToPage(index)
                                 params.screenNo = -1
                             }
@@ -215,6 +221,9 @@ fun AppMainScreen(
         topBar = {
             if (pagerState.currentPage != 0) {
                 MyAppBar(
+                    onExitClicked = {
+                        viewModel.logout()
+                    },
                     modifier = Modifier.zIndex(1f),
                     navController = navController,
                     title = when (pagerState.currentPage) {
@@ -358,7 +367,8 @@ fun MyAppBar(
     title: String,
     topBarBackgroundColor: Color,
     isMainScreen: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onExitClicked: () -> Unit = {},
 
 
 ) {
@@ -376,6 +386,7 @@ fun MyAppBar(
             positiveButtonText = "Çıkış Yap",
             negativeButtonText = "Vazgeç",
             onPositiveButtonClicked = {
+                onExitClicked()
                 navController.navigate(Screen.Login.route)
                 shouldShowLogoutAlertDialog = false
 

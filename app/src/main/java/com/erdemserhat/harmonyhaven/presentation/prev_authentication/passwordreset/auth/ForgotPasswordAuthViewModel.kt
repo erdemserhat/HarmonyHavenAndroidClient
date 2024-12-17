@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.erdemserhat.harmonyhaven.domain.ErrorTraceFlags
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
 import com.erdemserhat.harmonyhaven.dto.requests.password_reset.PasswordResetAuthenticateRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,47 +27,54 @@ class ForgotPasswordAuthViewModel @Inject constructor(
             authWarning = "Loading...",
             isLoading = true
         )
+        try {
+            viewModelScope.launch(Dispatchers.IO) {
 
-        viewModelScope.launch(Dispatchers.IO) {
-
-            val response = userUseCases.authenticatePasswordResetAttempt.executeRequest(
-                PasswordResetAuthenticateRequest(
-                    email = email,
-                    code = code
+                val response = userUseCases.authenticatePasswordResetAttempt.executeRequest(
+                    PasswordResetAuthenticateRequest(
+                        email = email,
+                        code = code
+                    )
                 )
-            )
 
-            if (response == null) {
-                _authModel.value = _authModel.value.copy(
-                    canNavigateTo = false,
-                    authWarning = "Network Error...",
-                    isLoading = false
-                )
-                return@launch
-            }
+                if (response == null) {
+                    _authModel.value = _authModel.value.copy(
+                        canNavigateTo = false,
+                        authWarning = "Network Error...",
+                        isLoading = false
+                    )
+                    return@launch
+                }
 
-            if (!(response.result)) {
+                if (!(response.result)) {
+                    _authModel.value = _authModel.value.copy(
+                        canNavigateTo = false,
+                        authWarning = response.message,
+                        isLoading = false,
+                        isError = true
+                    )
+                    return@launch
+
+                }
+
                 _authModel.value = _authModel.value.copy(
-                    canNavigateTo = false,
+                    canNavigateTo = true,
                     authWarning = response.message,
                     isLoading = false,
-                    isError = true
+                    isError = false,
+                    uuid = response.uuid
                 )
-                return@launch
+
+                Log.d("erdem0001", response.message)
+
 
             }
 
-            _authModel.value = _authModel.value.copy(
-                canNavigateTo = true,
-                authWarning = response.message,
-                isLoading = false,
-                isError = false,
-                uuid = response.uuid
+        } catch (e: Exception) {
+            Log.d(
+                ErrorTraceFlags.PASSWORD_RESET_TRACE.flagName,
+                "error while resetting password : ${e.message}"
             )
-
-            Log.d("erdem0001",response.message)
-
-
         }
 
 

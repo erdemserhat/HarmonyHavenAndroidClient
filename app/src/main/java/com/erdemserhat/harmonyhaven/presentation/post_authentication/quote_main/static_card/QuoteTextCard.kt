@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,7 +28,7 @@ import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.ui.theme.georgiaFont
 
 @Composable
-fun QuoteCard(
+fun QuoteText(
     modifier: Modifier = Modifier,
     quote: String,
     quoteWriter: String,
@@ -37,15 +38,15 @@ fun QuoteCard(
         modifier = modifier
             .padding(15.dp)
             .wrapContentSize()
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color.Black.copy(alpha = 0.8f),
-                        Color.Gray.copy(alpha = 0.5f)
-                    )
-                ),
-                shape = RoundedCornerShape(16.dp)
-            )
+          //  .background(
+               // brush = Brush.linearGradient(
+               //     colors = listOf(
+               //         Color.Black.copy(alpha = 0.8f),
+               //         Color.Gray.copy(alpha = 0.5f)
+               //     )
+               // ),
+               // shape = RoundedCornerShape(16.dp)
+          //  )
             .padding(15.dp) // Padding for content
     ) {
         Column(
@@ -56,13 +57,15 @@ fun QuoteCard(
             // Display the quote text
             Text(
                 text = quote,
-                color = Color.White.copy(alpha = 0.9f),
-                fontSize = 20.sp,
+                color = Color.White.copy(alpha = 0.85f),  // Reduced alpha for a softer appearance
+                fontSize = 18.sp,  // Slightly smaller font size for a more delicate look
                 fontStyle = FontStyle.Italic,
                 textAlign = TextAlign.Center,
-                fontFamily = FontFamily.Serif,
-                lineHeight = 30.sp,
-                modifier = Modifier.padding(bottom = 10.dp) // Add spacing
+                fontFamily = FontFamily.Serif,  // You can experiment with a different serif font for elegance
+                lineHeight = 28.sp,  // Slightly increased line height for better readability
+                letterSpacing = 0.5.sp,  // Add slight letter spacing to improve readability
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)  // Increased padding for better visual separation
             )
 
             // Display the quote writer if available
@@ -83,23 +86,36 @@ fun QuoteCard(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.harmony_haven_icon),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(5.dp)
-                            .size(20.dp)
-                    )
+                    Box(
+                        contentAlignment = Alignment.Center,
+                    ){
+                        Image(
+                            painter = painterResource(id = R.drawable.harmonyhaven_icon),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .padding()
+                                .size(40.dp)  // Slightly smaller size for a delicate look
+                        )
 
-                    Text(
-                        text = "harmonyinhaven",
-                        color = Color.White,
-                        fontFamily = FontFamily.Serif,
-                        fontSize = 15.sp
-                    )
+                        Text(
+                            text = "harmonyinhaven",
+                            color = Color.White.copy(alpha = 0.8f),  // Slightly reduced alpha for a softer look
+                            fontFamily = FontFamily.Serif,
+                            fontSize = 14.sp,  // Reduced font size for a lighter feel
+                            fontWeight = FontWeight.Light,  // Lighter weight for the text
+                            letterSpacing = 0.5.sp,  // Added letter spacing for a refined look
+                            modifier = Modifier.padding(start = 35.dp).align(Alignment.CenterEnd) // Added padding between the logo and text
+                        )
+
+                    }
+
+
+
                 }
-                Spacer(modifier = Modifier.size(10.dp)) // Add spacing
+                Spacer(modifier = Modifier.size(12.dp))  // Increased space below to separate from other elements
             }
+
         }
     }
 }

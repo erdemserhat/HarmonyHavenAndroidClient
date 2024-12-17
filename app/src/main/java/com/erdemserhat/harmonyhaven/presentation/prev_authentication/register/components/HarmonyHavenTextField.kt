@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -26,13 +27,13 @@ fun HarmonyHavenTextField(
             .size(width = 370.dp, height = 60.dp),
         value = text,
         onValueChange = onValueChanged,
-        label = { Text(text = placeHolderText) },
+        placeholder = { Text(text = placeHolderText) },
         shape = RoundedCornerShape(10.dp),
         colors = TextFieldDefaults.colors(
             unfocusedContainerColor = Color.White,
             focusedContainerColor = Color.White,
-            focusedIndicatorColor = Color.Black,
-            focusedLabelColor = Color.Black
+            focusedIndicatorColor = Color.Gray,
+            focusedLabelColor = Color.Gray
 
         ),
         singleLine = true,

@@ -33,4 +33,8 @@ class JwtTokenRepository(private val jwtTokenDao: JwtTokenDao) {
     suspend fun saveJwtToken(token: String) {
         jwtTokenDao.insertJwtToken(JwtTokenEntity(token = token))
     }
+
+    suspend fun deleteJwtToken() {
+        jwtTokenDao.deleteJwtToken()
+    }
 }

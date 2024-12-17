@@ -19,3 +19,4 @@ dependencyResolutionManagement {
 rootProject.name = "Harmony Haven"
 include(":app")
 
+include(":app:comment-feature")

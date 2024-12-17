@@ -17,4 +17,7 @@ interface JwtTokenDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertJwtToken(jwtTokenEntity: JwtTokenEntity)
+
+    @Query("DELETE FROM jwt_token")
+    suspend fun deleteJwtToken()
 }

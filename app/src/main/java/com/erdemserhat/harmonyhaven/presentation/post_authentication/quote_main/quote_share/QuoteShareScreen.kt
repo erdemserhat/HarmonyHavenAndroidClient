@@ -34,7 +34,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.navigation.QuoteShareScreenParams
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteCard
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteText
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VideoCard
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.downloadVideo
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.saveBitmapToFile
@@ -45,6 +45,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareToWhatsApp
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareToX
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareVideo
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteCard
 import dev.shreyaspatil.capturable.capturable
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.async
