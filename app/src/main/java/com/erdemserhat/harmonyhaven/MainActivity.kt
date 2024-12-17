@@ -65,10 +65,7 @@ class MainActivity : ComponentActivity() {
         val isFirstLaunch = firstInstallingExperiencePreferences.getBoolean("isFirstLaunch", true)
         val isLoggedInBefore =
             firstInstallingExperiencePreferences.getBoolean("isLoggedInBefore", false)
-        val isJwtExists = firstInstallingExperiencePreferences.getBoolean("isJwtExists", false)
-
-
-
+        val isJwtExists = firstInstallingExperiencePreferences.getBoolean("isJwtExists", true)
 
         setContent {
 

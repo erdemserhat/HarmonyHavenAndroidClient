@@ -45,6 +45,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareToWhatsApp
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareToX
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareVideo
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteCard
 import dev.shreyaspatil.capturable.capturable
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.async
@@ -158,7 +159,7 @@ fun QuoteShareScreen(
                 )
 
             } else {
-                QuoteText(
+                QuoteCard(
                     modifier = Modifier,
                     quoteWriter = params.author,
                     shouldAnimate = false,
@@ -366,7 +367,7 @@ fun QuoteShareScreen(
 
 
     //Original Screen Shot
-    QuoteText(
+    QuoteCard(
         modifier = Modifier
             .offset(x = 5000.dp, y = 5000.dp)
             .capturable(capturableController),

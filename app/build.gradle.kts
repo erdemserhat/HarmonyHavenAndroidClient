@@ -162,6 +162,8 @@ dependencies {
 
     // Capturable Library
     implementation(libs.capturable)
+
+    implementation(libs.palette)
 }
 
 

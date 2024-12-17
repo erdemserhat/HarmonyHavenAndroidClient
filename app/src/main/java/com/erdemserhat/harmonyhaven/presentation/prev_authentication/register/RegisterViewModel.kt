@@ -11,6 +11,7 @@ import androidx.credentials.PublicKeyCredential
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.data.local.repository.JwtTokenRepository
+import com.erdemserhat.harmonyhaven.domain.ErrorTraceFlags
 import com.erdemserhat.harmonyhaven.domain.model.RegisterFormModel
 import com.erdemserhat.harmonyhaven.domain.model.toUserInformationSchema
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
@@ -64,7 +65,6 @@ class RegisterViewModel @Inject constructor(
 
     private fun registerUser(userInformationSchema: UserInformationSchema) {
         try {
-
             viewModelScope.launch(Dispatchers.IO) {
                 val responseDeferred = async {
                     userUseCases.registerUser.executeRequest(userInformationSchema.apply {
@@ -163,7 +163,7 @@ class RegisterViewModel @Inject constructor(
 
             }
         } catch (e: Exception) {
-            Log.d("testRegisterScreen", e.message!!)
+            Log.d(ErrorTraceFlags.GOOGLE_SIGN_IN_TRACE.flagName, "error while registering user : ${e.message}")
         }
 
     }
@@ -194,7 +194,8 @@ class RegisterViewModel @Inject constructor(
             }
 
         } catch (e: Exception) {
-            //handle
+            Log.d(ErrorTraceFlags.CLOUD_MESSAGE_TRACE.flagName, "error while subscribing token : ${e.message}")
+
         }
 
 

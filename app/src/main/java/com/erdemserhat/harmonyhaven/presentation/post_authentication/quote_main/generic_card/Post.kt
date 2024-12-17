@@ -39,6 +39,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VideoCard
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLike
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLikeBottomControlButton
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteCard
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteText
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +58,6 @@ fun Quote(
     viewmodel: QuoteMainViewModel,
     onCategoryClicked: () -> Unit,
     onShareQuoteClicked: () -> Unit,
-    onReachedToLastPage: () -> Unit,
     navController: NavController? = null
 ) {
     var isQuoteLiked by remember { mutableStateOf(quote.isLiked) }
@@ -67,13 +67,6 @@ fun Quote(
     val coroutineScope = rememberCoroutineScope()
     val capturableController = rememberCaptureController()
 
-    // Triggers when the page is reached
-    LaunchedEffect(quote) {
-        coroutineScope.launch {
-            delay(1500)
-            onReachedToLastPage()
-        }
-    }
 
     // Syncs the liked state with the quote data
     LaunchedEffect(quote.isLiked) {
@@ -136,11 +129,11 @@ fun Quote(
 
         // Display quote as an image or video
         if (!quote.imageUrl.endsWith(".mp4")) {
-            QuoteText(
+            QuoteCard(
                 modifier = Modifier.align(Alignment.Center),
                 quoteWriter = quote.writer,
                 quoteSentence = quote.quote,
-                quoteURL = quote.imageUrl
+                 quoteURL = quote.imageUrl
             )
         } else {
             VideoCard(

@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.erdemserhat.harmonyhaven.data.local.entities.QuoteEntity
 import com.erdemserhat.harmonyhaven.data.local.repository.QuoteRepository
+import com.erdemserhat.harmonyhaven.domain.ErrorTraceFlags
 import com.erdemserhat.harmonyhaven.domain.usecase.quote.QuoteUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
@@ -54,8 +55,8 @@ class QuoteMainViewModel @Inject constructor(
 
 
     private val _quotes =
-        MutableStateFlow<List<Quote>>(mutableListOf())
-    val quotes: StateFlow<List<Quote>> = _quotes
+        MutableStateFlow<Set<Quote>>(mutableSetOf())
+    val quotes: StateFlow<Set<Quote>> = _quotes
 
 
     //user tutorial
@@ -92,26 +93,32 @@ class QuoteMainViewModel @Inject constructor(
 
 
     private fun checkConnection() {
-        viewModelScope.launch {
+        try {
+            viewModelScope.launch {
 
-            val authStatus = async {
-                userUseCases.checkUserAuthenticationStatus.executeRequest()
+                val authStatus = async {
+                    userUseCases.checkUserAuthenticationStatus.executeRequest()
+                }
+                _authState.value = authStatus.await()
+                Log.d("AuthStats", _authState.value.toString())
+
+
             }
-            _authState.value = authStatus.await()
-            Log.d("AuthStats", _authState.value.toString())
-
-
+        } catch (e: Exception) {
+            Log.d(ErrorTraceFlags.POST_FLOW_TRACE.flagName, e.message.toString())
         }
+
 
     }
 
     fun deleteQuoteById(id: Int) {
-        viewModelScope.launch {
-            try {
+        try {
+            viewModelScope.launch {
                 quoteUseCases.deleteQuoteById.executeRequest(id)
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
+        } catch (e: Exception) {
+            Log.d(ErrorTraceFlags.POST_FLOW_TRACE.flagName, e.message.toString())
+
         }
 
     }
@@ -143,7 +150,7 @@ class QuoteMainViewModel @Inject constructor(
     fun loadCategorizedQuotes(selectedCategories: CategorySelectionModel) {
         viewModelScope.launch {
             try {
-                _quotes.value = listOf()
+                _quotes.value = setOf()
                 sessionManager.resetSeed()
                 _seed = sessionManager.getSeed()
                 _page.value = 1
@@ -158,9 +165,7 @@ class QuoteMainViewModel @Inject constructor(
                     )
                 )
 
-
-
-                _quotes.value = requestedQuotes
+                _quotes.value = requestedQuotes.toSet()
 
                 withContext(Dispatchers.IO) {
                     quoteRepository.clearCachedQuotes()
@@ -195,24 +200,18 @@ class QuoteMainViewModel @Inject constructor(
                     )
                 )
 
-                _quotes.value.map {
-                    requestedQuotes.toMutableList().remove(it)
-                }
-                //Log.d("loadQuotesStat","requestedQuotes:${requestedQuotes.map { it.id }.toString()}")
-
                 _quotes.value += requestedQuotes
-
-
-                //Log.d("loadQuotesStat","after operation total:${_quotes.value.map { it.id }.toString()}")
 
                 withContext(Dispatchers.IO) {
                     quoteRepository.clearCachedQuotes()
                     quoteRepository.addCachedQuotes(
                         requestedQuotes.takeLast(4).map { it.convertToEntity() })
-                    //Log.d("loadQuotesStat","cache updated:${quoteRepository.getCachedQuotes().map { it.quoteId }.toString()}")
-
 
                 }
+
+                Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Loaded More")
+                Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,_quotes.value.map { it.id }.toString())
+
                 checkLikedList()
 
             } catch (_: Exception) {
@@ -225,26 +224,27 @@ class QuoteMainViewModel @Inject constructor(
     }
 
     private fun checkLikedList() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val categoryPreferences = getCategorySelection()
-            //Log.d("dsadas",categoryPreferences.isOnlyLikedSelected().toString())
-
-            if (categoryPreferences.isOnlyLikedSelected() && _quotes.value.isEmpty()) {
-                //Log.d("dsadas","dsdsadsadsaadsa")
-
-                withContext(Dispatchers.Main) {
-                    _quotes.value = listOf(
-                        Quote(
-                            quote = "Beğendiğiniz Herhangi Bir Gönderi Bulunmuyor",
-                            isLiked = false,
-                            quoteCategory = -1
+        try {
+            viewModelScope.launch(Dispatchers.IO) {
+                val categoryPreferences = getCategorySelection()
+                if (categoryPreferences.isOnlyLikedSelected() && _quotes.value.isEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        _quotes.value = setOf(
+                            Quote(
+                                quote = "Beğendiğiniz Herhangi Bir Gönderi Bulunmuyor",
+                                isLiked = false,
+                                quoteCategory = -1
+                            )
                         )
-                    )
+                    }
+
+
                 }
 
 
             }
 
+        } catch (e: Exception) {
 
         }
 
@@ -253,43 +253,63 @@ class QuoteMainViewModel @Inject constructor(
 
     //load notification via offset
     private fun prepareList() {
-        //Log.d("PrepareFirstInit","Application Launched")
+        try {
+            val idList = _quotes.value.map { it.id }.toString()
+            Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Prepare List Called")
+            Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,idList.toString())
 
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val cachedQuotes = quoteRepository.getCachedQuotes().ifEmpty { defaultCachedQuotes }
-                _quotes.value = cachedQuotes.map { it.convertToQuote() }
+            viewModelScope.launch {
+                withContext(Dispatchers.IO){
+                    try {
+                        val cachedQuotes = quoteRepository.getCachedQuotes().ifEmpty { defaultCachedQuotes }
+                        _quotes.value = cachedQuotes.map { it.convertToQuote() }.toSet()
 
-            }
-            try {
-                val categories = getCategorySelection().convertToIdListModel()
-                val requestedQuotes = quoteUseCases.getQuote.executeRequest2(
-                    filteredQuoteRequest = FilteredQuoteRequest(
-                        categories = categories,
-                        page = _page.value,
-                        pageSize = _pageSize,
-                        seed = _seed
-                    )
-                )
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Cached Quotes Loaded")
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,_quotes.value.map { it.id }.toString())
 
-                _quotes.value.map {
-                    requestedQuotes.toMutableList().remove(it)
+                        val categories = getCategorySelection().convertToIdListModel()
+                        val requestedQuotes = quoteUseCases.getQuote.executeRequest2(
+                            filteredQuoteRequest = FilteredQuoteRequest(
+                                categories = categories,
+                                page = _page.value,
+                                pageSize = _pageSize,
+                                seed = _seed
+                            )
+                        )
+
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Requested First Page")
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Requested First Page :${requestedQuotes.map { it.id }.toString()}")
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,_quotes.value.map { it.id }.toString())
+
+
+
+                        _quotes.value += requestedQuotes
+                        checkLikedList()
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"First Call Completed")
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,_quotes.value.map { it.id }.toString())
+
+
+
+
+
+                        quoteRepository.clearCachedQuotes()
+                        quoteRepository.addCachedQuotes(
+                            requestedQuotes.takeLast(4).map { it.convertToEntity() }
+                        )
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Cached Updated")
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,quoteRepository.getCachedQuotes().map { it.quoteId }.toString())
+
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
 
-                _quotes.value += requestedQuotes
-                checkLikedList()
-
-                withContext(Dispatchers.IO) {
-                    quoteRepository.clearCachedQuotes()
-                    quoteRepository.addCachedQuotes(
-                        requestedQuotes.takeLast(4).map { it.convertToEntity() })
-
-                }
 
 
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
+
+        } catch (e: Exception) {
 
         }
     }
@@ -308,34 +328,40 @@ class QuoteMainViewModel @Inject constructor(
 
 
     fun saveCategorySelection(model: CategorySelectionModel) {
-        categoryPreferences.edit().apply {
-            val selectionMap = mapOf(
-                "isGeneralSelected" to model.isGeneralSelected,
-                "isLikedSelected" to model.isLikedSelected,
-                "isBeYourselfSelected" to model.isBeYourselfSelected,
-                "isConfidenceSelected" to model.isConfidenceSelected,
-                "isSelfImprovementSelected" to model.isSelfImprovementSelected,
-                "isLifeSelected" to model.isLifeSelected,
-                "isStrengthSelected" to model.isStrengthSelected,
-                "isPositivitySelected" to model.isPositivitySelected,
-                "isAnxietySelected" to model.isAnxietySelected,
-                "isSelfEsteemSelected" to model.isSelfEsteemSelected,
-                "isSadnessSelected" to model.isSadnessSelected,
-                "isWorkSelected" to model.isWorkSelected,
-                "isToxicRelationshipsSelected" to model.isToxicRelationshipsSelected,
-                "isContinuingLifeSelected" to model.isContinuingLifeSelected,
-                "isSeparationSelected" to model.isSeparationSelected,
-                "isCourageSelected" to model.isCourageSelected,
-                "isSportSelected" to model.isSportSelected,
-                "isLoveSelected" to model.isLoveSelected,
-                "isShortVideosSelected" to model.isShortVideosSelected
-            )
-            selectionMap.forEach { (key, value) -> putBoolean(key, value) }
-            apply()
+        try {
+            categoryPreferences.edit().apply {
+                val selectionMap = mapOf(
+                    "isGeneralSelected" to model.isGeneralSelected,
+                    "isLikedSelected" to model.isLikedSelected,
+                    "isBeYourselfSelected" to model.isBeYourselfSelected,
+                    "isConfidenceSelected" to model.isConfidenceSelected,
+                    "isSelfImprovementSelected" to model.isSelfImprovementSelected,
+                    "isLifeSelected" to model.isLifeSelected,
+                    "isStrengthSelected" to model.isStrengthSelected,
+                    "isPositivitySelected" to model.isPositivitySelected,
+                    "isAnxietySelected" to model.isAnxietySelected,
+                    "isSelfEsteemSelected" to model.isSelfEsteemSelected,
+                    "isSadnessSelected" to model.isSadnessSelected,
+                    "isWorkSelected" to model.isWorkSelected,
+                    "isToxicRelationshipsSelected" to model.isToxicRelationshipsSelected,
+                    "isContinuingLifeSelected" to model.isContinuingLifeSelected,
+                    "isSeparationSelected" to model.isSeparationSelected,
+                    "isCourageSelected" to model.isCourageSelected,
+                    "isSportSelected" to model.isSportSelected,
+                    "isLoveSelected" to model.isLoveSelected,
+                    "isShortVideosSelected" to model.isShortVideosSelected
+                )
+                selectionMap.forEach { (key, value) -> putBoolean(key, value) }
+                apply()
+            }
+
+        } catch (e: Exception) {
+
         }
     }
 
     fun getCategorySelection(): CategorySelectionModel {
+
         val defaultValues = CategorySelectionModel() // Use the default values from the data class
 
         return CategorySelectionModel(
