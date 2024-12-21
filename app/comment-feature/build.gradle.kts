@@ -96,6 +96,8 @@ dependencies {
     androidTestImplementation(platform(libs.compose.bom.test))
     implementation(libs.navigation.compose)
     implementation("androidx.compose.ui:ui-tooling-preview:1.4.3")  // Preview için gerekli bağımlılık
+    runtimeOnly("com.google.accompanist:accompanist-placeholder-material:0.36.0")
+    implementation ("androidx.compose.animation:animation:1.4.0")
 
 
 }
