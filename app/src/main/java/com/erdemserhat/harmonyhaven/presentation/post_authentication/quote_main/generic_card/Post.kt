@@ -58,7 +58,8 @@ fun Quote(
     viewmodel: QuoteMainViewModel,
     onCategoryClicked: () -> Unit,
     onShareQuoteClicked: () -> Unit,
-    navController: NavController? = null
+    navController: NavController? = null,
+    onCommentClicked: () -> Unit
 ) {
     var isQuoteLiked by remember { mutableStateOf(quote.isLiked) }
     var isVisibleLikeAnimation by remember { mutableStateOf(false) }
@@ -123,7 +124,8 @@ fun Quote(
                             navController = navController
                         )
                     }
-                }
+                },
+                onCommentClicked = onCommentClicked
             )
         }
 
@@ -153,7 +155,8 @@ private fun BottomControls(
     shouldAnimateLikeButton: Boolean,
     onLikeClicked: (Boolean) -> Unit,
     onCategoryClicked: () -> Unit,
-    onShareQuoteClicked: () -> Unit
+    onShareQuoteClicked: () -> Unit,
+    onCommentClicked:()->Unit
 ) {
     Column(
         modifier = modifier.zIndex(4f),
@@ -176,6 +179,12 @@ private fun BottomControls(
             iconRes = R.drawable.share__3_,
             label = "Paylaş",
             onClick = onShareQuoteClicked
+        )
+
+        IconTextButton(
+            iconRes = R.drawable.commenss_,
+            label = "Yorum",
+            onClick = onCommentClicked
         )
     }
 }

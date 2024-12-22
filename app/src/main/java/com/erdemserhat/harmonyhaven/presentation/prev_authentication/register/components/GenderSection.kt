@@ -62,8 +62,8 @@ fun GenderIconDev(
             modifier = Modifier
                 .size(50.dp)
                 .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(bounded = true, radius = 25.dp)
+                   // interactionSource = remember { MutableInteractionSource() },
+                   // indication = rememberRipple(bounded = true, radius = 25.dp)
                 ) { onClick(gender) },
             colorFilter = colorFilter
         )

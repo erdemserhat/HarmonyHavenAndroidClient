@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.erdemserhat.comment_feature.R
 
 @Composable
@@ -40,11 +41,10 @@ fun CommentBlock(
     likeCount: Int = 12,
     replyCount: Int = 2,
     _isLiked: Boolean = false,
-    drawable: Int = R.drawable.examplepp,
+    profilePhotoUrl: String = "R.drawable.examplepp",
     isMainComment: Boolean = true,
-    isLoading: Boolean = true
 
-) {
+    ) {
 
     var shouldShowSubComments by rememberSaveable {
         mutableStateOf(false)
@@ -64,13 +64,13 @@ fun CommentBlock(
                 modifier = Modifier.fillMaxWidth()
             ) {
 
-                Image(
+                AsyncImage(
+                    model = profilePhotoUrl,
                     modifier = Modifier
                         .padding(5.dp)
                         .align(Alignment.Top)
                         .size(if (isMainComment) 40.dp else 30.dp)
                         .clip(shape = RoundedCornerShape(100)),
-                    painter = painterResource(id = drawable),
                     contentDescription = null
                 )
 
@@ -161,7 +161,7 @@ fun CommentBlock(
                                     likeCount = 15,
                                     replyCount = 3,
                                     _isLiked = true,
-                                    drawable = R.drawable.examplepp,
+                                    profilePhotoUrl ="https://erdemserhat.com/wp-content/uploads/2024/06/photo_2024-06-20_14-25-45.jpg",
                                     isMainComment = false
                                 )
 

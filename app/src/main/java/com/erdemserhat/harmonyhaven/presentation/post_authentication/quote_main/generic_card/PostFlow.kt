@@ -1,9 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.VerticalPager
@@ -12,14 +10,11 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import com.erdemserhat.harmonyhaven.dto.responses.Quote
-import com.erdemserhat.harmonyhaven.presentation.navigation.QuoteShareScreenParams
+import com.erdemserhat.comment_feature.presentation.CommentModalBottomSheet
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.CategoryPickerModalBottomSheet
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenProgressIndicator
@@ -39,6 +34,12 @@ fun PostFlow(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
     )
+
+    val commentSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+
+
+
+
     val coroutineScope = rememberCoroutineScope()
 
         val pagerState = rememberPagerState { quoteList1.value.size }
@@ -56,6 +57,15 @@ fun PostFlow(
                 },
                 onGetCategorySelectionModel = viewmodel.getCategorySelection()
             )
+
+            CommentModalBottomSheet(
+                sheetState = commentSheetState,
+                modifier = Modifier.zIndex(4f)
+            )
+
+
+
+
 
             if(quoteList1.value.isNotEmpty()){
 
@@ -93,7 +103,10 @@ fun PostFlow(
                             onCategoryClicked = {
                                 coroutineScope.launch { categorySheetState.show() }
                             },
-                            navController = navController
+                            navController = navController,
+                            onCommentClicked = {
+                                coroutineScope.launch { commentSheetState.show() }
+                            }
                         )
                     }
                 }

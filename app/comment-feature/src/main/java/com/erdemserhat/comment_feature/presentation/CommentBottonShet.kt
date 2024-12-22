@@ -1,12 +1,6 @@
 package com.erdemserhat.comment_feature.presentation
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,22 +11,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,9 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
@@ -51,31 +44,35 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.erdemserhat.comment_feature.R
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun CommentModuleExample(modifier: Modifier = Modifier) {
+fun CommentModalBottomSheet(
+    modifier: Modifier = Modifier,
+    viewModel: CommentViewModel = hiltViewModel(),
+    sheetState: ModalBottomSheetState
+
+) {
+    LaunchedEffect(Unit) {
+        viewModel.loadComments()
+    }
     var commentText by rememberSaveable {
         mutableStateOf("")
     }
-    var isLoading by rememberSaveable {
-        mutableStateOf(true)
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Gray)
-    )
+    val isLoading  by viewModel.isLoading.collectAsState()
+    val comments by viewModel.comments.collectAsState()
 
-    val sheetState = rememberModalBottomSheetState(
-        ModalBottomSheetValue.Expanded
-    )
 
 
     ModalBottomSheetLayout(
+        modifier = modifier
+              .background(Color.Transparent),
         sheetBackgroundColor = Color.Transparent,
+        scrimColor = Color.Black.copy(alpha = 0.4f),
         sheetState = sheetState,
         sheetContent = {
             Column(
@@ -92,19 +89,28 @@ fun CommentModuleExample(modifier: Modifier = Modifier) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         ModalBottomTitle(modifier = Modifier.align(Alignment.CenterHorizontally))
-
-                        LaunchedEffect(Unit) {
-                            delay(4000)
-                            isLoading = false
-
-                        }
                         if(isLoading){
                             repeat(5){
                                 CommentBlockShimmer()
                             }
+
+
                         }else{
-                            CommentBlock()
-                            CommentBlock()
+                            Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+                                comments.forEach{
+                                    CommentBlock(
+                                        date = it.date,
+                                        author = it.author,
+                                        content = it.content,
+                                        likeCount = it.likeCount,
+                                        replyCount = it.replyCount,
+                                        profilePhotoUrl = it.authorProfilePictureUrl,
+
+                                        )
+
+                                }
+                            }
+
                         }
 
 
@@ -228,7 +234,7 @@ fun CommentModuleExample(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun ModulePreview() {
-    CommentModuleExample()
+    //CommentModalBottomSheet()
 }
 
 @Composable
