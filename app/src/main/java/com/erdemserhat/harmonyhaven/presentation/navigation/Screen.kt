@@ -1,7 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.navigation
 
 sealed class Screen(val route:String) {
-    //Screenes
+    //Screens
     object Splash: Screen("splash_screen")
     object Login: Screen("login_screen")
     object Register: Screen("register_screen")
@@ -15,15 +15,12 @@ sealed class Screen(val route:String) {
     object Welcome: Screen("welcome_screen")
     object Dashboard: Screen("dashboard_screen")
     object Mail:Screen("forgot_password_mail_screen")
-
     object ResetPassword:Screen("forgot_password_code_screen")
-
     object HomeDev:Screen("home_screen_dev")
     object Article : Screen("article_screen")
     object RecentArticleDev :Screen("recent_articles")
     object Quotes:Screen("quotes_screen")
     object Main:Screen("main_screen")
-
     object SavedArticles:Screen("saved_articles_screen")
     object AboutUs:Screen("about_us_screen")
     object QuoteMain:Screen("quote_main")

@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
@@ -50,7 +51,8 @@ fun SetupNavGraph(
     navController: NavHostController,
     startDestination: String,
     modifier: Modifier = Modifier,
-    window: Window
+    window: Window,
+    sharedViewModel: SharedViewModel = hiltViewModel()
 ) {
 
     NavHost(
@@ -244,10 +246,10 @@ fun SetupNavGraph(
 
             if (params == null) {
 
-                AppMainScreen(navController = navController, window = window)
+                AppMainScreen(navController = navController, window = window, viewModel = sharedViewModel)
 
             } else {
-                AppMainScreen(navController, params, window)
+                AppMainScreen(navController, params, window,sharedViewModel)
 
             }
 
@@ -262,9 +264,6 @@ fun SetupNavGraph(
             AboutUsScreen(navController = navController)
         }
 
-        composable(route = Screen.QuoteMain.route) {
-            QuoteMainScreen(navController = navController)
-        }
 
         composable(route = Screen.Test.route) {
             TestScreen(navController = navController)
