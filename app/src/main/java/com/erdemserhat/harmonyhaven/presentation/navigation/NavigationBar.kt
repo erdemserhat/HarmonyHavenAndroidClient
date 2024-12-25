@@ -111,8 +111,11 @@ fun AppMainScreen(
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
-    val commentSheetState = rememberModalBottomSheetState(   initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true)
+    val commentSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+
+    )
     val categorySheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
 
 
