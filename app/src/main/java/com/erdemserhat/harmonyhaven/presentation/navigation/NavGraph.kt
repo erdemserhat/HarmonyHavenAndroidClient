@@ -15,6 +15,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -58,7 +59,7 @@ fun SetupNavGraph(
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        modifier = modifier.background(Color.Black) // Modifier'ı burada kullanın
+        modifier = modifier.fillMaxSize().background(Color.Black)
 
     ) {
 

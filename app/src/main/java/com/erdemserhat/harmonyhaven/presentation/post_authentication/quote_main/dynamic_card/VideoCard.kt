@@ -8,6 +8,7 @@ import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -110,6 +111,7 @@ fun VideoCard(
             AndroidView(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(Color.Black)
                     .placeholder(
                         visible = isLoading,
                         highlight = PlaceholderHighlight.shimmer(

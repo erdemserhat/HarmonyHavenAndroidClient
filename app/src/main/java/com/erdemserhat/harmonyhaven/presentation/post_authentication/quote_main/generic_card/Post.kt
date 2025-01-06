@@ -3,6 +3,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -77,6 +78,7 @@ fun Quote(
     Box(
         modifier = modifier
             .fillMaxSize()
+            .background(Color.Black)
             .pointerInput(Unit) {
                 detectTapGestures(
                     onDoubleTap = {

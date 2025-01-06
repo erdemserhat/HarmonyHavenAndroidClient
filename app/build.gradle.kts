@@ -83,7 +83,7 @@ kotlin {
 
 
 dependencies {
-    implementation(project("comment-feature"))
+   // implementation(project("comment-feature"))
 
 
     // Core Dependencies

@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import android.view.Window
 import androidx.annotation.RequiresApi
+import androidx.collection.mutableIntSetOf
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -27,6 +28,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -57,6 +59,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -79,7 +82,6 @@ import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.erdemserhat.comment_feature.presentation.CommentModalBottomSheet
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
@@ -87,6 +89,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.Ale
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.CategoryPickerModalBottomSheet
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentModalBottomSheet
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenIndicatorColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenSelectedNavigationBarItemColor
@@ -97,7 +100,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun AppMainScreen(
     navController: NavController,
@@ -117,6 +120,10 @@ fun AppMainScreen(
 
     )
     val categorySheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+
+    var postID by rememberSaveable{
+        mutableIntStateOf(3044)
+    }
 
 
 
@@ -164,6 +171,7 @@ fun AppMainScreen(
 
 
     Scaffold(
+        modifier = Modifier.fillMaxSize().background(Color.Red),
         bottomBar = {
             NavigationBar(
 
@@ -259,7 +267,8 @@ fun AppMainScreen(
     ) { padding ->
         CommentModalBottomSheet(
             sheetState = commentSheetState,
-            modifier = Modifier.zIndex(2f)
+            modifier = Modifier.zIndex(2f),
+            postId = postID
         )
 
         CategoryPickerModalBottomSheet(
@@ -277,12 +286,12 @@ fun AppMainScreen(
             )
         )
 
-        Box(modifier = Modifier.fillMaxSize()) {
             HorizontalPager(
                 state = pagerState,
                 count = items.size,
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(Color.Red)
                     .padding(padding)
                     .windowInsetsPadding(WindowInsets.systemBars)
                     .onGloballyPositioned {
@@ -295,7 +304,8 @@ fun AppMainScreen(
                     0 -> QuoteMainScreen(
                         navController = navController,
                         sharedViewModel = viewModel,
-                        onCommentsClicked = {
+                        onCommentsClicked = {postId->
+                            postID = postId
                             coroutineScope.launch {
                                 commentSheetState.show()
                             }
@@ -312,7 +322,7 @@ fun AppMainScreen(
                     )
                 }
             }
-        }
+
     }
 }
 

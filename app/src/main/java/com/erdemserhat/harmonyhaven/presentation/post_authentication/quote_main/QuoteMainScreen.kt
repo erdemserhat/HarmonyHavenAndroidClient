@@ -30,7 +30,7 @@ fun QuoteMainScreen(
     navController: NavController,
     viewmodel: QuoteMainViewModel,
     sharedViewModel: SharedViewModel,
-    onCommentsClicked:()->Unit,
+    onCommentsClicked:(postId:Int)->Unit,
     onCategoryClicked:()->Unit
 ) {
 
@@ -51,7 +51,7 @@ fun QuoteMainContent(
     viewmodel: QuoteMainViewModel,
     navController: NavController? = null,
     sharedViewModel:SharedViewModel,
-    onCommentsClicked:()->Unit,
+    onCommentsClicked:(postId:Int)->Unit,
     onCategoryClicked:()->Unit
 ) {
 

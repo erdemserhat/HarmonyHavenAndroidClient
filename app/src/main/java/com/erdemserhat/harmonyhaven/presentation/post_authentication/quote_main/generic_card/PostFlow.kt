@@ -3,6 +3,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
 import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.VerticalPager
@@ -14,10 +15,10 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.paging.LOG_TAG
-import com.erdemserhat.comment_feature.presentation.CommentModalBottomSheet
 import com.erdemserhat.harmonyhaven.presentation.navigation.SharedViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.CategoryPickerModalBottomSheet
@@ -31,7 +32,7 @@ fun PostFlow(
     viewmodel: QuoteMainViewModel,
     navController: NavController? = null,
     sharedViewModel: SharedViewModel,
-    onCommentsClicked:()->Unit,
+    onCommentsClicked:(postId:Int)->Unit,
     onCategoryClicked:()->Unit
 ) {
 
@@ -64,6 +65,7 @@ fun PostFlow(
                  VerticalPager(
                         modifier = Modifier
                             .fillMaxSize()
+                            .background(Color.Yellow)
                             .align(Alignment.Center),
                         state = pagerState
                     ) { page ->
@@ -97,7 +99,7 @@ fun PostFlow(
                                 },
                                 navController = navController,
                                 onCommentClicked = {
-                                    onCommentsClicked()
+                                    onCommentsClicked(quote.id)
                                 }
                             )
                         }

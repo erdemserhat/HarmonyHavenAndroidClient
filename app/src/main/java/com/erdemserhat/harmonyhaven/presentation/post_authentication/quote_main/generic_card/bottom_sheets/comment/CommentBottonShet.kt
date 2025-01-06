@@ -1,4 +1,4 @@
-package com.erdemserhat.comment_feature.presentation
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -59,7 +59,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.erdemserhat.comment_feature.R
+import coil.compose.AsyncImage
+import com.erdemserhat.harmonyhaven.R
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -67,12 +68,20 @@ import kotlinx.coroutines.delay
 fun CommentModalBottomSheet(
     modifier: Modifier = Modifier,
     viewModel: CommentViewModel = hiltViewModel(),
-    sheetState: ModalBottomSheetState
+    sheetState: ModalBottomSheetState,
+    postId: Int
 
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.loadComments()
+    LaunchedEffect(sheetState.isVisible) {
+        if (sheetState.isVisible) {
+            viewModel.loadComments(postId)
+        }else{
+            viewModel.resetList()
+        }
     }
+
+
+
 
     var commentText by rememberSaveable {
         mutableStateOf("")
@@ -112,19 +121,40 @@ fun CommentModalBottomSheet(
 
                             } else {
                                 LazyColumn(
-                                    modifier = Modifier.fillMaxSize().padding(bottom = 110.dp),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(bottom = 110.dp),
                                     verticalArrangement = Arrangement.spacedBy(8.dp), // Öğeler arasında boşluk
                                     contentPadding = PaddingValues(16.dp) // Kenar boşlukları
                                 ) {
                                     // items fonksiyonu doğru şekilde kullanılıyor
                                     items(items = comments) { comment ->
-                                        CommentBlock(
-                                            date = comment.date,
-                                            author = comment.author,
-                                            content = comment.content,
-                                            likeCount = comment.likeCount,
-                                            profilePhotoUrl = comment.authorProfilePictureUrl
-                                        )
+                                        AnimatedVisibility(true) {
+                                            CommentBlock(
+                                                hasOwnerShip = comment.hasOwnership,
+                                                date = comment.date,
+                                                author = comment.author,
+                                                content = comment.content,
+                                                likeCount = comment.likeCount,
+                                                profilePhotoUrl = comment.authorProfilePictureUrl,
+                                                _isLiked = comment.isLiked,
+                                                onLikedClicked = {
+                                                    viewModel.likeComment(comment.id,postId)
+
+                                                },
+                                                onUnlikeClicked = {
+                                                    viewModel.removeLikeFromComment(comment.id,postId)
+
+
+                                                },
+                                                onDeleteComment = {
+                                                    viewModel.deleteComment(comment.id,postId)
+                                                }
+
+                                            )
+
+                                        }
+
                                     }
                                 }
 
@@ -133,81 +163,47 @@ fun CommentModalBottomSheet(
 
 
                         }
-                        Column(modifier = Modifier.background(Color.Black).align(Alignment.BottomCenter)) {
+                        Column(
+                            modifier = Modifier
+                                .background(Color.Black)
+                                .align(Alignment.BottomCenter)
+                        ) {
                             Row(
                                 modifier = Modifier
                                     .padding(horizontal = 15.dp, vertical = 10.dp)
-                                    .horizontalScroll(
-                                        rememberScrollState()
-                                    )
-                                    .background(Color.Black), // Enables horizontal scrolling
+                                    .horizontalScroll(rememberScrollState())
+                                    .background(Color.Black) // Enables horizontal scrolling
                             ) {
-                                Text("❤\uFE0F", fontSize = 25.sp)
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE4C", fontSize = 25.sp)
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDD25", fontSize = 25.sp)
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDC4F", fontSize = 25.sp)
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE22", fontSize = 25.sp)
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE0D", fontSize = 25.sp)
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE2E", fontSize = 25.sp)
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE02", fontSize = 25.sp)
-                                // Additional Emojis
-                                Text(
-                                    "\uD83E\uDD73",
-                                    fontSize = 25.sp
-                                ) // Face with hand over mouth (surprised or shy)
-                                Spacer(modifier = Modifier.size(20.dp))
+                                val emojis = listOf(
+                                    "❤\uFE0F", "\uD83D\uDE4C", "\uD83D\uDD25", "\uD83D\uDC4F", "\uD83D\uDE22", "\uD83D\uDE0D",
+                                    "\uD83D\uDE2E", "\uD83D\uDE02", "\uD83E\uDD73", "\uD83D\uDE0A", "\uD83D\uDC4C",
+                                    "\uD83D\uDE0E", "\uD83D\uDE31", "\uD83D\uDE18", "\uD83D\uDE09", "\uD83D\uDE1C",
+                                    "\uD83D\uDE14", "\uD83D\uDE12", "\uD83D\uDE1F", "\uD83D\uDE28", "\uD83D\uDE17",
+                                    "\uD83D\uDE29", "\uD83D\uDE2F", "\uD83D\uDE05"
+                                )
 
-                                Text("\uD83D\uDE0A", fontSize = 25.sp) // Smiling face with smiling eyes
-                                Spacer(modifier = Modifier.size(20.dp))
-
-                                Text("\uD83D\uDC4C", fontSize = 25.sp) // OK hand sign
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE0E", fontSize = 25.sp) // Smiling face with sunglasses
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE31", fontSize = 25.sp) // Face screaming in fear
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE18", fontSize = 25.sp) // Face throwing a kiss
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE09", fontSize = 25.sp) // Winking face
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text(
-                                    "\uD83D\uDE1C",
-                                    fontSize = 25.sp
-                                ) // Face with stuck-out tongue and winking eye
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE14", fontSize = 25.sp) // Pensive face
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE12", fontSize = 25.sp) // Face with no mouth
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE1F", fontSize = 25.sp) // Face with steam from nose
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE28", fontSize = 25.sp) // Fearful face
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE17", fontSize = 25.sp) // Kiss mark
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE29", fontSize = 25.sp) // Weary face
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE2F", fontSize = 25.sp) // Face with open mouth and cold sweat
-                                Spacer(modifier = Modifier.size(20.dp))
-                                Text("\uD83D\uDE05", fontSize = 25.sp) // Face with tears of joy
-
+                                emojis.forEach { emoji ->
+                                    Text(
+                                        text = emoji,
+                                        fontSize = 25.sp,
+                                        modifier = Modifier
+                                            .padding(end = 15.dp)
+                                            .clickable {
+                                                commentText += emoji
+                                            }
+                                    )
+                                }
                             }
 
-                            Row() {
-                                Image(
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                            ) {
+                                AsyncImage(
+                                    model = viewModel.profilePhotoPath,
                                     modifier = Modifier
-                                        .padding(start = 10.dp, end = 5.dp, top = 5.dp, bottom = 5.dp)
-                                        .align(Alignment.Top)
                                         .size(40.dp)
-                                        .clip(shape = RoundedCornerShape(100)),
-                                    painter = painterResource(id = R.drawable.examplepp),
+                                        .clip(RoundedCornerShape(100)),
                                     contentDescription = null
                                 )
 
@@ -219,39 +215,32 @@ fun CommentModalBottomSheet(
                                     value = commentText,
                                     placeholder = {
                                         Text(
-                                            "yorum yaz",
-                                            color = Color.White,
-                                            modifier = Modifier.align(Alignment.CenterVertically) // Yerleşim düzenlemesi
+                                            text = "Yorum yaz",
+                                            color = Color.Gray
                                         )
                                     },
                                     colors = TextFieldDefaults.textFieldColors(
                                         focusedIndicatorColor = Color.Transparent,
-                                        unfocusedLabelColor = Color.Transparent,
-                                        focusedLabelColor = Color.Gray,
-                                        cursorColor = Color.Gray,
-                                        placeholderColor = Color.Gray,
+                                        unfocusedIndicatorColor = Color.Transparent,
                                         backgroundColor = Color.Black,
-                                        disabledPlaceholderColor = Color.Black
-
+                                        cursorColor = Color.Gray
                                     ),
-                                    textStyle = TextStyle(
-                                        color = Color.White,
-                                        fontSize = 16.sp
-                                    ), // TextStyle ile hizalamayı düzenleyebilirsiniz
+                                    textStyle = TextStyle(color = Color.White, fontSize = 16.sp)
                                 )
 
-
-                                ClickableImage()
-
-
+                                ClickableImage(
+                                    onClick = {
+                                        viewModel.postComment(postId = postId, comment = commentText)
+                                        commentText = "" // Yorum gönderildikten sonra alanı temizler
+                                    }
+                                )
                             }
+                        }
 
-                        }}
-
+                    }
 
 
                 }
-
 
 
             },
@@ -263,16 +252,16 @@ fun CommentModalBottomSheet(
 
 
         //AnimatedVisibility(
-         //   modifier = Modifier.align(Alignment.BottomCenter),
-         //   visible = sheetState.isVisible,
-          //  enter = fadeIn(animationSpec = tween(500)) + slideInVertically(
-           //     initialOffsetY = { fullHeight -> fullHeight }
-           // ),
-           // exit = fadeOut(animationSpec = tween(300)) + slideOutVertically(
-          //      targetOffsetY = { fullHeight -> fullHeight }
-          //  )
-      //  ) {
-        if(sheetState.isVisible){
+        //   modifier = Modifier.align(Alignment.BottomCenter),
+        //   visible = sheetState.isVisible,
+        //  enter = fadeIn(animationSpec = tween(500)) + slideInVertically(
+        //     initialOffsetY = { fullHeight -> fullHeight }
+        // ),
+        // exit = fadeOut(animationSpec = tween(300)) + slideOutVertically(
+        //      targetOffsetY = { fullHeight -> fullHeight }
+        //  )
+        //  ) {
+        if (sheetState.isVisible) {
 
         }
 
@@ -311,7 +300,7 @@ private fun ModalBottomTitle(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun ClickableImage() {
+fun ClickableImage(onClick: () -> Unit) {
     // Track whether the image is clicked
     var clicked by remember { mutableStateOf(false) }
 
@@ -334,6 +323,7 @@ fun ClickableImage() {
             .clickable {
                 // Toggle the clicked state to trigger the animation
                 clicked = true
+                onClick()
             },
         painter = painterResource(id = R.drawable.comment_arrow_up),
         contentDescription = null
