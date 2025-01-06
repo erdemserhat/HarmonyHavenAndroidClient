@@ -77,8 +77,7 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     startDestination = when (isLoggedInBefore) {
                         true -> if (isJwtExists) Screen.Main.route else Screen.Login.route
-                        false -> if (isFirstLaunch) Screen.Welcome.route else Screen.Login.route
-                    },
+                        false -> if (isFirstLaunch) Screen.Welcome.route else Screen.Login.route },
                     modifier = Modifier,
                     window = window,
 

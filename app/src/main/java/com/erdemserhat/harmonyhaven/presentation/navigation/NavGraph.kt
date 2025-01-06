@@ -15,6 +15,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
@@ -50,13 +52,14 @@ fun SetupNavGraph(
     navController: NavHostController,
     startDestination: String,
     modifier: Modifier = Modifier,
-    window: Window
+    window: Window,
+    sharedViewModel: SharedViewModel = hiltViewModel()
 ) {
 
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        modifier = modifier.background(Color.Black) // Modifier'ı burada kullanın
+        modifier = modifier.fillMaxSize().background(Color.Black)
 
     ) {
 
@@ -244,10 +247,10 @@ fun SetupNavGraph(
 
             if (params == null) {
 
-                AppMainScreen(navController = navController, window = window)
+                AppMainScreen(navController = navController, window = window, viewModel = sharedViewModel)
 
             } else {
-                AppMainScreen(navController, params, window)
+                AppMainScreen(navController, params, window,sharedViewModel)
 
             }
 
@@ -262,9 +265,6 @@ fun SetupNavGraph(
             AboutUsScreen(navController = navController)
         }
 
-        composable(route = Screen.QuoteMain.route) {
-            QuoteMainScreen(navController = navController)
-        }
 
         composable(route = Screen.Test.route) {
             TestScreen(navController = navController)

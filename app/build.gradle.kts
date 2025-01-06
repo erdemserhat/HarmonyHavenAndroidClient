@@ -83,6 +83,9 @@ kotlin {
 
 
 dependencies {
+   // implementation(project("comment-feature"))
+
+
     // Core Dependencies
     implementation(libs.appcompat)
     implementation(libs.core.ktx)

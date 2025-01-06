@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.erdemserhat.harmonyhaven.presentation.navigation.SharedViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.PostFlow
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -27,13 +28,19 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 fun QuoteMainScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewmodel: QuoteMainViewModel = hiltViewModel()
+    viewmodel: QuoteMainViewModel,
+    sharedViewModel: SharedViewModel,
+    onCommentsClicked:(postId:Int)->Unit,
+    onCategoryClicked:()->Unit
 ) {
 
     QuoteMainContent(
         modifier = modifier,
         viewmodel = viewmodel,
-        navController = navController
+        navController = navController,
+        sharedViewModel = sharedViewModel,
+        onCommentsClicked = onCommentsClicked,
+        onCategoryClicked = onCategoryClicked
     )
 
 }
@@ -42,7 +49,10 @@ fun QuoteMainScreen(
 fun QuoteMainContent(
     modifier: Modifier = Modifier,
     viewmodel: QuoteMainViewModel,
-    navController: NavController? = null
+    navController: NavController? = null,
+    sharedViewModel:SharedViewModel,
+    onCommentsClicked:(postId:Int)->Unit,
+    onCategoryClicked:()->Unit
 ) {
 
     //
@@ -81,7 +91,10 @@ fun QuoteMainContent(
         PostFlow(
             modifier = Modifier,
             viewmodel = viewmodel,
-            navController = navController
+            navController = navController,
+            sharedViewModel = sharedViewModel,
+            onCommentsClicked = onCommentsClicked,
+            onCategoryClicked = onCategoryClicked
         )
         var isButtonClicked by remember { mutableStateOf(false) }
         if (shouldShowUxDialog1.value) {

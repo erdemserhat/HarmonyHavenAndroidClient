@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import android.view.Window
 import androidx.annotation.RequiresApi
+import androidx.collection.mutableIntSetOf
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -27,6 +28,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -36,6 +39,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DropdownMenu
@@ -55,6 +59,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -82,6 +87,9 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.compos
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.AlertDialogBase
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.CategoryPickerModalBottomSheet
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentModalBottomSheet
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenIndicatorColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenSelectedNavigationBarItemColor
@@ -92,19 +100,32 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun AppMainScreen(
     navController: NavController,
     params: MainScreenParams = MainScreenParams(),
     window: Window,
-    viewModel: SharedViewModel = hiltViewModel()
+    viewModel: SharedViewModel = hiltViewModel(),
+    quoteViewModel: QuoteMainViewModel = hiltViewModel()
 
 
 ) {
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val commentSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+
+    )
+    val categorySheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+
+    var postID by rememberSaveable{
+        mutableIntStateOf(3044)
+    }
+
+
 
 
     // Scroll to the initial page if provided
@@ -150,6 +171,7 @@ fun AppMainScreen(
 
 
     Scaffold(
+        modifier = Modifier.fillMaxSize().background(Color.Red),
         bottomBar = {
             NavigationBar(
 
@@ -243,12 +265,33 @@ fun AppMainScreen(
             }
         }
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize()) {
+        CommentModalBottomSheet(
+            sheetState = commentSheetState,
+            modifier = Modifier.zIndex(2f),
+            postId = postID
+        )
+
+        CategoryPickerModalBottomSheet(
+            sheetState = categorySheetState,
+            actions = CommentBottomModalSheetActions(
+                onShouldFilterQuotes = {selectedCategories->
+                    quoteViewModel.loadCategorizedQuotes(selectedCategories)
+
+                },
+                onSaveCategorySelection = {model->
+                    quoteViewModel.saveCategorySelection(model)
+                },
+                onGetCategorySelectionModel = quoteViewModel.getCategorySelection()
+
+            )
+        )
+
             HorizontalPager(
                 state = pagerState,
                 count = items.size,
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(Color.Red)
                     .padding(padding)
                     .windowInsetsPadding(WindowInsets.systemBars)
                     .onGloballyPositioned {
@@ -258,10 +301,28 @@ fun AppMainScreen(
                 when (page) {
                     2 -> HomeScreenNew(navController = navController)
                     1 -> NotificationScreen(navController)
-                    0 -> QuoteMainScreen(navController = navController)
+                    0 -> QuoteMainScreen(
+                        navController = navController,
+                        sharedViewModel = viewModel,
+                        onCommentsClicked = {postId->
+                            postID = postId
+                            coroutineScope.launch {
+                                commentSheetState.show()
+                            }
+
+                        },
+                        onCategoryClicked = {
+                            coroutineScope.launch {
+                                categorySheetState.show()
+                            }
+                        },
+                        viewmodel = quoteViewModel
+
+
+                    )
                 }
             }
-        }
+
     }
 }
 

@@ -43,7 +43,7 @@ object RetrofitModule {
             .build()
         // Build and return the OkHttpClient
         return OkHttpClient.Builder()
-            .certificatePinner(certificatePinner)
+            //.certificatePinner(certificatePinner)
             .connectTimeout(1, TimeUnit.MINUTES) // Connection timeout
             .readTimeout(45, TimeUnit.SECONDS) // Read timeout
             .writeTimeout(30, TimeUnit.SECONDS) // Write timeout

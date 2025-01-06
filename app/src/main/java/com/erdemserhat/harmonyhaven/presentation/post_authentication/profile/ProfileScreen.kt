@@ -105,7 +105,12 @@ fun SettingsScreenContent(navController: NavController,modifier: Modifier) {
                 positiveButtonText = "Çıkış Yap",
                 negativeButtonText = "Vazgeç",
                 onPositiveButtonClicked = {
+
                     navController.navigate(Screen.Login.route)
+                    
+                    navController.navigate("Login")
+
+
                     shouldShowLogoutAlertDialog = false
 
                 },
