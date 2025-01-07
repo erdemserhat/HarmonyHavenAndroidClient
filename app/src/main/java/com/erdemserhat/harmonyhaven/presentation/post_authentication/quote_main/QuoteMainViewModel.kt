@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
 import javax.inject.Inject
 import javax.inject.Named
 import kotlin.system.measureTimeMillis
@@ -50,7 +51,8 @@ class QuoteMainViewModel @Inject constructor(
     @Named("UserTutorial") private val userTutorialPreferences: SharedPreferences,
     private var quoteRepository: QuoteRepository,
     @Named("DefaultQuoteCache")
-    private var defaultCachedQuotes: List<QuoteEntity>
+    private var defaultCachedQuotes: List<QuoteEntity>,
+    private val httpClient: OkHttpClient
 ) : ViewModel() {
 
 
@@ -209,8 +211,11 @@ class QuoteMainViewModel @Inject constructor(
 
                 }
 
-                Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Loaded More")
-                Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,_quotes.value.map { it.id }.toString())
+                Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName, "Loaded More")
+                Log.d(
+                    ErrorTraceFlags.POST_DETAIL_TRACE.flagName,
+                    _quotes.value.map { it.id }.toString()
+                )
 
                 checkLikedList()
 
@@ -255,17 +260,21 @@ class QuoteMainViewModel @Inject constructor(
     private fun prepareList() {
         try {
             val idList = _quotes.value.map { it.id }.toString()
-            Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Prepare List Called")
-            Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,idList.toString())
+            Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName, "Prepare List Called")
+            Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName, idList.toString())
 
             viewModelScope.launch {
-                withContext(Dispatchers.IO){
+                withContext(Dispatchers.IO) {
                     try {
-                        val cachedQuotes = quoteRepository.getCachedQuotes().ifEmpty { defaultCachedQuotes }
+                        val cachedQuotes =
+                            quoteRepository.getCachedQuotes().ifEmpty { defaultCachedQuotes }
                         _quotes.value = cachedQuotes.map { it.convertToQuote() }.toSet()
 
-                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Cached Quotes Loaded")
-                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,_quotes.value.map { it.id }.toString())
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName, "Cached Quotes Loaded")
+                        Log.d(
+                            ErrorTraceFlags.POST_DETAIL_TRACE.flagName,
+                            _quotes.value.map { it.id }.toString()
+                        )
 
                         val categories = getCategorySelection().convertToIdListModel()
                         val requestedQuotes = quoteUseCases.getQuote.executeRequest2(
@@ -277,16 +286,25 @@ class QuoteMainViewModel @Inject constructor(
                             )
                         )
 
-                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Requested First Page")
-                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Requested First Page :${requestedQuotes.map { it.id }.toString()}")
-                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,_quotes.value.map { it.id }.toString())
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName, "Requested First Page")
+                        Log.d(
+                            ErrorTraceFlags.POST_DETAIL_TRACE.flagName,
+                            "Requested First Page :${requestedQuotes.map { it.id }.toString()}"
+                        )
+                        Log.d(
+                            ErrorTraceFlags.POST_DETAIL_TRACE.flagName,
+                            _quotes.value.map { it.id }.toString()
+                        )
 
 
 
                         _quotes.value += requestedQuotes
                         checkLikedList()
-                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"First Call Completed")
-                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,_quotes.value.map { it.id }.toString())
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName, "First Call Completed")
+                        Log.d(
+                            ErrorTraceFlags.POST_DETAIL_TRACE.flagName,
+                            _quotes.value.map { it.id }.toString()
+                        )
 
 
 
@@ -296,15 +314,17 @@ class QuoteMainViewModel @Inject constructor(
                         quoteRepository.addCachedQuotes(
                             requestedQuotes.takeLast(4).map { it.convertToEntity() }
                         )
-                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Cached Updated")
-                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,quoteRepository.getCachedQuotes().map { it.quoteId }.toString())
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName, "Cached Updated")
+                        Log.d(
+                            ErrorTraceFlags.POST_DETAIL_TRACE.flagName,
+                            quoteRepository.getCachedQuotes().map { it.quoteId }.toString()
+                        )
 
 
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
-
 
 
             }
@@ -489,6 +509,7 @@ class QuoteMainViewModel @Inject constructor(
 
 
     }
+
 
 
 }
