@@ -7,6 +7,7 @@ import android.media.Image
 import android.os.Build
 import android.util.Log
 import android.view.Window
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.collection.mutableIntSetOf
 import androidx.compose.animation.core.LinearEasing
@@ -27,9 +28,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -60,6 +63,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -124,6 +128,13 @@ fun AppMainScreen(
     var postID by rememberSaveable{
         mutableIntStateOf(3044)
     }
+
+    var shouldShowExitDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    val context = LocalContext.current
+    val activity = context as? Activity // Context'i Activity'ye dönüştürüyoruz
 
 
 
@@ -265,6 +276,51 @@ fun AppMainScreen(
             }
         }
     ) { padding ->
+        var lastBackPressTime by remember { mutableLongStateOf(0L) } // Son basma zamanını tutacak değişken
+        BackHandler {
+            if(commentSheetState.isVisible){
+                coroutineScope.launch { commentSheetState.hide() }
+
+            }else if(categorySheetState.isVisible){
+                coroutineScope.launch { categorySheetState.hide() }
+
+            }else{
+                val currentTime = System.currentTimeMillis() // Şu anki zaman
+                if (currentTime - lastBackPressTime < 1000) { // Eğer 500 ms içinde iki kez tıklanmışsa
+                    shouldShowExitDialog = true
+                } else {
+                    lastBackPressTime = currentTime
+                }
+            }
+        }
+        if(shouldShowExitDialog){
+            AlertDialog(
+                onDismissRequest = { shouldShowExitDialog = false },
+                title = {
+                    androidx.compose.material.Text(text = "Çıkmak Üzeresiniz")
+                },
+                text = {
+                    androidx.compose.material.Text(text = "Uygulamadan çıkmak istediğinizden emin misiniz?")
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        activity?.finish() // Uygulamayı sonlandır
+                    }) {
+                        androidx.compose.material.Text(text = "Evet", color = Color.Red)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { shouldShowExitDialog = false }) {
+                        androidx.compose.material.Text(text = "Vazgeç", color = Color.White)
+                    }
+                }
+            )
+
+        }
+
+
+
+
         CommentModalBottomSheet(
             sheetState = commentSheetState,
             modifier = Modifier.zIndex(2f),
