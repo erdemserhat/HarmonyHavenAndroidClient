@@ -1,12 +1,10 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,11 +14,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,20 +26,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.contentColorFor
-import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,12 +49,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.R
 import kotlinx.coroutines.delay
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CommentModalBottomSheet(
@@ -72,15 +67,19 @@ fun CommentModalBottomSheet(
     postId: Int
 
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val coroutineScope = rememberCoroutineScope()
+
+
     LaunchedEffect(sheetState.isVisible) {
         if (sheetState.isVisible) {
             viewModel.loadComments(postId)
+
         }else{
-            viewModel.resetList()
+            keyboardController?.hide()
+           viewModel.resetList()
         }
     }
-
-
 
 
     var commentText by rememberSaveable {
@@ -120,43 +119,47 @@ fun CommentModalBottomSheet(
 
 
                             } else {
-                                LazyColumn(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(bottom = 110.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp), // Öğeler arasında boşluk
-                                    contentPadding = PaddingValues(16.dp) // Kenar boşlukları
-                                ) {
-                                    // items fonksiyonu doğru şekilde kullanılıyor
-                                    items(items = comments) { comment ->
-                                        AnimatedVisibility(true) {
-                                            CommentBlock(
-                                                hasOwnerShip = comment.hasOwnership,
-                                                date = comment.date,
-                                                author = comment.author,
-                                                content = comment.content,
-                                                likeCount = comment.likeCount,
-                                                profilePhotoUrl = comment.authorProfilePictureUrl,
-                                                _isLiked = comment.isLiked,
-                                                onLikedClicked = {
-                                                    viewModel.likeComment(comment.id,postId)
+                                if(comments.isNotEmpty()){
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .verticalScroll(rememberScrollState())
+                                            .padding(bottom = 110.dp, start = 16.dp, end = 16.dp, top = 16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp), // Öğeler arasında boşluk
+                                    ) {
+                                        comments.forEach{ comment ->
+                                            AnimatedVisibility(true) {
+                                                CommentBlock(
+                                                    hasOwnerShip = comment.hasOwnership,
+                                                    date = comment.date,
+                                                    author = comment.author,
+                                                    sending = comment.id==-1,
+                                                    content = comment.content,
+                                                    _likeCount = comment.likeCount,
+                                                    profilePhotoUrl = comment.authorProfilePictureUrl,
+                                                    _isLiked = comment.isLiked,
+                                                    onLikedClicked = {
+                                                        viewModel.likeComment(comment.id,postId)
 
-                                                },
-                                                onUnlikeClicked = {
-                                                    viewModel.removeLikeFromComment(comment.id,postId)
+                                                    },
+                                                    onUnlikeClicked = {
+                                                        viewModel.removeLikeFromComment(comment.id,postId)
 
 
-                                                },
-                                                onDeleteComment = {
-                                                    viewModel.deleteComment(comment.id,postId)
-                                                }
+                                                    },
+                                                    onDeleteComment = {
+                                                        viewModel.deleteComment(comment.id,postId)
+                                                    }
 
-                                            )
+                                                )
 
+                                            }
                                         }
-
                                     }
+                                }else{
+                                    Text("Henüz bir yorum yok...",color = Color.White, modifier = Modifier.align(Alignment.CenterHorizontally).padding(25.dp))
                                 }
+
 
 
                             }
@@ -230,8 +233,12 @@ fun CommentModalBottomSheet(
 
                                 ClickableImage(
                                     onClick = {
-                                        viewModel.postComment(postId = postId, comment = commentText)
-                                        commentText = "" // Yorum gönderildikten sonra alanı temizler
+                                        if(commentText.isNotEmpty())
+                                            viewModel.postComment(postId = postId, comment = commentText)
+                                        commentText = ""
+
+
+
                                     }
                                 )
                             }

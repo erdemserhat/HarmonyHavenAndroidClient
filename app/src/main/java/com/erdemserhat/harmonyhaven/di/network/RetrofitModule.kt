@@ -8,6 +8,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.CertificatePinner
+import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -43,7 +44,7 @@ object RetrofitModule {
             .build()
         // Build and return the OkHttpClient
         return OkHttpClient.Builder()
-            //.certificatePinner(certificatePinner)
+            .certificatePinner(certificatePinner)
             .connectTimeout(1, TimeUnit.MINUTES) // Connection timeout
             .readTimeout(45, TimeUnit.SECONDS) // Read timeout
             .writeTimeout(30, TimeUnit.SECONDS) // Write timeout

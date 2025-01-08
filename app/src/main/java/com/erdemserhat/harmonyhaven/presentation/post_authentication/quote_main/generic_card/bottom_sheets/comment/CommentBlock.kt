@@ -27,12 +27,14 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -52,9 +54,10 @@ fun CommentBlock(
     author: String,
     hasOwnerShip: Boolean,
     content: String,
-    likeCount: Int,
+    _likeCount: Int,
     _isLiked: Boolean,
     profilePhotoUrl: String,
+    sending: Boolean, // Yorumun gönderilip gönderilmediği durumu
     onLikedClicked: () -> Unit,
     onUnlikeClicked: () -> Unit,
     onDeleteComment: () -> Unit // Silme işlemi için eklenen callback
@@ -69,6 +72,10 @@ fun CommentBlock(
         mutableStateOf(_isLiked)
     }
 
+    var likeCount by rememberSaveable {
+        mutableIntStateOf(_likeCount)
+    }
+
     var isDialogVisible by rememberSaveable {
         mutableStateOf(false)
     }
@@ -77,17 +84,26 @@ fun CommentBlock(
         onDispose { isLiked = false }
     }
 
+    var lastClickTime by remember { mutableStateOf(0L) }
+    val debounceDelay = 500L // 500 milliseconds debounce time
+
+    // Yorumun gönderilme durumu "sending" parametresine göre bir opaklık ekleyelim
+    val commentBlockModifier = if (sending) {
+        modifier.then(Modifier.alpha(0.5f)) // Soluklaştırmak için alpha değerini düşürüyoruz
+    } else {
+        modifier
+    }
+
     Column(
-        modifier = Modifier
+        modifier = commentBlockModifier
             .fillMaxWidth()
             .pointerInput(Unit) {
                 detectTapGestures(
                     onDoubleTap = {
                         isLiked = !isLiked
                         if (isLiked) {
+                            likeCount += 1
                             onLikedClicked()
-
-                            // Titreşim ekle
                             if (vibrator?.hasVibrator() == true) {
                                 vibrator.vibrate(
                                     VibrationEffect.createOneShot(
@@ -97,6 +113,7 @@ fun CommentBlock(
                                 )
                             }
                         } else {
+                            likeCount += -1
                             onUnlikeClicked()
                         }
                     },
@@ -154,26 +171,41 @@ fun CommentBlock(
                             Spacer(modifier = Modifier.size(5.dp))
                         }
 
-                        LikeButton(
-                            modifier = Modifier.align(Alignment.TopEnd),
-                            isLiked = isLiked,
-                            likeCount = likeCount,
-                            onLikeClicked = {
-                                isLiked = !isLiked
-                                if (isLiked)
-                                    onLikedClicked()
-                                if (vibrator?.hasVibrator() == true) {
-                                    vibrator.vibrate(
-                                        VibrationEffect.createOneShot(
-                                            25, // Süre (ms)
-                                            VibrationEffect.DEFAULT_AMPLITUDE
-                                        )
-                                    )
+                        if (!sending) {
+                            LikeButton(
+                                modifier = Modifier.align(Alignment.TopEnd),
+                                isLiked = isLiked,
+                                likeCount = likeCount,
+                                onLikeClicked = {
+                                        isLiked = !isLiked
+                                        if (isLiked) {
+                                            likeCount += 1
+                                            onLikedClicked()
+                                            if (vibrator?.hasVibrator() == true) {
+                                                vibrator.vibrate(
+                                                    VibrationEffect.createOneShot(
+                                                        25, // Süre (ms)
+                                                        VibrationEffect.DEFAULT_AMPLITUDE
+                                                    )
+                                                )
+                                            }
+
+                                        } else {
+                                            likeCount += -1
+                                            onUnlikeClicked()
+
+                                        }
+
+
+
+
+
+
                                 }
-                                else
-                                    onUnlikeClicked()
-                            }
-                        )
+                            )
+
+                        }
+
                     }
                 }
             }
@@ -206,12 +238,13 @@ fun CommentBlock(
     }
 }
 
+
 @Composable
 fun LikeButton(
     modifier: Modifier = Modifier,
     likeCount: Int = 0,
     isLiked: Boolean = true,
-    onLikeClicked: (Boolean) -> Unit = {}
+    onLikeClicked: () -> Unit = {}
 ) {
     // Animasyon için scale değeri
     val scale by animateFloatAsState(
@@ -234,12 +267,16 @@ fun LikeButton(
                     indication = null, // Ripple efektini kaldır
                     interactionSource = remember { MutableInteractionSource() } // Etkileşim kaynağı
 
-                ) { onLikeClicked(!isLiked) }, // Butona tıklayınca like state'ini değiştir
+                ) { onLikeClicked() }, // Butona tıklayınca like state'ini değiştir
             painter = painterResource(id = if (isLiked) R.drawable.likedredfilled else R.drawable.likedwhiteunfilled),
             contentDescription = null
         )
         Spacer(modifier = Modifier.size(5.dp))
-        Text(likeCount.toString(), color = Color.White, fontSize = 10.sp)
+        Text(
+            text = if (likeCount == 0 || likeCount == -1) "" else likeCount.toString(),
+            color = Color.White,
+            fontSize = 10.sp
+        )
     }
 }
 
@@ -296,10 +333,7 @@ fun CommentBlockShimmer(modifier: Modifier = Modifier) {
                         }
 
 
-
                     }
-
-
 
 
                 }

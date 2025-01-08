@@ -9,4 +9,6 @@ plugins {
    alias(libs.plugins.kotlin.serialization)
    alias(libs.plugins.hilt) apply false
    alias(libs.plugins.google.services) apply false
+   alias(libs.plugins.kotlinMultiplatform) apply false
+
 }

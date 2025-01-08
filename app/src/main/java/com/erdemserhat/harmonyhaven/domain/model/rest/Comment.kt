@@ -5,8 +5,8 @@ data class Comment(
     var date: String,
     val author: String,
     val content: String,
-    val likeCount: Int,
-    val isLiked: Boolean,
+    var likeCount: Int,
+    var isLiked: Boolean,
     var authorProfilePictureUrl: String,
     val hasOwnership: Boolean
 )

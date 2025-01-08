@@ -48,9 +48,7 @@ class QuoteMainViewModel @Inject constructor(
     @Named("CategorySelection") private val categoryPreferences: SharedPreferences,
     @Named("Permission") private val permissionPreferences: SharedPreferences,
     @Named("UserTutorial") private val userTutorialPreferences: SharedPreferences,
-    private var quoteRepository: QuoteRepository,
-    @Named("DefaultQuoteCache")
-    private var defaultCachedQuotes: List<QuoteEntity>
+    private var quoteRepository: QuoteRepository
 ) : ViewModel() {
 
 
@@ -261,8 +259,9 @@ class QuoteMainViewModel @Inject constructor(
             viewModelScope.launch {
                 withContext(Dispatchers.IO){
                     try {
-                        val cachedQuotes = quoteRepository.getCachedQuotes().ifEmpty { defaultCachedQuotes }
-                        _quotes.value = cachedQuotes.map { it.convertToQuote() }.toSet()
+                        val cachedQuotes = quoteRepository.getCachedQuotes()
+                        if(cachedQuotes.isNotEmpty())
+                            _quotes.value = cachedQuotes.map { it.convertToQuote() }.toSet()
 
                         Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Cached Quotes Loaded")
                         Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,_quotes.value.map { it.id }.toString())
