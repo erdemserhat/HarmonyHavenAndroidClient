@@ -35,10 +35,12 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Notifications
@@ -94,6 +96,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.CategoryPickerModalBottomSheet
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentModalBottomSheet
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.user.ProfileScreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenIndicatorColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenSelectedNavigationBarItemColor
@@ -355,6 +358,7 @@ fun AppMainScreen(
                     }
             ) { page ->
                 when (page) {
+                    3-> ProfileScreen()
                     2 -> HomeScreenNew(navController = navController)
                     1 -> NotificationScreen(navController)
                     0 -> QuoteMainScreen(
@@ -469,12 +473,18 @@ private val items = listOf(
         unSelectedIconDarkIcon = R.drawable.homewhiteunfilled,
         unSelectedIconWhiteIcon =R.drawable.homeblackunfilled
 
-    )
-
-// NavigationBarItem(
-//     "Profile", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle, false, null,
-//       Screen.Settings.route
-// )
+    ),
+  //  NavigationBarItem(
+  //      title = "Home",
+  //      hasNews = false,
+  //      badgeCount = null,
+  //      route = Screen.Home.route,
+  //      selectedIconDarkIcon =R.drawable.house,
+  //      selectedIconWhiteIcon =R.drawable.house,
+  //      unSelectedIconDarkIcon = R.drawable.house,
+  //      unSelectedIconWhiteIcon =R.drawable.house
+//
+  //  )
 )
 
 @OptIn(ExperimentalMaterial3Api::class)

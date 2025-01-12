@@ -3,7 +3,9 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -26,10 +28,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -45,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -52,40 +58,26 @@ fun CommentBlock(
     modifier: Modifier = Modifier,
     date: String,
     author: String,
+    commentId:Int,
     hasOwnerShip: Boolean,
     content: String,
-    _likeCount: Int,
-    _isLiked: Boolean,
+    likeCount: Int,
+    isLiked: Boolean,
     profilePhotoUrl: String,
-    sending: Boolean, // Yorumun gönderilip gönderilmediği durumu
-    onLikedClicked: () -> Unit,
-    onUnlikeClicked: () -> Unit,
+    sending: Boolean,
+    onLikedClicked: (commentId:Int) -> Unit,
     onDeleteComment: () -> Unit // Silme işlemi için eklenen callback
 ) {
-    val context = LocalContext.current
-    val vibrator = context.getSystemService(Vibrator::class.java)
+    var currentCommentId by remember { mutableStateOf(commentId) }
+
     var shouldShowSubComments by rememberSaveable {
         mutableStateOf(false)
-    }
-
-    var isLiked by rememberSaveable {
-        mutableStateOf(_isLiked)
-    }
-
-    var likeCount by rememberSaveable {
-        mutableIntStateOf(_likeCount)
     }
 
     var isDialogVisible by rememberSaveable {
         mutableStateOf(false)
     }
 
-    DisposableEffect(Unit) {
-        onDispose { isLiked = false }
-    }
-
-    var lastClickTime by remember { mutableStateOf(0L) }
-    val debounceDelay = 500L // 500 milliseconds debounce time
 
     // Yorumun gönderilme durumu "sending" parametresine göre bir opaklık ekleyelim
     val commentBlockModifier = if (sending) {
@@ -94,28 +86,18 @@ fun CommentBlock(
         modifier
     }
 
+    LaunchedEffect(commentId) {
+        currentCommentId = commentId
+
+    }
+
     Column(
         modifier = commentBlockModifier
             .fillMaxWidth()
             .pointerInput(Unit) {
                 detectTapGestures(
                     onDoubleTap = {
-                        isLiked = !isLiked
-                        if (isLiked) {
-                            likeCount += 1
-                            onLikedClicked()
-                            if (vibrator?.hasVibrator() == true) {
-                                vibrator.vibrate(
-                                    VibrationEffect.createOneShot(
-                                        25, // Süre (ms)
-                                        VibrationEffect.DEFAULT_AMPLITUDE
-                                    )
-                                )
-                            }
-                        } else {
-                            likeCount += -1
-                            onUnlikeClicked()
-                        }
+                        onLikedClicked(currentCommentId)
                     },
                     onLongPress = {
                         isDialogVisible = true
@@ -177,29 +159,7 @@ fun CommentBlock(
                                 isLiked = isLiked,
                                 likeCount = likeCount,
                                 onLikeClicked = {
-                                        isLiked = !isLiked
-                                        if (isLiked) {
-                                            likeCount += 1
-                                            onLikedClicked()
-                                            if (vibrator?.hasVibrator() == true) {
-                                                vibrator.vibrate(
-                                                    VibrationEffect.createOneShot(
-                                                        25, // Süre (ms)
-                                                        VibrationEffect.DEFAULT_AMPLITUDE
-                                                    )
-                                                )
-                                            }
-
-                                        } else {
-                                            likeCount += -1
-                                            onUnlikeClicked()
-
-                                        }
-
-
-
-
-
+                                    onLikedClicked(currentCommentId)
 
                                 }
                             )
@@ -211,7 +171,7 @@ fun CommentBlock(
             }
         }
 
-        if (isDialogVisible && hasOwnerShip) {
+        if (isDialogVisible && hasOwnerShip && commentId!=-1) {
             AlertDialog(
                 onDismissRequest = { isDialogVisible = false },
                 title = {
@@ -273,7 +233,7 @@ fun LikeButton(
         )
         Spacer(modifier = Modifier.size(5.dp))
         Text(
-            text = if (likeCount == 0 || likeCount == -1) "" else likeCount.toString(),
+            text = if (likeCount == 0 || likeCount <0) "" else likeCount.toString(),
             color = Color.White,
             fontSize = 10.sp
         )

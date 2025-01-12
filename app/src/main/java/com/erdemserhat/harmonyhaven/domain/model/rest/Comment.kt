@@ -1,7 +1,7 @@
 package com.erdemserhat.harmonyhaven.domain.model.rest
 
 data class Comment(
-    val id: Int,
+    var id: Int,
     var date: String,
     val author: String,
     val content: String,

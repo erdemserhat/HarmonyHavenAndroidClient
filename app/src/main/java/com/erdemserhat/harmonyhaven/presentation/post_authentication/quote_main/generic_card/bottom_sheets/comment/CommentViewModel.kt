@@ -3,6 +3,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.erdemserhat.harmonyhaven.data.api.user.UserInformationApiService
 import com.erdemserhat.harmonyhaven.domain.model.rest.Comment
 import com.erdemserhat.harmonyhaven.domain.usecase.CommentUseCase
@@ -13,6 +14,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -23,7 +25,7 @@ import kotlin.properties.Delegates
 class CommentViewModel @Inject constructor(
     private val commentUseCase: CommentUseCase,
     private val userInformationApiService: UserInformationApiService,
-    private val httpClient:OkHttpClient
+    private val httpClient: OkHttpClient
 ) : ViewModel() {
     private var _comments = MutableStateFlow(listOf<Comment>())
     val comments: StateFlow<List<Comment>> = _comments
@@ -36,6 +38,10 @@ class CommentViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _lastPostId = MutableStateFlow(-1)
+    val lastPostId: StateFlow<Int> = _lastPostId
+    private var cachedCommentList: List<Comment> = listOf()
+
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -46,7 +52,13 @@ class CommentViewModel @Inject constructor(
                 userName = result.name
 
             }
+
         }
+    }
+
+    fun setLastPostId(postId: Int) {
+        cachedCommentList = _comments.value
+        _lastPostId.value = postId
     }
 
     fun resetApiCallPool() {
@@ -65,7 +77,6 @@ class CommentViewModel @Inject constructor(
     }
 
 
-
     fun loadComments(postId: Int) {
         _isLoading.value = true
         viewModelScope.launch {
@@ -82,10 +93,10 @@ class CommentViewModel @Inject constructor(
 
     private fun refreshList(postId: Int) {
         viewModelScope.launch {
-            Log.d("dasddsadas","job started with $postId")
+            Log.d("dasddsadas", "job started with $postId")
 
             val commentsDeferred = async {
-                val comments=commentUseCase.getCommentsByPostId(postId).getOrNull()
+                val comments = commentUseCase.getCommentsByPostId(postId).getOrNull()
                 comments?.map {
                     if (it.authorProfilePictureUrl == "-")
                         it.authorProfilePictureUrl = defaultPPLink
@@ -100,59 +111,121 @@ class CommentViewModel @Inject constructor(
 
 
     fun resetList() {
-        _comments.value = listOf()
         _isLoading.value = true
+        _comments.value = listOf()
+
     }
 
+    fun loadFromCache() {
+        _comments.value = cachedCommentList
+        _isLoading.value = false
+
+    }
 
 
 
     // Her bir yorum için ayrı job referansı
     private val debounceLikeJobs = mutableMapOf<Int, Job>()
+    private val debounceDelayJobs = mutableMapOf<Int, Job>()
 
     fun likeComment(commentId: Int, postId: Int) {
+        _comments.value = _comments.value.map { comment ->
+            val previousLikeCondition = if (comment.id == commentId) comment.isLiked else false
+            if (comment.id == commentId) comment.copy(
+                isLiked = true,
+                likeCount = if (!previousLikeCondition) comment.likeCount+1 else comment.likeCount
+            )
+            else comment
+        }
         viewModelScope.launch {
             // Eğer aynı yorum için tekrar işlem yapılmak istenirse, önceki iş iptal edilsin
             debounceLikeJobs[commentId]?.cancel()
 
             // Yeni bir iş başlat
             debounceLikeJobs[commentId] = launch {
-                // 500 ms'lik gecikme (debounce)
-                delay(500)  // 500 ms = 0.5 saniye
+
+                debounceDelayJobs[commentId] = launch {
+                    delay(1000)  // 500 ms = 0.5 saniye
+                }
+                debounceDelayJobs[commentId]?.join()
+
 
                 // IO işlerini arka planda yap
+                Log.d("fsdfdsf", "network call")
                 withContext(Dispatchers.IO) {
                     commentUseCase.likeComment(commentId)
-                    refreshList(postId)
+                    //refreshList(postId)
                 }
             }
+
+
         }
     }
 
+    fun commitApiCallsWithoutDelay() {
+
+        viewModelScope.launch {
+            launch {
+                debounceDelayJobs.forEach { (id, job) ->  // Key ve Job ayrı ayrı alınır
+                    job.cancel()  // Her bir işi iptal et
+                }
+
+            }.join()
+
+            launch {
+
+                debounceDelayJobs2.forEach { (id, job) ->  // Key ve Job ayrı ayrı alınır
+                    job.cancel()  // Her bir işi iptal et
+                }
+
+            }.join()
+
+            launch {
 
 
-    // Her bir yorum için ayrı job referansı
-    private val debounceUnlikeJobs = mutableMapOf<Int, Job>()
+            }.join()
+
+
+        }
+
+
+    }
+
+
+    private val debounceDelayJobs2 = mutableMapOf<Int, Job>()
 
     fun removeLikeFromComment(commentId: Int, postId: Int) {
+        _comments.value = _comments.value.map { comment ->
+            if (comment.id == commentId) comment.copy(
+                isLiked = false,
+                likeCount = comment.likeCount - 1
+            ) else comment
+        }
         viewModelScope.launch {
             // Eğer aynı yorum için tekrar işlem yapılmak istenirse, önceki iş iptal edilsin
-            debounceUnlikeJobs[commentId]?.cancel()
+            debounceLikeJobs[commentId]?.cancel()
 
             // Yeni bir iş başlat
-            debounceUnlikeJobs[commentId] = launch {
-                // 500 ms'lik gecikme (debounce)
-                delay(500)  // 500 ms = 0.5 saniye
+            debounceLikeJobs[commentId] = launch {
+                debounceDelayJobs2[commentId] = launch {
+                    delay(1000)  // 500 ms = 0.5 saniye
+                }
+                debounceDelayJobs2[commentId]?.join()
 
                 // IO işlerini arka planda yap
+                Log.d("fsdfdsf", "network call")
+
                 withContext(Dispatchers.IO) {
                     commentUseCase.unlikeComment(commentId)
-                    refreshList(postId)
+                    //refreshList(postId)
                 }
             }
         }
     }
 
+    fun logEvent(){
+
+    }
 
 
     fun postComment(postId: Int, comment: String) {
@@ -162,7 +235,7 @@ class CommentViewModel @Inject constructor(
                 list.add(
                     Comment(
                         id = -1,
-                        date = "Şimdi",
+                        date = "paylaşılıyor",
                         author = userName,
                         content = comment,
                         likeCount = 0,
@@ -173,7 +246,7 @@ class CommentViewModel @Inject constructor(
                 )
 
                 _comments.value = list
-            }
+            }.join()
             withContext(Dispatchers.IO) {
                 commentUseCase.addComment(postId, comment)
                 refreshList(postId)
@@ -185,17 +258,19 @@ class CommentViewModel @Inject constructor(
     fun deleteComment(commentId: Int, postId: Int) {
         viewModelScope.launch {
             launch {
-                val list = _comments.value.toMutableList()
-                val removedComment = list.find { it.id ==commentId }
-                list.remove(removedComment)
+                val list = _comments.value.toMutableList().map { comment->
+                    if(comment.id == commentId)  comment.copy(id=-1) else comment
+                }
                 _comments.value = list
+                delay(300)
+                _comments.value = _comments.value.filter {comment->
+                    comment.id!=-1
+                }
             }
-
-
 
             withContext(Dispatchers.IO) {
                 commentUseCase.deleteComment(commentId)
-                refreshList(postId)
+                //refreshList(postId)
 
             }
         }

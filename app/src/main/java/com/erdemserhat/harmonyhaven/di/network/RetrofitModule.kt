@@ -8,6 +8,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.CertificatePinner
+import okhttp3.ConnectionPool
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -38,12 +39,16 @@ object RetrofitModule {
         jwtInterceptor: JwtInterceptor,
         context: Context
     ): OkHttpClient {
+
         // Configure CertificatePinner with the SHA-256 fingerprint
         val certificatePinner = CertificatePinner.Builder()
             .add(BuildConfig.SERVER_MAIN_PATTERN, BuildConfig.SSL_CERTIFICATE) // Use the updated fingerprint
             .build()
         // Build and return the OkHttpClient
         return OkHttpClient.Builder()
+            .dispatcher(Dispatcher().apply {
+                maxRequestsPerHost = 10
+            })
             .certificatePinner(certificatePinner)
             .connectTimeout(1, TimeUnit.MINUTES) // Connection timeout
             .readTimeout(45, TimeUnit.SECONDS) // Read timeout
