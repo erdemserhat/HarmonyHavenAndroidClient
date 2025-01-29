@@ -62,7 +62,7 @@ fun AnimatedLikeBottomControlButton(
     }
 
     Column(
-        modifier = Modifier.padding(bottom = 25.dp),
+        modifier = Modifier.padding(bottom = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -83,6 +83,6 @@ fun AnimatedLikeBottomControlButton(
             ),
             contentDescription = null
         )
-        Text("Beğen...", color = Color.White, fontSize = 10.sp)
+        Text("Beğen", color = Color.White, fontSize = 10.sp)
     }
 }

@@ -153,6 +153,7 @@ class CommentViewModel @Inject constructor(
                 // IO işlerini arka planda yap
                 Log.d("fsdfdsf", "network call")
                 withContext(Dispatchers.IO) {
+                    Log.d("TRACE_123","API REQUEST SENT")
                     commentUseCase.likeComment(commentId)
                     //refreshList(postId)
                 }
@@ -216,6 +217,7 @@ class CommentViewModel @Inject constructor(
                 Log.d("fsdfdsf", "network call")
 
                 withContext(Dispatchers.IO) {
+                    Log.d("TRACE_123","API REQUEST SENT")
                     commentUseCase.unlikeComment(commentId)
                     //refreshList(postId)
                 }

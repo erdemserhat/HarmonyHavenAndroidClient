@@ -1,6 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.article.composables
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -11,16 +12,13 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.article.Art
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.article.toArticleResponseType
 
 
-
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ArticleScreen(
     article: ArticlePresentableUIModel,
     navController: NavController,
-    postId: Int = -1
 ) {
-
-    if (article.id != -1) {
+    if (!article.ready) {
         val articleVM: ArticleViewModel = hiltViewModel()
         val articleState = articleVM.articleScreenState.collectAsState()
         LaunchedEffect(key1 = article) {

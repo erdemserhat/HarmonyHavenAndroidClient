@@ -25,7 +25,8 @@ import com.erdemserhat.harmonyhaven.R
 fun ArticleScreenTopBar(
     onTextFontPlusClicked: () -> Unit,
     onTextFontMinusClicked: () -> Unit,
-    navController: NavController
+    navController: NavController,
+    onShareButtonClicked:()->Unit
 
 
 ) {
@@ -97,6 +98,19 @@ fun ArticleScreenTopBar(
                         .clip(RoundedCornerShape(50.dp))
                         .size(32.dp)
                         .clickable { onTextFontPlusClicked() }
+
+
+                )
+            }
+
+            IconButton(onClick = {  }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.shareicon),
+                    contentDescription = "Play",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50.dp))
+                        .size(26.dp)
+                        .clickable { onShareButtonClicked() }
 
 
                 )

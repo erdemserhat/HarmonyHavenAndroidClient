@@ -185,6 +185,7 @@ fun HomeScreenContentNew(
                             //normal parcelable data
                             val bundle = Bundle()
                             bundle.putParcelable("article", article)
+                            Log.d("articleCase",article.id.toString())
                             navController.navigate(
                                 route = Screen.Article.route,
                                 args = bundle

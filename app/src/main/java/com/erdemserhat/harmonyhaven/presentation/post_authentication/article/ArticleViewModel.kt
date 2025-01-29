@@ -35,7 +35,9 @@ class ArticleViewModel @Inject constructor(
                         articleContent = it.content,
                         publishDate = it.publishDate,
                         imagePath = it.imagePath,
-                        isLoaded = true
+                        isLoaded = true,
+                        slug = it.slug,
+                        id = it.id
                     )
                 }
             } catch (e: Exception) {

@@ -34,11 +34,11 @@ import dev.jeziellago.compose.markdowntext.MarkdownText
 @Composable
 fun ArticleContent(
     article: ArticlePresentableUIModel,
-    fontSize: Int
+    fontSize: Int,
+    modifier:Modifier
 ) {
     Column(
-        modifier = Modifier
-            .background(if (false) Color.Black else Color.White)
+        modifier = modifier
             .padding(end = 16.dp, start = 16.dp)
             .fillMaxSize()
             .verticalScroll(rememberScrollState())

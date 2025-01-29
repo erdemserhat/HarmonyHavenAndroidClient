@@ -101,7 +101,7 @@ fun Quote(
         if (!shouldScreenBeClear) {
             BottomControls(
                 modifier = Modifier
-                    .padding(bottom = 100.dp, end = 2.dp)
+                    .padding(bottom = 50.dp, end = 7.dp)
                     .align(Alignment.BottomEnd),
                 isQuoteLiked = isQuoteLiked,
                 shouldAnimateLikeButton = shouldAnimateLikeButton,
@@ -172,9 +172,9 @@ private fun BottomControls(
         )
 
         IconTextButton(
-            iconRes = R.drawable.category,
-            label = "Kategori",
-            onClick = onCategoryClicked
+            iconRes = R.drawable.commenss_,
+            label = "Yorum",
+            onClick = onCommentClicked
         )
 
         IconTextButton(
@@ -184,10 +184,14 @@ private fun BottomControls(
         )
 
         IconTextButton(
-            iconRes = R.drawable.commenss_,
-            label = "Yorum",
-            onClick = onCommentClicked
+            iconRes = R.drawable.category,
+            label = "Kategori",
+            onClick = onCategoryClicked
         )
+
+
+
+
     }
 }
 
@@ -200,7 +204,7 @@ private fun IconTextButton(
 ) {
     Column(
         modifier = Modifier
-            .padding(bottom = 25.dp)
+            .padding(bottom = 10.dp)
             .clickable(
                 interactionSource = MutableInteractionSource(),
                 indication = null,

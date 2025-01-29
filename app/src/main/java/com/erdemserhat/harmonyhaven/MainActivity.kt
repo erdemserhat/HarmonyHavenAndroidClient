@@ -149,45 +149,37 @@ class MainActivity : ComponentActivity() {
 
     // Deep Link'i işleyen fonksiyon
     private fun handleDeepLink(intent: Intent?) {
-        Log.d("dsadsadsa", "linkintn")
+        Log.d("DeepLinkHandler", "Link intent alındı")
         val data: Uri? = intent?.data
-        data?.let {
-            Log.d("dsadsadsa", it.toString())
-            // URI bilgilerini al
-            val path = it.path // Örnek: "/article/123"
-            Log.d("dsadsadsa", path.toString())
 
-            val queryParams = it.query // Sorgu parametreleri (eğer varsa)
+        data?.let { uri ->
+            Log.d("DeepLinkHandler", "URI: $uri")
 
+            // URI'nin yolunu al
+            val pathSegments = uri.pathSegments // Örnek: ["articles", "29", "5-dakikalik-meditasyonla-zihninizi-degistirin-ve-daha-sakin-olun"]
 
-            when {
-                path?.startsWith("/article") == true -> {
-                    val articleId = it.lastPathSegment
-                    val bundleArticle = Bundle()
+            // Eğer yol segmentleri varsa ve "articles" içeriyorsa
+            if (pathSegments.size >= 2 && pathSegments[0] == "articles") {
+                val articleId = pathSegments[1] // İkinci segment id'yi temsil eder (örneğin, "29" veya "32")
+                Log.d("DeepLinkHandler", "Article ID: $articleId")
 
-                    if (articleId != null) {
-                        bundleArticle.putParcelable(
-                            "article",
-                            ArticlePresentableUIModel(
-                                id = articleId.toInt()
-                            )
+                // Article ID'yi kullanarak Bundle oluştur
+                val bundleArticle = Bundle().apply {
+                    putParcelable(
+                        "article",
+                        ArticlePresentableUIModel(
+                            id = articleId.toInt() // String'i Int'e çevir
                         )
-                    }
-
-
-                    navController.navigate(
-                        route = Screen.Article.route,
-                        args = bundleArticle
                     )
                 }
 
-                path == "/quote" -> {
-
-                }
-
-                path == "/home" -> {
-                    //navigateToHomeScreen()
-                }
+                // Article ekranına yönlendir
+                navController.navigate(
+                    route = Screen.Article.route,
+                    args = bundleArticle
+                )
+            } else {
+                Log.d("DeepLinkHandler", "Geçersiz veya tanımlanamayan URI yolu: $uri")
             }
         }
     }

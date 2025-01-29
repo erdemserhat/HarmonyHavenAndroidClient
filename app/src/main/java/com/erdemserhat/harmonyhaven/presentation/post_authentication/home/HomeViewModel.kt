@@ -35,13 +35,12 @@ class HomeViewModel @Inject constructor(
 
                 val articlesDeferred = async {
                     articleUseCases.getArticles.executeRequest()
+
                 }
 
 
                 val categories = categoriesDeferred.await()
                 val articles = articlesDeferred.await()
-
-
 
                 if (categories == null && articles == null) {
                     Log.d("homepage_tests", "categories and/or articles were null")
@@ -52,8 +51,7 @@ class HomeViewModel @Inject constructor(
 
                     categories = categories!!,
                     categorizedArticles = articles!!.map {
-                        it.id = -1
-                        it.toArticleResponseType(categories)
+                        it.toArticleResponseType(categories,true)
                     },
                     isCategoryReady = true,
                     isArticleReady = true,
@@ -62,6 +60,15 @@ class HomeViewModel @Inject constructor(
                     allArticles = articles
 
                 )
+
+                _homeState.value.allArticles.map {
+
+                    Log.d("homepage_tests",it.id.toString() )
+
+                }
+
+
+
                 return@launch
 
 

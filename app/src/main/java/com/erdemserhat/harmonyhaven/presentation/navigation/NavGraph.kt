@@ -7,6 +7,7 @@ import android.media.Image
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.Window
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
@@ -211,11 +212,13 @@ fun SetupNavGraph(
             val bundle = backStackEntry.arguments
             val article = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 bundle?.getParcelable("article", ArticlePresentableUIModel::class.java)
+
             } else {
                 bundle?.getParcelable("article") as? ArticlePresentableUIModel
             }
             article?.let {
 
+                Log.d("articleCaser",article.id.toString())
                 ArticleScreen(article, navController)
             }
         }

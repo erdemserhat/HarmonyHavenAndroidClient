@@ -56,6 +56,7 @@ class CommentUseCase @Inject constructor(
 
     // Like a comment
     suspend fun likeComment(commentId: Int): Result<Unit> {
+
         return try {
             val response = commentApiService.likeComment(commentId)
             if (response.isSuccessful) {
