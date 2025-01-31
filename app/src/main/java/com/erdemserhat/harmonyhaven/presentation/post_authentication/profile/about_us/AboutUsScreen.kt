@@ -25,14 +25,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeViewModel
-import dev.jeziellago.compose.markdowntext.MarkdownText
 
 
 var mockData ="# About Us\n" +
@@ -117,14 +115,7 @@ fun AboutUsScreenContent(
 
 
 
-                MarkdownText(
-                    fontSize = 16.sp,
-                    markdown = mockData,
-                    modifier = Modifier.fillMaxSize().padding(25.dp)
 
-
-
-                )
 
             }
 

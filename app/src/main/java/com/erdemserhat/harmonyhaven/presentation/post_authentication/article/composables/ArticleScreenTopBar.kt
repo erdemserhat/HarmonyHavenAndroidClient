@@ -26,7 +26,9 @@ fun ArticleScreenTopBar(
     onTextFontPlusClicked: () -> Unit,
     onTextFontMinusClicked: () -> Unit,
     navController: NavController,
-    onShareButtonClicked:()->Unit
+    onShareButtonClicked:()->Unit,
+    color: Color,
+    isContentLight:Boolean = false
 
 
 ) {
@@ -40,8 +42,8 @@ fun ArticleScreenTopBar(
 
             WindowCompat.setDecorFitsSystemWindows(it, true)
 
-            it.statusBarColor = Color.White.toArgb()
-            it.navigationBarColor = Color.White.toArgb()
+            it.statusBarColor = color.toArgb()
+            it.navigationBarColor = color.toArgb()
 
 
 
@@ -55,8 +57,8 @@ fun ArticleScreenTopBar(
     TopAppBar(
         modifier = Modifier,
         elevation = 0.dp,
-        backgroundColor = if(false) Color.Black else Color.White,
-        contentColor = if(false) Color.White else Color.Black,
+        backgroundColor = color,
+        contentColor = if(isContentLight) Color.White else Color.Black,
         title = { },
         navigationIcon = {
             IconButton(onClick = {
@@ -77,31 +79,31 @@ fun ArticleScreenTopBar(
         },
         actions = {
 
-            IconButton(onClick = {  }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.text_size_minus),
-                    contentDescription = "Play",
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(50.dp))
-                        .size(32.dp)
-                        .clickable { onTextFontMinusClicked() },
+           // IconButton(onClick = {  }) {
+              //  Icon(
+                  ///  painter = painterResource(id = R.drawable.text_size_minus),
+                  //  contentDescription = "Play",
+                   // modifier = Modifier
+                  //     .clip(RoundedCornerShape(50.dp))
+                  //      .size(32.dp)
+                   //     .clickable { onTextFontMinusClicked() },
 
 
-                    )
-            }
+                   // )
+         //   }
 
-            IconButton(onClick = {  }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.text_size_plus),
-                    contentDescription = "Play",
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(50.dp))
-                        .size(32.dp)
-                        .clickable { onTextFontPlusClicked() }
+            //IconButton(onClick = {  }) {
+               // Icon(
+                  //  painter = painterResource(id = R.drawable.text_size_plus),
+                    //contentDescription = "Play",
+                    //modifier = Modifier
+                       // .clip(RoundedCornerShape(50.dp))
+                       // .size(32.dp)
+                       // .clickable { onTextFontPlusClicked() }
 
 
-                )
-            }
+               // )
+           // }
 
             IconButton(onClick = {  }) {
                 Icon(
@@ -109,7 +111,7 @@ fun ArticleScreenTopBar(
                     contentDescription = "Play",
                     modifier = Modifier
                         .clip(RoundedCornerShape(50.dp))
-                        .size(26.dp)
+                        .size(23.dp)
                         .clickable { onShareButtonClicked() }
 
 

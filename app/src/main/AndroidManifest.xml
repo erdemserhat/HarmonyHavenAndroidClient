@@ -54,6 +54,7 @@
             android:hardwareAccelerated="true"
             android:name=".MainActivity"
             android:launchMode="singleTop"
+            android:importantForAccessibility="no"
             android:configChanges = "orientation"
             android:screenOrientation = "portrait"
             android:exported="true"

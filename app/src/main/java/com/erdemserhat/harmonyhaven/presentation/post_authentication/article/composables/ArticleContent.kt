@@ -1,7 +1,5 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.article.composables
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -21,20 +19,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.toFontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.shimmer
-import dev.jeziellago.compose.markdowntext.MarkdownText
+import com.erdemserhat.harmonyhaven.markdowntext.MarkdownText
 
 @Composable
 fun ArticleContent(
+    selectedFontStyle:Int=0,
     article: ArticlePresentableUIModel,
     fontSize: Int,
+    textColor:Color = Color.Black,
     modifier:Modifier
 ) {
     Column(
@@ -67,23 +72,30 @@ fun ArticleContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Define your custom font using FontFamily
+        val customFont =
+            if (selectedFontStyle==0) (Font(R.font.opensans))
+            else if (selectedFontStyle==1) (Font(R.font.roboto))
+            else if (selectedFontStyle==2) (Font(R.font.kumbh_sans_light))
+            else if (selectedFontStyle==3) (Font(R.font.monster))
+            else (Font(R.font.lato))
 
-        MarkdownArticleContent(article.content, fontSize)
+        // Define the TextStyle with the custom font
+        val customStyle = TextStyle(
+            fontSize=fontSize.sp,
+            color = textColor,
+            fontFamily = customFont.toFontFamily(),  // Applying custom font
+        )
+
+        if (article.content.isNotEmpty()) {
+            MarkdownText(
+                syntaxHighlightColor = Color.Black.copy(0.18f),
+                style = customStyle,
+                markdown = article.content,
+                isTextSelectable = true,
+            )
+        }
+
     }
 }
 
-
-@Composable
-fun MarkdownArticleContent(
-    articleContent: String,
-    fontSize: Int = 16
-) {
-    MarkdownText(
-        color = if(false) Color.White else Color.Black,
-        fontSize = fontSize.sp,
-        markdown = articleContent,
-        modifier = Modifier.fillMaxSize()
-
-
-    )
-}

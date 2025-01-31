@@ -167,6 +167,16 @@ dependencies {
     implementation(libs.capturable)
 
     implementation(libs.palette)
+
+    val markwon_version = "4.6.2"
+
+    implementation ("io.noties.markwon:core:$markwon_version")
+    implementation ("io.noties.markwon:ext-strikethrough:$markwon_version")
+    implementation ("io.noties.markwon:ext-tables:$markwon_version")
+    implementation ("io.noties.markwon:html:$markwon_version")
+    implementation ("io.noties.markwon:linkify:$markwon_version")
+    implementation ("io.noties.markwon:ext-tasklist:$markwon_version")
+
 }
 
 
