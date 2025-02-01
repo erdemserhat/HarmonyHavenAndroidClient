@@ -1,42 +1,50 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.account_information
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountInformationTopBar(navController:NavController){
+fun AccountInformationTopBar(navController: NavController) {
     TopAppBar(
-        elevation = 0.dp,
-        backgroundColor = Color.White,
-        contentColor = Color.Transparent,
-        title = { Text(text = "Profil") },
+        title = {
+            Text(
+                text = "Profil",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        },
         navigationIcon = {
-            IconButton(onClick = { /* Geri gitme işlemi */ }) {
+            IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
-                    painter = painterResource(id = R.drawable.return_back_icon),
+                    imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Geri",
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(50.dp))
-                        .size(32.dp)
-                        .clickable {
-                            navController.popBackStack()
-                        }
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
-        }
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            navigationIconContentColor = MaterialTheme.colorScheme.onSurface
+        ),
+        modifier = Modifier
     )
-
 }

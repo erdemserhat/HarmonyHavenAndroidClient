@@ -5,7 +5,18 @@
         <item name="android:windowBackground">@color/black</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="android:forceDarkAllowed">false</item>
+
+
+    </style>
+
+    <style name="Theme.HarmonyHaven.MySplash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#92BABF</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/harmonyhaven_icon</item>
+        <item name="postSplashScreenTheme">@style/Theme.HarmonyHaven</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:forceDarkAllowed">false</item>
 
 
     </style>

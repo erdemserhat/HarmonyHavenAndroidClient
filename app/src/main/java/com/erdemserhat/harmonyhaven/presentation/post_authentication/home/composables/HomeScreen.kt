@@ -2,6 +2,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.home.compo
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
@@ -22,7 +23,6 @@ fun HomeScreenNew(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val homeState by homeViewModel.homeState.collectAsState()
-
 
 
 

@@ -65,7 +65,7 @@ fun PostFlow(
                  VerticalPager(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color.Yellow)
+                            .background(Color.Black)
                             .align(Alignment.Center),
                         state = pagerState
                     ) { page ->

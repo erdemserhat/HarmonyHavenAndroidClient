@@ -17,15 +17,23 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.AlertDialog
@@ -71,6 +79,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -128,7 +137,7 @@ fun AppMainScreen(
     )
     val categorySheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
 
-    var postID by rememberSaveable{
+    var postID by rememberSaveable {
         mutableIntStateOf(3044)
     }
 
@@ -138,8 +147,6 @@ fun AppMainScreen(
 
     val context = LocalContext.current
     val activity = context as? Activity // Context'i Activity'ye dönüştürüyoruz
-
-
 
 
     // Scroll to the initial page if provided
@@ -161,10 +168,15 @@ fun AppMainScreen(
     //set status bar and system navbar color
     if (pagerState.currentPage == 0) {
         window.let {
-
-            it.statusBarColor = Color.Black.toArgb()
-            it.navigationBarColor = Color.Black.toArgb()
+            // content fill the system navbar- status bar
+            //do not change this
+            WindowCompat.setDecorFitsSystemWindows(it, false)
             val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+            if (Build.VERSION.SDK_INT <Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                it.statusBarColor = Color.Black.toArgb()
+                it.navigationBarColor = Color.Black.toArgb()
+            }
+
             insetsController.isAppearanceLightStatusBars = false
             insetsController.isAppearanceLightNavigationBars = false
 
@@ -172,11 +184,17 @@ fun AppMainScreen(
         }
     } else {
         window.let {
-            it.statusBarColor = Color.Black.toArgb()
-            it.navigationBarColor = Color.Black.toArgb()
+            WindowCompat.setDecorFitsSystemWindows(it, false) // content fill the system navbar- status bar
             val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-            insetsController.isAppearanceLightStatusBars = false
-            insetsController.isAppearanceLightNavigationBars = false
+
+            if (Build.VERSION.SDK_INT <Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                it.statusBarColor = Color.Transparent.toArgb()
+                it.navigationBarColor = Color.Transparent.toArgb()
+            }
+
+
+            insetsController.isAppearanceLightStatusBars = true
+            insetsController.isAppearanceLightNavigationBars = true
 
 
         }
@@ -185,71 +203,49 @@ fun AppMainScreen(
 
 
     Scaffold(
-        modifier = Modifier.fillMaxSize().background(Color.Red),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(if (pagerState.currentPage == 0) Color.Black else Color.White)
+            .padding(WindowInsets.navigationBars.asPaddingValues()),
         bottomBar = {
-            NavigationBar(
-
-                containerColor = if (pagerState.currentPage == 0) Color.Black else Color.White,
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(45.dp)
-
-
+                    .background(if (pagerState.currentPage == 0) Color.Black else Color.White)
+                    //for android 15 (api level 35)
+                    .padding()
+                    .height(45.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 items.forEachIndexed { index, item ->
-                    NavigationBarItem(
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
 
-                        selected = pagerState.currentPage == index,
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = if (pagerState.currentPage == 0) Color.Black else Color.Black,
-                            selectedTextColor = harmonyHavenSelectedNavigationBarItemColor,
-                            indicatorColor = Color.Transparent,
-                            unselectedIconColor = if (pagerState.currentPage == 0) Color.Black else Color.Black
-                        ),
-                        onClick = {
-                            coroutineScope.launch {
-                                keyboardController?.hide() // Klavyeyi kapatır
-                                pagerState.scrollToPage(index)
-                                params.screenNo = -1
-                            }
-                        },
-                        icon = {
-                            BadgedBox(
-                                badge = {
-                                    if (item.badgeCount != null) {
-                                        Badge {
-                                            Text(text = item.badgeCount.toString())
-                                        }
-                                    } else if (item.hasNews) {
-                                        Badge()
-                                    }
-                                }
                             ) {
-                                if (pagerState.currentPage == 0) {
-                                    Image(
-                                        modifier = Modifier.size(23.dp),
-                                        painter = painterResource(id = if (pagerState.currentPage == index) item.selectedIconDarkIcon else item.unSelectedIconDarkIcon),
-                                        contentDescription = null
-                                    )
-                                } else {
-                                    Image(
-                                        modifier = Modifier.size(23.dp),
-                                        painter = painterResource(id = if (pagerState.currentPage == index) item.selectedIconWhiteIcon else item.unSelectedIconWhiteIcon),
-                                        contentDescription = null
-                                    )
-
-
+                                coroutineScope.launch {
+                                    keyboardController?.hide()
+                                    pagerState.scrollToPage(index)
+                                    params.screenNo = -1
                                 }
-                            }
-
-                        },
-                        label = {
-                            //  Text(
-                            //    text = item.title,
-                            //   fontWeight = if (pagerState.currentPage == index) FontWeight.Bold else FontWeight.Normal
-                            // ) // Simgelerin altına yazıyı ekler
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        val iconResource = if (pagerState.currentPage == 0) {
+                            if (pagerState.currentPage == index) item.selectedIconDarkIcon else item.unSelectedIconDarkIcon
+                        } else {
+                            if (pagerState.currentPage == index) item.selectedIconWhiteIcon else item.unSelectedIconWhiteIcon
                         }
-                    )
+                        Image(
+                            modifier = Modifier.size(23.dp),
+                            painter = painterResource(id = iconResource),
+                            contentDescription = null
+                        )
+                    }
                 }
             }
 
@@ -281,13 +277,13 @@ fun AppMainScreen(
     ) { padding ->
         var lastBackPressTime by remember { mutableLongStateOf(0L) } // Son basma zamanını tutacak değişken
         BackHandler {
-            if(commentSheetState.isVisible){
+            if (commentSheetState.isVisible) {
                 coroutineScope.launch { commentSheetState.hide() }
 
-            }else if(categorySheetState.isVisible){
+            } else if (categorySheetState.isVisible) {
                 coroutineScope.launch { categorySheetState.hide() }
 
-            }else{
+            } else {
                 val currentTime = System.currentTimeMillis() // Şu anki zaman
                 if (currentTime - lastBackPressTime < 1000) { // Eğer 500 ms içinde iki kez tıklanmışsa
                     shouldShowExitDialog = true
@@ -296,7 +292,12 @@ fun AppMainScreen(
                 }
             }
         }
-        if(shouldShowExitDialog){
+
+
+
+
+
+        if (shouldShowExitDialog) {
             AlertDialog(
                 onDismissRequest = { shouldShowExitDialog = false },
                 title = {
@@ -323,7 +324,7 @@ fun AppMainScreen(
 
 
 
-
+//////////////////////////////////////////////////////
         CommentModalBottomSheet(
             sheetState = commentSheetState,
             modifier = Modifier.zIndex(2f),
@@ -333,101 +334,58 @@ fun AppMainScreen(
         CategoryPickerModalBottomSheet(
             sheetState = categorySheetState,
             actions = CommentBottomModalSheetActions(
-                onShouldFilterQuotes = {selectedCategories->
+                onShouldFilterQuotes = { selectedCategories ->
                     quoteViewModel.loadCategorizedQuotes(selectedCategories)
 
                 },
-                onSaveCategorySelection = {model->
+                onSaveCategorySelection = { model ->
                     quoteViewModel.saveCategorySelection(model)
                 },
                 onGetCategorySelectionModel = quoteViewModel.getCategorySelection()
 
             )
         )
-
-            HorizontalPager(
-                state = pagerState,
-                count = items.size,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Red)
-                    .padding(padding)
-                    .windowInsetsPadding(WindowInsets.systemBars)
-                    .onGloballyPositioned {
-                        Log.d("debugDelayRender","ready")
-                    }
-            ) { page ->
-                when (page) {
-                    3-> ProfileScreen()
-                    2 -> HomeScreenNew(navController = navController)
-                    1 -> NotificationScreen(navController)
-                    0 -> QuoteMainScreen(
-                        navController = navController,
-                        sharedViewModel = viewModel,
-                        onCommentsClicked = {postId->
-                            postID = postId
-                            coroutineScope.launch {
-                                commentSheetState.show()
-                            }
-
-                        },
-                        onCategoryClicked = {
-                            coroutineScope.launch {
-                                categorySheetState.show()
-                            }
-                        },
-                        viewmodel = quoteViewModel
-
-
-                    )
+//////////////////////////////////////////////////////
+        HorizontalPager(
+            state = pagerState,
+            count = items.size,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .padding(padding)
+                .onGloballyPositioned {
+                    Log.d("debugDelayRender", "ready")
                 }
+        ) { page ->
+            when (page) {
+                3-> ProfileScreen()
+                2 -> HomeScreenNew(navController = navController)
+                1 -> NotificationScreen(navController)
+                0 -> QuoteMainScreen(
+                    navController = navController,
+                    sharedViewModel = viewModel,
+                    onCommentsClicked = {postId->
+                        postID = postId
+                        coroutineScope.launch {
+                            commentSheetState.show()
+                        }
+
+                    },
+                    onCategoryClicked = {
+                        coroutineScope.launch {
+                            categorySheetState.show()
+                        }
+                    },
+                    viewmodel = quoteViewModel
+
+
+                )
             }
 
+
+        }
     }
 }
-
-@Composable
-fun AnimatedGif(
-    gifId: Int,
-    shouldMoveFromRightToLeft: Boolean = true,
-    duration: Int = 10000,
-    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
-) {
-    // Ekranın genişliğini temsil edecek bir Float değeri tanımlıyoruz
-    val screenWidth = 1000f // Ekran genişliği, ekran genişliğinize göre ayarlayın
-
-    // InfiniteTransition kullanarak animasyon oluşturuyoruz
-    val infiniteTransition = rememberInfiniteTransition()
-
-    // GIF'in sağdan sola hareketini sağlamak için offset animasyonu oluşturuyoruz
-    val offsetX by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = screenWidth,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = duration, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ), label = ""
-    )
-
-    // Ekran boyutlarının alınabilmesi için bir Box kullanıyoruz
-    Box(
-        modifier = modifier.fillMaxSize()
-    ) {
-        // GIF'in hareket ettiği alanı tanımlıyoruz
-        val offset = if (shouldMoveFromRightToLeft) screenWidth - offsetX else offsetX
-
-        val imageModifier = Modifier
-            .offset(x = (offset).dp) // Ekranın genişliği kadar hareket
-            .size(50.dp) // GIF boyutunu belirliyoruz
-
-        // GIF görüntüleyici
-        LocalGifImage(
-            gifId,
-            modifier = imageModifier.size(10.dp)
-        )
-    }
-}
-
 
 private data class NavigationBarItem(
     val title: String,
@@ -442,16 +400,15 @@ private data class NavigationBarItem(
 )
 
 private val items = listOf(
-
     NavigationBarItem(
         title = "Sözler",
         hasNews = false,
         badgeCount = null,
         Screen.Quotes.route,
         selectedIconDarkIcon = R.drawable.quotewhitefilled,
-        selectedIconWhiteIcon =R.drawable.quoteblackfilled,
-        unSelectedIconDarkIcon =R.drawable.quotewhiteunfilled,
-        unSelectedIconWhiteIcon =R.drawable.quoteblackunfilled
+        selectedIconWhiteIcon = R.drawable.quoteblackfilled,
+        unSelectedIconDarkIcon = R.drawable.quotewhiteunfilled,
+        unSelectedIconWhiteIcon = R.drawable.quoteblackunfilled
     ),
     NavigationBarItem(
         title = "Bildirimler",
@@ -459,155 +416,34 @@ private val items = listOf(
         badgeCount = null,
         route = Screen.Notification.route,
         selectedIconDarkIcon = R.drawable.notificationwhitefilled,
-        selectedIconWhiteIcon =R.drawable.notificationblackfilled,
+        selectedIconWhiteIcon = R.drawable.notificationblackfilled,
         unSelectedIconDarkIcon = R.drawable.notificationwhiteunfilled,
-        unSelectedIconWhiteIcon =R.drawable.notificationblackunfilled
+        unSelectedIconWhiteIcon = R.drawable.notificationblackunfilled
     ),
     NavigationBarItem(
         title = "İçerikler",
         hasNews = false,
         badgeCount = null,
         route = Screen.Home.route,
-        selectedIconDarkIcon =R.drawable.homewhitefilled,
-        selectedIconWhiteIcon =R.drawable.homeblackfilled,
+        selectedIconDarkIcon = R.drawable.homewhitefilled,
+        selectedIconWhiteIcon = R.drawable.homeblackfilled,
         unSelectedIconDarkIcon = R.drawable.homewhiteunfilled,
-        unSelectedIconWhiteIcon =R.drawable.homeblackunfilled
+        unSelectedIconWhiteIcon = R.drawable.homeblackunfilled
 
     ),
-  //  NavigationBarItem(
-  //      title = "Home",
-  //      hasNews = false,
-  //      badgeCount = null,
-  //      route = Screen.Home.route,
-  //      selectedIconDarkIcon =R.drawable.house,
-  //      selectedIconWhiteIcon =R.drawable.house,
-  //      unSelectedIconDarkIcon = R.drawable.house,
-  //      unSelectedIconWhiteIcon =R.drawable.house
+    //  NavigationBarItem(
+    //      title = "Home",
+    //      hasNews = false,
+    //      badgeCount = null,
+    //      route = Screen.Home.route,
+    //      selectedIconDarkIcon =R.drawable.house,
+    //      selectedIconWhiteIcon =R.drawable.house,
+    //      unSelectedIconDarkIcon = R.drawable.house,
+    //      unSelectedIconWhiteIcon =R.drawable.house
 //
-  //  )
+    //  )
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MyAppBar(
-    navController: NavController,
-    title: String,
-    topBarBackgroundColor: Color,
-    isMainScreen: Boolean,
-    modifier: Modifier = Modifier,
-    onExitClicked: () -> Unit = {},
-
-
-) {
-
-    // State to manage the visibility of the dropdown menu
-    var expanded by remember { mutableStateOf(false) }
-    var shouldShowLogoutAlertDialog by rememberSaveable {
-        mutableStateOf(false)
-    }
-
-    if (shouldShowLogoutAlertDialog) {
-        AlertDialogBase(
-            alertTitle = "Çıkış Yap",
-            alertBody = "Çıkış yapmak istediğine emin misin?",
-            positiveButtonText = "Çıkış Yap",
-            negativeButtonText = "Vazgeç",
-            onPositiveButtonClicked = {
-                onExitClicked()
-                navController.navigate(Screen.Login.route)
-                shouldShowLogoutAlertDialog = false
-
-            },
-            onNegativeButtonClicked = {
-                shouldShowLogoutAlertDialog = false
-            }) {
-
-        }
-    }
-
-    TopAppBar(
-        modifier = modifier.drawBehind {
-            drawLine(
-                color = Color(0xFFE0E0E0), // Alt kenar rengini belirler
-                start = Offset(0f, size.height),
-                end = Offset(size.width, size.height),
-                strokeWidth = 1.dp.toPx() // Sınır kalınlığını belirler
-            )
-        },
-        navigationIcon = {
-
-        },
-
-        title = {
-
-
-            
-
-
-            Text(
-                text = title,
-                fontSize = 24.sp,
-                fontWeight = when (isMainScreen) {
-                    true -> FontWeight.Bold
-                    false -> FontWeight.Normal
-                },
-
-                color = when (isMainScreen) {
-                    true -> harmonyHavenSelectedNavigationBarItemColor
-                    false -> Color.Black
-                }// Beyazdan yeşile çalan renk (RGB: 191, 255, 191)
-            )
-
-
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = topBarBackgroundColor
-        ),
-        actions = {
-            IconButton(onClick = { expanded = !expanded }) {
-                Icon(
-                    imageVector = Icons.Filled.MoreVert,
-                    contentDescription = "More options"
-                )
-            }
-            // Dropdown menu
-            DropdownMenu(
-                modifier = Modifier.background(harmonyHavenComponentWhite),
-
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                DropdownMenuItem(onClick = {
-                    navController.navigate(Screen.Profile.route)
-                    expanded = false
-
-
-                }) {
-                    Text("Hesap Ayarları")
-                }
-
-                DropdownMenuItem(onClick = {
-                    expanded = false
-                    shouldShowLogoutAlertDialog = true
-
-
-                }) {
-                    Text("Çıkış Yap")
-
-                }
-
-                //DropdownMenuItem(onClick = { /* Handle option 2 click */ }) {
-                //     Text("Option 2")
-                // }
-                // DropdownMenuItem(onClick = { /* Handle option 3 click */ }) {
-                //    Text("Option 3")
-                //  }
-            }
-        },
-
-        )
-
-}
 
 
 

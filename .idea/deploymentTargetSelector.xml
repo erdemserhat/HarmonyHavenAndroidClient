@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="HarmonyHavenAndroidClient">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-01-09T14:15:01.617545200Z">
+        <DropdownSelection timestamp="2025-02-01T23:49:36.316843700Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=ws55vwzhs8u4hmge" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\erdem\.android\avd\Pixel_9_Pro_XL.avd" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -15,15 +15,12 @@
           <targets>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="FirebaseDirectAccess" identifier="reservation=projects/room-database-guidance/deviceSessions/session-31kt6afk00lxv" />
+                <DeviceId pluginId="PhysicalDevice" identifier="serial=R52W804XR0W" />
               </handle>
-              <template>
-                <DeviceId pluginId="FirebaseDirectAccess" type="TEMPLATE" identifier="model_id=comet/34" />
-              </template>
             </Target>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="PhysicalDevice" identifier="serial=ws55vwzhs8u4hmge" />
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\erdem\.android\avd\Pixel_9_Pro_XL.avd" />
               </handle>
             </Target>
           </targets>

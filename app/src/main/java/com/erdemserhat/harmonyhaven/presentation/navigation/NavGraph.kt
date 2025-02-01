@@ -16,9 +16,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -65,6 +69,9 @@ fun SetupNavGraph(
     ) {
 
         composable(route = Screen.Welcome.route) {
+
+            WindowInsets.navigationBars
+
             window.let {
 
                 WindowCompat.setDecorFitsSystemWindows(it, true)
@@ -133,6 +140,8 @@ fun SetupNavGraph(
 
 
         composable(route = Screen.ForgotPasswordMail.route) {
+
+
             window.let {
 
                 WindowCompat.setDecorFitsSystemWindows(it, true)
@@ -157,7 +166,26 @@ fun SetupNavGraph(
         }
 
         composable(route = Screen.Profile.route) {
+                window.let {
+                    WindowCompat.setDecorFitsSystemWindows(it, false) // content fill the system navbar- status bar
+                    val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+
+                    if (Build.VERSION.SDK_INT <Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                        it.statusBarColor = Color.Transparent.toArgb()
+                        it.navigationBarColor = Color.Transparent.toArgb()
+                    }
+
+
+                    insetsController.isAppearanceLightStatusBars = true
+                    insetsController.isAppearanceLightNavigationBars = true
+
+
+                }
+
             AccountInformationScreen(navController)
+
+
+
         }
 
 
@@ -170,6 +198,9 @@ fun SetupNavGraph(
 
 
         ) {
+
+
+
             HomeScreenNew(navController)
 
         }

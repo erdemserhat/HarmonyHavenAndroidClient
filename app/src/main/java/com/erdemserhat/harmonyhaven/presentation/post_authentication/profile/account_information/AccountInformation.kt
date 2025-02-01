@@ -1,15 +1,19 @@
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Scaffold
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,10 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
@@ -51,16 +57,19 @@ fun AccountInformationContent(
     viewModel: AccountInformationViewModel = hiltViewModel()
 
 ) {
+    val context = LocalContext.current
+    val window = (context as Activity).window  // Get the Window instance
+
     var shouldShowUpdateNamePopUp by rememberSaveable { mutableStateOf(false) }
     var shouldShowUpdatePasswordPopUp by rememberSaveable { mutableStateOf(false) }
     var shouldShowSuccessAnimation by rememberSaveable {
         mutableStateOf(false)
     }
 
-
     val passwordChangeResponse by viewModel.passwordChangeResponseModel
 
     val nameChangeState by viewModel.nameChangeState
+
 
 
     if (passwordChangeResponse.isSuccessfullyChangedPassword) {
@@ -91,6 +100,7 @@ fun AccountInformationContent(
 
 
     Scaffold(
+        modifier = Modifier,
         topBar = {
             AccountInformationTopBar(navController = navController)
         },
@@ -309,7 +319,3 @@ fun LocalGifImageWithFilter(resId: Int, modifier: Modifier = Modifier,colorFilte
         colorFilter = colorFilter
     )
 }
-
-/**
- * TODO():
- */
