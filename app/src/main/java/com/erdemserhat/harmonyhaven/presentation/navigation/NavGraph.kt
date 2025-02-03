@@ -250,6 +250,9 @@ fun SetupNavGraph(
             article?.let {
 
                 Log.d("articleCaser",article.id.toString())
+
+
+
                 ArticleScreen(article, navController)
             }
         }

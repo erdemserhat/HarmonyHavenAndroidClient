@@ -117,12 +117,12 @@ class MainActivity : ComponentActivity() {
                     )
 
 
-                /*
+
                 val bundleArticle = Bundle().apply {
                     putParcelable(
                         "article",
                         ArticlePresentableUIModel(
-                            id = 31 // String'i Int'e çevir
+                            id = 46 // String'i Int'e çevir
                         )
                     )
                 }
@@ -133,7 +133,7 @@ class MainActivity : ComponentActivity() {
                     args = bundleArticle
                 )
 
-                 */
+
 
 
                 extraData?.let {
