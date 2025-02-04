@@ -69,50 +69,12 @@ fun SetupNavGraph(
     ) {
 
         composable(route = Screen.Welcome.route) {
-
-            WindowInsets.navigationBars
-
-            window.let {
-
-                WindowCompat.setDecorFitsSystemWindows(it, true)
-
-                it.statusBarColor = Color.Black.toArgb()
-                it.navigationBarColor = Color.Black.toArgb()
-
-
-                val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-                insetsController.isAppearanceLightStatusBars = false
-                insetsController.isAppearanceLightNavigationBars = false
-
-            }
-
-
             WelcomeScreen(navHostController = navController)
 
 
         }
 
         composable(route = Screen.Login.route) {
-
-            window.let {
-
-
-                WindowCompat.setDecorFitsSystemWindows(it, true)
-
-                it.statusBarColor = Color.Black.toArgb()
-                it.navigationBarColor = Color.Black.toArgb()
-
-
-                val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-                insetsController.isAppearanceLightStatusBars = false
-                insetsController.isAppearanceLightNavigationBars = false
-
-
-            }
-
-
-
-
             LoginScreen(
                 navController = navController,
             )
@@ -120,42 +82,12 @@ fun SetupNavGraph(
         }
 
         composable(route = Screen.Register.route) {
-            window.let {
-
-                WindowCompat.setDecorFitsSystemWindows(it, true)
-
-                it.statusBarColor = Color.Black.toArgb()
-                it.navigationBarColor = Color.Black.toArgb()
-
-
-                val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-                insetsController.isAppearanceLightStatusBars = false
-                insetsController.isAppearanceLightNavigationBars = false
-
-            }
-
             RegisterScreen(navController = navController)
 
         }
 
 
         composable(route = Screen.ForgotPasswordMail.route) {
-
-
-            window.let {
-
-                WindowCompat.setDecorFitsSystemWindows(it, true)
-
-                it.statusBarColor = Color.Black.toArgb()
-                it.navigationBarColor = Color.Black.toArgb()
-
-
-                val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-                insetsController.isAppearanceLightStatusBars = false
-                insetsController.isAppearanceLightNavigationBars = false
-
-            }
-
             ForgotPasswordMailScreen(navController)
 
         }
@@ -166,22 +98,6 @@ fun SetupNavGraph(
         }
 
         composable(route = Screen.Profile.route) {
-                window.let {
-                    WindowCompat.setDecorFitsSystemWindows(it, false) // content fill the system navbar- status bar
-                    val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-
-                    if (Build.VERSION.SDK_INT <Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                        it.statusBarColor = Color.Transparent.toArgb()
-                        it.navigationBarColor = Color.Transparent.toArgb()
-                    }
-
-
-                    insetsController.isAppearanceLightStatusBars = true
-                    insetsController.isAppearanceLightNavigationBars = true
-
-
-                }
-
             AccountInformationScreen(navController)
 
 

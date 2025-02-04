@@ -176,6 +176,8 @@ dependencies {
     implementation ("io.noties.markwon:html:$markwon_version")
     implementation ("io.noties.markwon:linkify:$markwon_version")
     implementation ("io.noties.markwon:ext-tasklist:$markwon_version")
+    implementation (libs.androidx.autofill)
+
 
 }
 

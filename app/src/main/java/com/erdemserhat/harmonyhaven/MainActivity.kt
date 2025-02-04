@@ -117,6 +117,7 @@ class MainActivity : ComponentActivity() {
                     )
 
 
+                /*
 
                 val bundleArticle = Bundle().apply {
                     putParcelable(
@@ -133,6 +134,8 @@ class MainActivity : ComponentActivity() {
                     args = bundleArticle
                 )
 
+                 */
+                
 
 
 

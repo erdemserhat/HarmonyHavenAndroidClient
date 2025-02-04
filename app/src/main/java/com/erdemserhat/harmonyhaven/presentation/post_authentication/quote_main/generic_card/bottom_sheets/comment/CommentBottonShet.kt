@@ -14,27 +14,36 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Divider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.TabRowDefaults.Divider
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -61,37 +70,34 @@ import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.R
 import kotlinx.coroutines.delay
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CommentModalBottomSheet(
     modifier: Modifier = Modifier,
     viewModel: CommentViewModel = hiltViewModel(),
-    sheetState: ModalBottomSheetState,
-    postId: Int
-
+    sheetState: SheetState,
+    postId: Int,
+    onDismissRequest: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
-    val maxCommentLength = 1000 // Maksimum karakter sayısı
+    val maxCommentLength = 1000 // Maximum character count
 
     val vibrator = context.getSystemService(Vibrator::class.java)
 
-
-
     LaunchedEffect(sheetState.isVisible) {
         if (sheetState.isVisible) {
-            if(viewModel.lastPostId.value!=postId){
+            if (viewModel.lastPostId.value != postId) {
                 viewModel.loadComments(postId)
-
-            }else{
+            } else {
                 viewModel.loadFromCache()
             }
-
         } else {
             keyboardController?.hide()
             viewModel.setLastPostId(postId)
@@ -100,271 +106,243 @@ fun CommentModalBottomSheet(
         }
     }
 
-
-    var commentText by rememberSaveable {
-        mutableStateOf("")
-    }
+    var commentText by rememberSaveable { mutableStateOf("") }
     val isLoading by viewModel.isLoading.collectAsState()
     val comments by viewModel.comments.collectAsState()
-    Box(modifier = modifier.fillMaxSize()) {
+    val isImeVisible = WindowInsets.isImeVisible
 
-        ModalBottomSheetLayout(
+    val heightFraction by animateFloatAsState(
+        targetValue = if (isImeVisible) 1f else 0.90f,
+        label = "Height Animation"
+    )
+
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        sheetState = sheetState,
+        modifier = modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .fillMaxHeight(fraction = heightFraction)
+            .imePadding(),
+        containerColor = Color.Black,
+        scrimColor = Color.Black.copy(alpha = 0.4f)
+    ) {
+        Column(
             modifier = Modifier
-                .background(Color.Transparent)
-                .padding(WindowInsets.statusBars.asPaddingValues()),
-            sheetBackgroundColor = Color.Transparent,
-            scrimColor = Color.Black.copy(alpha = 0.4f),
-            sheetState = sheetState,
-            sheetContent = {
+                .fillMaxSize()
+                .background(
+                    Color.Black,
+                    shape = RoundedCornerShape(topEnd = 15.dp, topStart = 15.dp)
+                )
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    ModalBottomTitle(modifier = Modifier.align(Alignment.CenterHorizontally))
+                    if (isLoading) {
+                        repeat(10) {
+                            CommentBlockShimmer()
+                        }
+                    } else {
+                        if (comments.isNotEmpty()) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .verticalScroll(rememberScrollState())
+                                    .padding(
+                                        bottom = 120.dp,
+                                        start = 16.dp,
+                                        end = 16.dp,
+                                        top = 16.dp
+                                    ),
+                                verticalArrangement = Arrangement.spacedBy(0.dp)
+                            ) {
+                                comments.forEach { comment ->
+                                    CommentBlock(
+                                        commentId = comment.id,
+                                        hasOwnerShip = comment.hasOwnership,
+                                        date = comment.date,
+                                        author = comment.author,
+                                        sending = comment.id == -1,
+                                        content = comment.content,
+                                        likeCount = comment.likeCount,
+                                        profilePhotoUrl = comment.authorProfilePictureUrl,
+                                        isLiked = comment.isLiked,
+                                        onLikedClicked = { clickedCommentId ->
+                                            if (clickedCommentId != -1) {
+                                                if (!comment.isLiked) {
+                                                    viewModel.likeComment(clickedCommentId, postId)
+                                                    comment.isLiked = true
+                                                    Log.d(
+                                                        "LikeClicked",
+                                                        "Comment ID: $clickedCommentId liked."
+                                                    )
+                                                } else {
+                                                    viewModel.removeLikeFromComment(
+                                                        clickedCommentId,
+                                                        postId
+                                                    )
+                                                    comment.isLiked = false
+                                                    Log.d(
+                                                        "LikeClicked",
+                                                        "Comment ID: $clickedCommentId like removed."
+                                                    )
+                                                }
+                                            } else {
+                                                Log.d(
+                                                    "LikeClicked",
+                                                    "Invalid comment ID: $clickedCommentId"
+                                                )
+                                            }
 
-
+                                            if (vibrator?.hasVibrator() == true) {
+                                                vibrator.vibrate(
+                                                    VibrationEffect.createOneShot(
+                                                        25,
+                                                        VibrationEffect.DEFAULT_AMPLITUDE
+                                                    )
+                                                )
+                                            }
+                                        },
+                                        onDeleteComment = {
+                                            viewModel.deleteComment(comment.id, postId)
+                                            if (vibrator?.hasVibrator() == true) {
+                                                vibrator.vibrate(
+                                                    VibrationEffect.createOneShot(
+                                                        25,
+                                                        VibrationEffect.DEFAULT_AMPLITUDE
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        } else {
+                            Text(
+                                "Henüz bir yorum yok...",
+                                color = Color.White,
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .padding(25.dp)
+                            )
+                        }
+                    }
+                }
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Color.Black, shape = RoundedCornerShape(
-                                topEnd = 15.dp,
-                                topStart = 15.dp
-                            )
-                        )
-
+                        .background(Color.Black)
+                        .align(Alignment.BottomCenter)
                 ) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            ModalBottomTitle(modifier = Modifier.align(Alignment.CenterHorizontally))
-                            if (isLoading) {
-                                repeat(10) {
-                                    CommentBlockShimmer()
-                                }
-
-
-                            } else {
-                                if (comments.isNotEmpty()) {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .verticalScroll(rememberScrollState())
-                                            .padding(
-                                                bottom = 120.dp,
-                                                start = 16.dp,
-                                                end = 16.dp,
-                                                top = 16.dp
-                                            ),
-                                        verticalArrangement = Arrangement.spacedBy(0.dp), // Öğeler arasında boşluk
-                                    ) {
-                                        comments.forEach { comment ->
-                                            CommentBlock(
-                                                commentId = comment.id,
-                                                hasOwnerShip = comment.hasOwnership,
-                                                date = comment.date,
-                                                author = comment.author,
-                                                sending = comment.id == -1,
-                                                content = comment.content,
-                                                likeCount = comment.likeCount,
-                                                profilePhotoUrl = comment.authorProfilePictureUrl,
-                                                isLiked = comment.isLiked,
-                                                onLikedClicked = { clickedCommentId ->
-                                                    if (clickedCommentId != -1) {
-                                                        if (!comment.isLiked) {
-                                                            // Eğer beğenilmemişse beğen
-                                                            viewModel.likeComment(clickedCommentId, postId)
-                                                            comment.isLiked = true
-                                                            Log.d("LikeClicked", "Comment ID: $clickedCommentId liked.")
-                                                        } else {
-                                                            // Eğer beğenilmişse beğeniyi geri al
-                                                            viewModel.removeLikeFromComment(clickedCommentId, postId)
-                                                            comment.isLiked = false
-                                                            Log.d("LikeClicked", "Comment ID: $clickedCommentId like removed.")
-                                                        }
-                                                    } else {
-                                                        Log.d("LikeClicked", "Invalid comment ID: $clickedCommentId")
-                                                    }
-
-                                                    if (vibrator?.hasVibrator() == true) {
-                                                        vibrator.vibrate(
-                                                            VibrationEffect.createOneShot(
-                                                                25, // Süre (ms)
-                                                                VibrationEffect.DEFAULT_AMPLITUDE
-                                                            )
-                                                        )
-                                                    }
-                                                },
-                                                onDeleteComment = {
-                                                    viewModel.deleteComment(comment.id, postId)
-                                                    if (vibrator?.hasVibrator() == true) {
-                                                        vibrator.vibrate(
-                                                            VibrationEffect.createOneShot(
-                                                                25, // Süre (ms)
-                                                                VibrationEffect.DEFAULT_AMPLITUDE
-                                                            )
-                                                        )
-                                                    }
-                                                }
-                                            )
-
-
-
-
-                                        }
-                                    }
-                                } else {
-                                    Text(
-                                        "Henüz bir yorum yok...",
-                                        color = Color.White,
-                                        modifier = Modifier
-                                            .align(Alignment.CenterHorizontally)
-                                            .padding(25.dp)
-                                    )
-                                }
-
-
-                            }
-
-
-                        }
-                        Column(
-                            modifier = Modifier
-                                .background(Color.Black)
-                                .align(Alignment.BottomCenter)
-                        ) {
-                            // Emoji Seçimi
-                            Row(
+                    // Emoji Selection
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 15.dp, vertical = 10.dp)
+                            .horizontalScroll(rememberScrollState())
+                            .background(Color.Black)
+                    ) {
+                        val emojis = listOf(
+                            "❤️",
+                            "🙌",
+                            "🔥",
+                            "👏",
+                            "😢",
+                            "😍",
+                            "😮",
+                            "😂",
+                            "🥳",
+                            "😊",
+                            "👌",
+                            "😎",
+                            "😱",
+                            "😘",
+                            "😉",
+                            "😜",
+                            "😔",
+                            "😒",
+                            "😟",
+                            "😨",
+                            "😗",
+                            "😩",
+                            "😯",
+                            "😅"
+                        )
+                        emojis.forEach { emoji ->
+                            Text(
+                                text = emoji,
+                                fontSize = 25.sp,
                                 modifier = Modifier
-                                    .padding(horizontal = 15.dp, vertical = 10.dp)
-                                    .horizontalScroll(rememberScrollState())
-                                    .background(Color.Black) // Enables horizontal scrolling
-                            ) {
-                                val emojis = listOf(
-                                    "❤\uFE0F",
-                                    "\uD83D\uDE4C",
-                                    "\uD83D\uDD25",
-                                    "\uD83D\uDC4F",
-                                    "\uD83D\uDE22",
-                                    "\uD83D\uDE0D",
-                                    "\uD83D\uDE2E",
-                                    "\uD83D\uDE02",
-                                    "\uD83E\uDD73",
-                                    "\uD83D\uDE0A",
-                                    "\uD83D\uDC4C",
-                                    "\uD83D\uDE0E",
-                                    "\uD83D\uDE31",
-                                    "\uD83D\uDE18",
-                                    "\uD83D\uDE09",
-                                    "\uD83D\uDE1C",
-                                    "\uD83D\uDE14",
-                                    "\uD83D\uDE12",
-                                    "\uD83D\uDE1F",
-                                    "\uD83D\uDE28",
-                                    "\uD83D\uDE17",
-                                    "\uD83D\uDE29",
-                                    "\uD83D\uDE2F",
-                                    "\uD83D\uDE05"
-                                )
-
-                                emojis.forEach { emoji ->
-                                    Text(
-                                        text = emoji,
-                                        fontSize = 25.sp,
-                                        modifier = Modifier
-                                            .padding(end = 15.dp)
-                                            .clickable {
-                                                if (commentText.length < maxCommentLength) {
-                                                    commentText += emoji
-                                                }
-                                            }
-                                    )
-                                }
-                            }
-
-                            // Yorum Yapma Alanı
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                            ) {
-                                AsyncImage(
-                                    model = viewModel.profilePhotoPath,
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(RoundedCornerShape(100)),
-                                    contentDescription = null
-                                )
-
-                                TextField(
-                                    modifier = Modifier
-                                        .fillMaxWidth(0.85f)
-                                        .background(Color.Black),
-                                    onValueChange = { newText ->
-                                        if (newText.length <= maxCommentLength) {
-                                            commentText = newText
+                                    .padding(end = 15.dp)
+                                    .clickable {
+                                        if (commentText.length < maxCommentLength) {
+                                            commentText += emoji
                                         }
-                                    },
-                                    value = commentText,
-                                    placeholder = {
-                                        Text(
-                                            text = "Yorum yaz",
-                                            color = Color.Gray
-                                        )
-                                    },
-                                    colors = TextFieldDefaults.textFieldColors(
-                                        focusedIndicatorColor = Color.Transparent,
-                                        unfocusedIndicatorColor = Color.Transparent,
-                                        backgroundColor = Color.Black,
-                                        cursorColor = Color.Gray
-                                    ),
-                                    textStyle = TextStyle(color = Color.White, fontSize = 16.sp)
-                                )
-
-                                ClickableImage(
-                                    onClick = {
-                                        if (commentText.isNotEmpty()){
-                                            viewModel.postComment(postId = postId, comment = commentText)
-                                            vibrator.vibrate(
-                                                VibrationEffect.createOneShot(
-                                                    25, // Süre (ms)
-                                                    VibrationEffect.EFFECT_TICK
-                                                )
-                                            )
-                                        }
-                                        commentText = ""
-
                                     }
-                                )
-                            }
-
+                            )
                         }
-
                     }
 
+                    // Comment Input Area
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                    ) {
+                        AsyncImage(
+                            model = viewModel.profilePhotoPath,
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(100)),
+                            contentDescription = null
+                        )
 
+                        TextField(
+                            modifier = Modifier
+                                .fillMaxWidth(0.85f)
+                                .background(Color.Black),
+                            onValueChange = { newText ->
+                                if (newText.length <= maxCommentLength) {
+                                    commentText = newText
+                                }
+                            },
+                            value = commentText,
+                            placeholder = {
+                                Text(
+                                    text = "Yorum yaz",
+                                    color = Color.Gray
+                                )
+                            },
+                            colors = TextFieldDefaults.colors(
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedContainerColor = Color.Black,
+                                unfocusedContainerColor = Color.Black,
+                                cursorColor = Color.Gray,
+                                selectionColors = TextSelectionColors(
+                                    handleColor = Color.Gray,
+                                    backgroundColor = harmonyHavenGreen
+                                )
+                            ),
+                            textStyle = TextStyle(color = Color.White, fontSize = 16.sp)
+                        )
+
+                        ClickableImage(
+                            onClick = {
+                                if (commentText.isNotEmpty()) {
+                                    viewModel.postComment(postId = postId, comment = commentText)
+                                    vibrator.vibrate(
+                                        VibrationEffect.createOneShot(
+                                            25,
+                                            VibrationEffect.EFFECT_TICK
+                                        )
+                                    )
+                                }
+                                commentText = ""
+                            }
+                        )
+                    }
                 }
-
-
-            },
-            content = {
-
             }
-
-        )
-
-
-        //AnimatedVisibility(
-        //   modifier = Modifier.align(Alignment.BottomCenter),
-        //   visible = sheetState.isVisible,
-        //  enter = fadeIn(animationSpec = tween(500)) + slideInVertically(
-        //     initialOffsetY = { fullHeight -> fullHeight }
-        // ),
-        // exit = fadeOut(animationSpec = tween(300)) + slideOutVertically(
-        //      targetOffsetY = { fullHeight -> fullHeight }
-        //  )
-        //  ) {
-        if (sheetState.isVisible) {
-
         }
-
-
     }
-
-
 }
 
 @Preview
@@ -376,19 +354,10 @@ fun ModulePreview() {
 @Composable
 private fun ModalBottomTitle(modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Divider(
-            color = Color.Gray, // Çizginin rengi
-            thickness = 2.dp, // Çizginin kalınlığı
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .clip(RoundedCornerShape(5.dp))
-                .size(width = 45.dp, height = 5.dp)
-                .background(color = Color.White)
-        )
         Text(
             text = "Yorumlar",
             color = Color.White,
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(bottom = 8.dp),
             fontSize = 15.sp
         )
     }

@@ -1,23 +1,34 @@
 import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -28,6 +39,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -50,7 +62,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@OptIn(DelicateCoroutinesApi::class)
+@OptIn(DelicateCoroutinesApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun AccountInformationContent(
     navController: NavController,
@@ -170,6 +182,8 @@ fun AccountInformationContent(
     if (shouldShowUpdateNamePopUp) {
         Box(
             modifier = Modifier
+                .imePadding()
+                .navigationBarsPadding()
                 .fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.5f))
                 .pointerInput(Unit) {
@@ -200,10 +214,13 @@ fun AccountInformationContent(
 
     }
 
+
     if (shouldShowUpdatePasswordPopUp) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .imePadding()
+                .navigationBarsPadding()
                 .background(Color.Black.copy(alpha = 0.5f))
                 .pointerInput(Unit) {
                     detectTapGestures(onDoubleTap = {
@@ -302,7 +319,7 @@ fun LocalGifImage(resId: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LocalGifImageWithFilter(resId: Int, modifier: Modifier = Modifier,colorFilter: ColorFilter) {
+fun LocalGifImageWithFilter(resId: Int, modifier: Modifier = Modifier, colorFilter: ColorFilter) {
     val painter = rememberAsyncImagePainter(
         ImageRequest.Builder(LocalContext.current)
             .data(resId)

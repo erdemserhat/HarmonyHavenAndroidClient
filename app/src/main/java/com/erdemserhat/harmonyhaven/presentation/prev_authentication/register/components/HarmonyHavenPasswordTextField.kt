@@ -1,8 +1,10 @@
 package com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -22,6 +24,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.erdemserhat.harmonyhaven.R
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 
 @Composable
 fun HarmonyHavenPasswordTextField(
@@ -45,8 +48,8 @@ fun HarmonyHavenPasswordTextField(
     }
 
     OutlinedTextField(
-        modifier = Modifier
-            .size(width = 370.dp, height = 60.dp),
+        modifier = modifier
+            .fillMaxWidth(0.75f),
         value = password,
         onValueChange =onValueChanged,
         shape = RoundedCornerShape(10.dp),
@@ -54,7 +57,13 @@ fun HarmonyHavenPasswordTextField(
             unfocusedContainerColor = Color.White,
             focusedContainerColor = Color.White,
             focusedIndicatorColor = Color.Gray,
-            focusedLabelColor = Color.Gray
+            cursorColor = harmonyHavenGreen,
+            focusedLabelColor = Color.Gray,
+            selectionColors = TextSelectionColors(
+                handleColor = harmonyHavenGreen,
+
+                backgroundColor = harmonyHavenGreen.copy(alpha = 0.5f)
+            )
         ),
         singleLine = true,
         placeholder = { Text(text = placeHolderText) },

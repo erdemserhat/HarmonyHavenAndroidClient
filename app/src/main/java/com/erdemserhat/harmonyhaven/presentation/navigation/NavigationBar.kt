@@ -1,23 +1,12 @@
 package com.erdemserhat.harmonyhaven.presentation.navigation
 
-import LocalGifImage
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.media.Image
 import android.os.Build
 import android.util.Log
 import android.view.Window
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
-import androidx.collection.mutableIntSetOf
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -30,47 +19,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.TextButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -81,18 +39,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -100,19 +54,14 @@ import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.AlertDialogBase
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.CategoryPickerModalBottomSheet
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentModalBottomSheet
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.user.ProfileScreen
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenIndicatorColor
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenSelectedNavigationBarItemColor
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -130,12 +79,7 @@ fun AppMainScreen(
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
-    val commentSheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true
 
-    )
-    val categorySheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
 
     var postID by rememberSaveable {
         mutableIntStateOf(3044)
@@ -147,6 +91,16 @@ fun AppMainScreen(
 
     val context = LocalContext.current
     val activity = context as? Activity // Context'i Activity'ye dönüştürüyoruz
+
+    var shouldShowCommentBottomModal by remember{
+        mutableStateOf(false)
+    }
+    val commentSheetState = SheetState(skipPartiallyExpanded = true, density = Density(context))
+
+    var shouldShowCategoryBottomModal by remember{
+        mutableStateOf(false)
+    }
+    val categorySheetState = SheetState(skipPartiallyExpanded = false, density = Density(context))
 
 
     // Scroll to the initial page if provided
@@ -325,26 +279,7 @@ fun AppMainScreen(
 
 
 //////////////////////////////////////////////////////
-        CommentModalBottomSheet(
-            sheetState = commentSheetState,
-            modifier = Modifier.zIndex(2f),
-            postId = postID
-        )
 
-        CategoryPickerModalBottomSheet(
-            sheetState = categorySheetState,
-            actions = CommentBottomModalSheetActions(
-                onShouldFilterQuotes = { selectedCategories ->
-                    quoteViewModel.loadCategorizedQuotes(selectedCategories)
-
-                },
-                onSaveCategorySelection = { model ->
-                    quoteViewModel.saveCategorySelection(model)
-                },
-                onGetCategorySelectionModel = quoteViewModel.getCategorySelection()
-
-            )
-        )
 //////////////////////////////////////////////////////
         HorizontalPager(
             state = pagerState,
@@ -357,33 +292,77 @@ fun AppMainScreen(
                     Log.d("debugDelayRender", "ready")
                 }
         ) { page ->
-            when (page) {
-                3-> ProfileScreen()
-                2 -> HomeScreenNew(navController = navController)
-                1 -> NotificationScreen(navController)
-                0 -> QuoteMainScreen(
-                    navController = navController,
-                    sharedViewModel = viewModel,
-                    onCommentsClicked = {postId->
-                        postID = postId
-                        coroutineScope.launch {
-                            commentSheetState.show()
-                        }
 
-                    },
-                    onCategoryClicked = {
-                        coroutineScope.launch {
-                            categorySheetState.show()
-                        }
-                    },
-                    viewmodel = quoteViewModel
+            Box{
+
+                when (page) {
+                    3-> ProfileScreen()
+                    2 -> HomeScreenNew(navController = navController)
+                    1 -> NotificationScreen(navController)
+                    0 -> QuoteMainScreen(
+                        navController = navController,
+                        sharedViewModel = viewModel,
+                        onCommentsClicked = {postId->
+                            postID = postId
+                            shouldShowCommentBottomModal = true
+
+                        },
+                        onCategoryClicked = {
+                            coroutineScope.launch {
+                                shouldShowCategoryBottomModal = true
+                            }
+                        },
+                        viewmodel = quoteViewModel
 
 
-                )
+                    )
+                }
+
+
+
+                if(shouldShowCommentBottomModal){
+                    CommentModalBottomSheet(
+                        onDismissRequest = {shouldShowCommentBottomModal = false},
+                        sheetState = commentSheetState ,
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        postId = postID
+                    )
+
+                }
+
+                if(shouldShowCategoryBottomModal){
+
+                    CategoryPickerModalBottomSheet(
+                        onDismissRequest = {
+                            shouldShowCategoryBottomModal = false
+
+                        },
+                        sheetState = categorySheetState,
+                        actions = CommentBottomModalSheetActions(
+                            onShouldFilterQuotes = { selectedCategories ->
+                                quoteViewModel.loadCategorizedQuotes(selectedCategories)
+
+                            },
+                            onSaveCategorySelection = { model ->
+                                quoteViewModel.saveCategorySelection(model)
+                            },
+                            onGetCategorySelectionModel = quoteViewModel.getCategorySelection()
+
+                        )
+                    )
+                }
+
+
             }
 
 
+
+
+
         }
+
+
+
     }
 }
 

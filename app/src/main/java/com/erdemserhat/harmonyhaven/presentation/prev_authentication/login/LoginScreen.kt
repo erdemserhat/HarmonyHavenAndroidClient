@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.DisableContentCapture
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -68,6 +69,9 @@ fun LoginScreenContent(
 ) {
 
 
+
+
+
     //Navigation control
     if (params.canNavigateToDashBoard) {
         params.onCanNavigateToDashBoard()
@@ -93,7 +97,6 @@ fun LoginScreenContent(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .imePadding()
             .background(Color.White),
         // Automatically adds padding for the IME (keyboard)
         // .navigationBarsPadding(),
@@ -255,10 +258,7 @@ fun LoginScreenContent(
                                 }
                             )
 
-                            // Spacer(modifier = Modifier.size(10.dp))
-                            //   LoginScreenGoogleSignInButton(
-                            //     onClick = {params.onLoginViaGoogleClicked}
-                            //  )
+
 
                         }
 
@@ -314,6 +314,28 @@ fun LoginScreen(
 
     var isCheckedRememberCredentials by rememberSaveable {
         mutableStateOf(false)
+    }
+
+    val context = LocalContext.current
+    val activity = context as? Activity
+    val window = activity?.window!!
+
+
+
+    window.let {
+        WindowCompat.setDecorFitsSystemWindows(
+            it,
+            false
+        ) // content fill the system navbar- status bar
+        val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+
+        it.statusBarColor = Color.Transparent.toArgb()
+        it.navigationBarColor = Color.Transparent.toArgb()
+
+        insetsController.isAppearanceLightStatusBars = true
+        insetsController.isAppearanceLightNavigationBars = true
+
+
     }
 
 

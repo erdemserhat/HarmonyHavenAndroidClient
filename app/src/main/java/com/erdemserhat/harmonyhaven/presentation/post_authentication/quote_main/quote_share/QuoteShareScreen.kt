@@ -1,4 +1,5 @@
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,10 +9,9 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.LaunchedEffect
@@ -25,12 +25,14 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.navigation.QuoteShareScreenParams
@@ -46,6 +48,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareToX
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.shareVideo
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteCard
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import dev.shreyaspatil.capturable.capturable
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.async
@@ -62,16 +65,40 @@ fun QuoteShareScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     params: QuoteShareScreenParams = QuoteShareScreenParams(),
-    sheetState: ModalBottomSheetState? = null,
-    onContentReady: () -> Unit = {}
-
 ) {
-    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    val activity = context as? Activity
+    val window = activity?.window!!
+
+    val coroutineScope = rememberCoroutineScope()
     val capturableController = rememberCaptureController()
     var isLoading by rememberSaveable {
         mutableStateOf(false)
     }
+
+
+
+    window.let {
+        WindowCompat.setDecorFitsSystemWindows(
+            it,
+            false
+        ) // content fill the system navbar- status bar
+        val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+
+        it.statusBarColor = Color.Transparent.toArgb()
+        it.navigationBarColor = Color.Transparent.toArgb()
+
+        insetsController.isAppearanceLightStatusBars =false
+        insetsController.isAppearanceLightNavigationBars =false
+
+
+
+    }
+
+
+
+
     val onSaveImageFile: suspend () -> File? = {
         isLoading = true
         try {
@@ -121,6 +148,8 @@ fun QuoteShareScreen(
         modifier = Modifier
             .background(Color.LightGray.copy(alpha = 0.2f))
             .fillMaxSize()
+            .navigationBarsPadding()
+            .statusBarsPadding()
             .zIndex(3f)
     ) {
         Box(modifier = Modifier.size(60.dp)) {
@@ -172,6 +201,7 @@ fun QuoteShareScreen(
 
             if (isLoading) {
                 CircularProgressIndicator(
+                    color = harmonyHavenGreen,
                     modifier = Modifier
                         .align(Alignment.Center)
                         .zIndex(4f)

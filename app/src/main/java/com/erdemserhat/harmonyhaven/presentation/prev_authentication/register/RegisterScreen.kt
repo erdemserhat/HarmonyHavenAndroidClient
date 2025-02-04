@@ -27,7 +27,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.AutofillType
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
@@ -49,6 +51,7 @@ import com.erdemserhat.harmonyhaven.presentation.common.appcomponents.HarmonyHav
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.LoginViewModel
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.GoogleSignInButton
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.components.autofill
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.AcceptanceOfTermsOfUse
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenButton
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenPasswordTextField
@@ -58,6 +61,7 @@ import com.erdemserhat.harmonyhaven.presentation.prev_authentication.welcome.Gen
 import com.erdemserhat.harmonyhaven.ui.theme.customFontFamilyJunge
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun RegisterScreenContent(
     params: RegisterScreenParams
@@ -79,9 +83,7 @@ fun RegisterScreenContent(
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .imePadding()
-        ,
+            .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
 
@@ -115,6 +117,7 @@ fun RegisterScreenContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .imePadding()
                 .verticalScroll(rememberScrollState()),
 
 
@@ -174,7 +177,13 @@ fun RegisterScreenContent(
                         text = params.name,
                         onValueChanged = params.onNameValueChanged,
                         placeHolderText = stringResource(R.string.name),
-                        isError = params.isNameValid
+                        isError = params.isNameValid,
+                        modifier = Modifier.autofill(
+                            autofillTypes = listOf(AutofillType.PersonFirstName),
+                            onFill = {
+                                params.onNameValueChanged(it)
+                            }
+                        )
                     )
                     Spacer(modifier = Modifier.size(5.dp))
 
@@ -191,6 +200,12 @@ fun RegisterScreenContent(
                         onValueChanged = params.onEmailValueChanged,
                         placeHolderText = stringResource(R.string.e_mail),
                         isError = params.isEmailValid,
+                        modifier = Modifier.autofill(
+                            autofillTypes = listOf(AutofillType.EmailAddress),
+                            onFill = {
+                                params.onEmailValueChanged(it)
+                            }
+                        )
 
                     )
                     Spacer(modifier = Modifier.size(5.dp))
@@ -201,7 +216,12 @@ fun RegisterScreenContent(
                         password = params.password,
                         onValueChanged = params.onPasswordValueChanged,
                         isError = params.isPasswordValid,
-                        modifier = Modifier.imePadding()
+                        modifier = Modifier.autofill(
+                            autofillTypes = listOf(AutofillType.NewPassword),
+                            onFill = {
+                                params.onPasswordValueChanged(it)
+                            }
+                        )
                     )
 
                     /*
@@ -366,6 +386,30 @@ fun RegisterScreen(
 
     var isTermsOfConditionsAccepted by rememberSaveable {
         mutableStateOf(false)
+    }
+
+
+
+    val context = LocalContext.current
+    val activity = context as? Activity
+    val window = activity?.window!!
+
+
+
+    window.let {
+        WindowCompat.setDecorFitsSystemWindows(
+            it,
+            false
+        ) // content fill the system navbar- status bar
+        val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+
+        it.statusBarColor = Color.Transparent.toArgb()
+        it.navigationBarColor = Color.Transparent.toArgb()
+
+        insetsController.isAppearanceLightStatusBars = true
+        insetsController.isAppearanceLightNavigationBars = true
+
+
     }
 
     val registerScreenParams = RegisterScreenParams(

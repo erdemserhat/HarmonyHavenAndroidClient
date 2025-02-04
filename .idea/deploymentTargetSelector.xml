@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="HarmonyHavenAndroidClient">
         <option name="selectionMode" value="DIALOG" />
-        <DropdownSelection timestamp="2025-02-02T20:12:26.538419200Z">
+        <DropdownSelection timestamp="2025-02-04T14:57:25.074325800Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\erdem\.android\avd\Pixel_9_Pro_XL.avd" />
@@ -15,17 +15,12 @@
           <targets>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="PhysicalDevice" identifier="serial=R52W804XR0W" />
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\erdem\.android\avd\Pixel_9_Pro_XL.avd" />
               </handle>
             </Target>
             <Target type="DEFAULT_BOOT">
               <handle>
                 <DeviceId pluginId="PhysicalDevice" identifier="serial=ws55vwzhs8u4hmge" />
-              </handle>
-            </Target>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\erdem\.android\avd\Pixel_9_Pro_XL.avd" />
               </handle>
             </Target>
           </targets>

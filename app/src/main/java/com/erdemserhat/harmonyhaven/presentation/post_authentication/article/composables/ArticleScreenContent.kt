@@ -227,8 +227,6 @@ fun ArticleScreenContent(
             WindowInsets.systemBars.asPaddingValues().calculateTopPadding().value
         AnimatedVisibility(showBottomSheet) {
             ModalBottomSheet(
-                windowInsets = BottomSheetDefaults.windowInsets,
-
                 scrimColor = Color.Transparent,
                 onDismissRequest = {
                     coroutineScope.launch { showBottomSheet = false }
@@ -258,6 +256,7 @@ fun ArticleScreenContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
+                            modifier = Modifier.padding(10.dp),
                             fontFamily = Font(R.font.play).toFontFamily(),
                             text = "A-",
                             color = Color.White,
@@ -281,7 +280,8 @@ fun ArticleScreenContent(
                                 .padding(vertical = 8.dp)
                         )
                         Text(
-                            fontFamily = Font(R.font.play).toFontFamily(),
+                            modifier = Modifier.padding(10.dp),
+                                    fontFamily = Font(R.font.play).toFontFamily(),
                             text = "A+",
                             color = Color.White,
                             fontSize = 30.sp
