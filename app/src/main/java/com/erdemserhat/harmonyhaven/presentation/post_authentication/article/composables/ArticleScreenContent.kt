@@ -91,6 +91,8 @@ import androidx.core.view.WindowCompat
 import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.markdowntext.MarkdownText
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.article.ArticleReadingPreferences
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.article.ArticleViewModel
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -103,17 +105,23 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 fun ArticleScreenContent(
     article: ArticlePresentableUIModel,
     navController: NavController,
+    viewModel:ArticleViewModel
 ) {
-    var fontSize by rememberSaveable { mutableIntStateOf(ArticleScreenConstants.DEFAULT_FONT_SIZE) }
+    val savedPreferences = viewModel.getSavedArticleReadingPreferences()
+
+    var selectedBackgroundColorVariance by rememberSaveable { mutableIntStateOf(savedPreferences.selectedBackgroundColorVariance) }
+    var fontSize by rememberSaveable { mutableIntStateOf(savedPreferences.fontSize) }
+    var selectedFontStyle by remember { mutableIntStateOf(savedPreferences.selectedFontStyle) }
+
+
     val modalSheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
 
 
     val coroutineScope = rememberCoroutineScope()
-    var selectedFontStyle by remember { mutableIntStateOf(0) }
     var selectedTextColor by remember { mutableStateOf(Color.Black) }
     var selectedBackgroundColor by remember { mutableStateOf(Color.White) }
-    var selectedBackgroundColorVariance by rememberSaveable { mutableIntStateOf(0) }
+
     var isTopBarContentLight by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val localFocusManager = LocalFocusManager.current
@@ -143,6 +151,27 @@ fun ArticleScreenContent(
         }
         lastScrollOffset = scrollState.value // Update last scroll position
     }
+
+
+
+    LaunchedEffect(
+        key1 = selectedBackgroundColorVariance,
+        key2 = selectedFontStyle,
+        key3 = fontSize
+    ) {
+        coroutineScope.launch {
+            viewModel.saveArticleReadingPreferences(
+                preferences = ArticleReadingPreferences(
+                    fontSize = fontSize,
+                    selectedBackgroundColorVariance = selectedBackgroundColorVariance,
+                    selectedFontStyle = selectedFontStyle
+                )
+            )
+        }
+
+    }
+
+
 
 
 
@@ -229,7 +258,11 @@ fun ArticleScreenContent(
             ModalBottomSheet(
                 scrimColor = Color.Transparent,
                 onDismissRequest = {
-                    coroutineScope.launch { showBottomSheet = false }
+                    coroutineScope.launch {
+                        showBottomSheet = false
+
+
+                    }
                 },
                 dragHandle = { BottomSheetDefaults.DragHandle() },
                 sheetState = modalSheetState,

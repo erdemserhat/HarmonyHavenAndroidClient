@@ -51,4 +51,12 @@ object SharedPreferencesModule {
         return context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
     }
+
+    @Provides
+    @Singleton
+    @Named("ArticleReadingPreferences")
+    fun provideArticleReadingPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("ArticleReadingPreferences", Context.MODE_PRIVATE)
+
+    }
 }

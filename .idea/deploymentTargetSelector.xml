@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="HarmonyHavenAndroidClient">
         <option name="selectionMode" value="DIALOG" />
-        <DropdownSelection timestamp="2025-02-04T14:57:25.074325800Z">
+        <DropdownSelection timestamp="2025-02-04T22:52:52.013316600Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\erdem\.android\avd\Pixel_9_Pro_XL.avd" />

@@ -430,7 +430,7 @@ fun ShareItem(modifier: Modifier = Modifier, painterId: Int, text: String, onCli
             contentDescription = null
 
         )
-        Text(text, color = Color.White, fontSize = 15.sp, textAlign = TextAlign.Center)
+        Text(text, color = Color.White, fontSize = 15.sp, textAlign = TextAlign.Center,modifier = Modifier.padding(vertical = 5.dp))
 
     }
 

@@ -19,18 +19,19 @@ fun ArticleScreen(
     article: ArticlePresentableUIModel,
     navController: NavController,
 ) {
+    val articleVM: ArticleViewModel = hiltViewModel()
+
     if (!article.ready) {
-        val articleVM: ArticleViewModel = hiltViewModel()
         val articleState = articleVM.articleScreenState.collectAsState()
         LaunchedEffect(key1 = article) {
             articleVM.prepareArticle(article.id)
 
         }
-        ArticleScreenContent(articleState.value.toArticleResponseType(), navController)
+        ArticleScreenContent(articleState.value.toArticleResponseType(), navController,articleVM)
 
 
     } else {
-        ArticleScreenContent(article, navController)
+        ArticleScreenContent(article, navController,articleVM)
 
 
     }

@@ -6,6 +6,10 @@ import android.util.Log
 import android.view.Window
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -58,6 +62,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.CategoryPickerModalBottomSheet
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentModalBottomSheet
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.user.ProfileScreen
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -102,7 +107,7 @@ fun AppMainScreen(
     }
     val categorySheetState = SheetState(skipPartiallyExpanded = false, density = Density(context))
 
-
+    val  commentViewModel :CommentViewModel = hiltViewModel()
     // Scroll to the initial page if provided
     LaunchedEffect(params.screenNo) {
         if (params.screenNo != -1) {
@@ -280,7 +285,8 @@ fun AppMainScreen(
 
 //////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////
+//////////////////////////////////////////////////
+// //
         HorizontalPager(
             state = pagerState,
             count = items.size,
@@ -320,14 +326,44 @@ fun AppMainScreen(
 
 
 
-                if(shouldShowCommentBottomModal){
-                    CommentModalBottomSheet(
+                AnimatedVisibility(
+                    visible = shouldShowCommentBottomModal,
+                    enter = slideInVertically(
+                        // Slide in from the bottom (start position is the height of the composable)
+                        initialOffsetY = { it },
+                        animationSpec = tween(durationMillis = 500)
+                    ),
+                    exit = slideOutVertically(
+                        // Slide out to the bottom (end position is the height of the composable)
+                        targetOffsetY = { it },
+                        animationSpec = tween(durationMillis = 500)
+                    )
+                ) {
+
+
+                CommentModalBottomSheet(
                         onDismissRequest = {shouldShowCommentBottomModal = false},
                         sheetState = commentSheetState ,
                         modifier = Modifier.align(Alignment.BottomCenter),
-                        postId = postID
+                        postId = postID,
+                        viewModel = commentViewModel
                     )
 
+                }
+
+                LaunchedEffect(commentSheetState.isVisible) {
+                    if (commentSheetState.isVisible) {
+                        if ( commentViewModel.lastPostId.value != postID) {
+                            commentViewModel.loadComments(postID)
+                        } else {
+                            commentViewModel.loadFromCache()
+                        }
+                    } else {
+                        keyboardController?.hide()
+                        commentViewModel.setLastPostId(postID)
+                        commentViewModel.resetList()
+                        commentViewModel.commitApiCallsWithoutDelay()
+                    }
                 }
 
                 if(shouldShowCategoryBottomModal){

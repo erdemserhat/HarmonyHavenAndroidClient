@@ -7,9 +7,11 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +24,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -37,6 +40,7 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -44,6 +48,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -59,6 +64,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -79,7 +85,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CommentModalBottomSheet(
     modifier: Modifier = Modifier,
-    viewModel: CommentViewModel = hiltViewModel(),
+    viewModel: CommentViewModel,
     sheetState: SheetState,
     postId: Int,
     onDismissRequest: () -> Unit
@@ -89,34 +95,66 @@ fun CommentModalBottomSheet(
     val context = LocalContext.current
     val maxCommentLength = 1000 // Maximum character count
 
+
     val vibrator = context.getSystemService(Vibrator::class.java)
 
-    LaunchedEffect(sheetState.isVisible) {
-        if (sheetState.isVisible) {
-            if (viewModel.lastPostId.value != postId) {
-                viewModel.loadComments(postId)
-            } else {
-                viewModel.loadFromCache()
-            }
-        } else {
-            keyboardController?.hide()
-            viewModel.setLastPostId(postId)
-            viewModel.resetList()
-            viewModel.commitApiCallsWithoutDelay()
-        }
-    }
 
     var commentText by rememberSaveable { mutableStateOf("") }
     val isLoading by viewModel.isLoading.collectAsState()
     val comments by viewModel.comments.collectAsState()
     val isImeVisible = WindowInsets.isImeVisible
+    var isScrolledUp by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(isImeVisible) {
+        if (isImeVisible) {
+            isScrolledUp = true
+        }
+    }
 
     val heightFraction by animateFloatAsState(
-        targetValue = if (isImeVisible) 1f else 0.90f,
-        label = "Height Animation"
+        targetValue = if (isScrolledUp) 1f else 0.65f,
+        animationSpec = tween(
+            durationMillis = 400, // Duration of the animation
+            delayMillis = 0, // Optional delay before the animation starts
+        )
     )
 
+
+
+
     ModalBottomSheet(
+        dragHandle = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .pointerInput(Unit) {
+                        detectVerticalDragGestures { _, dragAmount ->
+                            // Detect the scroll direction based on drag amount
+                            if (dragAmount > 0) {
+                                isScrolledUp = false
+                                if(heightFraction ==0.65f){
+                                    coroutineScope.launch {
+                                        sheetState.hide()
+                                        onDismissRequest()
+
+                                    }
+                                }
+
+                            } else if (dragAmount < 0) {
+                                // The user is scrolling up (negative value)
+                                isScrolledUp = true
+
+                            }
+                        }
+                    },
+                contentAlignment = Alignment.Center,
+                content = {
+                    BottomSheetDefaults.DragHandle()
+                }
+            )
+        },
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         modifier = modifier
@@ -125,11 +163,32 @@ fun CommentModalBottomSheet(
             .fillMaxHeight(fraction = heightFraction)
             .imePadding(),
         containerColor = Color.Black,
-        scrimColor = Color.Black.copy(alpha = 0.4f)
+        scrimColor = Color.Black.copy(alpha = 0.4f),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectVerticalDragGestures { _, dragAmount ->
+                        // Detect the scroll direction based on drag amount
+                        if (dragAmount > 0) {
+                            // The user is scrolling down (positive value)
+                            isScrolledUp = false
+                            if(heightFraction ==0.65f){
+                                coroutineScope.launch {
+                                    sheetState.hide()
+                                    onDismissRequest()
+
+
+                                }
+                            }
+                        } else if (dragAmount < 0) {
+                            // The user is scrolling up (negative value)
+                            isScrolledUp = true
+
+                        }
+                    }
+                }
                 .background(
                     Color.Black,
                     shape = RoundedCornerShape(topEnd = 15.dp, topStart = 15.dp)

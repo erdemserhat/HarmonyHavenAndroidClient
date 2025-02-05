@@ -21,11 +21,6 @@ private fun ArticleScreenPreview() {
 
     val navControllerMock:NavController = rememberNavController()
 
-    ArticleScreenContent(
-        article = articlePresentableUIModelMock,
-        navController = navControllerMock
-
-    )
 
 }
 
