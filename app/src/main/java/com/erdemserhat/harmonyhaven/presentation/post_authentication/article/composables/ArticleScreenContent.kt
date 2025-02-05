@@ -105,11 +105,10 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 fun ArticleScreenContent(
     article: ArticlePresentableUIModel,
     navController: NavController,
-    viewModel:ArticleViewModel
+    viewModel: ArticleViewModel
 ) {
     val savedPreferences = viewModel.getSavedArticleReadingPreferences()
 
-    var selectedBackgroundColorVariance by rememberSaveable { mutableIntStateOf(savedPreferences.selectedBackgroundColorVariance) }
     var fontSize by rememberSaveable { mutableIntStateOf(savedPreferences.fontSize) }
     var selectedFontStyle by remember { mutableIntStateOf(savedPreferences.selectedFontStyle) }
 
@@ -132,10 +131,36 @@ fun ArticleScreenContent(
     val systemUiController = rememberSystemUiController()
 
 
-
     var isTopBarVisible by remember { mutableStateOf(true) }
     val scrollState = rememberScrollState()
     var lastScrollOffset by remember { mutableStateOf(0) }
+
+    var selectedBackgroundColorVariance by rememberSaveable {
+        mutableIntStateOf(savedPreferences.selectedBackgroundColorVariance) }
+
+    val colorMap: Map<Int, Pair<Color, Color>> = mapOf(
+        0 to (Color(0xFF121212) to Color(0xFFE0E0E0)),
+        1 to (Color(0xFF1E1E1E) to Color(0xFFB0BEC5)),
+        2 to (Color(0xFF263238) to Color(0xFFCFD8DC)),
+        3 to (Color(0xFF212121) to Color(0xFFF5F5F5)),
+        4 to (Color(0xFF2C2C2C) to Color(0xFFE0E0E0)),
+        5 to (Color(0xFFFFFFFF) to Color(0xFF212121)),
+        6 to (Color(0xFFF5F5F5) to Color(0xFF212121)),
+        7 to (Color(0xFFFFFDE7) to Color(0xFF424242)),
+        8 to (Color(0xFFF0F4C3) to Color(0xFF2E2E2E)),
+        9 to (Color(0xFFE3F2FD) to Color(0xFF1B1B1B)),
+        10 to (Color(0xFFFFF3E0) to Color(0xFF3E3E3E)),
+        11 to (Color(0xFFF5F5F5) to Color(0xFF212121))
+    )
+
+    LaunchedEffect(Unit) {
+        val selectedBgVariance = colorMap[selectedBackgroundColorVariance]
+        selectedTextColor = selectedBgVariance!!.first
+        selectedBackgroundColor = selectedBgVariance.second
+        isTopBarContentLight = selectedBackgroundColorVariance in 5..10
+
+
+    }
 
 
 
@@ -154,20 +179,20 @@ fun ArticleScreenContent(
 
 
 
-    LaunchedEffect(
-        key1 = selectedBackgroundColorVariance,
-        key2 = selectedFontStyle,
-        key3 = fontSize
-    ) {
-        coroutineScope.launch {
-            viewModel.saveArticleReadingPreferences(
-                preferences = ArticleReadingPreferences(
-                    fontSize = fontSize,
-                    selectedBackgroundColorVariance = selectedBackgroundColorVariance,
-                    selectedFontStyle = selectedFontStyle
+    LaunchedEffect(showBottomSheet) {
+        if (!showBottomSheet) {
+            coroutineScope.launch {
+                viewModel.saveArticleReadingPreferences(
+                    preferences = ArticleReadingPreferences(
+                        fontSize = fontSize,
+                        selectedBackgroundColorVariance = selectedBackgroundColorVariance,
+                        selectedFontStyle = selectedFontStyle
+                    )
                 )
-            )
+            }
+
         }
+
 
     }
 
@@ -216,7 +241,6 @@ fun ArticleScreenContent(
     ) {
 
 
-
         /////////////////////////
         Box(
             modifier = Modifier
@@ -255,6 +279,14 @@ fun ArticleScreenContent(
         val systemNavigationBarPadding =
             WindowInsets.systemBars.asPaddingValues().calculateTopPadding().value
         AnimatedVisibility(showBottomSheet) {
+
+            var ratio by rememberSaveable {
+                mutableFloatStateOf(
+                    ((fontSize.toFloat() - ArticleScreenConstants.MIN_FONT_SIZE.toFloat()) /
+                            (ArticleScreenConstants.MAX_FONT_SIZE.toFloat() - ArticleScreenConstants.MIN_FONT_SIZE.toFloat()))
+                            * 100f
+                )
+            }
             ModalBottomSheet(
                 scrimColor = Color.Transparent,
                 onDismissRequest = {
@@ -281,8 +313,8 @@ fun ArticleScreenContent(
                         .fillMaxWidth()
                         .padding(8.dp)
                 ) {
-                    // Font Size Slider
-                    var sliderValue by rememberSaveable { mutableFloatStateOf(60f) }
+
+
                     Row(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         horizontalArrangement = Arrangement.Center,
@@ -301,9 +333,9 @@ fun ArticleScreenContent(
                                 activeTrackColor = harmonyHavenGreen,
                                 inactiveTrackColor = Color.DarkGray.copy(alpha = 0.5f)
                             ),
-                            value = sliderValue,
+                            value = ratio,
                             onValueChange = {
-                                sliderValue = it
+                                ratio = it
                                 fontSize = (ArticleScreenConstants.MIN_FONT_SIZE +
                                         (it / 100f) * (ArticleScreenConstants.MAX_FONT_SIZE - ArticleScreenConstants.MIN_FONT_SIZE)).toInt()
                             },
@@ -314,7 +346,7 @@ fun ArticleScreenContent(
                         )
                         Text(
                             modifier = Modifier.padding(10.dp),
-                                    fontFamily = Font(R.font.play).toFontFamily(),
+                            fontFamily = Font(R.font.play).toFontFamily(),
                             text = "A+",
                             color = Color.White,
                             fontSize = 30.sp
@@ -337,7 +369,10 @@ fun ArticleScreenContent(
                         }
                     }
 
-                    // Background Color Options
+
+
+
+
                     Text(
                         text = "Arkaplan",
                         color = Color.White,
@@ -349,20 +384,7 @@ fun ArticleScreenContent(
                     ) {
                         items(11) { index ->
                             ColorOption(
-                                color = when (index) {
-                                    0 -> Color(0xFF121212) to Color(0xFFE0E0E0)
-                                    1 -> Color(0xFF1E1E1E) to Color(0xFFB0BEC5)
-                                    2 -> Color(0xFF263238) to Color(0xFFCFD8DC)
-                                    3 -> Color(0xFF212121) to Color(0xFFF5F5F5)
-                                    4 -> Color(0xFF2C2C2C) to Color(0xFFE0E0E0)
-                                    5 -> Color(0xFFFFFFFF) to Color(0xFF212121)
-                                    6 -> Color(0xFFF5F5F5) to Color(0xFF212121)
-                                    7 -> Color(0xFFFFFDE7) to Color(0xFF424242)
-                                    8 -> Color(0xFFF0F4C3) to Color(0xFF2E2E2E)
-                                    9 -> Color(0xFFE3F2FD) to Color(0xFF1B1B1B)
-                                    10 -> Color(0xFFFFF3E0) to Color(0xFF3E3E3E)
-                                    else -> Color(0xFFF5F5F5) to Color(0xFF212121)
-                                },
+                                color = colorMap[index] ?: (Color(0xFFF5F5F5) to Color(0xFF212121) ),
                                 isSelected = selectedBackgroundColorVariance == index,
                                 onClick = { text, bg ->
                                     selectedBackgroundColorVariance = index
@@ -382,69 +404,62 @@ fun ArticleScreenContent(
         var isLoading by remember { mutableStateOf(true) }
         Column(
             modifier = Modifier
-                .padding(end = 16.dp, start = 16.dp, top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding())
+                .padding(
+                    end = 16.dp,
+                    start = 16.dp,
+                    top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+                )
                 .fillMaxSize()
                 .verticalScroll(scrollState)
         ) {
 
             Spacer(modifier = Modifier.size(50.dp))
 
-                AsyncImage(
-                    model = article.imagePath,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1.5f)
-                        .clip(RoundedCornerShape(8.dp))
-                        .placeholder(
-                            visible = isLoading,
-                            highlight = PlaceholderHighlight.shimmer(
-                                highlightColor = Color.Gray.copy(0.3f)
-                            ),
-                            color = harmonyHavenComponentWhite
+            AsyncImage(
+                model = article.imagePath,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1.5f)
+                    .clip(RoundedCornerShape(8.dp))
+                    .placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer(
+                            highlightColor = Color.Gray.copy(0.3f)
                         ),
+                        color = harmonyHavenComponentWhite
+                    ),
 
-                    contentScale = ContentScale.Fit,
-                    onSuccess = { isLoading = false },
-                    onError = { isLoading = false }
+                contentScale = ContentScale.Fit,
+                onSuccess = { isLoading = false },
+                onError = { isLoading = false }
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            // Define your custom font using FontFamily
+            val customFont =
+                if (selectedFontStyle == 0) (Font(R.font.opensans))
+                else if (selectedFontStyle == 1) (Font(R.font.roboto))
+                else if (selectedFontStyle == 2) (Font(R.font.kumbh_sans_light))
+                else if (selectedFontStyle == 3) (Font(R.font.monster))
+                else (Font(R.font.lato))
+
+            // Define the TextStyle with the custom font
+            val customStyle = TextStyle(
+                fontSize = fontSize.sp,
+                color = selectedTextColor,
+                fontFamily = customFont.toFontFamily(),  // Applying custom font
+            )
+
+            if (article.content.isNotEmpty()) {
+                MarkdownText(
+                    syntaxHighlightColor = Color.Black.copy(0.18f),
+                    style = customStyle,
+                    markdown = article.content,
+                    isTextSelectable = true,
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-
-
-
-
-
-                // Define your custom font using FontFamily
-                val customFont =
-                    if (selectedFontStyle==0) (Font(R.font.opensans))
-                    else if (selectedFontStyle==1) (Font(R.font.roboto))
-                    else if (selectedFontStyle==2) (Font(R.font.kumbh_sans_light))
-                    else if (selectedFontStyle==3) (Font(R.font.monster))
-                    else (Font(R.font.lato))
-
-                // Define the TextStyle with the custom font
-                val customStyle = TextStyle(
-                    fontSize=fontSize.sp,
-                    color = selectedTextColor,
-                    fontFamily = customFont.toFontFamily(),  // Applying custom font
-                )
-
-                if (article.content.isNotEmpty()) {
-                    MarkdownText(
-                        syntaxHighlightColor = Color.Black.copy(0.18f),
-                        style = customStyle,
-                        markdown = article.content,
-                        isTextSelectable = true,
-                    )
-                }
-
-
-
-
-
-
-
-
+            }
 
 
         }
