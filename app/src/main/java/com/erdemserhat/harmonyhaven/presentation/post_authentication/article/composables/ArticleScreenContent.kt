@@ -145,7 +145,7 @@ fun ArticleScreenContent(
         3 to (Color(0xFF212121) to Color(0xFFF5F5F5)),
         4 to (Color(0xFF2C2C2C) to Color(0xFFE0E0E0)),
         5 to (Color(0xFFFFFFFF) to Color(0xFF212121)),
-        6 to (Color(0xFFF5F5F5) to Color(0xFF212121)),
+        6 to (Color(0xFFF5F5F5) to Color(0xFF000000)),
         7 to (Color(0xFFFFFDE7) to Color(0xFF424242)),
         8 to (Color(0xFFF0F4C3) to Color(0xFF2E2E2E)),
         9 to (Color(0xFFE3F2FD) to Color(0xFF1B1B1B)),
