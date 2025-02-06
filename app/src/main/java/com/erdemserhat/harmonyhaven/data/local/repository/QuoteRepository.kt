@@ -8,6 +8,7 @@ import com.erdemserhat.harmonyhaven.data.local.entities.QuoteEntity
 class QuoteRepository(private val quoteDao: QuoteDao) {
 
     suspend fun getCachedQuotes(): List<QuoteEntity> = quoteDao.getAllQuotes()
+    suspend fun updateLikeStatusIfQuoteExist(quoteId: Int, isLiked: Boolean):Int =quoteDao.updateLikeStatusIfQuoteExist(quoteId,isLiked)
     suspend fun addCachedQuotes(quotes: List<QuoteEntity>) = quoteDao.insertQuotes(quotes)
     suspend fun clearCachedQuotes() = quoteDao.clearQuotes()
 

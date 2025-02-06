@@ -1,9 +1,9 @@
-package com.erdemserhat.harmonyhaven.test
+package com.erdemserhat.harmonyhaven.di
 
 import javax.inject.Inject
 
 class SessionManager @Inject constructor() {
-    private var seed: Int? = null
+    private var seed: Int? = 12
 
     fun getSeed(): Int {
         if (seed == null) {

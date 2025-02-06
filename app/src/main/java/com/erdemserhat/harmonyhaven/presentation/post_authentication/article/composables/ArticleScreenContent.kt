@@ -454,11 +454,14 @@ fun ArticleScreenContent(
 
             if (article.content.isNotEmpty()) {
                 MarkdownText(
+                    maxLines = Int.MAX_VALUE,
                     syntaxHighlightColor = Color.Black.copy(0.18f),
                     style = customStyle,
                     markdown = article.content,
                     isTextSelectable = true,
                 )
+
+                Spacer(modifier = Modifier.background(Color.Transparent).size(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() +10.dp))
             }
 
 

@@ -2,15 +2,10 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.os.Build
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.erdemserhat.harmonyhaven.data.local.entities.QuoteEntity
 import com.erdemserhat.harmonyhaven.data.local.repository.QuoteRepository
 import com.erdemserhat.harmonyhaven.domain.ErrorTraceFlags
 import com.erdemserhat.harmonyhaven.domain.usecase.quote.QuoteUseCases
@@ -24,12 +19,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import com.erdemserhat.harmonyhaven.domain.model.rest.FilteredQuoteRequest
 import com.erdemserhat.harmonyhaven.dto.responses.QuoteForOrderModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.CategorySelectionModel
-import com.erdemserhat.harmonyhaven.test.SessionManager
+import com.erdemserhat.harmonyhaven.di.SessionManager
 
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -37,7 +31,6 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Named
-import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class QuoteMainViewModel @Inject constructor(
@@ -126,6 +119,13 @@ class QuoteMainViewModel @Inject constructor(
             try {
                 quoteUseCases.likeQuote.executeRequest(quoteId)
 
+                launch(Dispatchers.IO) {
+                    val a = quoteRepository.updateLikeStatusIfQuoteExist(quoteId,true)
+                    Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,a.toString())
+
+
+                }
+
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -137,6 +137,11 @@ class QuoteMainViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 quoteUseCases.removeLike.executeRequest(quoteId)
+                launch(Dispatchers.IO) {
+                    val a = quoteRepository.updateLikeStatusIfQuoteExist(quoteId,false)
+                    Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,a.toString())
+                }
+
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -264,6 +269,7 @@ class QuoteMainViewModel @Inject constructor(
                             _quotes.value = cachedQuotes.map { it.convertToQuote() }.toSet()
 
                         Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Cached Quotes Loaded")
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"${cachedQuotes[0].isLiked}")
                         Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,_quotes.value.map { it.id }.toString())
 
                         val categories = getCategorySelection().convertToIdListModel()

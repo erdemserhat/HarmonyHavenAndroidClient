@@ -23,4 +23,9 @@ interface QuoteDao {
 
     @Query("DELETE FROM quotes")
     fun clearQuotes()
+
+    @Query("UPDATE quotes SET isLiked = :isLiked WHERE quoteId = :quoteId")
+    fun updateLikeStatusIfQuoteExist(quoteId: Int, isLiked: Boolean): Int
+
+
 }

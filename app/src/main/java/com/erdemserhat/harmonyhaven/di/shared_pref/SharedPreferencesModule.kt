@@ -2,7 +2,7 @@ package com.erdemserhat.harmonyhaven.di.shared_pref
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.erdemserhat.harmonyhaven.test.SessionManager
+import com.erdemserhat.harmonyhaven.di.SessionManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

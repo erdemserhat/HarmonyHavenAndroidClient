@@ -30,7 +30,7 @@ android {
     buildTypes {
 
         release {
-            isMinifyEnabled = true
+                isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             buildConfigField("String", "API_KEY", "\"${project.findProperty("API_KEY_PRODUCTION")}\"")
             buildConfigField("String", "SERVER_URL", "\"${project.findProperty("SERVER_URL_PRODUCTION")}\"")
