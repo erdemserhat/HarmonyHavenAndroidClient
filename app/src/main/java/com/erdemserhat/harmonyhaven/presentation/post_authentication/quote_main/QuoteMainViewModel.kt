@@ -269,7 +269,6 @@ class QuoteMainViewModel @Inject constructor(
                             _quotes.value = cachedQuotes.map { it.convertToQuote() }.toSet()
 
                         Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Cached Quotes Loaded")
-                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"${cachedQuotes[0].isLiked}")
                         Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,_quotes.value.map { it.id }.toString())
 
                         val categories = getCategorySelection().convertToIdListModel()

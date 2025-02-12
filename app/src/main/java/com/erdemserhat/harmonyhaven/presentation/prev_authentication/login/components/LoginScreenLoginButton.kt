@@ -182,7 +182,7 @@ private fun doGoogleSignIn(
         val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
             //you can learn this value from your google api console.
             .setServerClientId(context.getString(R.string.default_web_client_id))
-            .setFilterByAuthorizedAccounts(true)
+            .setFilterByAuthorizedAccounts(false)
             .setAutoSelectEnabled(true)
             .build()
 
