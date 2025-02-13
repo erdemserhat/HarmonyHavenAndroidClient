@@ -8,12 +8,15 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,8 +33,8 @@ fun QuoteMainScreen(
     navController: NavController,
     viewmodel: QuoteMainViewModel,
     sharedViewModel: SharedViewModel,
-    onCommentsClicked:(postId:Int)->Unit,
-    onCategoryClicked:()->Unit
+    onCommentsClicked: (postId: Int) -> Unit,
+    onCategoryClicked: () -> Unit
 ) {
 
     QuoteMainContent(
@@ -45,14 +48,15 @@ fun QuoteMainScreen(
 
 }
 
+
 @Composable
 fun QuoteMainContent(
     modifier: Modifier = Modifier,
     viewmodel: QuoteMainViewModel,
     navController: NavController? = null,
-    sharedViewModel:SharedViewModel,
-    onCommentsClicked:(postId:Int)->Unit,
-    onCategoryClicked:()->Unit
+    sharedViewModel: SharedViewModel,
+    onCommentsClicked: (postId: Int) -> Unit,
+    onCategoryClicked: () -> Unit
 ) {
 
     //

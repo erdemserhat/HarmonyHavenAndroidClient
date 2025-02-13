@@ -54,6 +54,9 @@ class QuoteMainViewModel @Inject constructor(
     private val _shouldShowUxDialog1 = MutableStateFlow(true)
     private val _shouldShowUxDialog2 = MutableStateFlow(true)
     val shouldShowUxDialog1: StateFlow<Boolean> = _shouldShowUxDialog1
+    private var _isRefreshing= MutableStateFlow(false)
+
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
     var isLikedListEmpty = MutableStateFlow(true)
     private var _selectedQuote = mutableStateOf(QuoteForOrderModel())
@@ -252,6 +255,61 @@ class QuoteMainViewModel @Inject constructor(
         }
 
     }
+
+     fun refreshList() {
+        try {
+            _isRefreshing.value = true
+            Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"refreshList()  List Called")
+
+            viewModelScope.launch {
+                withContext(Dispatchers.IO){
+                    try {
+                        _seed = sessionManager.randomizeSeed()
+                        val categories = getCategorySelection().convertToIdListModel()
+                        val requestedQuotes = quoteUseCases.getQuote.executeRequest2(
+                            filteredQuoteRequest = FilteredQuoteRequest(
+                                categories = categories,
+                                page = _page.value,
+                                pageSize = _pageSize,
+                                seed = _seed
+                            )
+                        )
+
+
+
+
+                        _quotes.value = requestedQuotes.toSet()
+                        checkLikedList()
+
+
+
+
+
+                        quoteRepository.clearCachedQuotes()
+                        quoteRepository.addCachedQuotes(
+                            requestedQuotes.takeLast(4).map { it.convertToEntity() }
+                        )
+                        Log.d(ErrorTraceFlags.POST_DETAIL_TRACE.flagName,"Cached Updated")
+                        _isRefreshing.value = false
+
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+
+
+
+            }
+
+        } catch (e: Exception) {
+
+        }
+    }
+
+
+
+
 
 
     //load notification via offset
