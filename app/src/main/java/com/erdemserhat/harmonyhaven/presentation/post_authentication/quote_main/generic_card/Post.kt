@@ -1,6 +1,8 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.media.AudioManager
 import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,7 +63,7 @@ fun Quote(
     onCategoryClicked: () -> Unit,
     onShareQuoteClicked: () -> Unit,
     navController: NavController? = null,
-    onCommentClicked: () -> Unit
+    onCommentClicked: () -> Unit,
 ) {
     var isQuoteLiked by remember { mutableStateOf(quote.isLiked) }
     var isVisibleLikeAnimation by remember { mutableStateOf(false) }
@@ -68,6 +71,8 @@ fun Quote(
     var shouldScreenBeClear by rememberSaveable { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val capturableController = rememberCaptureController()
+    val isMuted = viewmodel.isMuted.value// ViewModel'den isMuted durumunu alın
+    val context = LocalContext.current
 
 
     // Syncs the liked state with the quote data
@@ -87,6 +92,11 @@ fun Quote(
                         isVisibleLikeAnimation = true
                         viewmodel.likeQuote(quote.id)
                         shouldAnimateLikeButton = true
+                    },
+                    onTap = {
+
+
+
                     }
                 )
             },
@@ -143,7 +153,8 @@ fun Quote(
             VideoCard(
                 videoUrl = quote.imageUrl,
                 isPlaying = isCurrentPage,
-                prepareOnly = isVisible
+                prepareOnly = isVisible,
+                isMuted = isMuted
             )
 
         }
@@ -248,6 +259,25 @@ private suspend fun handleQuoteShare(
     )
     withContext(Dispatchers.Main) {
         navController?.navigate(route = Screen.QuoteShareScreen.route, args = bundle)
+    }
+}
+
+
+
+fun toggleAppSound(context: Context) {
+    val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    val isMuted = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) == 0
+
+    if (isMuted) {
+        // Ses Aç
+        audioManager.setStreamVolume(
+            AudioManager.STREAM_MUSIC,
+            audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC),
+            0
+        )
+    } else {
+        // Ses Kapat
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0)
     }
 }
 

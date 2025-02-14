@@ -26,6 +26,7 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.SharedViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.CategoryPickerModalBottomSheet
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenProgressIndicator
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -48,12 +49,23 @@ fun PostFlow(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true,
     )
+    val pagerState = rememberPagerState { quoteList1.value.size }
+    var isMuted by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(viewmodel.shouldScrollToStart.value) {
+        if (viewmodel.shouldScrollToStart.value){
+            pagerState.scrollToPage(0)
+            viewmodel.scrolledToStart()
+        }
+    }
 
     // State to track if the pull-to-refresh is in progress
     var isRefreshing  = viewmodel.isRefreshing.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState { quoteList1.value.size }
+
 
     Box(modifier = modifier) {
         if (quoteList1.value.isNotEmpty()) {
@@ -64,6 +76,7 @@ fun PostFlow(
                     // Trigger refresh logic
                     coroutineScope.launch {
                         viewmodel.refreshList()
+
                     }
                 },
                 modifier = Modifier.fillMaxSize() // Ensure it takes up the entire screen
@@ -101,6 +114,7 @@ fun PostFlow(
                             },
                             onCategoryClicked = {
                                 onCategoryClicked()
+
                             },
                             navController = navController,
                             onCommentClicked = {

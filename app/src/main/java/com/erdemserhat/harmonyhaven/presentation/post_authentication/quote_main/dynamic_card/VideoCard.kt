@@ -45,8 +45,9 @@ import com.google.accompanist.placeholder.shimmer
 @Composable
 fun VideoCard(
     videoUrl: String,
-    isPlaying: Boolean, // Aktif sayfa mı?
-    prepareOnly: Boolean, // Görünür sayfa mı?
+    isPlaying: Boolean,
+    prepareOnly: Boolean,
+    isMuted:Boolean = false
 ) {
     val context = LocalContext.current
     var isLoading by remember { mutableStateOf(true) } // Yüklenme durumunu takip edin
@@ -77,8 +78,13 @@ fun VideoCard(
                         }
                     }
                 })
+
             }
+
     }
+
+    exoPlayer.volume =if(isMuted) 0f else 1f
+
 
     // LifecycleObserver için bir uygulama yaşam döngüsü gözlemcisi ekle
     val lifecycleOwner = LocalLifecycleOwner.current

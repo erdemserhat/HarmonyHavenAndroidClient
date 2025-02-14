@@ -3,6 +3,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -43,6 +44,21 @@ class QuoteMainViewModel @Inject constructor(
     @Named("UserTutorial") private val userTutorialPreferences: SharedPreferences,
     private var quoteRepository: QuoteRepository
 ) : ViewModel() {
+    private var _shouldScrollToStart = mutableStateOf(false)
+    val shouldScrollToStart:State<Boolean> = _shouldScrollToStart
+    private val _isMuted = mutableStateOf(false)
+    val isMuted: State<Boolean> get() = _isMuted
+
+    fun muted() {
+        _isMuted.value = true
+    }
+    fun unmuted() {
+        _isMuted.value = false
+    }
+
+    fun toggleeMuted() {
+        _isMuted.value = !_isMuted.value
+    }
 
 
     private val _quotes =
@@ -83,6 +99,14 @@ class QuoteMainViewModel @Inject constructor(
         initializeScrollTutorial()
 
 
+    }
+
+    fun shouldScrollToStart(){
+        _shouldScrollToStart.value = true
+    }
+
+    fun scrolledToStart(){
+        _shouldScrollToStart.value = false
     }
 
 

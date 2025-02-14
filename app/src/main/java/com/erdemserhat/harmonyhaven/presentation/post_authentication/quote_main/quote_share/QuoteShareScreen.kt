@@ -184,7 +184,7 @@ fun QuoteShareScreen(
                 VideoCard(
                     videoUrl = params.quoteUrl,
                     isPlaying = true,
-                    prepareOnly = true,
+                    prepareOnly = true
                 )
 
             } else {

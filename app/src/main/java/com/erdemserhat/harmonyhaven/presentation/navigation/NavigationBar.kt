@@ -13,6 +13,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -81,7 +83,10 @@ fun AppMainScreen(
 
 
 ) {
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(
+        initialPage = 1
+
+    )
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -108,6 +113,9 @@ fun AppMainScreen(
     val categorySheetState = SheetState(skipPartiallyExpanded = false, density = Density(context))
 
     val  commentViewModel :CommentViewModel = hiltViewModel()
+
+    var lastClickTime by remember { mutableStateOf(0L) }
+    val doubleClickThreshold = 300L // Çift tıklama için eşik süre (ms)
     // Scroll to the initial page if provided
     LaunchedEffect(params.screenNo) {
         if (params.screenNo != -1) {
@@ -116,16 +124,19 @@ fun AppMainScreen(
 
     }
 
-    window.let {
-
-        WindowCompat.setDecorFitsSystemWindows(it, true)
-
-
+    LaunchedEffect(pagerState.currentPage) {
+        Log.d("dsdfsdfsdf",pagerState.currentPage.toString())
+        if(pagerState.currentPage!=1){
+            quoteViewModel.muted()
+        }else{
+            quoteViewModel.unmuted()
+        }
     }
 
 
+
     //set status bar and system navbar color
-    if (pagerState.currentPage == 0) {
+    if (pagerState.currentPage == 1) {
         window.let {
             // content fill the system navbar- status bar
             //do not change this
@@ -161,16 +172,17 @@ fun AppMainScreen(
     }
 
 
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(if (pagerState.currentPage == 0) Color.Black else Color.White)
+            .background(if (pagerState.currentPage == 1) Color.Black else Color.White)
             .padding(WindowInsets.navigationBars.asPaddingValues()),
         bottomBar = {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(if (pagerState.currentPage == 0) Color.Black else Color.White)
+                    .background(if (pagerState.currentPage == 1) Color.Black else Color.White)
                     //for android 15 (api level 35)
                     .padding()
                     .height(45.dp),
@@ -187,14 +199,31 @@ fun AppMainScreen(
 
                             ) {
                                 coroutineScope.launch {
+                                    if(index==1){
+                                        val currentTime = System.currentTimeMillis()
+                                        if (currentTime - lastClickTime < doubleClickThreshold) {
+                                            // Çift tıklama algılandı
+                                            coroutineScope.launch {
+                                                // Çift tıklama işlemi
+                                                quoteViewModel.shouldScrollToStart()
+
+                                                quoteViewModel.refreshList()
+                                            }
+                                        }
+                                        lastClickTime = currentTime
+
+                                    }
                                     keyboardController?.hide()
                                     pagerState.scrollToPage(index)
                                     params.screenNo = -1
+
                                 }
-                            },
+                            }
+
+                        ,
                         contentAlignment = Alignment.Center
                     ) {
-                        val iconResource = if (pagerState.currentPage == 0) {
+                        val iconResource = if (pagerState.currentPage == 1) {
                             if (pagerState.currentPage == index) item.selectedIconDarkIcon else item.unSelectedIconDarkIcon
                         } else {
                             if (pagerState.currentPage == index) item.selectedIconWhiteIcon else item.unSelectedIconWhiteIcon
@@ -210,7 +239,7 @@ fun AppMainScreen(
 
         },
         topBar = {
-            if (pagerState.currentPage != 0) {
+            if (pagerState.currentPage != 1) {
                 MyAppBar(
                     onExitClicked = {
                         viewModel.logout()
@@ -218,9 +247,9 @@ fun AppMainScreen(
                     modifier = Modifier.zIndex(1f),
                     navController = navController,
                     title = when (pagerState.currentPage) {
-                        2 -> "Harmony Haven"
-                        1 -> "Bildirimler"
-                        0 -> "Söz Akışı"
+                        0 -> "Harmony Haven"
+                        2 -> "Bildirimler"
+                        1 -> "Söz Akışı"
                         else -> "Default Title"
                     },
                     topBarBackgroundColor = when (pagerState.currentPage) {
@@ -303,9 +332,9 @@ fun AppMainScreen(
 
                 when (page) {
                     3-> ProfileScreen()
-                    2 -> HomeScreenNew(navController = navController)
-                    1 -> NotificationScreen(navController)
-                    0 -> QuoteMainScreen(
+                    0 -> HomeScreenNew(navController = navController)
+                    2-> NotificationScreen(navController)
+                    1 -> QuoteMainScreen(
                         navController = navController,
                         sharedViewModel = viewModel,
                         onCommentsClicked = {postId->
@@ -416,6 +445,17 @@ private data class NavigationBarItem(
 
 private val items = listOf(
     NavigationBarItem(
+        title = "İçerikler",
+        hasNews = false,
+        badgeCount = null,
+        route = Screen.Home.route,
+        selectedIconDarkIcon = R.drawable.homewhitefilled,
+        selectedIconWhiteIcon = R.drawable.homeblackfilled,
+        unSelectedIconDarkIcon = R.drawable.homewhiteunfilled,
+        unSelectedIconWhiteIcon = R.drawable.homeblackunfilled
+
+    ),
+    NavigationBarItem(
         title = "Sözler",
         hasNews = false,
         badgeCount = null,
@@ -434,18 +474,7 @@ private val items = listOf(
         selectedIconWhiteIcon = R.drawable.notificationblackfilled,
         unSelectedIconDarkIcon = R.drawable.notificationwhiteunfilled,
         unSelectedIconWhiteIcon = R.drawable.notificationblackunfilled
-    ),
-    NavigationBarItem(
-        title = "İçerikler",
-        hasNews = false,
-        badgeCount = null,
-        route = Screen.Home.route,
-        selectedIconDarkIcon = R.drawable.homewhitefilled,
-        selectedIconWhiteIcon = R.drawable.homeblackfilled,
-        unSelectedIconDarkIcon = R.drawable.homewhiteunfilled,
-        unSelectedIconWhiteIcon = R.drawable.homeblackunfilled
-
-    ),
+    )
     //  NavigationBarItem(
     //      title = "Home",
     //      hasNews = false,
