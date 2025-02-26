@@ -175,10 +175,10 @@ fun CommentBlock(
             AlertDialog(
                 onDismissRequest = { isDialogVisible = false },
                 title = {
-                    Text(text = "Yorumu Sil")
+                    Text(text = "Yorumu Sil", color = Color.White)
                 },
                 text = {
-                    Text(text = "Yorumunu silmek istediğine emin misin?")
+                    Text(text = "Yorumunu silmek istediğine emin misin?", color = Color.White)
                 },
                 confirmButton = {
                     TextButton(onClick = {

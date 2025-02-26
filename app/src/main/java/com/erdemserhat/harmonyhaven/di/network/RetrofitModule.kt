@@ -40,16 +40,12 @@ object RetrofitModule {
         context: Context
     ): OkHttpClient {
 
-        // Configure CertificatePinner with the SHA-256 fingerprint
-        val certificatePinner = CertificatePinner.Builder()
-            .add(BuildConfig.SERVER_MAIN_PATTERN, BuildConfig.SSL_CERTIFICATE) // Use the updated fingerprint
-            .build()
+
         // Build and return the OkHttpClient
         return OkHttpClient.Builder()
             .dispatcher(Dispatcher().apply {
                 maxRequestsPerHost = 10
             })
-            .certificatePinner(certificatePinner)
             .connectTimeout(1, TimeUnit.MINUTES) // Connection timeout
             .readTimeout(45, TimeUnit.SECONDS) // Read timeout
             .writeTimeout(30, TimeUnit.SECONDS) // Write timeout

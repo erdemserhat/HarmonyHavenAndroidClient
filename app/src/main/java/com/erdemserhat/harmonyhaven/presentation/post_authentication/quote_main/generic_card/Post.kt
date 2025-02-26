@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioManager
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,6 +42,7 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VideoCard
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VolumeControlViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLike
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLikeBottomControlButton
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteCard
@@ -64,6 +66,7 @@ fun Quote(
     onShareQuoteClicked: () -> Unit,
     navController: NavController? = null,
     onCommentClicked: () -> Unit,
+    volumeControllerViewModel:VolumeControlViewModel? = null
 ) {
     var isQuoteLiked by remember { mutableStateOf(quote.isLiked) }
     var isVisibleLikeAnimation by remember { mutableStateOf(false) }
@@ -71,7 +74,6 @@ fun Quote(
     var shouldScreenBeClear by rememberSaveable { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val capturableController = rememberCaptureController()
-    val isMuted = viewmodel.isMuted.value// ViewModel'den isMuted durumunu alın
     val context = LocalContext.current
 
 
@@ -94,6 +96,8 @@ fun Quote(
                         shouldAnimateLikeButton = true
                     },
                     onTap = {
+                        Log.d("dasdasdas","dasdas")
+                        volumeControllerViewModel?.toggleMute()
 
 
 
@@ -154,7 +158,7 @@ fun Quote(
                 videoUrl = quote.imageUrl,
                 isPlaying = isCurrentPage,
                 prepareOnly = isVisible,
-                isMuted = isMuted
+                viewModel = volumeControllerViewModel
             )
 
         }

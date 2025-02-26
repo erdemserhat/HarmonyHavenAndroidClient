@@ -4,6 +4,7 @@ package com.erdemserhat.harmonyhaven.presentation.prev_authentication.login
 import android.app.Activity
 import android.util.Log
 import android.view.Window
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -67,6 +68,7 @@ import okhttp3.internal.wait
 fun LoginScreenContent(
     params: LoginScreenParams,
 ) {
+
 
 
 
@@ -319,6 +321,10 @@ fun LoginScreen(
     val context = LocalContext.current
     val activity = context as? Activity
     val window = activity?.window!!
+
+    BackHandler {
+
+    }
 
 
 

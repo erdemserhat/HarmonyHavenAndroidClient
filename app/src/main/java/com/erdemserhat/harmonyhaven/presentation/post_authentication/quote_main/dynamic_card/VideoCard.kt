@@ -1,6 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card
 
 import android.app.Activity
+import android.util.Log
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.OptIn
@@ -16,9 +17,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,10 +50,15 @@ fun VideoCard(
     videoUrl: String,
     isPlaying: Boolean,
     prepareOnly: Boolean,
-    isMuted:Boolean = false
+    viewModel: VolumeControlViewModel? = null
+
 ) {
+
     val context = LocalContext.current
-    var isLoading by remember { mutableStateOf(true) } // Yüklenme durumunu takip edin
+    var isLoading by remember { mutableStateOf(true) }
+    val isMuted = viewModel?.isMuted?.collectAsState()
+
+
 
     // Cache Oluşturma
     val cache = CacheManager.getCache(context)
@@ -65,12 +73,17 @@ fun VideoCard(
         ExoPlayer.Builder(context)
             .setMediaSourceFactory(DefaultMediaSourceFactory(cacheDataSourceFactory))
             .build().apply {
+                if (isMuted != null) {
+                    Log.d("dqddasdasdas",isMuted.value.toString())
+                    volume = if(isMuted.value) 0f else 1f
+                }
+
+
+
                 setMediaItem(MediaItem.fromUri(videoUrl))
                 prepare()
                 playWhenReady = true
-
                 repeatMode = ExoPlayer.REPEAT_MODE_ALL
-
                 addListener(object : Player.Listener {
                     override fun onPlaybackStateChanged(state: Int) {
                         if (state == ExoPlayer.STATE_READY) {
@@ -83,7 +96,10 @@ fun VideoCard(
 
     }
 
-    exoPlayer.volume =if(isMuted) 0f else 1f
+    LaunchedEffect(isMuted?.value) {
+        exoPlayer.volume = if(isMuted?.value == true) 0f else 1f
+    }
+
 
 
     // LifecycleObserver için bir uygulama yaşam döngüsü gözlemcisi ekle
@@ -109,7 +125,7 @@ fun VideoCard(
 
     LaunchedEffect(isPlaying) {
         exoPlayer.playWhenReady = isPlaying
-        exoPlayer.volume = if (isPlaying) 1f else 0f // Ses sadece aktif sayfa için açık
+        exoPlayer.volume = if (isPlaying && (isMuted?.value == false)) 1f else 0f // Ses sadece aktif sayfa için açık
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -132,6 +148,7 @@ fun VideoCard(
                 factory = {
                     PlayerView(context)
                         .apply {
+
                         useController = false
                         player = exoPlayer
                         resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM

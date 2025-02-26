@@ -24,6 +24,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.presentation.navigation.SharedViewModel
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VolumeControlViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.PostFlow
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -34,10 +35,12 @@ fun QuoteMainScreen(
     viewmodel: QuoteMainViewModel,
     sharedViewModel: SharedViewModel,
     onCommentsClicked: (postId: Int) -> Unit,
-    onCategoryClicked: () -> Unit
+    onCategoryClicked: () -> Unit,
+    volumeControllerViewModel:VolumeControlViewModel? = null
 ) {
 
     QuoteMainContent(
+        volumeControllerViewModel = volumeControllerViewModel,
         modifier = modifier,
         viewmodel = viewmodel,
         navController = navController,
@@ -56,7 +59,8 @@ fun QuoteMainContent(
     navController: NavController? = null,
     sharedViewModel: SharedViewModel,
     onCommentsClicked: (postId: Int) -> Unit,
-    onCategoryClicked: () -> Unit
+    onCategoryClicked: () -> Unit,
+    volumeControllerViewModel:VolumeControlViewModel? =null
 ) {
 
     //
@@ -93,6 +97,7 @@ fun QuoteMainContent(
             .background(Color.Black)
     ) {
         PostFlow(
+            volumeControllerViewModel = volumeControllerViewModel,
             modifier = Modifier,
             viewmodel = viewmodel,
             navController = navController,

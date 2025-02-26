@@ -46,20 +46,6 @@ class QuoteMainViewModel @Inject constructor(
 ) : ViewModel() {
     private var _shouldScrollToStart = mutableStateOf(false)
     val shouldScrollToStart:State<Boolean> = _shouldScrollToStart
-    private val _isMuted = mutableStateOf(false)
-    val isMuted: State<Boolean> get() = _isMuted
-
-    fun muted() {
-        _isMuted.value = true
-    }
-    fun unmuted() {
-        _isMuted.value = false
-    }
-
-    fun toggleeMuted() {
-        _isMuted.value = !_isMuted.value
-    }
-
 
     private val _quotes =
         MutableStateFlow<Set<Quote>>(mutableSetOf())

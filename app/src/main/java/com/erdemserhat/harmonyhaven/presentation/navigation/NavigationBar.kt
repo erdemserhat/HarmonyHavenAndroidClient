@@ -62,6 +62,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.compos
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VolumeControlViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.CategoryPickerModalBottomSheet
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentModalBottomSheet
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentViewModel
@@ -105,6 +106,8 @@ fun AppMainScreen(
     var shouldShowCommentBottomModal by remember{
         mutableStateOf(false)
     }
+    val volumeControlViewModel = hiltViewModel<VolumeControlViewModel>()
+
     val commentSheetState = SheetState(skipPartiallyExpanded = true, density = Density(context))
 
     var shouldShowCategoryBottomModal by remember{
@@ -127,11 +130,41 @@ fun AppMainScreen(
     LaunchedEffect(pagerState.currentPage) {
         Log.d("dsdfsdfsdf",pagerState.currentPage.toString())
         if(pagerState.currentPage!=1){
-            quoteViewModel.muted()
+            volumeControlViewModel.saveLastCondition()
+            volumeControlViewModel.mute()
         }else{
-            quoteViewModel.unmuted()
+            volumeControlViewModel.setLastCondition()
+
+
         }
     }
+
+
+
+
+    val screens: Map<Int, @Composable () -> Unit> = remember {
+        mapOf(
+            0 to { HomeScreenNew(navController) },
+            1 to { QuoteMainScreen(
+                volumeControllerViewModel = volumeControlViewModel,
+                navController = navController,
+                sharedViewModel = viewModel,
+                onCommentsClicked = { postId ->
+                    postID = postId
+                    shouldShowCommentBottomModal = true
+                },
+                onCategoryClicked = {
+                    coroutineScope.launch {
+                        shouldShowCategoryBottomModal = true
+                    }
+                },
+                viewmodel = quoteViewModel
+            ) },
+            2 to { NotificationScreen(navController) },
+            3 to { ProfileScreen() }
+        )
+    }
+
 
 
 
@@ -282,31 +315,49 @@ fun AppMainScreen(
         }
 
 
-
+        LaunchedEffect(commentSheetState.isVisible) {
+            if (commentSheetState.isVisible) {
+                if ( commentViewModel.lastPostId.value != postID) {
+                    commentViewModel.loadComments(postID)
+                } else {
+                    commentViewModel.loadFromCache()
+                }
+            } else {
+                keyboardController?.hide()
+                commentViewModel.setLastPostId(postID)
+                commentViewModel.resetList()
+                commentViewModel.commitApiCallsWithoutDelay()
+            }
+        }
 
 
         if (shouldShowExitDialog) {
-            AlertDialog(
-                onDismissRequest = { shouldShowExitDialog = false },
-                title = {
-                    androidx.compose.material.Text(text = "Çıkmak Üzeresiniz")
-                },
-                text = {
-                    androidx.compose.material.Text(text = "Uygulamadan çıkmak istediğinizden emin misiniz?")
-                },
-                confirmButton = {
-                    TextButton(onClick = {
-                        activity?.finish() // Uygulamayı sonlandır
-                    }) {
-                        androidx.compose.material.Text(text = "Evet", color = Color.Red)
+            Box(modifier = Modifier.fillMaxSize()){
+                AlertDialog(
+                    modifier = Modifier.align(Alignment.Center),
+                    onDismissRequest = { shouldShowExitDialog = false },
+                    title = {
+                        androidx.compose.material.Text(text = "Çıkmak Üzeresiniz")
+                    },
+                    text = {
+                        androidx.compose.material.Text(text = "Uygulamadan çıkmak istediğinizden emin misiniz?")
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            activity?.finish() // Uygulamayı sonlandır
+                        }) {
+                            androidx.compose.material.Text(text = "Evet", color = Color.Red)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { shouldShowExitDialog = false }) {
+                            androidx.compose.material.Text(text = "Vazgeç", color = Color.White)
+                        }
                     }
-                },
-                dismissButton = {
-                    TextButton(onClick = { shouldShowExitDialog = false }) {
-                        androidx.compose.material.Text(text = "Vazgeç", color = Color.White)
-                    }
-                }
-            )
+                )
+
+            }
+
 
         }
 
@@ -330,28 +381,7 @@ fun AppMainScreen(
 
             Box{
 
-                when (page) {
-                    3-> ProfileScreen()
-                    0 -> HomeScreenNew(navController = navController)
-                    2-> NotificationScreen(navController)
-                    1 -> QuoteMainScreen(
-                        navController = navController,
-                        sharedViewModel = viewModel,
-                        onCommentsClicked = {postId->
-                            postID = postId
-                            shouldShowCommentBottomModal = true
-
-                        },
-                        onCategoryClicked = {
-                            coroutineScope.launch {
-                                shouldShowCategoryBottomModal = true
-                            }
-                        },
-                        viewmodel = quoteViewModel
-
-
-                    )
-                }
+                screens[page]?.let { it() }
 
 
 
@@ -380,20 +410,7 @@ fun AppMainScreen(
 
                 }
 
-                LaunchedEffect(commentSheetState.isVisible) {
-                    if (commentSheetState.isVisible) {
-                        if ( commentViewModel.lastPostId.value != postID) {
-                            commentViewModel.loadComments(postID)
-                        } else {
-                            commentViewModel.loadFromCache()
-                        }
-                    } else {
-                        keyboardController?.hide()
-                        commentViewModel.setLastPostId(postID)
-                        commentViewModel.resetList()
-                        commentViewModel.commitApiCallsWithoutDelay()
-                    }
-                }
+
 
                 if(shouldShowCategoryBottomModal){
 
@@ -487,6 +504,10 @@ private val items = listOf(
 //
     //  )
 )
+
+
+
+
 
 
 

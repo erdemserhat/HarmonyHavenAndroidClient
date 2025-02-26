@@ -153,6 +153,23 @@ fun ArticleScreenContent(
         11 to (Color(0xFFF5F5F5) to Color(0xFF212121))
     )
 
+
+    val fontMap:Map<Int,Font> = mapOf(
+        0 to Font(R.font.opensans),
+        1 to Font(R.font.roboto),
+        2 to Font(R.font.kumbh_sans_light),
+        3 to Font(R.font.monster),
+        4 to Font(R.font.lato)
+    )
+
+    // Define your custom font using FontFamily
+    val customFont =
+        if (selectedFontStyle == 0) (Font(R.font.opensans))
+        else if (selectedFontStyle == 1) (Font(R.font.roboto))
+        else if (selectedFontStyle == 2) (Font(R.font.kumbh_sans_light))
+        else if (selectedFontStyle == 3) (Font(R.font.monster))
+        else (Font(R.font.lato))
+
     LaunchedEffect(Unit) {
         val selectedBgVariance = colorMap[selectedBackgroundColorVariance]
         selectedTextColor = selectedBgVariance!!.first
@@ -161,7 +178,6 @@ fun ArticleScreenContent(
 
 
     }
-
 
 
 // Track scroll direction
@@ -364,7 +380,8 @@ fun ArticleScreenContent(
                             Spacer(modifier = Modifier.size(6.dp))
                             FontStyleOption(
                                 isSelected = selectedFontStyle == index,
-                                onClick = { selectedFontStyle = index }
+                                onClick = { selectedFontStyle = index },
+                                font = fontMap[index]!!
                             )
                         }
                     }
@@ -384,7 +401,7 @@ fun ArticleScreenContent(
                     ) {
                         items(11) { index ->
                             ColorOption(
-                                color = colorMap[index] ?: (Color(0xFFF5F5F5) to Color(0xFF212121) ),
+                                color = colorMap[index] ?: (Color(0xFFF5F5F5) to Color(0xFF212121)),
                                 isSelected = selectedBackgroundColorVariance == index,
                                 onClick = { text, bg ->
                                     selectedBackgroundColorVariance = index
@@ -437,13 +454,7 @@ fun ArticleScreenContent(
             Spacer(modifier = Modifier.height(16.dp))
 
 
-            // Define your custom font using FontFamily
-            val customFont =
-                if (selectedFontStyle == 0) (Font(R.font.opensans))
-                else if (selectedFontStyle == 1) (Font(R.font.roboto))
-                else if (selectedFontStyle == 2) (Font(R.font.kumbh_sans_light))
-                else if (selectedFontStyle == 3) (Font(R.font.monster))
-                else (Font(R.font.lato))
+
 
             // Define the TextStyle with the custom font
             val customStyle = TextStyle(
@@ -461,7 +472,14 @@ fun ArticleScreenContent(
                     isTextSelectable = true,
                 )
 
-                Spacer(modifier = Modifier.background(Color.Transparent).size(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() +10.dp))
+                Spacer(
+                    modifier = Modifier
+                        .background(Color.Transparent)
+                        .size(
+                            WindowInsets.navigationBars.asPaddingValues()
+                                .calculateBottomPadding() + 10.dp
+                        )
+                )
             }
 
 
@@ -527,7 +545,8 @@ private fun ColorOption(
 @Composable
 private fun FontStyleOption(
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    font:Font
 ) {
     Box(
         modifier = Modifier
@@ -539,7 +558,7 @@ private fun FontStyleOption(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            fontFamily = Font(R.font.play).toFontFamily(),
+            fontFamily = font.toFontFamily(),
             fontSize = 20.sp,
             text = "A",
             color = if (isSelected) Color.White else Color.White,
