@@ -20,7 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenIndicatorColor
 
 @Composable
@@ -31,7 +33,7 @@ fun CategoryCard(
 ) {
 
     val targetColor =
-        if (isSelected) harmonyHavenIndicatorColor else Color.Black
+        if (isSelected) harmonyHavenGreen.copy(alpha = 0.85f) else Color.LightGray.copy(alpha = 0.4f)
 
 
     val animatedColor by animateColorAsState(
@@ -41,9 +43,9 @@ fun CategoryCard(
 
     Card(
         modifier = Modifier
-            .padding(end = 8.dp)
+            .padding(end = 3.dp)
             .size(width = 90.dp, height = 45.dp)
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(50.dp))
             .clickable { onItemClick() },
 
         colors = CardDefaults.cardColors(
@@ -56,9 +58,10 @@ fun CategoryCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
+                fontSize = 13.sp,
                 text = category.name,
                 style = MaterialTheme.typography.labelLarge,
-                color = if (isSelected) Color.Black else Color.White
+                color = if (isSelected) Color.White else Color.Black
 
             )
         }

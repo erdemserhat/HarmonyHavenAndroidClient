@@ -209,13 +209,13 @@ fun AppMainScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(if (pagerState.currentPage == 1) Color.Black else Color.White)
+            .background(if (pagerState.currentPage == 1) Color.Black else Color.White.copy(alpha = 0.95f))
             .padding(WindowInsets.navigationBars.asPaddingValues()),
         bottomBar = {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(if (pagerState.currentPage == 1) Color.Black else Color.White)
+                    .background(if (pagerState.currentPage == 1) Color.Black else Color.White.copy(alpha = 0.95f))
                     //for android 15 (api level 35)
                     .padding()
                     .height(45.dp),

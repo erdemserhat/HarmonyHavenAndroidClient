@@ -60,7 +60,7 @@ fun HomeScreenContentNew(
     var isKeyboardVisible by remember {
         mutableStateOf(false)
     }
-    var selectedCategoryId = rememberSaveable { mutableIntStateOf(0) }
+    var selectedCategoryId = rememberSaveable { mutableIntStateOf(1) }
 
     val keyboardController = LocalSoftwareKeyboardController.current
 

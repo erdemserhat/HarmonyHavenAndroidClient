@@ -34,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.erdemserhat.harmonyhaven.R
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 
 @Composable
 fun HomeScreenSearchBar(
@@ -66,10 +67,10 @@ fun HomeScreenSearchBar(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .background(
-                color = Color.LightGray,
-                shape = RoundedCornerShape(10.dp)
+                color = Color.LightGray.copy(alpha = 0.4f),
+                shape = RoundedCornerShape(50.dp)
             )
-            .fillMaxWidth(0.9f),
+            .fillMaxWidth(0.93f),
 
 
     ) {

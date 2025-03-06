@@ -67,6 +67,29 @@ class NotificationViewModel @Inject constructor(
         Log.d("testNotification",_notifications.value.toString())
     }
 
+     fun refreshNotification(onRefreshed:()->Unit){
+         isLoading.value = true
+         currentPage = 1
+        viewModelScope.launch {
+            try {
+                _notifications.value = listOf()
+                val newNotifications =
+                    notificationUseCases.getNotification.executeRequest(currentPage, pageSize)
+                if (newNotifications.isNotEmpty()) {
+                    _notifications.value = newNotifications
+                } else {
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                onRefreshed()
+                hasMoreData = true
+                isLoading.value = false
+            }
+        }
+
+    }
+
 
     //Permission operations
     private val sharedPreferences =

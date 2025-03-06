@@ -31,10 +31,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -42,6 +46,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -55,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -68,11 +75,16 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenButton
 import com.erdemserhat.harmonyhaven.ui.theme.customFontInter
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.placeholder.shimmer
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
@@ -86,6 +98,7 @@ fun convertTimestampToTurkishDate(timestamp: Long): String {
     return sdf.format(date)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun NotificationScreen(
@@ -94,12 +107,11 @@ fun NotificationScreen(
 
 ) {
 
-   // val isDarkMode: Boolean = isSystemInDarkTheme()
-
-
     //val notifications by viewModel.allNotifications.observeAsState(initial = emptyList())
     val notifications by viewModel.notifications.collectAsState()
     var permissionGranted by remember { mutableStateOf(viewModel.isPermissionGranted()) }
+
+
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -120,105 +132,125 @@ fun NotificationScreen(
         )
     }
 
+    var isRefreshing by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val coroutineScope = rememberCoroutineScope()
 
 
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = {
+            isRefreshing = true
+            // Trigger refresh logic
+            coroutineScope.launch {
+                viewModel.refreshNotification {
+                    isRefreshing = false
 
-
-    Column(
-        Modifier
-            .fillMaxSize()
-            .background(
-                Color.White
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (Build.VERSION.SDK_INT >= 31 && !permissionGranted) {
-            //Request Permission
-            Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-
-            ) {
-                Spacer(modifier = Modifier.size(25.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.notication),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.size(20.dp))
-                Text(
-                    text = "Harmony Haven, size daha iyi bir deneyim sunmak için bildirimler gönderebilir. Bu bildirimler, ilgi alanlarınıza ve kullanım alışkanlıklarınıza göre özelleştirilmiştir.",
-                    modifier = Modifier.widthIn(max = 400.dp), // Metnin genişliği
-                    softWrap = true // Satır başı yapma
-                )
-
-                Spacer(modifier = Modifier.size(20.dp))
-                HarmonyHavenButton(buttonText = "İzin Ver", onClick = {
-                    notificationPermissionLauncher.launch(
-                        Manifest.permission.POST_NOTIFICATIONS
-                    )
-                }, isEnabled = true)
-                Spacer(modifier = Modifier.size(20.dp))
+                }
 
             }
+        },
+        modifier = Modifier.fillMaxSize() // Ensure it takes up the entire screen
+    ){
+        Column(
+            Modifier
+                .fillMaxSize()
+                .background(
+                    Color.White
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (Build.VERSION.SDK_INT >= 31 && !permissionGranted) {
+                //Request Permission
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
 
-        } else {
-            if (notifications.isEmpty() && isLoading.value) {
-                Spacer(modifier = Modifier.size(20.dp))
-                viewModel.loadNotifications()
+                ) {
+                    Spacer(modifier = Modifier.size(25.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.notication),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.size(20.dp))
+                    Text(
+                        text = "Harmony Haven, size daha iyi bir deneyim sunmak için bildirimler gönderebilir. Bu bildirimler, ilgi alanlarınıza ve kullanım alışkanlıklarınıza göre özelleştirilmiştir.",
+                        modifier = Modifier.widthIn(max = 400.dp), // Metnin genişliği
+                        softWrap = true // Satır başı yapma
+                    )
 
-                Column {
-                    repeat(5){
+                    Spacer(modifier = Modifier.size(20.dp))
+                    HarmonyHavenButton(buttonText = "İzin Ver", onClick = {
+                        notificationPermissionLauncher.launch(
+                            Manifest.permission.POST_NOTIFICATIONS
+                        )
+                    }, isEnabled = true)
+                    Spacer(modifier = Modifier.size(20.dp))
+
+                }
+
+            } else {
+                if (notifications.isEmpty() && isLoading.value) {
+                    Spacer(modifier = Modifier.size(20.dp))
+                    viewModel.loadNotifications()
+
+                    Column {
+                        repeat(5){
                             NotificationContentShimmer()
                         }
                     }
 
 
-            }else if (notifications.isEmpty()){
-                Spacer(modifier = Modifier.size(20.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.no_mail),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.size(10.dp))
-                Text(
-                    text = "Henüz bir bildirim yok, en kısa sürede bildirim almaya başlayacaksınız.",
-                    textAlign = TextAlign.Center
+                }else if (notifications.isEmpty()){
+                    Spacer(modifier = Modifier.size(20.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.no_mail),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.size(10.dp))
+                    Text(
+                        text = "Henüz bir bildirim yok, en kısa sürede bildirim almaya başlayacaksınız.",
+                        textAlign = TextAlign.Center
 
-                )
-            }
-
-            else {
-                val scrollState = rememberLazyListState()
-                LazyColumn(state = scrollState) {
-                    items(notifications) {it
-                        NotificationContent(it,navController)
-                    }
-
-                    // Loading indicator or more items
-                    item {
-                        if (isLoading.value) {
-                            // Show loading indicator
-                            Text(text = "...", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-                        }
-                    }
-
+                    )
                 }
 
-                // Detect when user scrolls to the end
-                LaunchedEffect(scrollState) {
-                    snapshotFlow { scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
-                        .collect { lastVisibleIndex ->
-                            if (lastVisibleIndex != null) {
-                                if (lastVisibleIndex >= notifications.size - 1 && !isLoading.value && viewModel.hasMoreData) {
-                                    viewModel.loadNotifications()
-                                }
+                else {
+                    val scrollState = rememberLazyListState()
+                    LazyColumn(state = scrollState) {
+                        items(notifications) {it
+                            NotificationContent(it,navController)
+                        }
+
+                        // Loading indicator or more items
+                        item {
+                            if (isLoading.value) {
+                                // Show loading indicator
+                                Text(text = "...", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                             }
                         }
+
+                    }
+
+                    // Detect when user scrolls to the end
+                    LaunchedEffect(scrollState) {
+                        snapshotFlow { scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+                            .collect { lastVisibleIndex ->
+                                if (lastVisibleIndex != null) {
+                                    if (lastVisibleIndex >= notifications.size - 1 && !isLoading.value && viewModel.hasMoreData) {
+                                        viewModel.loadNotifications()
+                                    }
+                                }
+                            }
+                    }
+
+
+
+
                 }
-
-
 
 
             }
@@ -226,8 +258,13 @@ fun NotificationScreen(
 
         }
 
-
     }
+
+
+
+
+
+
 
 
 }
@@ -247,20 +284,14 @@ fun NotificationContent(notification: NotificationDto,navController: NavControll
         modifier = Modifier
             .padding(10.dp)
     ) {
-        Text(
-            text = convertTimestampToTurkishDate(notification.timeStamp),
-            fontFamily = customFontInter,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier
-                .padding(bottom = 5.dp)
-        )
+
+
         Box(
             modifier = Modifier
                 .width(380.dp)
                 .wrapContentHeight()
                 .defaultMinSize(minHeight = 100.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(color = harmonyHavenComponentWhite)
+                .background(color = Color.Transparent)
                 .clickable {
                     val shouldNavigateToPost = notification.screenCode.startsWith("-1")
                     if(shouldNavigateToPost){
@@ -309,8 +340,21 @@ fun NotificationContent(notification: NotificationDto,navController: NavControll
                         .padding(start = 10.dp, end = 10.dp, bottom = 10.dp),
                     textAlign = TextAlign.Justify,
                     fontFamily = customFontInter,
+                    color = Color.Black.copy(alpha = 0.7f),
                     fontSize = MaterialTheme.typography.bodyMedium.fontSize
 
+                )
+
+                Text(
+                    text = convertTimestampToTurkishDate(notification.timeStamp),
+                    fontSize = 13.sp
+                    ,
+                    color = Color.Black.copy(alpha = 0.65f),
+
+                    fontFamily = customFontInter,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier
+                        .padding(bottom = 5.dp, start = 10.dp)
                 )
 
             }
@@ -325,17 +369,13 @@ fun NotificationContent(notification: NotificationDto,navController: NavControll
 
                // )
 
-            Image(
-                painter = painterResource(id = R.drawable.harmony_haven_icon),
-                contentDescription = null,
-                Modifier
-                    .size(35.dp)
-                    .padding(10.dp)
-                    .align(Alignment.TopEnd),
 
-                )
+            Box(modifier = Modifier.clip(CircleShape).background(harmonyHavenGreen.copy(alpha = 0.65f)).size(8.dp).align(Alignment.TopEnd).padding(5.dp))
+
+
 
         }
+        Divider(color =  Color.Black.copy(alpha = 0.07f))
     }
 
 }
