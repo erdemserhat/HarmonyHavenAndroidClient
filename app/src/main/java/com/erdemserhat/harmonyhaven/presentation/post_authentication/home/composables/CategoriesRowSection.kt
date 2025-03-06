@@ -51,27 +51,19 @@ fun CategoryRow(
 
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header Section
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+
             Text(
                 text = "Kategoriler",
+                modifier = Modifier.align(Alignment.Start),
                 fontFamily = DefaultAppFont,
                 color = Color.Black.copy(alpha = 0.85f),
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 textAlign = TextAlign.Start
             )
-            
-            // Optional: Add a "See All" button or other action
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Categories List
         LazyRow(

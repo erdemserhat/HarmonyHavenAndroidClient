@@ -97,10 +97,7 @@ fun ArticleCard(
         label = "elevation"
     )
 
-    LaunchedEffect(Unit) {
 
-        Log.d("dsadasdas", convertToTurkishDate(article.publishDate))
-    }
 
     Box(
         modifier = Modifier
@@ -181,10 +178,10 @@ fun ArticleCard(
                                 )
                         )
 
-                        // Category Tag with Glass Effect
+
                         Box(
                             modifier = Modifier
-                                .align(Alignment.TopStart)
+                                .align(Alignment.BottomEnd)
                                 .padding(16.dp)
                                 .background(
                                     color = harmonyHavenGreen.copy(alpha = 0.85f),
@@ -277,7 +274,7 @@ fun ArticleCard(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.information_icon),
+                                        painter = painterResource(id = R.drawable.calendar),
                                         contentDescription = null,
                                         modifier = Modifier.size(16.dp),
                                         tint = Color.Gray.copy(alpha = 0.6f)
