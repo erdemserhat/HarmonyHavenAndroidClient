@@ -68,11 +68,9 @@ class NotificationViewModel @Inject constructor(
     }
 
      fun refreshNotification(onRefreshed:()->Unit){
-         isLoading.value = true
          currentPage = 1
         viewModelScope.launch {
             try {
-                _notifications.value = listOf()
                 val newNotifications =
                     notificationUseCases.getNotification.executeRequest(currentPage, pageSize)
                 if (newNotifications.isNotEmpty()) {
@@ -84,7 +82,6 @@ class NotificationViewModel @Inject constructor(
             } finally {
                 onRefreshed()
                 hasMoreData = true
-                isLoading.value = false
             }
         }
 

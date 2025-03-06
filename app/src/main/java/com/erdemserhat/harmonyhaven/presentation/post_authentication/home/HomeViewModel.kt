@@ -81,6 +81,63 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun refresh(onRefreshed:()->Unit){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+
+                val categoriesDeferred = async {
+                    articleUseCases.getCategories.executeRequest()
+                }
+
+                val articlesDeferred = async {
+                    articleUseCases.getArticles.executeRequest()
+
+                }
+
+
+                val categories = categoriesDeferred.await()
+                val articles = articlesDeferred.await()
+
+                if (categories == null && articles == null) {
+                    Log.d("homepage_tests", "categories and/or articles were null")
+                    return@launch
+                }
+
+                _homeState.value = _homeState.value.copy(
+
+                    categories = categories!!,
+                    categorizedArticles = articles!!.map {
+                        it.toArticleResponseType(categories,true)
+                    },
+                    isCategoryReady = true,
+                    isArticleReady = true,
+                    recentArticles = articles.take(4)
+                        .map { it.toArticleResponseType(categories) },
+                    allArticles = articles
+
+                )
+
+                _homeState.value.allArticles.map {
+
+                    Log.d("homepage_tests",it.id.toString() )
+
+                }
+
+
+                onRefreshed()
+                return@launch
+
+
+            } catch (e: Exception) {
+                //Handle the error process
+                Log.d("homepage_tests", "request operation is successful")
+
+            }
+
+        }
+
+    }
+
 
     fun getArticlesByCategoryId(categoryId: Int) {
         viewModelScope.launch(Dispatchers.IO) {

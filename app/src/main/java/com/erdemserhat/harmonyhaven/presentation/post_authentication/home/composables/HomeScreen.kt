@@ -38,6 +38,9 @@ fun HomeScreenNew(
         },
         allArticles = homeState.allArticles.map {
             it.toArticleResponseType(homeState.categories)
+        },
+        onRefreshed = {
+            homeViewModel.refresh(it)
         }
     )
 
