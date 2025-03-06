@@ -160,9 +160,6 @@ class MainActivity : ComponentActivity() {
                         val bundleMain = Bundle()
                         val screenCode = extraData.toInt()
 
-                        if (screenCode == 2) {
-
-                        } else {
                             bundleMain.putParcelable(
                                 "params",
                                 MainScreenParams(screenNo = screenCode)
@@ -172,7 +169,7 @@ class MainActivity : ComponentActivity() {
                                 args = bundleMain
                             )
 
-                        }
+
 
 
                     }
