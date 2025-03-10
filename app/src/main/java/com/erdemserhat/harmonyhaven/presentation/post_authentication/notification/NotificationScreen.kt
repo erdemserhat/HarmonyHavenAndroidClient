@@ -10,10 +10,17 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -53,7 +60,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -73,6 +82,7 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.MainScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenButton
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenProgressIndicator
 import com.erdemserhat.harmonyhaven.ui.theme.customFontInter
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
@@ -194,14 +204,12 @@ fun NotificationScreen(
 
             } else {
                 if (notifications.isEmpty() && isLoading.value) {
-                    Spacer(modifier = Modifier.size(20.dp))
                     viewModel.loadNotifications()
 
-                    Column {
-                        repeat(5){
-                            NotificationContentShimmer()
-                        }
-                    }
+                   Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                       HarmonyHavenProgressIndicator()
+
+                   }
 
 
                 }else if (notifications.isEmpty()){
@@ -484,5 +492,100 @@ fun NotificationContentShimmer() {
                     )
             )
         }
+    }
+}
+
+@Composable
+fun LoadingIndicator() {
+    val transition = rememberInfiniteTransition()
+
+    // Rotation animation
+    val rotation = transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = FastOutSlowInEasing)
+        )
+    )
+
+    // Scale animation for pulsing effect
+    val scale = transition.animateFloat(
+        initialValue = 0.8f,
+        targetValue = 1.2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        // Background circle
+        Box(
+            modifier = Modifier
+                .size(80.dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            harmonyHavenGreen.copy(alpha = 0.2f),
+                            harmonyHavenGreen.copy(alpha = 0.1f),
+                            Color.Transparent
+                        )
+                    ),
+                    shape = CircleShape
+                )
+        )
+
+        // Rotating circle
+        Box(
+            modifier = Modifier
+                .size(60.dp)
+                .graphicsLayer {
+                    rotationZ = rotation.value
+                    scaleX = scale.value
+                    scaleY = scale.value
+                }
+        ) {
+            // Arc segments
+            repeat(4) { index ->
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .graphicsLayer {
+                            rotationZ = index * 90f
+                        }
+                        .padding(8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(4.dp)
+                            .height(20.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(
+                                harmonyHavenGreen.copy(
+                                    alpha = 0.7f - (index * 0.15f)
+                                )
+                            )
+                            .align(Alignment.TopCenter)
+                    )
+                }
+            }
+        }
+
+        // Center dot
+        Box(
+            modifier = Modifier
+                .size(12.dp)
+                .background(
+                    harmonyHavenGreen.copy(alpha = 0.9f),
+                    shape = CircleShape
+                )
+                .graphicsLayer {
+                    scaleX = scale.value * 0.8f
+                    scaleY = scale.value * 0.8f
+                }
+        )
     }
 }

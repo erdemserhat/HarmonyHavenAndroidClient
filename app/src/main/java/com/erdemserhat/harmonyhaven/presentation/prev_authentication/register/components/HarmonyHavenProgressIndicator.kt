@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.dp
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 
 @Composable
-fun HarmonyHavenProgressIndicator() {
+fun HarmonyHavenProgressIndicator(modifier: Modifier = Modifier) {
     CircularProgressIndicator(
-        modifier = Modifier
+        modifier = modifier
             .width(32.dp),
         color = harmonyHavenGreen,
         trackColor = MaterialTheme.colorScheme.surfaceVariant,

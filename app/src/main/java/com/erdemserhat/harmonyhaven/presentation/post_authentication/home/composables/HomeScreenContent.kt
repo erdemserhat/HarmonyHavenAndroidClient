@@ -219,7 +219,7 @@ fun HomeScreenContentNew(
 
                     }
                 }else{
-                    items(10){
+                    items(2){
                         ShimmerArticleCard()
                     }
 
@@ -250,10 +250,11 @@ fun ShimmerArticleCard(onItemClick: () -> Unit={}) {
             .clickable { onItemClick() }
             .placeholder(
                 visible = true,
-                color = Color.LightGray,  // Base color of the shimmer effect
-                shape = RoundedCornerShape(10.dp),  // Match the shape of the card
+                color = Color.LightGray.copy(alpha = 0.4f)
+                ,
+                shape = RoundedCornerShape(12.dp),
                 highlight = PlaceholderHighlight.shimmer(
-                    highlightColor = Color.White  // Color of the shimmer highlight
+                    highlightColor = Color.LightGray.copy(alpha = 0.9f)
                 )
             ),
         elevation = CardDefaults.cardElevation(4.dp)  // Use CardDefaults to specify elevation

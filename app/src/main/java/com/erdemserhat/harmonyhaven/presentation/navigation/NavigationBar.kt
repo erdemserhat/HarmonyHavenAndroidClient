@@ -369,6 +369,7 @@ fun AppMainScreen(
 // //
         HorizontalPager(
             state = pagerState,
+            userScrollEnabled = false,
             count = items.size,
             modifier = Modifier
                 .fillMaxSize()

@@ -97,37 +97,21 @@ fun ShimmerCategoryCard(onItemClick: () -> Unit = {}) {
         modifier = Modifier
             .padding(end = 8.dp)
             .size(width = 90.dp, height = 45.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .shadow(
-                elevation = 4.dp,
-                shape = RoundedCornerShape(12.dp),
-                spotColor = Color.Black.copy(alpha = 0.1f)
-            )
+            .clip(RoundedCornerShape(50.dp))
             .clickable { onItemClick() }
             .placeholder(
                 visible = true,
-                color = Color(0xFFF5F5F5),
+                color = Color.LightGray.copy(alpha = 0.4f),
                 shape = RoundedCornerShape(12.dp),
                 highlight = PlaceholderHighlight.shimmer(
-                    highlightColor = Color.White.copy(alpha = 0.8f)
+                    highlightColor = Color.LightGray.copy(alpha = 0.9f)
+
                 )
             ),
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
         )
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFFF5F5F5),
-                            Color(0xFFF8F8F8)
-                        )
-                    )
-                )
-        )
+
     }
 }
