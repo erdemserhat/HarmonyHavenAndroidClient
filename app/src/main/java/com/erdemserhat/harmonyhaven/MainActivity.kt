@@ -51,16 +51,32 @@ import javax.inject.Inject
 import javax.inject.Named
 
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowInsetsControllerCompat
+import com.erdemserhat.harmonyhaven.domain.usecase.VersionControlUseCase
+import com.erdemserhat.harmonyhaven.presentation.common.NetworkErrorScreen
+import com.erdemserhat.harmonyhaven.presentation.common.UpdateAvailableScreen
+import com.erdemserhat.harmonyhaven.presentation.common.VersionCheckScreen
 import com.google.android.material.bottomsheet.BottomSheetBehavior.StableState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlin.coroutines.CoroutineContext
 
 
 @AndroidEntryPoint
@@ -77,6 +93,10 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var jwtRepository: JwtTokenRepository
+
+    @Inject
+    lateinit var versionControlUseCase: VersionControlUseCase
+
 
 
     @SuppressLint("NewApi")
@@ -95,70 +115,78 @@ class MainActivity : ComponentActivity() {
             firstInstallingExperiencePreferences.getBoolean("isLoggedInBefore", false)
         val isJwtExists = firstInstallingExperiencePreferences.getBoolean("isJwtExists", true)
 
-        setContent {
 
-            // Add this block:
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                window.isNavigationBarContrastEnforced = false
+        setContent {
+            navController = rememberNavController()
+            var scope = rememberCoroutineScope()
+
+
+            var version by rememberSaveable {
+                mutableIntStateOf(-1)
+            }
+            LaunchedEffect(Unit) {
+                delay(5_000)
+                version = versionControlUseCase.executeRequest(39)
+
             }
 
-            HarmonyHavenTheme {
-                navController = rememberNavController()
-                window
-
-                SetupNavGraph(
-                    navController = navController,
-                    startDestination = when (isLoggedInBefore) {
-                        true -> if (isJwtExists) Screen.Main.route else Screen.Login.route
-                        false -> if (isFirstLaunch) Screen.Welcome.route else Screen.Login.route },
-                    modifier = Modifier,
-                    window = window,
-
-                    )
+            if(version==-1){
+                VersionCheckScreen()
+            }else if (version==0) {
+                UpdateAvailableScreen()
+            }else if(version==-2){
+                NetworkErrorScreen(
+                    onRetry = {
+                        scope.launch {
+                            version = -1
+                            versionControlUseCase.executeRequest(version)
+                        }
 
 
-                /*
-
-                val bundleArticle = Bundle().apply {
-                    putParcelable(
-                        "article",
-                        ArticlePresentableUIModel(
-                            id = 46 // String'i Int'e çevir
-                        )
-                    )
+                    }
+                )
+            } else{
+                // Add this block:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    window.isNavigationBarContrastEnforced = false
                 }
 
-                // Article ekranına yönlendir
-                navController.navigate(
-                    route = Screen.Article.route,
-                    args = bundleArticle
-                )
+                HarmonyHavenTheme {
+                    window
 
-                 */
-                
+                    SetupNavGraph(
+                        navController = navController,
+                        startDestination = when (isLoggedInBefore) {
+                            true -> if (isJwtExists) Screen.Main.route else Screen.Login.route
+                            false -> if (isFirstLaunch) Screen.Welcome.route else Screen.Login.route
+                        },
+                        modifier = Modifier,
+                        window = window,
+
+                        )
 
 
-
-                extraData?.let {
-                    val bundleArticle = Bundle()
-                    val shouldNavigateToPost = extraData.startsWith("-1")
-                    if (shouldNavigateToPost) {
-                        val postId = extraData.drop(2)
-                        bundleArticle.putParcelable(
-                            "article",
-                            ArticlePresentableUIModel(
-                                id = postId.toInt()
+                    extraData?.let {
+                        val bundleArticle = Bundle()
+                        val shouldNavigateToPost = extraData.startsWith("-1")
+                        if (shouldNavigateToPost) {
+                            val postId = extraData.drop(2)
+                            bundleArticle.putParcelable(
+                                "article",
+                                ArticlePresentableUIModel(
+                                    id = postId.toInt()
+                                )
                             )
-                        )
 
-                        navController.navigate(
-                            route = Screen.Article.route,
-                            args = bundleArticle
-                        )
+                            navController.navigate(
+                                route = Screen.Article.route,
+                                args = bundleArticle
+                            )
 
-                    } else {
-                        val bundleMain = Bundle()
-                        val screenCode = extraData.toInt()
+                        } else {
+
+                            val screenCode = extraData.toInt()
+                            val bundleMain = Bundle()
 
                             bundleMain.putParcelable(
                                 "params",
@@ -172,19 +200,27 @@ class MainActivity : ComponentActivity() {
 
 
 
+                        }
+
                     }
 
+                    LaunchedEffect(key1 = Unit) {
+                        handleDeepLink(intent)
+                        firstInstallingExperiencePreferences.edit().putBoolean("isFirstLaunch", false)
+                            .apply()
+                    }
+
+
+
                 }
-
-                LaunchedEffect(key1 = Unit) {
-                    handleDeepLink(intent)
-                    firstInstallingExperiencePreferences.edit().putBoolean("isFirstLaunch", false)
-                        .apply()
-                }
-
-
 
             }
+
+
+
+
+
+
         }
 
     }
