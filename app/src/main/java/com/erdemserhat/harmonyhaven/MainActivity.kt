@@ -68,6 +68,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalView
+import androidx.core.splashscreen.SplashScreen
 import androidx.core.view.WindowInsetsControllerCompat
 import com.erdemserhat.harmonyhaven.domain.usecase.VersionControlUseCase
 import com.erdemserhat.harmonyhaven.presentation.common.NetworkErrorScreen
@@ -97,11 +98,12 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var versionControlUseCase: VersionControlUseCase
 
+    private var currentVersionCode = BuildConfig.VERSION_CODE.toInt()
 
 
     @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         enableEdgeToEdge() // Add this line.
@@ -121,31 +123,30 @@ class MainActivity : ComponentActivity() {
             var scope = rememberCoroutineScope()
 
 
-            var version by rememberSaveable {
+            var versionStatus by rememberSaveable {
                 mutableIntStateOf(-1)
             }
+            splashScreen.setKeepOnScreenCondition(SplashScreen.KeepOnScreenCondition {
+                versionStatus == -1
+            })
             LaunchedEffect(Unit) {
-                delay(5_000)
-                version = versionControlUseCase.executeRequest(39)
+                versionStatus = versionControlUseCase.executeRequest(currentVersionCode.toInt())
 
             }
-
-            if(version==-1){
-                VersionCheckScreen()
-            }else if (version==0) {
-                UpdateAvailableScreen()
-            }else if(version==-2){
+            if (versionStatus == 0) {
+                UpdateAvailableScreen(navController)
+            } else if (versionStatus == -2) {
                 NetworkErrorScreen(
                     onRetry = {
                         scope.launch {
-                            version = -1
-                            versionControlUseCase.executeRequest(version)
+                            versionStatus = -1
+                            versionStatus = versionControlUseCase.executeRequest(currentVersion = currentVersionCode.toInt())
                         }
 
 
                     }
                 )
-            } else{
+            } else {
                 // Add this block:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     window.isNavigationBarContrastEnforced = false
@@ -198,27 +199,21 @@ class MainActivity : ComponentActivity() {
                             )
 
 
-
-
                         }
 
                     }
 
                     LaunchedEffect(key1 = Unit) {
                         handleDeepLink(intent)
-                        firstInstallingExperiencePreferences.edit().putBoolean("isFirstLaunch", false)
+                        firstInstallingExperiencePreferences.edit()
+                            .putBoolean("isFirstLaunch", false)
                             .apply()
                     }
-
 
 
                 }
 
             }
-
-
-
-
 
 
         }
@@ -246,11 +241,13 @@ class MainActivity : ComponentActivity() {
             Log.d("DeepLinkHandler", "URI: $uri")
 
             // URI'nin yolunu al
-            val pathSegments = uri.pathSegments // Örnek: ["articles", "29", "5-dakikalik-meditasyonla-zihninizi-degistirin-ve-daha-sakin-olun"]
+            val pathSegments =
+                uri.pathSegments // Örnek: ["articles", "29", "5-dakikalik-meditasyonla-zihninizi-degistirin-ve-daha-sakin-olun"]
 
             // Eğer yol segmentleri varsa ve "articles" içeriyorsa
             if (pathSegments.size >= 2 && pathSegments[0] == "articles") {
-                val articleId = pathSegments[1] // İkinci segment id'yi temsil eder (örneğin, "29" veya "32")
+                val articleId =
+                    pathSegments[1] // İkinci segment id'yi temsil eder (örneğin, "29" veya "32")
                 Log.d("DeepLinkHandler", "Article ID: $articleId")
 
                 // Article ID'yi kullanarak Bundle oluştur
@@ -275,6 +272,8 @@ class MainActivity : ComponentActivity() {
     }
 
 }
+
+
 
 
 
