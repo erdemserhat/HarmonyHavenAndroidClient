@@ -60,8 +60,7 @@ fun ProfileScreen(
             if (showIntro) {
                 EnneagramIntroScreen(
                     onStartClick = {
-                        showIntro = false
-                        shouldShowRemainder = true
+
 
                     }
                 )

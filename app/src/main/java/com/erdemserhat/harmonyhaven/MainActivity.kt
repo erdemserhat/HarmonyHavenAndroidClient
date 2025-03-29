@@ -73,7 +73,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.erdemserhat.harmonyhaven.domain.usecase.VersionControlUseCase
 import com.erdemserhat.harmonyhaven.presentation.common.NetworkErrorScreen
 import com.erdemserhat.harmonyhaven.presentation.common.UpdateAvailableScreen
-import com.erdemserhat.harmonyhaven.presentation.common.VersionCheckScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatScreen
 import com.google.android.material.bottomsheet.BottomSheetBehavior.StableState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -118,105 +118,109 @@ class MainActivity : ComponentActivity() {
         val isJwtExists = firstInstallingExperiencePreferences.getBoolean("isJwtExists", true)
 
 
-        setContent {
-            navController = rememberNavController()
-            var scope = rememberCoroutineScope()
 
 
-            var versionStatus by rememberSaveable {
-                mutableIntStateOf(-1)
-            }
-            splashScreen.setKeepOnScreenCondition(SplashScreen.KeepOnScreenCondition {
-                versionStatus == -1
-            })
-            LaunchedEffect(Unit) {
-                versionStatus = versionControlUseCase.executeRequest(currentVersionCode.toInt())
-
-            }
-            if (versionStatus == 0) {
-                UpdateAvailableScreen(navController)
-            } else if (versionStatus == -2) {
-                NetworkErrorScreen(
-                    onRetry = {
-                        scope.launch {
-                            versionStatus = -1
-                            versionStatus = versionControlUseCase.executeRequest(currentVersion = currentVersionCode.toInt())
-                        }
+            setContent {
+                navController = rememberNavController()
+                var scope = rememberCoroutineScope()
 
 
-                    }
-                )
-            } else {
-                // Add this block:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    window.isNavigationBarContrastEnforced = false
+                var versionStatus by rememberSaveable {
+                    mutableIntStateOf(-1)
                 }
+                splashScreen.setKeepOnScreenCondition(SplashScreen.KeepOnScreenCondition {
+                    versionStatus == -1
+                })
+                LaunchedEffect(Unit) {
+                    versionStatus = versionControlUseCase.executeRequest(currentVersionCode.toInt())
 
-                HarmonyHavenTheme {
-                    window
-
-                    SetupNavGraph(
-                        navController = navController,
-                        startDestination = when (isLoggedInBefore) {
-                            true -> if (isJwtExists) Screen.Main.route else Screen.Login.route
-                            false -> if (isFirstLaunch) Screen.Welcome.route else Screen.Login.route
-                        },
-                        modifier = Modifier,
-                        window = window,
-
-                        )
+                }
+                if (versionStatus == 0) {
+                    UpdateAvailableScreen(navController)
+                } else if (versionStatus == -2) {
+                    NetworkErrorScreen(
+                        onRetry = {
+                            scope.launch {
+                                versionStatus = -1
+                                versionStatus = versionControlUseCase.executeRequest(currentVersion = currentVersionCode.toInt())
+                            }
 
 
-                    extraData?.let {
-                        val bundleArticle = Bundle()
-                        val shouldNavigateToPost = extraData.startsWith("-1")
-                        if (shouldNavigateToPost) {
-                            val postId = extraData.drop(2)
-                            bundleArticle.putParcelable(
-                                "article",
-                                ArticlePresentableUIModel(
-                                    id = postId.toInt()
+                        }
+                    )
+                } else {
+                    // Add this block:
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        window.isNavigationBarContrastEnforced = false
+                    }
+
+                    HarmonyHavenTheme {
+                        window
+
+                        SetupNavGraph(
+                            navController = navController,
+                            startDestination = when (isLoggedInBefore) {
+                                true -> if (isJwtExists) Screen.Main.route else Screen.Login.route
+                                false -> if (isFirstLaunch) Screen.Welcome.route else Screen.Login.route
+                            },
+                            modifier = Modifier,
+                            window = window,
+
+                            )
+
+
+                        extraData?.let {
+                            val bundleArticle = Bundle()
+                            val shouldNavigateToPost = extraData.startsWith("-1")
+                            if (shouldNavigateToPost) {
+                                val postId = extraData.drop(2)
+                                bundleArticle.putParcelable(
+                                    "article",
+                                    ArticlePresentableUIModel(
+                                        id = postId.toInt()
+                                    )
                                 )
-                            )
 
-                            navController.navigate(
-                                route = Screen.Article.route,
-                                args = bundleArticle
-                            )
+                                navController.navigate(
+                                    route = Screen.Article.route,
+                                    args = bundleArticle
+                                )
 
-                        } else {
+                            } else {
 
-                            val screenCode = extraData.toInt()
-                            val bundleMain = Bundle()
+                                val screenCode = extraData.toInt()
+                                val bundleMain = Bundle()
 
-                            bundleMain.putParcelable(
-                                "params",
-                                MainScreenParams(screenNo = screenCode)
-                            )
-                            navController.navigate(
-                                route = Screen.Main.route,
-                                args = bundleMain
-                            )
+                                bundleMain.putParcelable(
+                                    "params",
+                                    MainScreenParams(screenNo = screenCode)
+                                )
+                                navController.navigate(
+                                    route = Screen.Main.route,
+                                    args = bundleMain
+                                )
 
+
+                            }
 
                         }
 
-                    }
+                        LaunchedEffect(key1 = Unit) {
+                            handleDeepLink(intent)
+                            firstInstallingExperiencePreferences.edit()
+                                .putBoolean("isFirstLaunch", false)
+                                .apply()
+                        }
 
-                    LaunchedEffect(key1 = Unit) {
-                        handleDeepLink(intent)
-                        firstInstallingExperiencePreferences.edit()
-                            .putBoolean("isFirstLaunch", false)
-                            .apply()
-                    }
 
+                    }
 
                 }
+
 
             }
 
 
-        }
 
     }
 
