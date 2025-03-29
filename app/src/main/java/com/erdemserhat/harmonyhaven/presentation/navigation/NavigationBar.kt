@@ -58,6 +58,8 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatIntroScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
@@ -161,7 +163,7 @@ fun AppMainScreen(
                 viewmodel = quoteViewModel
             ) },
             2 to { NotificationScreen(navController) },
-            3 to { ProfileScreen() }
+            3 to { ChatIntroScreen(navController = navController) },
         )
     }
 
@@ -212,6 +214,7 @@ fun AppMainScreen(
             .background(if (pagerState.currentPage == 1) Color.Black else Color.White.copy(alpha = 0.95f))
             .padding(WindowInsets.navigationBars.asPaddingValues()),
         bottomBar = {
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -270,8 +273,11 @@ fun AppMainScreen(
                 }
             }
 
+
+
         },
         topBar = {
+
             if (pagerState.currentPage != 1) {
                 MyAppBar(
                     onExitClicked = {
@@ -283,7 +289,8 @@ fun AppMainScreen(
                         0 -> "Harmony Haven"
                         2 -> "Bildirimler"
                         1 -> "Söz Akışı"
-                        else -> "Default Title"
+                        3 -> "Harmonia"
+                        else -> ""
                     },
                     topBarBackgroundColor = when (pagerState.currentPage) {
                         2 -> Color.White
@@ -293,7 +300,9 @@ fun AppMainScreen(
                     },
                     isMainScreen = pagerState.currentPage == 0
                 )
+
             }
+
         }
     ) { padding ->
         var lastBackPressTime by remember { mutableLongStateOf(0L) } // Son basma zamanını tutacak değişken
@@ -492,7 +501,25 @@ private val items = listOf(
         selectedIconWhiteIcon = R.drawable.notificationblackfilled,
         unSelectedIconDarkIcon = R.drawable.notificationwhiteunfilled,
         unSelectedIconWhiteIcon = R.drawable.notificationblackunfilled
-    )
+    ),
+
+    NavigationBarItem(
+        title = "Harmonia",
+        hasNews = false,
+        badgeCount = null,
+        route = Screen.Notification.route,
+        selectedIconDarkIcon = R.drawable.message_f_white,
+        selectedIconWhiteIcon = R.drawable.message_f_black,
+        unSelectedIconDarkIcon = R.drawable.message_uf_white,
+        unSelectedIconWhiteIcon = R.drawable.message_uf_black
+    ),
+
+
+
+
+
+
+
     //  NavigationBarItem(
     //      title = "Home",
     //      hasNews = false,

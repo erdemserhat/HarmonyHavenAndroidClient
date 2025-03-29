@@ -26,6 +26,9 @@ sealed class Screen(val route:String) {
     object QuoteMain:Screen("quote_main")
     object Test:Screen("test_screen")
     object QuoteShareScreen:Screen("quote_share_screen")
+    object ChatScreen:Screen("chat_screen")
+    object ChatIntroScreen:Screen("chat_intro_screen")
+
 
 
 
