@@ -3,32 +3,41 @@ package com.erdemserhat.harmonyhaven.domain.usecase
 import android.util.Log
 import com.erdemserhat.harmonyhaven.data.api.ChatApiService
 import com.erdemserhat.harmonyhaven.data.api.ChatDto
+import com.erdemserhat.harmonyhaven.data.api.SSEClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 class ChatUseCase @Inject constructor(
-    private val chatApiService: ChatApiService
+    private val sseClient: SSEClient
 ) {
 
-    suspend fun sendMessage(text:String):String{
+    suspend fun sendMessage(text:String): Flow<String> = flow{
+        val scope = CoroutineScope(Dispatchers.IO)
         try {
-            val response = chatApiService.sendMessage(ChatDto(text))
+            sseClient.connectToSSE(
+                prompt = text,
+                onMessageReceived = {message->
+                    scope.launch {
+                        emit(message)
 
+                    }
+                },
+                onError = {
+                    scope.launch {
+                        emit("error")
 
-            if(response.isSuccessful){
-                Log.d("chatapiservice","+")
-
-                return response.body()!!.text
-            }else{
-                Log.d("chatapiservice","-")
-                return response.body()!!.text
-            }
+                    }
+                }
+            )
 
         }catch (e:Exception){
             Log.d("chatapiservice","?")
-
             Log.d("chatapiservice",e.localizedMessage)
-            return "Bir hata oluştu"
 
         }
 

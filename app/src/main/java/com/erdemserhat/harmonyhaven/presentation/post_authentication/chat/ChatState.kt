@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 
 
 data class ChatState(
+    val currentMessage:String="",
     val messages: List<ChatMessage> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null

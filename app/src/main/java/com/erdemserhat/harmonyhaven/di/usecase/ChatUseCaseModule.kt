@@ -1,6 +1,7 @@
 package com.erdemserhat.harmonyhaven.di.usecase
 
 import com.erdemserhat.harmonyhaven.data.api.ChatApiService
+import com.erdemserhat.harmonyhaven.data.api.SSEClient
 import com.erdemserhat.harmonyhaven.data.api.notification.NotificationApiService
 import com.erdemserhat.harmonyhaven.domain.usecase.ChatUseCase
 import com.erdemserhat.harmonyhaven.domain.usecase.notification.GetNotification
@@ -22,6 +23,8 @@ object ChatUseCaseModule {
         chatApiService: ChatApiService
     ): ChatUseCase {
 
-        return ChatUseCase(chatApiService = chatApiService)
+        return ChatUseCase(
+            sseClient = SSEClient()
+        )
     }
 }

@@ -70,6 +70,8 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalView
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.view.WindowInsetsControllerCompat
+import com.erdemserhat.harmonyhaven.data.api.SSEClient
+import com.erdemserhat.harmonyhaven.domain.usecase.ChatUseCase
 import com.erdemserhat.harmonyhaven.domain.usecase.VersionControlUseCase
 import com.erdemserhat.harmonyhaven.presentation.common.NetworkErrorScreen
 import com.erdemserhat.harmonyhaven.presentation.common.UpdateAvailableScreen
@@ -100,8 +102,14 @@ class MainActivity : ComponentActivity() {
 
     private var currentVersionCode = BuildConfig.VERSION_CODE.toInt()
 
+    @Inject
+    lateinit var sseClient: SSEClient
 
-    @SuppressLint("NewApi")
+    @Inject
+     lateinit var useCase: ChatUseCase
+
+
+    @SuppressLint("NewApi", "CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -116,6 +124,11 @@ class MainActivity : ComponentActivity() {
         val isLoggedInBefore =
             firstInstallingExperiencePreferences.getBoolean("isLoggedInBefore", false)
         val isJwtExists = firstInstallingExperiencePreferences.getBoolean("isJwtExists", true)
+
+
+
+
+
 
 
 
