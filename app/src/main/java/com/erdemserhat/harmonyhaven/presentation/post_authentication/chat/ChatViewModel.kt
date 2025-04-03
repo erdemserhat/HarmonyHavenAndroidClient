@@ -26,54 +26,65 @@ class ChatViewModel @Inject constructor(
 
 
     fun sendMessage(message: String) {
-        Log.d("dsdsfsd","started")
+        Log.d("ChatViewModel", "Sending message: $message")
         viewModelScope.launch {
-            _chatState.value = _chatState.value.copy(isLoading = true)
-            Log.d("chatapiservice",chatState.value.toString())
+            // Set loading to true and add user message
+            _chatState.value = _chatState.value.copy(
+                isLoading = true,
+                messages = _chatState.value.messages + ChatMessage.User(message)
+            )
 
             try {
-                _chatState.value = _chatState.value.copy(
-                    messages = _chatState.value.messages + ChatMessage.User(message),
-                )
-                Log.d("chatapiservice",chatState.value.toString())
-
-
-                var currentMessage = ""
+                var receivedPartialMessage = false
+                var completeResponse = ""
+                
                 sseClient.connectToSSE(
                     prompt = message,
-                    onMessageReceived = {it->
-                        if(it.isNotEmpty()){
-                            val part = it.substring(5)
-                            currentMessage+=part
-
+                    onMessageReceived = { part ->
+                        if (part.isNotEmpty()) {
+                            // Remove the "data:" prefix if present
+                            val partialMessage = if (part.startsWith("data:")) part.substring(6) else part
+                            
+                            // First partial message received, stop showing loading indicator
+                            if (!receivedPartialMessage) {
+                                receivedPartialMessage = true
+                                _chatState.value = _chatState.value.copy(isLoading = false)
+                            }
+                            
+                            // Append to the complete response
+                            completeResponse += partialMessage
+                            
+                            // Update the current message being built
                             _chatState.value = _chatState.value.copy(
-                                currentMessage = currentMessage,
-                                isLoading = false
+                                currentMessage = completeResponse
                             )
-
                         }
-
-
                     },
-                    onError = {
-                        Log.d("dsfs","dsafsd")
-
+                    onError = { error ->
+                        Log.e("ChatViewModel", "SSE Error: $error")
+                        _chatState.value = _chatState.value.copy(
+                            error = "Mesaj alınırken bir hata oluştu: $error",
+                            isLoading = false
+                        )
+                    },
+                    onComplete = {
+                        // When SSE connection is complete, add the final bot message to chat history
+                        if (completeResponse.isNotEmpty()) {
+                            _chatState.value = _chatState.value.copy(
+                                messages = _chatState.value.messages + ChatMessage.Bot(completeResponse),
+                                currentMessage = "" // Reset current message
+                            )
+                        }
                     }
                 )
-
-                _chatState.value = _chatState.value.copy(
-                    messages = _chatState.value.messages + ChatMessage.Bot(message),
-                )
-
-
-                Log.d("chatapiservice",chatState.value.toString())
-
-
             } catch (e: Exception) {
-                _chatState.value = _chatState.value.copy(error = e.localizedMessage, isLoading = false)
+                Log.e("ChatViewModel", "Exception: ${e.message}", e)
+                _chatState.value = _chatState.value.copy(
+                    error = e.localizedMessage,
+                    isLoading = false
+                )
             }
         }
     }
-
 }
 

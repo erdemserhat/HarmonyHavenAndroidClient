@@ -62,17 +62,35 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
     var isKeyboardVisible by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     
-    // Auto-scroll to bottom when new messages arrive
-    LaunchedEffect(state.value.messages.size) {
-        if (state.value.messages.isNotEmpty()) {
-            listState.animateScrollToItem(state.value.messages.size - 1)
+    // Auto-scroll to bottom when new messages arrive or current message updates
+    LaunchedEffect(state.value.messages.size, state.value.currentMessage) {
+        if (state.value.messages.isNotEmpty() || state.value.currentMessage.isNotEmpty()) {
+            val messageCount = state.value.messages.size
+            val hasPartialMessage = state.value.currentMessage.isNotEmpty()
+            
+            // Add 1 to account for the partial message item if it exists
+            val targetIndex = if (messageCount > 0) {
+                messageCount - 1 + (if (hasPartialMessage) 1 else 0)
+            } else 0
+            
+            if (targetIndex > 0) {
+                listState.animateScrollToItem(targetIndex)
+            }
         }
     }
 
     // Auto-scroll to bottom when keyboard appears
     LaunchedEffect(isKeyboardVisible) {
-        if (isKeyboardVisible && state.value.messages.isNotEmpty()) {
-            listState.animateScrollToItem(state.value.messages.size - 1)
+        if (isKeyboardVisible) {
+            val messageCount = state.value.messages.size
+            val hasPartialMessage = state.value.currentMessage.isNotEmpty()
+            val targetIndex = if (messageCount > 0) {
+                messageCount - 1 + (if (hasPartialMessage) 1 else 0)
+            } else 0
+            
+            if (targetIndex > 0) {
+                listState.animateScrollToItem(targetIndex)
+            }
         }
     }
 
@@ -121,7 +139,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                 Spacer(modifier = Modifier.height(8.dp))
             }
             
-            if (state.value.messages.isEmpty()) {
+            if (state.value.messages.isEmpty() && state.value.currentMessage.isEmpty()) {
                 item {
                     WelcomeMessage(
                         onExampleClick = { exampleMessage ->
@@ -143,7 +161,17 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                 }
             }
             
-            if (state.value.isLoading) {
+            // Show current partial message if it exists
+            if (state.value.currentMessage.isNotEmpty()) {
+                item {
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn() + slideInVertically { it },
+                    ) {
+                        BotMessageBox(message = state.value.currentMessage)
+                    }
+                }
+            } else if (state.value.isLoading) {
                 item {
                     AnimatedVisibility(
                         visible = true,
@@ -426,11 +454,7 @@ fun BotMessageBox(message: String, modifier: Modifier = Modifier) {
                 markdown = message,
                 modifier = Modifier.padding(12.dp),
                 style = customStyle
-
-
-
-                )
-
+            )
         }
     }
 }

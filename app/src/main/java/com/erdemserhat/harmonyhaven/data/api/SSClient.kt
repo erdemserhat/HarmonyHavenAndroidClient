@@ -16,36 +16,60 @@ class SSEClient @Inject constructor() {
 
     @Inject
     lateinit var client: OkHttpClient
+    
+    private var activeCall: Call? = null
 
-    suspend fun connectToSSE(prompt: String, onMessageReceived: (String) -> Unit, onError: (Throwable) -> Unit) {
+    suspend fun connectToSSE(
+        prompt: String, 
+        onMessageReceived: (String) -> Unit, 
+        onError: (Throwable) -> Unit,
+        onComplete: () -> Unit = {}
+    ) {
         val url = "${BuildConfig.SERVER_URL}/v1/chat/$prompt"
 
         // Bu URL ile SSE bağlantısı kuruyoruz
         val request = Request.Builder().url(url).build()
 
         // Bir HTTP isteği üzerinden veri akışını sürekli olarak dinlemek için
-        client.newCall(request).enqueue(object : Callback {
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    // Gelen veri akışını sürekli olarak oku
-                    response.body?.let { body ->
-                        val reader = body.charStream()
-                        reader.forEachLine { line ->
-                            onMessageReceived(line)  // Sunucudan gelen mesajı al
+        activeCall = client.newCall(request).apply {
+            enqueue(object : Callback {
+                override fun onResponse(call: Call, response: Response) {
+                    if (response.isSuccessful) {
+                        // Gelen veri akışını sürekli olarak oku
+                        response.body?.let { body ->
+                            try {
+                                val reader = body.charStream()
+                                reader.forEachLine { line ->
+                                    onMessageReceived(line)  // Sunucudan gelen mesajı al
+                                }
+                                // Stream tamamlandığında onComplete çağrılır
+                                onComplete()
+                            } catch (e: Exception) {
+                                onError(e)
+                                onComplete()
+                            } finally {
+                                response.close()
+                            }
+                        } ?: run {
+                            onError(Throwable("Empty response body"))
+                            onComplete()
                         }
+                    } else {
+                        onError(Throwable("SSE connection failed with code: ${response.code}"))
+                        onComplete()
                     }
-                } else {
-                    onError(Throwable("SSE connection failed with code: ${response.code}"))
                 }
-            }
 
-            override fun onFailure(call: Call, e: IOException) {
-                onError(e)  // Hata durumunda çağrılır
-            }
-        })
+                override fun onFailure(call: Call, e: IOException) {
+                    onError(e)  // Hata durumunda çağrılır
+                    onComplete()
+                }
+            })
+        }
     }
 
     fun close() {
+        activeCall?.cancel()
         client.dispatcher.executorService.shutdown()
     }
 }
