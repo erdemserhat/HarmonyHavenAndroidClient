@@ -42,17 +42,27 @@ class ChatViewModel @Inject constructor(
                     prompt = message,
                     onMessageReceived = { part ->
                         if (part.isNotEmpty()) {
-                            // Remove the "data:" prefix if present
-                            val partialMessage = if (part.startsWith("data:")) part.substring(6) else part
+                            // SSE formatında "data:" ile başlayan satırlar vardır
+                            // "data:" sadece ise, bu satır başlangıcını temsil eder
+                            // "data:içerik" şeklindeyse, içeriği alırız
+                            
+                            if (part == "data:" || part.trim() == "data:") {
+                                // Sadece "data:" ise bu yeni bir satır başlangıcıdır
+                                completeResponse += "\n"
+                            } else if (part.startsWith("data:")) {
+                                // "data:" ile başlayan bir içerik varsa, "data:" prefixi kaldırılır
+                                val content = part.substring(6)
+                                completeResponse += content
+                            } else {
+                                // Normal metin - olduğu gibi ekle
+                                completeResponse += part
+                            }
                             
                             // First partial message received, stop showing loading indicator
                             if (!receivedPartialMessage) {
                                 receivedPartialMessage = true
                                 _chatState.value = _chatState.value.copy(isLoading = false)
                             }
-                            
-                            // Append to the complete response
-                            completeResponse += partialMessage
                             
                             // Update the current message being built
                             _chatState.value = _chatState.value.copy(
