@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -60,6 +61,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -106,7 +108,7 @@ class MainActivity : ComponentActivity() {
     lateinit var sseClient: SSEClient
 
     @Inject
-     lateinit var useCase: ChatUseCase
+    lateinit var useCase: ChatUseCase
 
 
     @SuppressLint("NewApi", "CoroutineCreationDuringComposition")
@@ -117,6 +119,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge() // Add this line.
         window.isNavigationBarContrastEnforced = false
         super.onCreate(savedInstanceState)
+        val internetAvailability = isInternetAvailable(this)
 
 
         val extraData = intent.getStringExtra("data")
@@ -126,50 +129,46 @@ class MainActivity : ComponentActivity() {
         val isJwtExists = firstInstallingExperiencePreferences.getBoolean("isJwtExists", true)
 
 
+        setContent {
+            var isInternetAvailable by rememberSaveable { mutableStateOf(internetAvailability) }
 
 
+            navController = rememberNavController()
+            val context = LocalContext.current
 
 
+            var scope = rememberCoroutineScope()
 
 
+            var versionStatus by rememberSaveable {
+                mutableIntStateOf(-1)
+            }
+            splashScreen.setKeepOnScreenCondition(SplashScreen.KeepOnScreenCondition {
+                versionStatus == -1
+            })
+            LaunchedEffect(Unit) {
+                versionStatus = versionControlUseCase.executeRequest(currentVersionCode)
 
-            setContent {
-                navController = rememberNavController()
-                var scope = rememberCoroutineScope()
-
-
-                var versionStatus by rememberSaveable {
-                    mutableIntStateOf(-1)
-                }
-                splashScreen.setKeepOnScreenCondition(SplashScreen.KeepOnScreenCondition {
-                    versionStatus == -1
-                })
-                LaunchedEffect(Unit) {
-                    versionStatus = versionControlUseCase.executeRequest(currentVersionCode.toInt())
-
-                }
-                if (versionStatus == 0) {
-                    UpdateAvailableScreen(navController)
-                } else if (versionStatus == -2) {
-                    NetworkErrorScreen(
-                        onRetry = {
-                            scope.launch {
-                                versionStatus = -1
-                                versionStatus = versionControlUseCase.executeRequest(currentVersion = currentVersionCode.toInt())
-                            }
-
-
+            }
+            if (versionStatus == 0) {
+                UpdateAvailableScreen(navController)
+            } else if (versionStatus == -2) {
+                NetworkErrorScreen(
+                    onRetry = {
+                        scope.launch {
+                            versionStatus = -1
+                            versionStatus = versionControlUseCase.executeRequest(currentVersion = currentVersionCode.toInt())
                         }
-                    )
-                } else {
-                    // Add this block:
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        window.isNavigationBarContrastEnforced = false
-                    }
+                     }
+                )
+            } else {
+                // Add this block:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    window.isNavigationBarContrastEnforced = false
+                }
 
-                    HarmonyHavenTheme {
-                        window
-
+                HarmonyHavenTheme {
+                    if (isInternetAvailable) {
                         SetupNavGraph(
                             navController = navController,
                             startDestination = when (isLoggedInBefore) {
@@ -181,58 +180,69 @@ class MainActivity : ComponentActivity() {
 
                             )
 
-
-                        extraData?.let {
-                            val bundleArticle = Bundle()
-                            val shouldNavigateToPost = extraData.startsWith("-1")
-                            if (shouldNavigateToPost) {
-                                val postId = extraData.drop(2)
-                                bundleArticle.putParcelable(
-                                    "article",
-                                    ArticlePresentableUIModel(
-                                        id = postId.toInt()
-                                    )
-                                )
-
-                                navController.navigate(
-                                    route = Screen.Article.route,
-                                    args = bundleArticle
-                                )
-
-                            } else {
-
-                                val screenCode = extraData.toInt()
-                                val bundleMain = Bundle()
-
-                                bundleMain.putParcelable(
-                                    "params",
-                                    MainScreenParams(screenNo = screenCode)
-                                )
-                                navController.navigate(
-                                    route = Screen.Main.route,
-                                    args = bundleMain
-                                )
-
-
-                            }
-
-                        }
-
-                        LaunchedEffect(key1 = Unit) {
-                            handleDeepLink(intent)
-                            firstInstallingExperiencePreferences.edit()
-                                .putBoolean("isFirstLaunch", false)
-                                .apply()
-                        }
-
+                    } else {
+                        NetworkErrorScreen(
+                            onRetry = {
+                                scope.launch {
+                                    isInternetAvailable = isInternetAvailable(context)
+                                }
+                            })
 
                     }
 
-                }
 
+
+
+                    extraData?.let {
+                        val bundleArticle = Bundle()
+                        val shouldNavigateToPost = extraData.startsWith("-1")
+                        if (shouldNavigateToPost) {
+                            val postId = extraData.drop(2)
+                            bundleArticle.putParcelable(
+                                "article",
+                                ArticlePresentableUIModel(
+                                    id = postId.toInt()
+                                )
+                            )
+
+                            navController.navigate(
+                                route = Screen.Article.route,
+                                args = bundleArticle
+                            )
+
+                        } else {
+
+                            val screenCode = extraData.toInt()
+                            val bundleMain = Bundle()
+
+                            bundleMain.putParcelable(
+                                "params",
+                                MainScreenParams(screenNo = screenCode)
+                            )
+                            navController.navigate(
+                                route = Screen.Main.route,
+                                args = bundleMain
+                            )
+
+
+                        }
+
+                    }
+
+                    LaunchedEffect(key1 = Unit) {
+                        handleDeepLink(intent)
+                        firstInstallingExperiencePreferences.edit()
+                            .putBoolean("isFirstLaunch", false)
+                            .apply()
+                    }
+
+
+                }
 
             }
 
+
+        }
 
 
     }
@@ -289,6 +299,15 @@ class MainActivity : ComponentActivity() {
     }
 
 }
+
+
+@SuppressLint("ServiceCast")
+fun isInternetAvailable(context: Context): Boolean {
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    return connectivityManager.activeNetworkInfo?.isConnected == true
+}
+
 
 
 
