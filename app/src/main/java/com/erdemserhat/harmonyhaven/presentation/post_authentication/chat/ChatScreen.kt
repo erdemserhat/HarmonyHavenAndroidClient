@@ -425,6 +425,9 @@ fun InputField(
 
 @Composable
 fun BotMessageBox(message: String, modifier: Modifier = Modifier) {
+    // Markdown metni için satır düzenlemelerini koru
+    val processedMessage = message
+    
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -448,10 +451,12 @@ fun BotMessageBox(message: String, modifier: Modifier = Modifier) {
             val customStyle = TextStyle(
                 fontSize = 16.sp,
                 color = Color.Black,
+                lineHeight = 24.sp  // Satır yüksekliğini artırarak okunabilirliği iyileştir
             )
 
+            // Markdown text renderlama
             MarkdownText(
-                markdown = message,
+                markdown = processedMessage,
                 modifier = Modifier.padding(12.dp),
                 style = customStyle
             )
