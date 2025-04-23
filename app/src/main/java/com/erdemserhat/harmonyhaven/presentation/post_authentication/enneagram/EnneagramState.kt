@@ -7,5 +7,10 @@ data class EnneagramState(
     val errorMessage:String="",
     val isLoadingQuestions:Boolean = false,
     val questions:List<EnneagramQuestionDto> = listOf(),
-    val answers:MutableList<EnneagramAnswersDto> = mutableListOf()
+    val answers:MutableList<EnneagramAnswersDto> = mutableListOf(),
+    val isSubmittingAnswers: Boolean = false,
+    val isTestCompleted: Boolean = false,
+    val showInstructions: Boolean = true,
+    val isTestStarted: Boolean = false,
+    val currentQuestionIndex: Int = 0
 )
