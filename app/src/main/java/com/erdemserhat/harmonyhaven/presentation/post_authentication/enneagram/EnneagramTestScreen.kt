@@ -52,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -283,34 +284,46 @@ fun TestQuestionsScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                     
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    // Açıklayıcı metin
+                    Text(
+                        text = "Yukarıdaki ifade sizi ne kadar yansıtıyor?",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontStyle = FontStyle.Italic,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    
                     Spacer(modifier = Modifier.height(24.dp))
                     
                     // Answer options
                     val selectedAnswer = answers.find { it.questionId == question.id }?.score
                     
                     AnswerOption(
-                        text = "Hiç yansıtmıyor (Bu ifade beni hiç yansıtmıyor)",
+                        text = "Hiç yansıtmıyor",
                         score = 0,
                         isSelected = selectedAnswer == 0,
                         onSelected = { onAnswerSelected(question.id, 0) }
                     )
                     
                     AnswerOption(
-                        text = "Biraz yansıtıyor (Bu ifade beni biraz yansıtıyor)",
+                        text = "Biraz yansıtıyor",
                         score = 1,
                         isSelected = selectedAnswer == 1,
                         onSelected = { onAnswerSelected(question.id, 1) }
                     )
                     
                     AnswerOption(
-                        text = "Kısmen yansıtıyor (Bu ifade beni kısmen yansıtıyor)",
+                        text = "Kısmen yansıtıyor",
                         score = 2,
                         isSelected = selectedAnswer == 2,
                         onSelected = { onAnswerSelected(question.id, 2) }
                     )
                     
                     AnswerOption(
-                        text = "Tam olarak yansıtıyor (Bu ifade beni tam olarak yansıtıyor)",
+                        text = "Tam olarak yansıtıyor ",
                         score = 3,
                         isSelected = selectedAnswer == 3,
                         onSelected = { onAnswerSelected(question.id, 3) }
@@ -323,16 +336,7 @@ fun TestQuestionsScreen(
         val currentQuestionId = currentQuestion?.id
         val isCurrentQuestionAnswered = currentQuestionId != null && answers.any { it.questionId == currentQuestionId }
         
-        // Warning message if not answered
-        if (!isCurrentQuestionAnswered) {
-            Text(
-                text = "Bu soruyu cevaplamadan sonraki soruya geçemezsiniz.",
-                color = Color.Red,
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-            )
-        }
+
         
         // Navigation buttons
         Row(
