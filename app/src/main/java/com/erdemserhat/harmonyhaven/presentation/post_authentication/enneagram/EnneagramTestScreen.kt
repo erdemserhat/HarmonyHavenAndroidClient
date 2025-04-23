@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,6 +39,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -70,7 +72,7 @@ fun EnneagramTestScreen(navController: NavController, enneagramViewModel: Enneag
     val context = LocalContext.current
 
     Box(modifier = Modifier
-        .background(harmonyHavenComponentWhite)
+        .background(Color.White)
         .fillMaxSize()
         .padding(16.dp)
     ) {
@@ -163,7 +165,11 @@ fun TestInstructionsScreen(onStartTest: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = harmonyHavenGreen,
+                contentColor = Color.White
+            )
         ) {
             Text("Teste Başla")
         }
@@ -232,14 +238,13 @@ fun TestQuestionsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         // Header with progress
         Column {
-
-
             Spacer(modifier = Modifier.height(8.dp))
 
             // Enhanced Progress Bar
@@ -268,7 +273,7 @@ fun TestQuestionsScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color.White
+                    containerColor = Color(0xFFF8F8F8)
                 ),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
@@ -336,8 +341,6 @@ fun TestQuestionsScreen(
         val currentQuestionId = currentQuestion?.id
         val isCurrentQuestionAnswered = currentQuestionId != null && answers.any { it.questionId == currentQuestionId }
         
-
-        
         // Navigation buttons
         Row(
             modifier = Modifier
@@ -353,7 +356,10 @@ fun TestQuestionsScreen(
                     }
                 },
                 enabled = localCurrentIndex > 0,
-                modifier = Modifier.weight(1f).padding(end = 8.dp)
+                modifier = Modifier.weight(1f).padding(end = 8.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = harmonyHavenGreen
+                )
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
@@ -374,7 +380,11 @@ fun TestQuestionsScreen(
                     }
                 },
                 enabled = isCurrentQuestionAnswered,
-                modifier = Modifier.weight(1f).padding(start = 8.dp)
+                modifier = Modifier.weight(1f).padding(start = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = harmonyHavenGreen,
+                    contentColor = Color.White
+                )
             ) {
                 if (localCurrentIndex < questions.size - 1) {
                     Text(text = "Sonraki")
@@ -475,7 +485,7 @@ fun AnswerOption(
                 onClick = onSelected
             )
             .background(
-                color = if (isSelected) harmonyHavenGreen.copy(alpha = 0.1f) else Color.Transparent,
+                color = if (isSelected) harmonyHavenGreen.copy(alpha = 0.1f) else Color.White,
                 shape = RoundedCornerShape(8.dp)
             )
             .padding(8.dp),
@@ -483,7 +493,11 @@ fun AnswerOption(
     ) {
         RadioButton(
             selected = isSelected,
-            onClick = onSelected
+            onClick = onSelected,
+            colors = RadioButtonDefaults.colors(
+                selectedColor = harmonyHavenGreen,
+                unselectedColor = Color.Gray
+            )
         )
         
         Spacer(modifier = Modifier.width(8.dp))
@@ -589,7 +603,11 @@ fun InitialScreen(onStartTest: () -> Unit) {
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp)
                 .height(50.dp),
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = harmonyHavenGreen,
+                contentColor = Color.White
+            )
         ) {
             Text("Teste Başla")
         }
@@ -636,7 +654,11 @@ fun TestCompletedScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = harmonyHavenGreen,
+                contentColor = Color.White
+            )
         ) {
             Text("Ana Sayfaya Dön")
         }
