@@ -58,8 +58,10 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
+import com.erdemserhat.harmonyhaven.presentation.feature.google_auth.TestScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatIntroScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.EnneagramTestScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
@@ -68,7 +70,6 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.CategoryPickerModalBottomSheet
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentModalBottomSheet
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentViewModel
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.user.ProfileScreen
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -164,7 +165,9 @@ fun AppMainScreen(
             ) },
             2 to { NotificationScreen(navController) },
             3 to { ChatIntroScreen(navController = navController) },
-        )
+            4 to { EnneagramTestScreen(navController) },
+
+            )
     }
 
 
@@ -290,6 +293,7 @@ fun AppMainScreen(
                         2 -> "Bildirimler"
                         1 -> "Söz Akışı"
                         3 -> "Harmonia"
+                        4-> "Enneagram"
                         else -> ""
                     },
                     topBarBackgroundColor = when (pagerState.currentPage) {
@@ -516,21 +520,17 @@ private val items = listOf(
 
 
 
+      NavigationBarItem(
+          title = "Profile",
+         hasNews = false,
+          badgeCount = null,
+          route = Screen.Home.route,
+          selectedIconDarkIcon =R.drawable.house,
+          selectedIconWhiteIcon =R.drawable.house,
+          unSelectedIconDarkIcon = R.drawable.house,
+          unSelectedIconWhiteIcon =R.drawable.house
 
-
-
-
-    //  NavigationBarItem(
-    //      title = "Home",
-    //      hasNews = false,
-    //      badgeCount = null,
-    //      route = Screen.Home.route,
-    //      selectedIconDarkIcon =R.drawable.house,
-    //      selectedIconWhiteIcon =R.drawable.house,
-    //      unSelectedIconDarkIcon = R.drawable.house,
-    //      unSelectedIconWhiteIcon =R.drawable.house
-//
-    //  )
+      )
 )
 
 
