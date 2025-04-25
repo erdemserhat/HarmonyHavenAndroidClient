@@ -18,7 +18,7 @@ interface EnneagramApiService {
     @POST("v1/enneagram/answers")
     suspend fun saveAnswers(
         @Body answers: List<EnneagramAnswersDto> // The request body containing the FCM token details
-    ): Response<Void>
+    ): Response<EnneagramTestResultDetailedDto>
 
 
 }
@@ -40,3 +40,33 @@ data class EnneagramAnswersDto(
         require(score in 0..3) { "Score must be between 0 and 3. Given: $score" }
     }
 }
+
+@Serializable
+data class EnneagramTestResultDetailedDto(
+    val result: EnneagramTestResult,
+    val description: String,
+    val famousPeople: List<EnneagramFamousPeople>,
+    val chartUrl:String
+
+)
+
+@Serializable
+data class EnneagramScore(
+    val type: Int = 0,
+    var score: Int = 1
+)
+
+@Serializable
+data class EnneagramTestResult(
+    val typeScores: List<EnneagramScore>,
+    val dominantType: EnneagramScore,
+    val wingType: EnneagramScore,
+)
+
+@Serializable
+data class EnneagramFamousPeople(
+    val name: String,
+    val imageUrl: String,
+    val desc: String
+)
+

@@ -1,13 +1,8 @@
-package com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.test
 
 import android.util.Log
-import android.view.View
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.Recomposer
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramAnswersDto
@@ -15,7 +10,6 @@ import com.erdemserhat.harmonyhaven.domain.usecase.EnneagramUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -82,12 +76,14 @@ class EnneagramViewModel @Inject constructor(
             try {
                 _enneagramState.value = _enneagramState.value.copy(isSubmittingAnswers = true)
                 
-                enneagramUseCase.sendAnswers(_enneagramState.value.answers)
+                val result = enneagramUseCase.sendAnswers(_enneagramState.value.answers)
                 
                 _enneagramState.value = _enneagramState.value.copy(
                     isSubmittingAnswers = false,
                     isTestCompleted = true,
-                    errorMessage = ""
+                    errorMessage = "",
+                    result = result
+
                 )
                 
             } catch (e: Exception) {
