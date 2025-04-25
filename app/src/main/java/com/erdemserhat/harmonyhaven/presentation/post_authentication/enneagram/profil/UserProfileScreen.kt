@@ -358,8 +358,8 @@ fun TypeScoreItem(score: EnneagramScore) {
                 .clip(RoundedCornerShape(6.dp))
                 .background(Color.LightGray)
         ) {
-            // Calculate percentage (assuming maximum score is 30 for enneagram)
-            val percentage = (score.score.toFloat() / 30f).coerceIn(0f, 1f)
+            // Calculate percentage (assuming maximum score is 12 for enneagram)
+            val percentage = (score.score.toFloat() / 12).coerceIn(0f, 1f)
             
             Box(
                 modifier = Modifier
