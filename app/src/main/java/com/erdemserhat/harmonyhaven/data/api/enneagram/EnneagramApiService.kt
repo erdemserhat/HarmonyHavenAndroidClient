@@ -21,6 +21,11 @@ interface EnneagramApiService {
     ): Response<EnneagramTestResultDetailedDto>
 
 
+    @GET("v1/enneagram/check-test-status")
+    suspend fun checkTestResult(
+    ): Response<CheckingTestResultDto>
+
+
 }
 
 
@@ -68,5 +73,11 @@ data class EnneagramFamousPeople(
     val name: String,
     val imageUrl: String,
     val desc: String
+)
+
+@Serializable
+data class CheckingTestResultDto(
+    val detailedResult: EnneagramTestResultDetailedDto?,
+    val isTestTakenBefore: Boolean
 )
 

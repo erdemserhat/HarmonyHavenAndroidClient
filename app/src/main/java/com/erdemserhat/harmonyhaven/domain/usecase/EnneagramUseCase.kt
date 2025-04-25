@@ -1,6 +1,7 @@
 package com.erdemserhat.harmonyhaven.domain.usecase
 
 import android.util.Log
+import com.erdemserhat.harmonyhaven.data.api.enneagram.CheckingTestResultDto
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramAnswersDto
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramApiService
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramQuestionDto
@@ -58,6 +59,33 @@ class EnneagramUseCase @Inject constructor(
         }catch (e:Exception){
             Log.d("ENNEAGRAM_USECASE",e.message?:"Error message was null")
            return null
+
+
+        }
+
+    }
+
+    suspend fun checkTestResult(): CheckingTestResultDto? {
+        try {
+            Log.d("ENNEAGRAM_USECASE","api request is successfully")
+            val result = enneagramApiService.checkTestResult()
+
+            if(result.isSuccessful){
+                val resultData = result.body()
+                Log.d("ENNEAGRAM_USECASE","$resultData")
+
+                return  resultData
+            }else{
+                Log.d("ENNEAGRAM_USECASE","api request is unsuccessfully")
+
+                val errorBody = result.errorBody()?.string()
+                throw EnneagramApiException(errorBody ?: "error message was null")
+
+            }
+
+        }catch (e:Exception){
+            Log.d("ENNEAGRAM_USECASE",e.message?:"Error message was null")
+            return null
 
 
         }
