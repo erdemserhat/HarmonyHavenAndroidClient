@@ -71,7 +71,7 @@ class EnneagramViewModel @Inject constructor(
         _enneagramState.value = _enneagramState.value.copy(answers = currentAnswers)
     }
 
-    fun submitAnswers() {
+    fun submitAnswers(onCompleted:()->Unit = {}) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _enneagramState.value = _enneagramState.value.copy(isSubmittingAnswers = true)
@@ -85,6 +85,7 @@ class EnneagramViewModel @Inject constructor(
                     result = result
 
                 )
+                onCompleted()
                 
             } catch (e: Exception) {
                 Log.d("ENNEAGRAM_USECASE", e.message ?: "Error message was null")

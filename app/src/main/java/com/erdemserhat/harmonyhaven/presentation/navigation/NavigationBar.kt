@@ -58,6 +58,7 @@ import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatIntroScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreenViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.test.EnneagramTestScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
@@ -80,7 +81,8 @@ fun AppMainScreen(
     params: MainScreenParams = MainScreenParams(),
     window: Window,
     viewModel: SharedViewModel = hiltViewModel(),
-    quoteViewModel: QuoteMainViewModel = hiltViewModel()
+    quoteViewModel: QuoteMainViewModel = hiltViewModel(),
+    userProfileSharedViewModel :UserProfileScreenViewModel
 
 
 ) {
@@ -161,7 +163,7 @@ fun AppMainScreen(
             },
             2 to { NotificationScreen(navController) },
             3 to { ChatIntroScreen(navController = navController) },
-            4 to { UserProfileScreen(navController) }
+            4 to { UserProfileScreen(navController,profileScreenViewModel = userProfileSharedViewModel) }
 
         )
     }

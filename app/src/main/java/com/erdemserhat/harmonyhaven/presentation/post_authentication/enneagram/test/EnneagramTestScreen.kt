@@ -52,11 +52,18 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramQuestionDto
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreenViewModel
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 
 @Composable
-fun EnneagramTestScreen(navController: NavController, enneagramViewModel: EnneagramViewModel = hiltViewModel()) {
+fun EnneagramTestScreen(
+    navController: NavController,
+    enneagramViewModel: EnneagramViewModel = hiltViewModel(),
+    sharedViewModel: UserProfileScreenViewModel
+
+
+) {
     val enneagramState by enneagramViewModel.enneagramState
     val context = LocalContext.current
 
@@ -91,7 +98,15 @@ fun EnneagramTestScreen(navController: NavController, enneagramViewModel: Enneag
                         enneagramViewModel.updateAnswer(questionId, score)
                     },
                     onSubmitAnswers = {
-                        enneagramViewModel.submitAnswers()
+                        enneagramViewModel.submitAnswers(
+                            onCompleted = {
+                                sharedViewModel.checkTestResult(onCompleted = {
+                                    sharedViewModel.resetScrollState()
+                                })
+
+
+                            }
+                        )
                     }
                 )
             }
@@ -639,7 +654,10 @@ fun TestCompletedScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(32.dp))
         
         Button(
-            onClick = { navController.popBackStack() },
+            onClick = {
+                navController.popBackStack()
+
+                      },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),

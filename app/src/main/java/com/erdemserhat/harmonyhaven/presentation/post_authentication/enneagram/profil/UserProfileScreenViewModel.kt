@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -35,8 +36,20 @@ class UserProfileScreenViewModel @Inject constructor(
     }
 
 
+    fun resetScrollState(){
+        userProfile.shouldResetScrollState = true
 
-    fun checkTestResult() {
+    }
+
+    fun protectScrollState(){
+        userProfile.shouldResetScrollState = false
+
+    }
+
+
+
+    fun checkTestResult(onCompleted: () -> Unit = {}) {
+        Log.d("fdsfsdfsd","checked")
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 userProfile.isLoading = true
@@ -58,10 +71,45 @@ class UserProfileScreenViewModel @Inject constructor(
 
                 )
 
+                onCompleted()
+
 
 
             } catch (e: Exception) {
 
+            }
+
+
+        }
+
+    }
+
+    fun refreshTestResults(onCompleted:()->Unit = {}) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val testResultDeferred = async {
+                    enneagramUseCase.checkTestResult()
+                }
+
+                val userInfoDeferred = async {
+                    userInformation.executeRequest()
+                }
+                val testResult = testResultDeferred.await()
+                val userInfo = userInfoDeferred.await()
+
+                userProfile =  UserProfileState(
+                    result = testResult,
+                    username = userInfo.name,
+                    userProfilePicturePath = userInfo.profilePhotoPath
+
+                )
+
+
+
+            } catch (e: Exception) {
+
+            }finally {
+                onCompleted()
             }
 
 

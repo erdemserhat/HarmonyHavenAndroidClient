@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -27,16 +28,20 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,11 +68,30 @@ import androidx.compose.ui.draw.rotate
 import com.erdemserhat.harmonyhaven.domain.model.rest.Article
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserProfileScreen(navController: NavController, profileScreenViewModel: UserProfileScreenViewModel = hiltViewModel()) {
+fun UserProfileScreen(navController: NavController, profileScreenViewModel: UserProfileScreenViewModel) {
     val profileScreenState by profileScreenViewModel.state
     val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
+
+
+    var isRefreshing by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+
+
+    LaunchedEffect(Unit) {
+        if(profileScreenState.shouldResetScrollState){
+            scrollState.scrollTo(0)
+            profileScreenViewModel.protectScrollState()
+
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -75,128 +99,146 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
             .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
-        
-        
-        if (profileScreenState.isLoading) {
-            LoadingUI()
-        } else if (profileScreenState.result?.isTestTakenBefore == true) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .padding(16.dp)
-            ) {
-                profileScreenState.result?.detailedResult?.let { result ->
-                    // Greeting with username
-                    profileScreenState.username?.let { username ->
-                        Text(
-                            text = "Merhaba, $username",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = harmonyHavenDarkGreenColor,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
+
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                isRefreshing = true
+                profileScreenViewModel.refreshTestResults(
+                    onCompleted = {
+                        isRefreshing = false
                     }
-                    
-                    // Main Result Card
-                    EnneagramResultCard(result.result.dominantType, result.result.wingType, result.description)
-                    
-                    Spacer(modifier = Modifier.height(24.dp))
-                    
-                    // Famous People Section
-                    Text(
-                        text = "Seninle Aynı Enneagram Tipindeki Ünlüler",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = harmonyHavenDarkGreenColor,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    
-                    result.famousPeople.forEach { person ->
-                        FamousPersonCard(person)
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-                    
-                    Spacer(modifier = Modifier.height(24.dp))
-                    
-                    // Chart Section (if available)
-                    result.chartUrl.takeIf { it.isNotEmpty() }?.let { chartUrl ->
+                )
+            },
+            modifier = Modifier.fillMaxSize() // Ensure it takes up the entire screen
+        ){
+
+
+            if (profileScreenState.isLoading) {
+                LoadingUI()
+            } else if (profileScreenState.result?.isTestTakenBefore == true) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                        .padding(16.dp)
+                ) {
+                    profileScreenState.result?.detailedResult?.let { result ->
+                        // Greeting with username
+                        profileScreenState.username?.let { username ->
+                            Text(
+                                text = "Merhaba, $username",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = harmonyHavenDarkGreenColor,
+                                modifier = Modifier.padding(bottom = 16.dp).clickable {
+                                    Log.d("dasdsds",profileScreenState.shouldResetScrollState.toString())
+                                }
+                            )
+                        }
+
+                        // Main Result Card
+                        EnneagramResultCard(result.result.dominantType, result.result.wingType, result.description)
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Famous People Section
                         Text(
-                            text = "Enneagram Grafik Görünümün",
+                            text = "Seninle Aynı Enneagram Tipindeki Ünlüler",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = harmonyHavenDarkGreenColor,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
-                        
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            elevation = CardDefaults.cardElevation(4.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
-                        ) {
-                            Image(
-                                painter = rememberAsyncImagePainter(
-                                    ImageRequest.Builder(LocalContext.current)
-                                        .data(data = chartUrl)
-                                        .build()
-                                ),
-                                contentDescription = "Enneagram Chart",
+
+                        result.famousPeople.forEach { person ->
+                            FamousPersonCard(person)
+                            Spacer(modifier = Modifier.height(12.dp))
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Chart Section (if available)
+                        result.chartUrl.takeIf { it.isNotEmpty() }?.let { chartUrl ->
+                            Text(
+                                text = "Enneagram Grafik Görünümün",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = harmonyHavenDarkGreenColor,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+
+                            Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(200.dp),
-                                contentScale = ContentScale.Fit
-                            )
+                                    .padding(vertical = 8.dp),
+                                elevation = CardDefaults.cardElevation(4.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.White)
+                            ) {
+                                Image(
+                                    painter = rememberAsyncImagePainter(
+                                        ImageRequest.Builder(LocalContext.current)
+                                            .data(data = chartUrl)
+                                            .build()
+                                    ),
+                                    contentDescription = "Enneagram Chart",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp),
+                                    contentScale = ContentScale.Fit
+                                )
+                            }
                         }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // All Type Scores
+                        Text(
+                            text = "Tüm Tip Skorların",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = harmonyHavenDarkGreenColor,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+
+                        result.result.typeScores.forEach { score ->
+                            TypeScoreItem(score)
+                        }
+
+                        Spacer(modifier = Modifier.height(32.dp))
+
+                        // Exploration Tabs Section
+                        ExplorationTabs(navController, result.result.dominantType.type)
+
+                        Spacer(modifier = Modifier.height(24.dp))
                     }
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    // All Type Scores
-                    Text(
-                        text = "Tüm Tip Skorların",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = harmonyHavenDarkGreenColor,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    
-                    result.result.typeScores.forEach { score ->
-                        TypeScoreItem(score)
+
+                    // Retake Test Button
+                    Button(
+                        onClick = {
+                            navController.navigate(Screen.EnneagramTestScreen.route)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = harmonyHavenGreen
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = "Testi Tekrar Al",
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
                     }
-                    
-                    Spacer(modifier = Modifier.height(32.dp))
-                    
-                    // Exploration Tabs Section
-                    ExplorationTabs(navController, result.result.dominantType.type)
-                    
-                    Spacer(modifier = Modifier.height(24.dp))
                 }
-                
-                // Retake Test Button
-                Button(
-                    onClick = {
-                        navController.navigate(Screen.EnneagramTestScreen.route)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = harmonyHavenGreen
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        text = "Testi Tekrar Al",
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
-                }
+            } else {
+                // No Test Result UI
+                NoTestResultUI(navController)
             }
-        } else {
-            // No Test Result UI
-            NoTestResultUI(navController)
+
         }
+
     }
 }
 

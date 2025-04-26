@@ -40,6 +40,7 @@ import com.erdemserhat.harmonyhaven.presentation.feature.google_auth.TestScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.article.composables.ArticleScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatIntroScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreenViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.test.EnneagramTestScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
@@ -61,7 +62,8 @@ fun SetupNavGraph(
     startDestination: String,
     modifier: Modifier = Modifier,
     window: Window,
-    sharedViewModel: SharedViewModel = hiltViewModel()
+    sharedViewModel: SharedViewModel = hiltViewModel(),
+    sharedViewModelUserProfile: UserProfileScreenViewModel = hiltViewModel()
 ) {
 
     NavHost(
@@ -120,7 +122,7 @@ fun SetupNavGraph(
         }
 
         composable(route = Screen.EnneagramTestScreen.route) {
-            EnneagramTestScreen(navController = navController)
+            EnneagramTestScreen(navController = navController, sharedViewModel = sharedViewModelUserProfile)
         }
 
 
@@ -220,10 +222,10 @@ fun SetupNavGraph(
 
             if (params == null) {
 
-                AppMainScreen(navController = navController, window = window, viewModel = sharedViewModel)
+                AppMainScreen(navController = navController, window = window, viewModel = sharedViewModel, userProfileSharedViewModel = sharedViewModelUserProfile)
 
             } else {
-                AppMainScreen(navController, params, window,sharedViewModel)
+                AppMainScreen(navController, params, window,sharedViewModel, userProfileSharedViewModel = sharedViewModelUserProfile)
 
             }
 
