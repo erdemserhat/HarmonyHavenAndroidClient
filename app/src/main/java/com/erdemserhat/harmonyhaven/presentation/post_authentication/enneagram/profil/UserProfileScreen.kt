@@ -1,7 +1,10 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil
 
+import android.os.Bundle
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,16 +27,24 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,11 +53,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramFamousPeople
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramScore
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import androidx.compose.ui.draw.rotate
+import com.erdemserhat.harmonyhaven.domain.model.rest.Article
+import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
+import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 
 @Composable
 fun UserProfileScreen(navController: NavController, profileScreenViewModel: UserProfileScreenViewModel = hiltViewModel()) {
@@ -59,6 +75,8 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
             .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
+        
+        
         if (profileScreenState.isLoading) {
             LoadingUI()
         } else if (profileScreenState.result?.isTestTakenBefore == true) {
@@ -148,6 +166,11 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
                         TypeScoreItem(score)
                     }
                     
+                    Spacer(modifier = Modifier.height(32.dp))
+                    
+                    // Exploration Tabs Section
+                    ExplorationTabs(navController, result.result.dominantType.type)
+                    
                     Spacer(modifier = Modifier.height(24.dp))
                 }
                 
@@ -173,6 +196,210 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
         } else {
             // No Test Result UI
             NoTestResultUI(navController)
+        }
+    }
+}
+
+@Composable
+fun ExplorationTabs(navController: NavController, dominantType: Int) {
+    var selectedTabIndex by remember { mutableStateOf(0) }
+    val tabs = listOf("Enneagramı Keşfet", "Kendini Keşfet", "Kariyerini Yönet")
+    
+    Column {
+        TabRow(
+            selectedTabIndex = selectedTabIndex,
+            containerColor = Color.White,
+            contentColor = harmonyHavenGreen,
+            indicator = { tabPositions ->
+                Box(
+                    modifier = Modifier
+                        .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                        .height(3.dp)
+                        .padding(horizontal = 16.dp)
+                        .background(
+                            color = harmonyHavenGreen,
+                            shape = RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp)
+                        )
+                )
+            }
+        ) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTabIndex == index,
+                    onClick = { selectedTabIndex = index },
+                    text = { 
+                        Text(
+                            text = title,
+                            fontSize = 14.sp,
+                            fontWeight = if (selectedTabIndex == index) FontWeight.Bold else FontWeight.Normal
+                        ) 
+                    },
+                    selectedContentColor = harmonyHavenDarkGreenColor,
+                    unselectedContentColor = Color.Gray
+                )
+            }
+        }
+        
+        when (selectedTabIndex) {
+            0 -> EnneagramExploreContent(navController)
+            1 -> SelfDiscoveryContent(navController, dominantType)
+            2 -> CareerManagementContent(navController, dominantType)
+        }
+    }
+}
+
+@Composable
+fun EnneagramExploreContent(navController: NavController) {
+    val topicList = listOf(
+        "Ennagram nedir",
+        "Ana tip kanat tip ve alt tip nedir",
+        "Stres hattı ve rahat hattı nedir",
+        "Mizaç yapısının kişilik düzeyindeki farklılık seviyeleri",
+        "Ennagram hangi alanlarda kullanılıyor",
+        "Enneagram tiplerine genel bakış",
+        "Enneagram tipimizi bilmek bize ne kazandırır",
+        "Enneagram hakkında sıkça sorular sorular"
+    )
+    
+    Column(modifier = Modifier.padding(top = 16.dp)) {
+        topicList.forEachIndexed { index, topic ->
+            TopicCard(
+                title = topic,
+                onClick = {
+                    // Burayı siz doldurabilirsiniz - örneğin:
+                    // navController.navigate("enneagramExplore/${index}")
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+fun SelfDiscoveryContent(navController: NavController, dominantType: Int) {
+    val topicList = listOf(
+        "Kendini İfade etme şeklin",
+        "En sık kullanıdıgın cümleler",
+        "Ebeveynlik tarzın",
+        "Potansiyel risklerin",
+        "Temel duygu ve düşünce yönetimi",
+        "Davranışsal tepkiler ve stres yönetimi",
+        "Motivasyon yönetimini etkileyen faktörler",
+        "Problemlere yaklasım tarzın",
+        "Stres durumunda tutumların",
+        "Rahat durumda tutumların",
+        "Hangi kısıtlılıklar görülebilir",
+        "Olumlu özelliklerin"
+    )
+    
+    Column(modifier = Modifier.padding(top = 16.dp)) {
+        topicList.forEachIndexed { index, topic ->
+            TopicCard(
+                title = topic,
+                onClick = {
+                    // Burayı siz doldurabilirsiniz - örneğin:
+                    // navController.navigate("selfDiscovery/${dominantType}/${index}")
+                },
+                typeNumber = dominantType
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+fun CareerManagementContent(navController: NavController, dominantType: Int) {
+    val topicList = listOf(
+        "Yetenekler ve değerler",
+        "Öz saygıyı geliştirme stratejileri",
+        "Meslek ve iş hayatı",
+        "Zaman yönetimi ve verimlilik teknikleri",
+        "Beliriszlikleri yönetme ve stratejiler",
+        "İş yapma tarzın",
+        "Prensiplerin"
+    )
+    
+    Column(modifier = Modifier.padding(top = 16.dp)) {
+        topicList.forEachIndexed { index, topic ->
+            TopicCard(
+                title = topic,
+                onClick = {
+                    val article:ArticlePresentableUIModel = ArticlePresentableUIModel(
+                        title = "Örnek",
+                        content = "örnek"
+                    )
+
+                    val bundle = Bundle()
+                    bundle.putParcelable("article", article)
+                    navController.navigate(
+                        route = Screen.Article.route,
+                        args = bundle
+                    )
+                    // Burayı siz doldurabilirsiniz - örneğin:
+                    // navController.navigate("careerManagement/${dominantType}/${index}")
+                },
+                typeNumber = dominantType
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+fun TopicCard(
+    title: String,
+    onClick: () -> Unit,
+    typeNumber: Int? = null
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        elevation = CardDefaults.cardElevation(2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Tik işareti
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(harmonyHavenGreen.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.check),
+                    contentDescription = "Check",
+                    tint = harmonyHavenGreen,
+                    modifier = Modifier.size(8.dp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.padding(horizontal = 8.dp))
+            
+            Text(
+                text = title,
+                fontSize = 16.sp,
+                color = Color.DarkGray,
+                modifier = Modifier.weight(1f)
+            )
+            
+            Icon(
+                painter = painterResource(id = R.drawable.arrow_back),
+                contentDescription = "Go to detail",
+                tint = harmonyHavenGreen,
+                modifier = Modifier
+                    .size(24.dp)
+                    .rotate(180f)
+            )
         }
     }
 }
