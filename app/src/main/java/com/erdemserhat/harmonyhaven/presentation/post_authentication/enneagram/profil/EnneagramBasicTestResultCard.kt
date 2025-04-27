@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +20,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -29,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramFamousPeople
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramScore
 import com.erdemserhat.harmonyhaven.markdowntext.MarkdownText
@@ -48,6 +51,7 @@ fun EnneagramResultCard(dominantType: EnneagramScore, wingType: EnneagramScore, 
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+
             Text(
                 text = "Senin Enneagram Tipin:",
                 fontSize = 16.sp,
@@ -75,6 +79,20 @@ fun EnneagramResultCard(dominantType: EnneagramScore, wingType: EnneagramScore, 
                     )
                 }
             }
+
+            // Header görseli
+            Image(
+                painter = painterResource(id = R.drawable.ex),
+                contentDescription = "Enneagram Tipi",
+                modifier = Modifier
+                    .size(350.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .clip(RoundedCornerShape(10.dp)),
+                contentScale = ContentScale.FillBounds
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
 
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 8.dp),
