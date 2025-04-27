@@ -1,8 +1,9 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,11 +29,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -55,7 +56,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -67,13 +67,11 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.toFontFamily
-import com.erdemserhat.harmonyhaven.domain.model.rest.Article
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.markdowntext.MarkdownText
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.rememberModalBottomSheetState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,19 +79,29 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
     val profileScreenState by profileScreenViewModel.state
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
-
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
 
     var isRefreshing by rememberSaveable {
         mutableStateOf(false)
     }
 
+    var shouldShowIntroTestScreen by rememberSaveable {
+        mutableStateOf(false)
+    }
 
+    BackHandler {
+        if (showBottomSheet) {
+            showBottomSheet = false
+        } else {
+            shouldShowIntroTestScreen = false
+        }
+    }
 
     LaunchedEffect(Unit) {
         if(profileScreenState.shouldResetScrollState){
             scrollState.scrollTo(0)
             profileScreenViewModel.protectScrollState()
-
         }
     }
 
@@ -103,7 +111,6 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
             .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
-
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = {
@@ -116,9 +123,9 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
             },
             modifier = Modifier.fillMaxSize() // Ensure it takes up the entire screen
         ){
-
-
-            if (profileScreenState.isLoading) {
+            if(shouldShowIntroTestScreen){
+                TestIntroScreen(navController)
+            }else if (profileScreenState.isLoading) {
                 LoadingUI()
             } else if (profileScreenState.result?.isTestTakenBefore == true) {
                 Column(
@@ -135,9 +142,11 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = harmonyHavenDarkGreenColor,
-                                modifier = Modifier.padding(bottom = 16.dp).clickable {
-                                    Log.d("dasdsds",profileScreenState.shouldResetScrollState.toString())
-                                }
+                                modifier = Modifier
+                                    .padding(bottom = 16.dp)
+                                    .clickable {
+                                        Log.d("dasdsds",profileScreenState.shouldResetScrollState.toString())
+                                    }
                             )
                         }
 
@@ -220,7 +229,7 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
                     // Retake Test Button
                     Button(
                         onClick = {
-                            navController.navigate(Screen.EnneagramTestScreen.route)
+                            showBottomSheet = true
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
@@ -236,13 +245,83 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
                         )
                     }
                 }
-            } else {
-                // No Test Result UI
-                NoTestResultUI(navController)
+            }else{
+                TestIntroScreen(navController)
             }
-
         }
-
+    }
+    
+    // Modal Bottom Sheet for test mode selection
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showBottomSheet = false },
+            sheetState = bottomSheetState,
+            containerColor = Color.White
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp)
+            ) {
+                // Header
+                Text(
+                    text = "Test Modunu Seçin",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = harmonyHavenDarkGreenColor,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 16.dp),
+                    textAlign = TextAlign.Center
+                )
+                
+                // Divider
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+                    color = harmonyHavenGreen.copy(alpha = 0.2f)
+                )
+                
+                // Test Mode Cards
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 8.dp)
+                ) {
+                    // Basit Test - Active
+                    TestModeSelectionItem(
+                        title = "Basit Test",
+                        description = "Hızlı sonuç için 36 soru (5-10 dakika)",
+                        isEnabled = true,
+                        onClick = {
+                            showBottomSheet = false
+                            navController.navigate(Screen.EnneagramTestScreen.route + "?mode=simple")
+                        }
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Standart Test - Disabled
+                    TestModeSelectionItem(
+                        title = "Standart Test",
+                        description = "Detaylı analiz için 60 soru (10-15 dakika)",
+                        isEnabled = false,
+                        comingSoonText = "Yakında",
+                        onClick = {}
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Profesyonel Test - Disabled
+                    TestModeSelectionItem(
+                        title = "Profesyonel Test",
+                        description = "Derinlemesine analiz için 108 soru (20-30 dakika)",
+                        isEnabled = false,
+                        comingSoonText = "Yakında",
+                        onClick = {}
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -470,192 +549,103 @@ fun LoadingUI() {
 }
 
 @Composable
-fun NoTestResultUI(navController: NavController) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Text(
-            text = "Henüz enneagram testini tamamlamadınız.",
-            fontSize = 18.sp,
-            color = harmonyHavenDarkGreenColor,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
-        
-        Button(
-            onClick = {
-                navController.navigate(Screen.EnneagramTestScreen.route)
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = harmonyHavenGreen
-            ),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Text(
-                text = "Testi Şimdi Al",
-                color = Color.White,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun EnneagramResultCard(dominantType: EnneagramScore, wingType: EnneagramScore, description: String) {
+fun TestModeSelectionItem(
+    title: String,
+    description: String,
+    isEnabled: Boolean,
+    comingSoonText: String? = null,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+            .fillMaxWidth()
+            .clickable(enabled = isEnabled, onClick = onClick),
+        elevation = CardDefaults.cardElevation(3.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isEnabled) Color.White else Color.White.copy(alpha = 0.9f)
+        ),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, if (isEnabled) harmonyHavenGreen.copy(alpha = 0.3f) else Color.Gray.copy(alpha = 0.3f))
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "Senin Enneagram Tipin:",
-                fontSize = 16.sp,
-                color = Color.Gray
-            )
-            
+        Box {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
+                    .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Tip ${dominantType.type}",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = harmonyHavenDarkGreenColor
-                )
+                // Icon
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(if (isEnabled) harmonyHavenGreen.copy(alpha = 0.1f) else Color.Gray.copy(alpha = 0.1f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.check),
+                        contentDescription = "Icon",
+                        tint = if (isEnabled) harmonyHavenGreen else Color.Gray,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
                 
-                if (wingType.type > 0) {
+                Spacer(modifier = Modifier.width(16.dp))
+                
+                // Text
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
                     Text(
-                        text = " (Kanat ${wingType.type})",
-                        fontSize = 20.sp,
-                        color = harmonyHavenDarkGreenColor
+                        text = title,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isEnabled) harmonyHavenDarkGreenColor else Color.Gray
+                    )
+                    
+                    Spacer(modifier = Modifier.height(4.dp))
+                    
+                    Text(
+                        text = description,
+                        fontSize = 14.sp,
+                        color = if (isEnabled) Color.DarkGray else Color.Gray
+                    )
+                }
+                
+                if (isEnabled) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.arrow_back),
+                        contentDescription = "Başla",
+                        tint = harmonyHavenGreen,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .rotate(180f)
                     )
                 }
             }
-
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = harmonyHavenGreen.copy(alpha = 0.3f)
-            )
-
-            val customStyle = TextStyle(
-                fontSize = 16.sp,
-                color = Color.Black,
-            )
-
-            MarkdownText(
-                maxLines = Int.MAX_VALUE,
-                syntaxHighlightColor = Color.Black.copy(0.18f),
-                style = customStyle,
-                markdown = description,
-                isTextSelectable = true,
-            )
-
-        }
-    }
-}
-
-@Composable
-fun FamousPersonCard(person: EnneagramFamousPeople) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    ImageRequest.Builder(LocalContext.current)
-                        .data(data = person.imageUrl)
-                        .build()
-                ),
-                contentDescription = person.name,
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
             
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 16.dp)
-            ) {
-                Text(
-                    text = person.name,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = harmonyHavenDarkGreenColor
-                )
-                
-                Text(
-                    text = person.desc,
-                    fontSize = 14.sp,
-                    color = Color.DarkGray
-                )
+            // Coming Soon Badge
+            comingSoonText?.let {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .background(
+                            color = harmonyHavenGreen.copy(alpha = 0.2f),
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = it,
+                        fontSize = 12.sp,
+                        color = harmonyHavenDarkGreenColor,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
         }
     }
 }
 
-@Composable
-fun TypeScoreItem(score: EnneagramScore) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "Tip ${score.type}",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = harmonyHavenDarkGreenColor,
-            modifier = Modifier.padding(end = 16.dp)
-        )
-        
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .height(12.dp)
-                .clip(RoundedCornerShape(6.dp))
-                .background(Color.LightGray)
-        ) {
-            // Calculate percentage (assuming maximum score is 12 for enneagram)
-            val percentage = (score.score.toFloat() / 12).coerceIn(0f, 1f)
-            
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(percentage)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(harmonyHavenGreen)
-            )
-        }
-        
-        Text(
-            text = "${score.score}",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            color = harmonyHavenDarkGreenColor,
-            modifier = Modifier.padding(start = 16.dp)
-        )
-    }
-}
+

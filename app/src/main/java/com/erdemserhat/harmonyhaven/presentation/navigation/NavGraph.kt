@@ -40,6 +40,7 @@ import com.erdemserhat.harmonyhaven.presentation.feature.google_auth.TestScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.article.composables.ArticleScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatIntroScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.TestIntroScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreenViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.test.EnneagramTestScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
@@ -104,9 +105,10 @@ fun SetupNavGraph(
 
         composable(route = Screen.Profile.route) {
             AccountInformationScreen(navController)
+        }
 
-
-
+        composable(route = Screen.EnneagramIntroScreen.route) {
+            TestIntroScreen(navController)
         }
 
 
