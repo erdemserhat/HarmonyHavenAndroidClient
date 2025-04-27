@@ -29,6 +29,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
@@ -65,8 +66,11 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.toFontFamily
 import com.erdemserhat.harmonyhaven.domain.model.rest.Article
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
+import com.erdemserhat.harmonyhaven.markdowntext.MarkdownText
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -539,18 +543,25 @@ fun EnneagramResultCard(dominantType: EnneagramScore, wingType: EnneagramScore, 
                     )
                 }
             }
-            
-            Divider(
+
+            HorizontalDivider(
                 modifier = Modifier.padding(vertical = 8.dp),
                 color = harmonyHavenGreen.copy(alpha = 0.3f)
             )
-            
-            Text(
-                text = description,
+
+            val customStyle = TextStyle(
                 fontSize = 16.sp,
-                color = Color.DarkGray,
-                modifier = Modifier.padding(top = 8.dp)
+                color = Color.Black,
             )
+
+            MarkdownText(
+                maxLines = Int.MAX_VALUE,
+                syntaxHighlightColor = Color.Black.copy(0.18f),
+                style = customStyle,
+                markdown = description,
+                isTextSelectable = true,
+            )
+
         }
     }
 }
