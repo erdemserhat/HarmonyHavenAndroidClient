@@ -7,15 +7,19 @@ import android.view.Window
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -25,6 +29,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.TextButton
@@ -49,8 +54,12 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -72,6 +81,9 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Text
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
@@ -222,50 +234,94 @@ fun AppMainScreen(
                         alpha = 0.95f
                     )
                 )
-                //for android 15 (api level 35)
-                .padding()
-                .height(45.dp),
+                .padding(vertical = 4.dp)
+                .height(64.dp),  // Increased height to accommodate indicator
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             items.forEachIndexed { index, item ->
-                Box(modifier = Modifier
-                    .weight(1f)
-                    .clickable(indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-
-                    ) {
-                        coroutineScope.launch {
-                            if (index == 1) {
-                                val currentTime = System.currentTimeMillis()
-                                if (currentTime - lastClickTime < doubleClickThreshold) {
-                                    // Çift tıklama algılandı
-                                    coroutineScope.launch {
-                                        // Çift tıklama işlemi
-                                        quoteViewModel.shouldScrollToStart()
-
-                                        quoteViewModel.refreshList()
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            role = Role.Tab,
+                            onClick = {
+                                coroutineScope.launch {
+                                    if (index == 1) {
+                                        val currentTime = System.currentTimeMillis()
+                                        if (currentTime - lastClickTime < doubleClickThreshold) {
+                                            // Double tap detected
+                                            coroutineScope.launch {
+                                                quoteViewModel.shouldScrollToStart()
+                                                quoteViewModel.refreshList()
+                                            }
+                                        }
+                                        lastClickTime = currentTime
                                     }
+                                    keyboardController?.hide()
+                                    pagerState.scrollToPage(index)
+                                    params.screenNo = -1
                                 }
-                                lastClickTime = currentTime
-
                             }
-                            keyboardController?.hide()
-                            pagerState.scrollToPage(index)
-                            params.screenNo = -1
-
-                        }
-                    }, contentAlignment = Alignment.Center
+                        )
+                       ,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     val iconResource = if (pagerState.currentPage == 1) {
                         if (pagerState.currentPage == index) item.selectedIconDarkIcon else item.unSelectedIconDarkIcon
                     } else {
                         if (pagerState.currentPage == index) item.selectedIconWhiteIcon else item.unSelectedIconWhiteIcon
                     }
+                    
+                    val isSelected = pagerState.currentPage == index
+                    val textColor = if (pagerState.currentPage == 1) {
+                        if (isSelected) Color.White else Color.White.copy(alpha = 0.6f)
+                    } else {
+                        if (isSelected) Color.Black else Color.Black.copy(alpha = 0.6f)
+                    }
+                    
+                    // Indicator color animation
+                    val indicatorColor = animateColorAsState(
+                        targetValue = if (isSelected) {
+                            if (pagerState.currentPage == 1) Color.White else Color.Black
+                        } else Color.Transparent,
+                        label = "indicatorColor"
+                    )
+                    
+                    // Indicator width animation
+                    val indicatorWidth = animateDpAsState(
+                        targetValue = if (isSelected) 24.dp else 0.dp,
+                        label = "indicatorWidth"
+                    )
+                    
                     Image(
-                        modifier = Modifier.size(23.dp),
+                        modifier = Modifier.size(26.dp),
                         painter = painterResource(id = iconResource),
-                        contentDescription = null
+                        contentDescription = item.title
+                    )
+                    
+                    Text(
+                        text = item.title,
+                        color = textColor,
+                        fontSize = 10.sp,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                    
+                    // Indicator
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 3.dp)
+                            .width(indicatorWidth.value)
+                            .height(2.dp)
+                            .background(
+                                color = indicatorColor.value,
+                                shape = RoundedCornerShape(1.dp)
+                            )
                     )
                 }
             }
@@ -484,7 +540,7 @@ private val items = listOf(
         title = "Harmonia",
         hasNews = false,
         badgeCount = null,
-        route = Screen.Notification.route,
+        route = Screen.ChatIntroScreen.route,
         selectedIconDarkIcon = R.drawable.message_f_white,
         selectedIconWhiteIcon = R.drawable.message_f_black,
         unSelectedIconDarkIcon = R.drawable.message_uf_white,
@@ -496,12 +552,11 @@ private val items = listOf(
         title = "Profile",
         hasNews = false,
         badgeCount = null,
-        route = Screen.Home.route,
-        selectedIconDarkIcon = R.drawable.house,
-        selectedIconWhiteIcon = R.drawable.house,
-        unSelectedIconDarkIcon = R.drawable.house,
-        unSelectedIconWhiteIcon = R.drawable.house
-
+        route = Screen.Profile.route,
+        selectedIconDarkIcon = R.drawable.profile_filled_white,
+        selectedIconWhiteIcon = R.drawable.profile_filled_black,
+        unSelectedIconDarkIcon = R.drawable.profile_unfilled_white,
+        unSelectedIconWhiteIcon = R.drawable.profile_unfilled_black
     )
 )
 

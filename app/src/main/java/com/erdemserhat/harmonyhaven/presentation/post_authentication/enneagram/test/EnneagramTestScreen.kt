@@ -220,7 +220,7 @@ fun TestQuestionsScreen(
     questions: List<EnneagramQuestionDto>,
     currentIndex: Int,
     answers: List<com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramAnswersDto>,
-    onAnswerSelected: (Int, Int) -> Unit,
+    onAnswerSelected: (String, Int) -> Unit,
     onSubmitAnswers: () -> Unit
 ) {
     val viewModel = hiltViewModel<EnneagramViewModel>()
@@ -421,8 +421,8 @@ fun TestQuestionsScreen(
 fun ProgressBarWithSegments(
     totalQuestions: Int,
     currentIndex: Int,
-    answeredQuestions: List<Int>,
-    questionsMap: Map<Int, EnneagramQuestionDto>,
+    answeredQuestions: List<String>,
+    questionsMap: Map<String, EnneagramQuestionDto>,
     onQuestionSelected: (Int) -> Unit
 ) {
     // Debug log'ları

@@ -100,8 +100,9 @@ fun EnneagramResultCard(dominantType: EnneagramScore, wingType: EnneagramScore, 
             )
 
             val customStyle = TextStyle(
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 color = Color.Black,
+                lineHeight = 25.sp
             )
 
             MarkdownText(

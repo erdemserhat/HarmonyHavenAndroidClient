@@ -67,7 +67,6 @@ class EnneagramUseCase @Inject constructor(
 
     suspend fun checkTestResult(): CheckingTestResultDto? {
         try {
-            Log.d("ENNEAGRAM_USECASE","api request is successfully")
             val result = enneagramApiService.checkTestResult()
 
             if(result.isSuccessful){
@@ -76,7 +75,7 @@ class EnneagramUseCase @Inject constructor(
 
                 return  resultData
             }else{
-                Log.d("ENNEAGRAM_USECASE","api request is unsuccessfully")
+                Log.d("ENNEAGRAM_USECASE","api request is unsuccessfully-2")
 
                 val errorBody = result.errorBody()?.string()
                 throw EnneagramApiException(errorBody ?: "error message was null")

@@ -50,7 +50,7 @@ class EnneagramViewModel @Inject constructor(
         }
     }
 
-    fun updateAnswer(questionId: Int, score: Int) {
+    fun updateAnswer(questionId: String, score: Int) {
         Log.d("EnneagramViewModel", "Updating answer for questionId: $questionId with score: $score")
         val currentAnswers = _enneagramState.value.answers.toMutableList()
         

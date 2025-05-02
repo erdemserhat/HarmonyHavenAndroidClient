@@ -31,14 +31,14 @@ interface EnneagramApiService {
 
 @Serializable
 data class EnneagramQuestionDto(
-    val id: Int,
+    val id: String,
     val personalityNumber: Int,
     val content: String
 )
 
 @Serializable
 data class EnneagramAnswersDto(
-    val questionId:Int,
+    val questionId:String,
     val score:Int,
 ){
     init {
