@@ -72,9 +72,9 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="harmonyhaven.erdemserhat.com" android:pathPrefix="/article" />
-                <data android:scheme="https" android:host="harmonyhaven.erdemserhat.com" android:pathPrefix="/quote" />
-                <data android:scheme="https" android:host="harmonyhaven.erdemserhat.com" android:pathPrefix="/home" />
+                <data android:scheme="https" android:host="harmonyhavenapp.com" android:pathPrefix="/article" />
+                <data android:scheme="https" android:host="harmonyhavenapp.com" android:pathPrefix="/quote" />
+                <data android:scheme="https" android:host="harmonyhavenapp.com" android:pathPrefix="/home" />
             </intent-filter>
 
 

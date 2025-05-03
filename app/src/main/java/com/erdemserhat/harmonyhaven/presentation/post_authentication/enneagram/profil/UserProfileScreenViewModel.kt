@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.domain.usecase.EnneagramUseCase
+import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.user.GetUserInformation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UserProfileScreenViewModel @Inject constructor(
     private val enneagramUseCase: EnneagramUseCase,
-    private val userInformation: GetUserInformation
+    private val userInformation: GetUserInformation,
+    private val articleUseCases: ArticleUseCases
 ) : ViewModel() {
 
     private val _state = mutableStateOf(UserProfileState())
@@ -33,6 +35,15 @@ class UserProfileScreenViewModel @Inject constructor(
 
     init {
         checkTestResult()
+    }
+
+
+    fun loadEnneagramContents(){
+        viewModelScope.launch {
+            val articles =  articleUseCases.getArticlesByCategory(2)
+
+
+        }
     }
 
 

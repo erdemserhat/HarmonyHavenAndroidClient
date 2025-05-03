@@ -51,7 +51,7 @@ data class EnneagramTestResultDetailedDto(
     val result: EnneagramTestResult,
     val description: String,
     val famousPeople: List<EnneagramFamousPeople>,
-    val chartUrl:String
+    val chartUrl:EnneagramUrl
 
 )
 
@@ -80,4 +80,12 @@ data class CheckingTestResultDto(
     val detailedResult: EnneagramTestResultDetailedDto?,
     val isTestTakenBefore: Boolean
 )
+
+@Serializable
+data class EnneagramUrl(
+    val chartUrl:String,
+    val personalityImageUrl:String,
+
+    )
+
 

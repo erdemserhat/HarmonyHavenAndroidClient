@@ -29,6 +29,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.erdemserhat.harmonyhaven.R
@@ -39,7 +40,14 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 
 @Composable
-fun EnneagramResultCard(dominantType: EnneagramScore, wingType: EnneagramScore, description: String) {
+fun EnneagramResultCard(
+    dominantType: EnneagramScore,
+    wingType: EnneagramScore,
+    description: String,
+    personalityImageUrl:String
+
+
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -81,11 +89,11 @@ fun EnneagramResultCard(dominantType: EnneagramScore, wingType: EnneagramScore, 
             }
 
             // Header görseli
-            Image(
-                painter = painterResource(id = R.drawable.ex),
+            AsyncImage(
+                model = personalityImageUrl,
                 contentDescription = "Enneagram Tipi",
                 modifier = Modifier
-                    .size(350.dp)
+                    .size(240.dp)
                     .align(Alignment.CenterHorizontally)
                     .clip(RoundedCornerShape(10.dp)),
                 contentScale = ContentScale.FillBounds

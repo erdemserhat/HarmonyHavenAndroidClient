@@ -151,7 +151,7 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
                         }
 
                         // Main Result Card
-                        EnneagramResultCard(result.result.dominantType, result.result.wingType, result.description)
+                        EnneagramResultCard(result.result.dominantType, result.result.wingType, result.description, result.chartUrl.personalityImageUrl)
 
                         Spacer(modifier = Modifier.height(24.dp))
 
@@ -172,7 +172,7 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
                         Spacer(modifier = Modifier.height(24.dp))
 
                         // Chart Section (if available)
-                        result.chartUrl.takeIf { it.isNotEmpty() }?.let { chartUrl ->
+                        result.chartUrl.takeIf { it.chartUrl.isNotEmpty() }?.let { chartUrl ->
                             Text(
                                 text = "Enneagram Grafik Görünümün",
                                 fontSize = 18.sp,
@@ -181,6 +181,7 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
 
+                            /*
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -201,7 +202,11 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
                                     contentScale = ContentScale.Fit
                                 )
                             }
+                              */
+
                         }
+
+
 
                         Spacer(modifier = Modifier.height(16.dp))
 
@@ -328,7 +333,7 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
 @Composable
 fun ExplorationTabs(navController: NavController, dominantType: Int) {
     var selectedTabIndex by remember { mutableStateOf(0) }
-    val tabs = listOf("Enneagramı Keşfet", "Kendini Keşfet", "Kariyerini Yönet")
+    val tabs = listOf("Enneagramı Keşfet")
     
     Column {
         TabRow(
@@ -391,8 +396,12 @@ fun EnneagramExploreContent(navController: NavController) {
             TopicCard(
                 title = topic,
                 onClick = {
-                    // Burayı siz doldurabilirsiniz - örneğin:
-                    // navController.navigate("enneagramExplore/${index}")
+                    val bundle = Bundle()
+                    bundle.putParcelable("article", ArticlePresentableUIModel())
+                    navController.navigate(
+                        route = Screen.Article.route,
+                        args = bundle
+                    )
                 }
             )
             Spacer(modifier = Modifier.height(8.dp))
