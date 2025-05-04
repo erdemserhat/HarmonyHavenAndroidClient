@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.erdemserhat.harmonyhaven.domain.usecase.EnneagramUseCase
 import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.user.GetUserInformation
@@ -38,12 +39,14 @@ class UserProfileScreenViewModel @Inject constructor(
     }
 
 
-    fun loadEnneagramContents(){
-        viewModelScope.launch {
-            val articles =  articleUseCases.getArticlesByCategory(2)
-
-
+    private fun loadArticle(){
+        viewModelScope.launch(Dispatchers.IO) {
+            val article = articleUseCases.getArticleById.executeRequest(_state.value.result?.detailedResult?.fullDescriptionCode ?: 0)
+            _state.value = _state.value.copy(
+                article = article
+            )
         }
+
     }
 
 
@@ -72,6 +75,7 @@ class UserProfileScreenViewModel @Inject constructor(
                     userInformation.executeRequest()
                 }
                 val testResult = testResultDeferred.await()
+
                 val userInfo = userInfoDeferred.await()
 
                 userProfile =  UserProfileState(
@@ -83,7 +87,7 @@ class UserProfileScreenViewModel @Inject constructor(
                 )
 
                 onCompleted()
-
+                loadArticle()
 
 
             } catch (e: Exception) {
@@ -114,6 +118,7 @@ class UserProfileScreenViewModel @Inject constructor(
                     userProfilePicturePath = userInfo.profilePhotoPath
 
                 )
+                loadArticle()
 
 
 

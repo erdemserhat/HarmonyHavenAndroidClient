@@ -139,7 +139,7 @@ fun TestModeCard(
             .clickable(enabled = isEnabled, onClick = onClick),
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isEnabled) Color.White else Color.White.copy(alpha = 0.9f)
+            containerColor = if (isEnabled) Color.White else Color.White
         ),
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(1.dp, if (isEnabled) harmonyHavenGreen.copy(alpha = 0.3f) else Color.Gray.copy(alpha = 0.3f))

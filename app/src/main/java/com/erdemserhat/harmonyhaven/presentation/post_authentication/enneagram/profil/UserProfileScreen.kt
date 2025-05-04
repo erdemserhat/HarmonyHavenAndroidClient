@@ -145,13 +145,24 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
                                 modifier = Modifier
                                     .padding(bottom = 16.dp)
                                     .clickable {
-                                        Log.d("dasdsds",profileScreenState.shouldResetScrollState.toString())
+                                        Log.d(
+                                            "dasdsds",
+                                            profileScreenState.shouldResetScrollState.toString()
+                                        )
                                     }
                             )
                         }
 
                         // Main Result Card
-                        EnneagramResultCard(result.result.dominantType, result.result.wingType, result.description, result.chartUrl.personalityImageUrl)
+                        EnneagramResultCard(
+                            result.result.dominantType,
+                            result.result.wingType, result.description,
+                            result.chartUrl.personalityImageUrl,
+                            navController,
+                            profileScreenState.article
+
+
+                        )
 
                         Spacer(modifier = Modifier.height(24.dp))
 
@@ -226,7 +237,7 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
                         Spacer(modifier = Modifier.height(32.dp))
 
                         // Exploration Tabs Section
-                        ExplorationTabs(navController, result.result.dominantType.type)
+                       // ExplorationTabs(navController, result.result.dominantType.type)
 
                         Spacer(modifier = Modifier.height(24.dp))
                     }
@@ -588,7 +599,11 @@ fun TestModeSelectionItem(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(if (isEnabled) harmonyHavenGreen.copy(alpha = 0.1f) else Color.Gray.copy(alpha = 0.1f)),
+                        .background(
+                            if (isEnabled) harmonyHavenGreen.copy(alpha = 0.1f) else Color.Gray.copy(
+                                alpha = 0.1f
+                            )
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(

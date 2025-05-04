@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil
 
+import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -29,13 +32,18 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramFamousPeople
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramScore
+import com.erdemserhat.harmonyhaven.domain.model.rest.Article
+import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.markdowntext.MarkdownText
+import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 
@@ -44,7 +52,9 @@ fun EnneagramResultCard(
     dominantType: EnneagramScore,
     wingType: EnneagramScore,
     description: String,
-    personalityImageUrl:String
+    personalityImageUrl:String,
+    navController:NavController,
+    article: ArticlePresentableUIModel?
 
 
 ) {
@@ -120,6 +130,33 @@ fun EnneagramResultCard(
                 markdown = description,
                 isTextSelectable = true,
             )
+            article.let {article->
+                Spacer(modifier = Modifier.size(25.dp))
+                Button(
+                    onClick = {
+                            val bundle = Bundle()
+                            bundle.putParcelable("article",article)
+                            navController.navigate(
+                                route = Screen.Article.route,
+                                args = bundle
+                            )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = harmonyHavenGreen
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = "Detaylı Açıklamaya Git",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                }
+
+            }
+
 
         }
     }

@@ -50,6 +50,7 @@ data class EnneagramAnswersDto(
 data class EnneagramTestResultDetailedDto(
     val result: EnneagramTestResult,
     val description: String,
+    val fullDescriptionCode: Int,
     val famousPeople: List<EnneagramFamousPeople>,
     val chartUrl:EnneagramUrl
 
