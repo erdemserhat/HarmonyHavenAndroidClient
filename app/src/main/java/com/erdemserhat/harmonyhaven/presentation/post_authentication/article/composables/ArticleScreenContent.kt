@@ -501,7 +501,7 @@ fun ArticleScreenContent(
                 navController = navController,
                 onShareButtonClicked = {
                     val link =
-                        "https://harmonyhaven.erdemserhat.com/articles/${article.id}/${article.slug}"
+                        "https://harmonyhavenapp.com/articles/${article.id}/${article.slug}"
                     val shareIntent = Intent(Intent.ACTION_SEND).apply {
                         type = "text/plain"
                         putExtra(Intent.EXTRA_TEXT, link)

@@ -33,6 +33,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -62,6 +63,8 @@ class LoginViewModel @Inject constructor(
 
 
     private fun authenticateUser(email: String, password: String) {
+        val startedTime = Date().time
+
         try {
             viewModelScope.launch(Dispatchers.IO) {
                 delay(400)
@@ -180,11 +183,15 @@ class LoginViewModel @Inject constructor(
             Log.d(ErrorTraceFlags.LOGIN_TRACE.flagName,"error while authenticating user ${e.message}")
             Toast.makeText(context, "Giriş yapma işlemi ile ilgili bir hata oluştu", Toast.LENGTH_SHORT).show()
 
+        }finally {
+            Log.d("mstestharmony","total lasted:${Date().time-startedTime}")
+
         }
     }
 
 
     fun handleSignInWithGoogle(result: GetCredentialResponse) {
+        val startedTime = Date().time
         _loginState.value = _loginState.value.copy(
             isLoading = true,
         )
@@ -248,11 +255,13 @@ class LoginViewModel @Inject constructor(
                     } catch (e: GoogleIdTokenParsingException) {
                         Log.d(ErrorTraceFlags.GOOGLE_SIGN_IN_TRACE.flagName,"Received an invalid google id token response: ${e.message}")
 
+                    } finally {
+                        Log.d("mstestharmony","total lasted:${Date().time-startedTime}")
+
                     }
                 } else {
                     // Catch any unrecognized custom credential type here.
                     Log.d(ErrorTraceFlags.GOOGLE_SIGN_IN_TRACE.flagName,"Unexpected type of credential")
-
 
                 }
             }

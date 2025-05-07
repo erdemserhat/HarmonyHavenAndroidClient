@@ -7,16 +7,19 @@ import android.view.Window
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -26,6 +29,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.TextButton
@@ -46,20 +50,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatIntroScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreenViewModel
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.test.EnneagramTestScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
@@ -68,11 +77,13 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.CategoryPickerModalBottomSheet
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentModalBottomSheet
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentViewModel
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.user.ProfileScreen
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Text
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
@@ -82,7 +93,8 @@ fun AppMainScreen(
     params: MainScreenParams = MainScreenParams(),
     window: Window,
     viewModel: SharedViewModel = hiltViewModel(),
-    quoteViewModel: QuoteMainViewModel = hiltViewModel()
+    quoteViewModel: QuoteMainViewModel = hiltViewModel(),
+    userProfileSharedViewModel :UserProfileScreenViewModel
 
 
 ) {
@@ -105,19 +117,19 @@ fun AppMainScreen(
     val context = LocalContext.current
     val activity = context as? Activity // Context'i Activity'ye dönüştürüyoruz
 
-    var shouldShowCommentBottomModal by remember{
+    var shouldShowCommentBottomModal by remember {
         mutableStateOf(false)
     }
     val volumeControlViewModel = hiltViewModel<VolumeControlViewModel>()
 
     val commentSheetState = SheetState(skipPartiallyExpanded = true, density = Density(context))
 
-    var shouldShowCategoryBottomModal by remember{
+    var shouldShowCategoryBottomModal by remember {
         mutableStateOf(false)
     }
     val categorySheetState = SheetState(skipPartiallyExpanded = false, density = Density(context))
 
-    val  commentViewModel :CommentViewModel = hiltViewModel()
+    val commentViewModel: CommentViewModel = hiltViewModel()
 
     var lastClickTime by remember { mutableStateOf(0L) }
     val doubleClickThreshold = 300L // Çift tıklama için eşik süre (ms)
@@ -130,11 +142,11 @@ fun AppMainScreen(
     }
 
     LaunchedEffect(pagerState.currentPage) {
-        Log.d("dsdfsdfsdf",pagerState.currentPage.toString())
-        if(pagerState.currentPage!=1){
+        Log.d("dsdfsdfsdf", pagerState.currentPage.toString())
+        if (pagerState.currentPage != 1) {
             volumeControlViewModel.saveLastCondition()
             volumeControlViewModel.mute()
-        }else{
+        } else {
             volumeControlViewModel.setLastCondition()
 
 
@@ -142,32 +154,31 @@ fun AppMainScreen(
     }
 
 
-
-
     val screens: Map<Int, @Composable () -> Unit> = remember {
-        mapOf(
-            0 to { HomeScreenNew(navController) },
-            1 to { QuoteMainScreen(
-                volumeControllerViewModel = volumeControlViewModel,
-                navController = navController,
-                sharedViewModel = viewModel,
-                onCommentsClicked = { postId ->
-                    postID = postId
-                    shouldShowCommentBottomModal = true
-                },
-                onCategoryClicked = {
-                    coroutineScope.launch {
-                        shouldShowCategoryBottomModal = true
-                    }
-                },
-                viewmodel = quoteViewModel
-            ) },
+        mapOf(0 to { HomeScreenNew(navController) },
+            1 to {
+                QuoteMainScreen(
+                    volumeControllerViewModel = volumeControlViewModel,
+                    navController = navController,
+                    sharedViewModel = viewModel,
+                    onCommentsClicked = { postId ->
+                        postID = postId
+                        shouldShowCommentBottomModal = true
+                    },
+                    onCategoryClicked = {
+                        coroutineScope.launch {
+                            shouldShowCategoryBottomModal = true
+                        }
+                    },
+                    viewmodel = quoteViewModel
+                )
+            },
             2 to { NotificationScreen(navController) },
             3 to { ChatIntroScreen(navController = navController) },
+            4 to { UserProfileScreen(navController,profileScreenViewModel = userProfileSharedViewModel) }
+
         )
     }
-
-
 
 
     //set status bar and system navbar color
@@ -177,7 +188,7 @@ fun AppMainScreen(
             //do not change this
             WindowCompat.setDecorFitsSystemWindows(it, false)
             val insetsController = WindowCompat.getInsetsController(it, it.decorView)
-            if (Build.VERSION.SDK_INT <Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
                 it.statusBarColor = Color.Black.toArgb()
                 it.navigationBarColor = Color.Black.toArgb()
             }
@@ -189,10 +200,12 @@ fun AppMainScreen(
         }
     } else {
         window.let {
-            WindowCompat.setDecorFitsSystemWindows(it, false) // content fill the system navbar- status bar
+            WindowCompat.setDecorFitsSystemWindows(
+                it, false
+            ) // content fill the system navbar- status bar
             val insetsController = WindowCompat.getInsetsController(it, it.decorView)
 
-            if (Build.VERSION.SDK_INT <Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
                 it.statusBarColor = Color.Transparent.toArgb()
                 it.navigationBarColor = Color.Transparent.toArgb()
             }
@@ -208,103 +221,142 @@ fun AppMainScreen(
 
 
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(if (pagerState.currentPage == 1) Color.Black else Color.White.copy(alpha = 0.95f))
-            .padding(WindowInsets.navigationBars.asPaddingValues()),
-        bottomBar = {
+    Scaffold(modifier = Modifier
+        .fillMaxSize()
+        .background(if (pagerState.currentPage == 1) Color.Black else Color.White.copy(alpha = 0.95f))
+        .padding(WindowInsets.navigationBars.asPaddingValues()), bottomBar = {
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(if (pagerState.currentPage == 1) Color.Black else Color.White.copy(alpha = 0.95f))
-                    //for android 15 (api level 35)
-                    .padding()
-                    .height(45.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                items.forEachIndexed { index, item ->
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-
-                            ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    if (pagerState.currentPage == 1) Color.Black else Color.White.copy(
+                        alpha = 0.95f
+                    )
+                )
+                .padding(vertical = 4.dp)
+                .height(64.dp),  // Increased height to accommodate indicator
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            items.forEachIndexed { index, item ->
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            role = Role.Tab,
+                            onClick = {
                                 coroutineScope.launch {
-                                    if(index==1){
+                                    if (index == 1) {
                                         val currentTime = System.currentTimeMillis()
                                         if (currentTime - lastClickTime < doubleClickThreshold) {
-                                            // Çift tıklama algılandı
+                                            // Double tap detected
                                             coroutineScope.launch {
-                                                // Çift tıklama işlemi
                                                 quoteViewModel.shouldScrollToStart()
-
                                                 quoteViewModel.refreshList()
                                             }
                                         }
                                         lastClickTime = currentTime
-
                                     }
                                     keyboardController?.hide()
                                     pagerState.scrollToPage(index)
                                     params.screenNo = -1
-
                                 }
                             }
-
-                        ,
-                        contentAlignment = Alignment.Center
-                    ) {
-                        val iconResource = if (pagerState.currentPage == 1) {
-                            if (pagerState.currentPage == index) item.selectedIconDarkIcon else item.unSelectedIconDarkIcon
-                        } else {
-                            if (pagerState.currentPage == index) item.selectedIconWhiteIcon else item.unSelectedIconWhiteIcon
-                        }
-                        Image(
-                            modifier = Modifier.size(23.dp),
-                            painter = painterResource(id = iconResource),
-                            contentDescription = null
                         )
+                       ,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val iconResource = if (pagerState.currentPage == 1) {
+                        if (pagerState.currentPage == index) item.selectedIconDarkIcon else item.unSelectedIconDarkIcon
+                    } else {
+                        if (pagerState.currentPage == index) item.selectedIconWhiteIcon else item.unSelectedIconWhiteIcon
                     }
+                    
+                    val isSelected = pagerState.currentPage == index
+                    val textColor = if (pagerState.currentPage == 1) {
+                        if (isSelected) Color.White else Color.White.copy(alpha = 0.6f)
+                    } else {
+                        if (isSelected) Color.Black else Color.Black.copy(alpha = 0.6f)
+                    }
+                    
+                    // Indicator color animation
+                    val indicatorColor = animateColorAsState(
+                        targetValue = if (isSelected) {
+                            if (pagerState.currentPage == 1) Color.White else Color.Black
+                        } else Color.Transparent,
+                        label = "indicatorColor"
+                    )
+                    
+                    // Indicator width animation
+                    val indicatorWidth = animateDpAsState(
+                        targetValue = if (isSelected) 24.dp else 0.dp,
+                        label = "indicatorWidth"
+                    )
+                    
+                    Image(
+                        modifier = Modifier.size(26.dp),
+                        painter = painterResource(id = iconResource),
+                        contentDescription = item.title
+                    )
+                    
+                    Text(
+                        text = item.title,
+                        color = textColor,
+                        fontSize = 10.sp,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                    
+                    // Indicator
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 3.dp)
+                            .width(indicatorWidth.value)
+                            .height(2.dp)
+                            .background(
+                                color = indicatorColor.value,
+                                shape = RoundedCornerShape(1.dp)
+                            )
+                    )
                 }
             }
+        }
 
 
+    }, topBar = {
 
-        },
-        topBar = {
-
-            if (pagerState.currentPage != 1) {
-                MyAppBar(
-                    onExitClicked = {
-                        viewModel.logout()
-                    },
-                    modifier = Modifier.zIndex(1f),
-                    navController = navController,
-                    title = when (pagerState.currentPage) {
-                        0 -> "Harmony Haven"
-                        2 -> "Bildirimler"
-                        1 -> "Söz Akışı"
-                        3 -> "Harmonia"
-                        else -> ""
-                    },
-                    topBarBackgroundColor = when (pagerState.currentPage) {
-                        2 -> Color.White
-                        1 -> Color.White
-                        0 -> Color.White
-                        else -> Color.White // do not laugh it will be a future :)
-                    },
-                    isMainScreen = pagerState.currentPage == 0
-                )
-
-            }
+        if (pagerState.currentPage != 1) {
+            MyAppBar(
+                onExitClicked = {
+                    viewModel.logout()
+                },
+                modifier = Modifier.zIndex(1f),
+                navController = navController,
+                title = when (pagerState.currentPage) {
+                    0 -> "Harmony Haven"
+                    2 -> "Bildirimler"
+                    1 -> "Söz Akışı"
+                    3 -> "Harmonia"
+                    4 -> "Enneagram"
+                    else -> ""
+                },
+                topBarBackgroundColor = when (pagerState.currentPage) {
+                    2 -> Color.White
+                    1 -> Color.White
+                    0 -> Color.White
+                    else -> Color.White // do not laugh it will be a future :)
+                },
+                isMainScreen = pagerState.currentPage == 0
+            )
 
         }
-    ) { padding ->
+
+    }) { padding ->
         var lastBackPressTime by remember { mutableLongStateOf(0L) } // Son basma zamanını tutacak değişken
         BackHandler {
             if (commentSheetState.isVisible) {
@@ -326,7 +378,7 @@ fun AppMainScreen(
 
         LaunchedEffect(commentSheetState.isVisible) {
             if (commentSheetState.isVisible) {
-                if ( commentViewModel.lastPostId.value != postID) {
+                if (commentViewModel.lastPostId.value != postID) {
                     commentViewModel.loadComments(postID)
                 } else {
                     commentViewModel.loadFromCache()
@@ -341,9 +393,8 @@ fun AppMainScreen(
 
 
         if (shouldShowExitDialog) {
-            Box(modifier = Modifier.fillMaxSize()){
-                AlertDialog(
-                    modifier = Modifier.align(Alignment.Center),
+            Box(modifier = Modifier.fillMaxSize()) {
+                AlertDialog(modifier = Modifier.align(Alignment.Center),
                     onDismissRequest = { shouldShowExitDialog = false },
                     title = {
                         androidx.compose.material.Text(text = "Çıkmak Üzeresiniz")
@@ -362,8 +413,7 @@ fun AppMainScreen(
                         TextButton(onClick = { shouldShowExitDialog = false }) {
                             androidx.compose.material.Text(text = "Vazgeç", color = Color.White)
                         }
-                    }
-                )
+                    })
 
             }
 
@@ -371,13 +421,11 @@ fun AppMainScreen(
         }
 
 
-
 //////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////
 // //
-        HorizontalPager(
-            state = pagerState,
+        HorizontalPager(state = pagerState,
             userScrollEnabled = false,
             count = items.size,
             modifier = Modifier
@@ -386,33 +434,28 @@ fun AppMainScreen(
                 .padding(padding)
                 .onGloballyPositioned {
                     Log.d("debugDelayRender", "ready")
-                }
-        ) { page ->
+                }) { page ->
 
-            Box{
+            Box {
 
                 screens[page]?.let { it() }
 
 
 
                 AnimatedVisibility(
-                    visible = shouldShowCommentBottomModal,
-                    enter = slideInVertically(
+                    visible = shouldShowCommentBottomModal, enter = slideInVertically(
                         // Slide in from the bottom (start position is the height of the composable)
-                        initialOffsetY = { it },
-                        animationSpec = tween(durationMillis = 500)
-                    ),
-                    exit = slideOutVertically(
+                        initialOffsetY = { it }, animationSpec = tween(durationMillis = 500)
+                    ), exit = slideOutVertically(
                         // Slide out to the bottom (end position is the height of the composable)
-                        targetOffsetY = { it },
-                        animationSpec = tween(durationMillis = 500)
+                        targetOffsetY = { it }, animationSpec = tween(durationMillis = 500)
                     )
                 ) {
 
 
-                CommentModalBottomSheet(
-                        onDismissRequest = {shouldShowCommentBottomModal = false},
-                        sheetState = commentSheetState ,
+                    CommentModalBottomSheet(
+                        onDismissRequest = { shouldShowCommentBottomModal = false },
+                        sheetState = commentSheetState,
                         modifier = Modifier.align(Alignment.BottomCenter),
                         postId = postID,
                         viewModel = commentViewModel
@@ -422,23 +465,19 @@ fun AppMainScreen(
 
 
 
-                if(shouldShowCategoryBottomModal){
+                if (shouldShowCategoryBottomModal) {
 
-                    CategoryPickerModalBottomSheet(
-                        onDismissRequest = {
-                            shouldShowCategoryBottomModal = false
+                    CategoryPickerModalBottomSheet(onDismissRequest = {
+                        shouldShowCategoryBottomModal = false
 
-                        },
+                    },
                         sheetState = categorySheetState,
-                        actions = CommentBottomModalSheetActions(
-                            onShouldFilterQuotes = { selectedCategories ->
-                                quoteViewModel.loadCategorizedQuotes(selectedCategories)
+                        actions = CommentBottomModalSheetActions(onShouldFilterQuotes = { selectedCategories ->
+                            quoteViewModel.loadCategorizedQuotes(selectedCategories)
 
-                            },
-                            onSaveCategorySelection = { model ->
-                                quoteViewModel.saveCategorySelection(model)
-                            },
-                            onGetCategorySelectionModel = quoteViewModel.getCategorySelection()
+                        }, onSaveCategorySelection = { model ->
+                            quoteViewModel.saveCategorySelection(model)
+                        }, onGetCategorySelectionModel = quoteViewModel.getCategorySelection()
 
                         )
                     )
@@ -448,11 +487,7 @@ fun AppMainScreen(
             }
 
 
-
-
-
         }
-
 
 
     }
@@ -481,8 +516,7 @@ private val items = listOf(
         unSelectedIconDarkIcon = R.drawable.homewhiteunfilled,
         unSelectedIconWhiteIcon = R.drawable.homeblackunfilled
 
-    ),
-    NavigationBarItem(
+    ), NavigationBarItem(
         title = "Sözler",
         hasNews = false,
         badgeCount = null,
@@ -491,8 +525,7 @@ private val items = listOf(
         selectedIconWhiteIcon = R.drawable.quoteblackfilled,
         unSelectedIconDarkIcon = R.drawable.quotewhiteunfilled,
         unSelectedIconWhiteIcon = R.drawable.quoteblackunfilled
-    ),
-    NavigationBarItem(
+    ), NavigationBarItem(
         title = "Bildirimler",
         hasNews = false,
         badgeCount = null,
@@ -507,7 +540,7 @@ private val items = listOf(
         title = "Harmonia",
         hasNews = false,
         badgeCount = null,
-        route = Screen.Notification.route,
+        route = Screen.ChatIntroScreen.route,
         selectedIconDarkIcon = R.drawable.message_f_white,
         selectedIconWhiteIcon = R.drawable.message_f_black,
         unSelectedIconDarkIcon = R.drawable.message_uf_white,
@@ -515,22 +548,16 @@ private val items = listOf(
     ),
 
 
-
-
-
-
-
-    //  NavigationBarItem(
-    //      title = "Home",
-    //      hasNews = false,
-    //      badgeCount = null,
-    //      route = Screen.Home.route,
-    //      selectedIconDarkIcon =R.drawable.house,
-    //      selectedIconWhiteIcon =R.drawable.house,
-    //      unSelectedIconDarkIcon = R.drawable.house,
-    //      unSelectedIconWhiteIcon =R.drawable.house
-//
-    //  )
+    NavigationBarItem(
+        title = "Profile",
+        hasNews = false,
+        badgeCount = null,
+        route = Screen.Profile.route,
+        selectedIconDarkIcon = R.drawable.profile_filled_white,
+        selectedIconWhiteIcon = R.drawable.profile_filled_black,
+        unSelectedIconDarkIcon = R.drawable.profile_unfilled_white,
+        unSelectedIconWhiteIcon = R.drawable.profile_unfilled_black
+    )
 )
 
 
