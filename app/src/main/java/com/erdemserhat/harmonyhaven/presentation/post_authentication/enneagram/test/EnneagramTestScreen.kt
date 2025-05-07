@@ -289,7 +289,7 @@ fun TestQuestionsScreen(
                     Text(
                         text = question.content,
                         style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center,
+                        textAlign = TextAlign.Left,
                         modifier = Modifier.fillMaxWidth()
                     )
                     
