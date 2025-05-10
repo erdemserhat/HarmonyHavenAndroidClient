@@ -71,6 +71,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -147,6 +148,25 @@ fun NotificationScreen(
     }
     val coroutineScope = rememberCoroutineScope()
 
+    // Add this before the PullToRefreshBox
+    Box(
+        modifier = Modifier
+            .zIndex(10f)
+            .fillMaxWidth()
+            .padding(16.dp),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        HarmonyHavenButton(
+            buttonText = "Bildirim Zamanlama",
+            onClick = {
+                navController.navigate(Screen.NotificationScheduler.route)
+            },
+            isEnabled = true,
+            modifier = Modifier
+                .width(180.dp)
+                .height(40.dp)
+        )
+    }
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,

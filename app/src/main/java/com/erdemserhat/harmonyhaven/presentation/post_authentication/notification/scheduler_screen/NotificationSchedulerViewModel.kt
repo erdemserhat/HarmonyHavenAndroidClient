@@ -25,7 +25,7 @@ class NotificationSchedulerViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _state.value = _state.value.copy(isSchedulingNotificationInProgress = true)
-                val result = notificationUseCases.scheduleNotification.executeRequest(scheduler)
+                notificationUseCases.scheduleNotification.executeRequest(scheduler)
                 val newSchedulers = notificationUseCases.getSchedulers.executeRequest()
                 _state.value = _state.value.copy(
                     isSchedulingNotificationInProgress = false,

@@ -84,27 +84,6 @@ class NotificationViewModel @Inject constructor(
             }
 
 
-            val result22 = notificationUseCases.getSchedulers.executeRequest()
-            val result = notificationUseCases.deleteScheduler.executeRequest(
-                id = "681f76eb2357ac62cf382f51"
-            )
-
-            val result23 = notificationUseCases.scheduleNotification.executeRequest(
-                scheduler = NotificationSchedulerDto(
-                    preferredTime = "18:51:00",
-
-                    definedType = NotificationDefinedType.DEFAULT,
-                    type = NotificationType.REMINDER,
-                    predefinedReminderSubject = PredefinedReminderSubject.EXERCISE,
-                    daysOfWeek = listOf(DayOfWeek.SATURDAY)
-
-                )
-            )
-
-            Log.d("dfsadfasdas",result22.toString())
-            Log.d("dfsadfasdas",result.toString())
-            Log.d("dfsadfasdas",result23.toString())
-
         }
 
     }
