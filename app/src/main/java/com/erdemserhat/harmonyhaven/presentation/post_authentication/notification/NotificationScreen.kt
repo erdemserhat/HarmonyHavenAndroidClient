@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -148,25 +149,6 @@ fun NotificationScreen(
     }
     val coroutineScope = rememberCoroutineScope()
 
-    // Add this before the PullToRefreshBox
-    Box(
-        modifier = Modifier
-            .zIndex(10f)
-            .fillMaxWidth()
-            .padding(16.dp),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        HarmonyHavenButton(
-            buttonText = "Bildirim Zamanlama",
-            onClick = {
-                navController.navigate(Screen.NotificationScheduler.route)
-            },
-            isEnabled = true,
-            modifier = Modifier
-                .width(180.dp)
-                .height(40.dp)
-        )
-    }
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
@@ -334,14 +316,21 @@ fun NotificationContent(notification: NotificationDto,navController: NavControll
                             route = Screen.Article.route,
                             args = bundleArticle
                         )
-
-                    }else if(notification.screenCode!="1"){
-                        val bundleMain = Bundle()
-                        val screenCode = notification.screenCode.toInt()
-                        bundleMain.putParcelable("params", MainScreenParams(screenNo = screenCode))
-                        navController.navigate(
-                            route =Screen.Main.route,
-                            args = bundleMain)
+                    }else if(notification.screenCode != "1") {
+                        val screenCode = notification.screenCode.toIntOrNull()
+                        if (screenCode != null) {
+                            val bundleMain = Bundle().apply {
+                                putParcelable("params", MainScreenParams(screenNo = screenCode))
+                            }
+                            navController.navigate(
+                                route = Screen.Main.route,
+                                args = bundleMain
+                            )
+                        } else {
+                            // Hatalı değer geldiğinde log basabilir veya varsayılan ekran gösterebilirsin
+                            Log.e("Notification", "Geçersiz screenCode: ${notification.screenCode}")
+                            // İsteğe bağlı: kullanıcıyı hata ekranına yönlendirme veya görmezden gelme
+                        }
                     }
 
 

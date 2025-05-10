@@ -351,7 +351,8 @@ fun AppMainScreen(
                     0 -> Color.White
                     else -> Color.White // do not laugh it will be a future :)
                 },
-                isMainScreen = pagerState.currentPage == 0
+                isMainScreen = pagerState.currentPage == 0,
+                isNotificationScreen = pagerState.currentPage ==2
             )
 
         }

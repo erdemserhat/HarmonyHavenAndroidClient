@@ -5,15 +5,23 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -29,9 +37,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,6 +57,7 @@ import com.erdemserhat.harmonyhaven.data.api.notification.PredefinedMessageSubje
 import com.erdemserhat.harmonyhaven.data.api.notification.PredefinedReminderSubject
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
+import kotlinx.coroutines.delay
 import java.time.DayOfWeek
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -199,7 +210,7 @@ fun SchedulerItem(
     // Effect to auto-dismiss deletion result after 3 seconds
     LaunchedEffect(showDeletionResult) {
         if (showDeletionResult) {
-            kotlinx.coroutines.delay(3000)
+            delay(3000)
             onDismissDeletionResult()
         }
     }
@@ -310,7 +321,7 @@ fun SchedulerItem(
                     text = "Siliniyor...",
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.error,
-                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    fontStyle = FontStyle.Italic
                 )
             } else if (isPending) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -318,7 +329,7 @@ fun SchedulerItem(
                     text = "Ekleniyor...",
                     fontSize = 14.sp,
                     color = Color.Gray,
-                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    fontStyle = FontStyle.Italic
                 )
             } else if (showDeletionResult) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -327,14 +338,14 @@ fun SchedulerItem(
                         text = "Başarıyla silindi!",
                         fontSize = 14.sp,
                         color = harmonyHavenDarkGreenColor,
-                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                        fontStyle = FontStyle.Italic
                     )
                 } else {
                     Text(
                         text = errorMessage ?: "Silme işlemi başarısız oldu",
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.error,
-                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                        fontStyle = FontStyle.Italic
                     )
                 }
             }
@@ -364,6 +375,17 @@ fun AddSchedulerDialog(
     val selectedDays = remember { mutableStateListOf<DayOfWeek>() }
     val scrollState = rememberScrollState()
     
+    // Map Turkish day names for better UI
+    val dayNames = mapOf(
+        DayOfWeek.MONDAY to "Pazartesi",
+        DayOfWeek.TUESDAY to "Salı",
+        DayOfWeek.WEDNESDAY to "Çarşamba",
+        DayOfWeek.THURSDAY to "Perşembe",
+        DayOfWeek.FRIDAY to "Cuma",
+        DayOfWeek.SATURDAY to "Cumartesi",
+        DayOfWeek.SUNDAY to "Pazar"
+    )
+    
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -372,12 +394,12 @@ fun AddSchedulerDialog(
     ) {
         Surface(
             modifier = Modifier
-                .fillMaxWidth(0.92f) // Make it wider
-                .heightIn(max = 600.dp)
+                .fillMaxWidth(0.92f)
+                .heightIn(max = 640.dp)
                 .padding(8.dp),
-            shape = RoundedCornerShape(16.dp),
-            tonalElevation = 8.dp,
-            color = Color.White
+            shape = RoundedCornerShape(24.dp),
+            color = Color.White,
+            shadowElevation = 8.dp
         ) {
             Column(
                 modifier = Modifier
@@ -385,317 +407,511 @@ fun AddSchedulerDialog(
                     .padding(24.dp)
                     .verticalScroll(scrollState)
             ) {
+                // Title with icon and close button
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Yeni Bildirim Zamanlama",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = harmonyHavenDarkGreenColor
-                    )
-                    
-                    IconButton(onClick = onDismiss) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
                         Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Kapat",
-                            tint = harmonyHavenGreen
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = harmonyHavenGreen,
+                            modifier = Modifier
+                                .size(28.dp)
+                                .padding(end = 8.dp)
                         )
+                        Text(
+                            text = "Yeni Bildirim Zamanlama",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = harmonyHavenDarkGreenColor
+                        )
+                    }
+                    
+                    Box(
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                    ) {
+                        IconButton(
+                            onClick = onDismiss,
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFF5F5F5))
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Kapat",
+                                tint = harmonyHavenGreen,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(20.dp))
-                
-                // Defined Type Selection
-                Text(
-                    text = "Tanımlama Tipi",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    color = harmonyHavenDarkGreenColor
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                Row(
+                Divider(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .selectableGroup()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    FilterChip(
-                        selected = selectedDefinedType == NotificationDefinedType.DEFAULT,
-                        onClick = { selectedDefinedType = NotificationDefinedType.DEFAULT },
-                        label = { Text("Hazır Şablonlar") },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = harmonyHavenGreen,
-                            selectedLabelColor = Color.White
-                        ),
-                        modifier = Modifier.weight(1f)
-                    )
-                    
-                    FilterChip(
-                        selected = selectedDefinedType == NotificationDefinedType.CUSTOM,
-                        onClick = { selectedDefinedType = NotificationDefinedType.CUSTOM },
-                        label = { Text("Özel") },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = harmonyHavenGreen,
-                            selectedLabelColor = Color.White
-                        ),
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(20.dp))
-                
-                // Notification Type Selection
-                Text(
-                    text = "Bildirim Türü",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    color = harmonyHavenDarkGreenColor
+                        .padding(vertical = 16.dp),
+                    color = Color(0xFFEEEEEE),
+                    thickness = 1.dp
                 )
                 
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                Row(
+                // Notification Type Section with Card
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .selectableGroup()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        .padding(bottom = 16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFF9F9F9)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
-                    FilterChip(
-                        selected = selectedType == NotificationType.MESSAGE,
-                        onClick = { selectedType = NotificationType.MESSAGE },
-                        label = { Text("Mesaj") },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = harmonyHavenGreen,
-                            selectedLabelColor = Color.White
-                        ),
-                        modifier = Modifier.weight(1f)
-                    )
-                    
-                    FilterChip(
-                        selected = selectedType == NotificationType.REMINDER,
-                        onClick = { selectedType = NotificationType.REMINDER },
-                        label = { Text("Hatırlatma") },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = harmonyHavenGreen,
-                            selectedLabelColor = Color.White
-                        ),
-                        modifier = Modifier.weight(1f)
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        // Section title
+                        Text(
+                            text = "Bildirim Türü",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = harmonyHavenDarkGreenColor,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                        
+                        // Notification Type Selection
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .selectableGroup()
+                                .padding(bottom = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            FilterChip(
+                                selected = selectedType == NotificationType.MESSAGE,
+                                onClick = { selectedType = NotificationType.MESSAGE },
+                                label = { 
+                                    Text(
+                                        "Mesaj", 
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                    ) 
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = harmonyHavenGreen,
+                                    selectedLabelColor = Color.White,
+                                    containerColor = Color.White
+                                ),
+                                modifier = Modifier.weight(1f)
+                            )
+                            
+                            FilterChip(
+                                selected = selectedType == NotificationType.REMINDER,
+                                onClick = { selectedType = NotificationType.REMINDER },
+                                label = { 
+                                    Text(
+                                        "Hatırlatma",
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                    ) 
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = harmonyHavenGreen,
+                                    selectedLabelColor = Color.White,
+                                    containerColor = Color.White
+                                ),
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        
+                        // Template type selection
+                        Text(
+                            text = "Tanımlama Tipi",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = harmonyHavenDarkGreenColor,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                        
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .selectableGroup(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            FilterChip(
+                                selected = selectedDefinedType == NotificationDefinedType.DEFAULT,
+                                onClick = { selectedDefinedType = NotificationDefinedType.DEFAULT },
+                                label = { 
+                                    Text(
+                                        "Hazır Şablonlar",
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                    ) 
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = harmonyHavenGreen,
+                                    selectedLabelColor = Color.White,
+                                    containerColor = Color.White
+                                ),
+                                modifier = Modifier.weight(1f)
+                            )
+                            
+                            FilterChip(
+                                selected = selectedDefinedType == NotificationDefinedType.CUSTOM,
+                                onClick = { selectedDefinedType = NotificationDefinedType.CUSTOM },
+                                label = { 
+                                    Text(
+                                        "Kendin Oluştur",
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                    ) 
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = harmonyHavenGreen,
+                                    selectedLabelColor = Color.White,
+                                    containerColor = Color.White
+                                ),
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
                 }
-                
-                Spacer(modifier = Modifier.height(20.dp))
                 
                 // Content Selection based on choices
-                AnimatedVisibility(visible = selectedDefinedType == NotificationDefinedType.DEFAULT && selectedType == NotificationType.MESSAGE) {
-                    Column {
-                        Text(
-                            text = "Hazır Mesaj Seçin",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            color = harmonyHavenDarkGreenColor
-                        )
-                        
-                        Spacer(modifier = Modifier.height(8.dp))
-                        
-                        Column(modifier = Modifier.selectableGroup()) {
-                            PredefinedMessageSubject.values().forEach { subject ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .selectable(
-                                            selected = predefinedMessageSubject == subject,
-                                            onClick = { predefinedMessageSubject = subject }
-                                        )
-                                        .padding(vertical = 12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    RadioButton(
-                                        selected = predefinedMessageSubject == subject,
-                                        onClick = null, // null because the parent is selectable
-                                        colors = RadioButtonDefaults.colors(
-                                            selectedColor = harmonyHavenGreen
-                                        )
-                                    )
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Text(
-                                        text = getMessageSubjectText(subject),
-                                        fontSize = 16.sp
-                                    )
-                                }
-                            }
-                        }
-                        
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-                }
-                
-                AnimatedVisibility(visible = selectedDefinedType == NotificationDefinedType.DEFAULT && selectedType == NotificationType.REMINDER) {
-                    Column {
-                        Text(
-                            text = "Hazır Hatırlatıcı Seçin",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            color = harmonyHavenDarkGreenColor
-                        )
-                        
-                        Spacer(modifier = Modifier.height(8.dp))
-                        
-                        Column(modifier = Modifier.selectableGroup()) {
-                            PredefinedReminderSubject.values().forEach { subject ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .selectable(
-                                            selected = predefinedReminderSubject == subject,
-                                            onClick = { predefinedReminderSubject = subject }
-                                        )
-                                        .padding(vertical = 12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    RadioButton(
-                                        selected = predefinedReminderSubject == subject,
-                                        onClick = null, // null because the parent is selectable
-                                        colors = RadioButtonDefaults.colors(
-                                            selectedColor = harmonyHavenGreen
-                                        )
-                                    )
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Text(
-                                        text = getReminderSubjectText(subject),
-                                        fontSize = 16.sp
-                                    )
-                                }
-                            }
-                        }
-                        
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-                }
-                
-                AnimatedVisibility(visible = selectedDefinedType == NotificationDefinedType.CUSTOM) {
-                    Column {
-                        Text(
-                            text = "Özel Bildirim Metni",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            color = harmonyHavenDarkGreenColor
-                        )
-                        
-                        Spacer(modifier = Modifier.height(12.dp))
-                        
-                        OutlinedTextField(
-                            value = customSubject,
-                            onValueChange = { customSubject = it },
-                            modifier = Modifier.fillMaxWidth(),
-                            placeholder = { Text("Örnek: beni motive eden bir mesaj yaz") },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = harmonyHavenGreen,
-                                focusedLabelColor = harmonyHavenGreen,
-                                cursorColor = harmonyHavenGreen
-                            ),
-                            minLines = 2
-                        )
-                        
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Time Selection
-                Text(
-                    text = "Bildirim Saati",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    color = harmonyHavenDarkGreenColor
-                )
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                
-                // Show only hours and minutes in the button (format HH:mm)
-                val displayTime = "${selectedTime.hour.toString().padStart(2, '0')}:${selectedTime.minute.toString().padStart(2, '0')}"
-                
-                OutlinedButton(
-                    onClick = {
-                        TimePickerDialog(
-                            context,
-                            { _, hour: Int, minute: Int ->
-                                // Set seconds to 0 when selecting time
-                                selectedTime = LocalTime.of(hour, minute, 0)
-                            },
-                            selectedTime.hour,
-                            selectedTime.minute,
-                            true
-                        ).show()
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = harmonyHavenGreen
-                    ),
-                    border = ButtonDefaults.outlinedButtonBorder.copy(
-                        width = 1.5.dp
-                    )
+                AnimatedVisibility(
+                    visible = selectedDefinedType == NotificationDefinedType.DEFAULT && selectedType == NotificationType.MESSAGE,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
                 ) {
-                    Text(
-                        text = displayTime,
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(20.dp))
-                
-                // Day Selection
-                Text(
-                    text = "Bildirim Günleri",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    color = harmonyHavenDarkGreenColor
-                )
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    DayOfWeek.values().forEach { day ->
-                        val isSelected = selectedDays.contains(day)
-                        FilterChip(
-                            selected = isSelected,
-                            onClick = {
-                                if (isSelected) {
-                                    selectedDays.remove(day)
-                                } else {
-                                    selectedDays.add(day)
-                                }
-                            },
-                            label = {
-                                Text(
-                                    text = day.getDisplayName(
-                                        TextStyle.SHORT,
-                                        Locale("tr", "TR")
-                                    )
-                                )
-                            },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = harmonyHavenGreen,
-                                selectedLabelColor = Color.White
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFFF9F9F9)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Hazır Mesaj Seçin",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = harmonyHavenDarkGreenColor,
+                                modifier = Modifier.padding(bottom = 12.dp)
                             )
-                        )
+                            
+                            Column(modifier = Modifier.selectableGroup()) {
+                                PredefinedMessageSubject.values().forEach { subject ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(
+                                                if (predefinedMessageSubject == subject) Color(0xFFE8F5E9) 
+                                                else Color.Transparent
+                                            )
+                                            .selectable(
+                                                selected = predefinedMessageSubject == subject,
+                                                onClick = { predefinedMessageSubject = subject }
+                                            )
+                                            .padding(vertical = 12.dp, horizontal = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        RadioButton(
+                                            selected = predefinedMessageSubject == subject,
+                                            onClick = null, // null because the parent is selectable
+                                            colors = RadioButtonDefaults.colors(
+                                                selectedColor = harmonyHavenGreen,
+                                                unselectedColor = Color(0xFFBDBDBD)
+                                            )
+                                        )
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Text(
+                                            text = getMessageSubjectText(subject),
+                                            fontSize = 16.sp,
+                                            color = if (predefinedMessageSubject == subject) 
+                                                harmonyHavenDarkGreenColor else Color.Black
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(24.dp))
+                AnimatedVisibility(
+                    visible = selectedDefinedType == NotificationDefinedType.DEFAULT && selectedType == NotificationType.REMINDER,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFFF9F9F9)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Hazır Hatırlatıcı Seçin",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = harmonyHavenDarkGreenColor,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                            
+                            Column(modifier = Modifier.selectableGroup()) {
+                                PredefinedReminderSubject.values().forEach { subject ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(
+                                                if (predefinedReminderSubject == subject) Color(0xFFE8F5E9) 
+                                                else Color.Transparent
+                                            )
+                                            .selectable(
+                                                selected = predefinedReminderSubject == subject,
+                                                onClick = { predefinedReminderSubject = subject }
+                                            )
+                                            .padding(vertical = 12.dp, horizontal = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        RadioButton(
+                                            selected = predefinedReminderSubject == subject,
+                                            onClick = null, // null because the parent is selectable
+                                            colors = RadioButtonDefaults.colors(
+                                                selectedColor = harmonyHavenGreen,
+                                                unselectedColor = Color(0xFFBDBDBD)
+                                            )
+                                        )
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Text(
+                                            text = getReminderSubjectText(subject),
+                                            fontSize = 16.sp,
+                                            color = if (predefinedReminderSubject == subject) 
+                                                harmonyHavenDarkGreenColor else Color.Black
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 
+                AnimatedVisibility(
+                    visible = selectedDefinedType == NotificationDefinedType.CUSTOM,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFFF9F9F9)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Özel Bildirim Metni",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = harmonyHavenDarkGreenColor,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                            
+                            OutlinedTextField(
+                                value = customSubject,
+                                onValueChange = { customSubject = it },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(120.dp),
+                                placeholder = { 
+                                    Text(
+                                        if (selectedType == NotificationType.REMINDER)
+                                            "Örnek: bana toplantımı hatırlat"
+                                        else
+                                            "Örnek: beni motive eden bir mesaj yaz"
+                                    ) 
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = harmonyHavenGreen,
+                                    unfocusedBorderColor = Color(0xFFE0E0E0),
+                                    focusedLabelColor = harmonyHavenGreen,
+                                    cursorColor = harmonyHavenGreen,
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White
+                                ),
+                                textStyle = LocalTextStyle.current.copy(
+                                    color = Color.Black
+                                )
+                            )
+                        }
+                    }
+                }
+                
+                // Time and Day Selection Card
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFF9F9F9)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        // Time Selection
+                        Text(
+                            text = "Bildirim Saati",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = harmonyHavenDarkGreenColor,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                        
+                        // Show only hours and minutes in the button (format HH:mm)
+                        val displayTime = "${selectedTime.hour.toString().padStart(2, '0')}:${selectedTime.minute.toString().padStart(2, '0')}"
+                        
+                        Button(
+                            onClick = {
+                                TimePickerDialog(
+                                    context,
+                                    { _, hour: Int, minute: Int ->
+                                        // Set seconds to 0 when selecting time
+                                        selectedTime = LocalTime.of(hour, minute, 0)
+                                    },
+                                    selectedTime.hour,
+                                    selectedTime.minute,
+                                    true
+                                ).show()
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = harmonyHavenDarkGreenColor
+                            ),
+                            border = BorderStroke(1.dp, Color(0xFFE0E0E0)),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add, // Replace with a clock icon if available
+                                    contentDescription = null,
+                                    tint = harmonyHavenGreen,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(
+                                    text = displayTime,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                        
+                        Spacer(modifier = Modifier.height(24.dp))
+                        
+                        // Day Selection - Horizontal and Scrollable
+                        Text(
+                            text = "Bildirim Günleri",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = harmonyHavenDarkGreenColor,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                        
+                        val daysScrollState = rememberScrollState()
+                        
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(daysScrollState)
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            DayOfWeek.values().sortedBy { it.value }.forEach { day ->
+                                val isSelected = selectedDays.contains(day)
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(44.dp)
+                                            .clip(CircleShape)
+                                            .background(
+                                                if (isSelected) harmonyHavenGreen else Color.White
+                                            )
+                                            .border(
+                                                width = 1.dp,
+                                                color = if (isSelected) harmonyHavenGreen else Color(0xFFE0E0E0),
+                                                shape = CircleShape
+                                            )
+                                            .clickable {
+                                                if (isSelected) {
+                                                    selectedDays.remove(day)
+                                                } else {
+                                                    selectedDays.add(day)
+                                                }
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = day.getDisplayName(java.time.format.TextStyle.SHORT, Locale("tr", "TR")).first().toString(),
+                                            color = if (isSelected) Color.White else Color.Black,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 16.sp
+                                        )
+                                    }
+                                    
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    
+                                    Text(
+                                        text = dayNames[day]?.substring(0, 2) ?: "",
+                                        fontSize = 12.sp,
+                                        color = Color.DarkGray
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Submit Button
                 Button(
                     onClick = {
                         if (isFormValid(
@@ -721,10 +937,12 @@ fun AddSchedulerDialog(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(54.dp),
+                        .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = harmonyHavenGreen,
-                        contentColor = Color.White
+                        contentColor = Color.White,
+                        disabledContainerColor = Color(0xFFE0E0E0),
+                        disabledContentColor = Color(0xFF9E9E9E)
                     ),
                     enabled = isFormValid(
                         selectedDefinedType,
@@ -733,16 +951,15 @@ fun AddSchedulerDialog(
                         predefinedMessageSubject,
                         predefinedReminderSubject,
                         selectedDays
-                    )
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
                         "Bildirim Planla",
-                        fontSize = 16.sp,
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
-                
-                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
@@ -762,11 +979,11 @@ fun FlowRow(
         val horizontalGapPx = 0
         val verticalGapPx = 0
         
-        val rows = mutableListOf<MutableList<androidx.compose.ui.layout.Placeable>>()
+        val rows = mutableListOf<MutableList<Placeable>>()
         val rowWidths = mutableListOf<Int>()
         val rowHeights = mutableListOf<Int>()
         
-        var currentRow = mutableListOf<androidx.compose.ui.layout.Placeable>()
+        var currentRow = mutableListOf<Placeable>()
         var currentRowWidth = 0
         var currentRowHeight = 0
         
@@ -778,7 +995,7 @@ fun FlowRow(
                 rowWidths.add(currentRowWidth)
                 rowHeights.add(currentRowHeight)
                 
-                currentRow = mutableListOf<androidx.compose.ui.layout.Placeable>()
+                currentRow = mutableListOf<Placeable>()
                 currentRowWidth = 0
                 currentRowHeight = 0
             }
