@@ -27,8 +27,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -44,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -218,9 +223,10 @@ fun SchedulerItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .alpha(alpha),
+            .alpha(alpha)
+            .padding(vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         )
@@ -230,91 +236,154 @@ fun SchedulerItem(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+            // Title and delete button row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top // Changed to Top alignment
             ) {
-                Text(
-                    text = when {
-                        scheduler.definedType == NotificationDefinedType.DEFAULT && scheduler.type == NotificationType.MESSAGE ->
-                            "Mesaj: ${getMessageSubjectText(scheduler.predefinedMessageSubject)}"
-                        scheduler.definedType == NotificationDefinedType.DEFAULT && scheduler.type == NotificationType.REMINDER ->
-                            "Hatırlatıcı: ${getReminderSubjectText(scheduler.predefinedReminderSubject)}"
-                        else -> "Özel: ${scheduler.customSubject ?: ""}"
-                    },
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = harmonyHavenDarkGreenColor
-                )
+                // Title and content column - limit width to make room for delete button
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 12.dp) // Ensure there's space between text and delete button
+                ) {
+                    // Title
+                    Text(
+                        text = when {
+                            scheduler.definedType == NotificationDefinedType.DEFAULT && scheduler.type == NotificationType.MESSAGE ->
+                                "Mesaj: ${getMessageSubjectText(scheduler.predefinedMessageSubject)}"
+                            scheduler.definedType == NotificationDefinedType.DEFAULT && scheduler.type == NotificationType.REMINDER ->
+                                "Hatırlatıcı: ${getReminderSubjectText(scheduler.predefinedReminderSubject)}"
+                            else -> "Özel: ${scheduler.customSubject ?: ""}"
+                        },
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = harmonyHavenDarkGreenColor,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
 
-                if (isDeleting) {
-                    // Show loading spinner when deleting
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.error,
-                        strokeWidth = 2.dp
-                    )
-                } else if (isPending) {
-                    // Show loading spinner when item is pending addition
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = harmonyHavenGreen,
-                        strokeWidth = 2.dp
-                    )
-                } else if (showDeletionResult) {
-                    // Show result icon
-                    if (deletionSuccess == true) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    // Details section with icons
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    ) {
                         Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Silindi",
-                            tint = Color.Green,
-                            modifier = Modifier.size(24.dp)
+                            imageVector = if (scheduler.type == NotificationType.MESSAGE) 
+                                Icons.Default.Email else Icons.Default.Notifications,
+                            contentDescription = null,
+                            tint = harmonyHavenGreen.copy(alpha = 0.7f),
+                            modifier = Modifier.size(16.dp)
                         )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Hata",
-                            tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(24.dp)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = if (scheduler.type == NotificationType.MESSAGE) "Mesaj" else "Hatırlatma",
+                            fontSize = 14.sp,
+                            color = Color.DarkGray
                         )
                     }
-                } else {
-                    // Show delete button normally
-                    IconButton(onClick = onDelete) {
+                    
+                    // Time info
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    ) {
                         Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Sil",
-                            tint = MaterialTheme.colorScheme.error
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = harmonyHavenGreen.copy(alpha = 0.7f),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        // Format time to show only HH:mm
+                        val timeString = scheduler.preferredTime.split(":").take(2).joinToString(":")
+                        Text(
+                            text = "Saat: $timeString",
+                            fontSize = 14.sp,
+                            color = Color.DarkGray
+                        )
+                    }
+
+                    // Days info
+                    Row(
+                        verticalAlignment = Alignment.Top,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = null,
+                            tint = harmonyHavenGreen.copy(alpha = 0.7f),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Günler: ${formatDaysOfWeek(scheduler.daysOfWeek)}",
+                            fontSize = 14.sp,
+                            color = Color.DarkGray,
+                            modifier = Modifier.fillMaxWidth(0.9f) // Limit width to prevent overflow
                         )
                     }
                 }
+                
+                // Delete/status column fixed width 
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(top = 2.dp),
+                    contentAlignment = Alignment.TopEnd
+                ) {
+                    if (isDeleting) {
+                        // Show loading spinner when deleting
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.error,
+                            strokeWidth = 2.dp
+                        )
+                    } else if (isPending) {
+                        // Show loading spinner when item is pending addition
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = harmonyHavenGreen,
+                            strokeWidth = 2.dp
+                        )
+                    } else if (showDeletionResult) {
+                        // Show result icon
+                        if (deletionSuccess == true) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Silindi",
+                                tint = Color.Green,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Hata",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    } else {
+                        // Show delete button normally
+                        IconButton(
+                            onClick = onDelete,
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Sil",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                }
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Bildirim Tipi: ${if (scheduler.type == NotificationType.MESSAGE) "Mesaj" else "Hatırlatma"}",
-                fontSize = 16.sp
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Format time to show only HH:mm
-            val timeString = scheduler.preferredTime.split(":").take(2).joinToString(":")
             
-            Text(
-                text = "Saat: $timeString",
-                fontSize = 16.sp
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = "Günler: ${formatDaysOfWeek(scheduler.daysOfWeek)}",
-                fontSize = 16.sp
-            )
-            
+            // Status messages at the bottom
             if (isDeleting) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -349,6 +418,21 @@ fun SchedulerItem(
                     )
                 }
             }
+            
+            // Visual tag for notification type
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+                    .height(4.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(
+                        if (scheduler.type == NotificationType.MESSAGE) 
+                            harmonyHavenGreen.copy(alpha = 0.6f)
+                        else 
+                            MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
+                    )
+            )
         }
     }
 }
