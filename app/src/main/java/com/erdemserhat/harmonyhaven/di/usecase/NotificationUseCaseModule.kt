@@ -1,8 +1,11 @@
 package com.erdemserhat.harmonyhaven.di.usecase
 
 import com.erdemserhat.harmonyhaven.data.api.notification.NotificationApiService
+import com.erdemserhat.harmonyhaven.domain.usecase.notification.DeleteScheduler
 import com.erdemserhat.harmonyhaven.domain.usecase.notification.GetNotification
+import com.erdemserhat.harmonyhaven.domain.usecase.notification.GetSchedulers
 import com.erdemserhat.harmonyhaven.domain.usecase.notification.NotificationUseCases
+import com.erdemserhat.harmonyhaven.domain.usecase.notification.ScheduleNotification
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,7 +38,10 @@ object NotificationUseCaseModule {
         notificationApiService: NotificationApiService
     ): NotificationUseCases {
         return NotificationUseCases(
-            getNotification = GetNotification(notificationApiService)
+            getNotification = GetNotification(notificationApiService),
+            getSchedulers = GetSchedulers(notificationApiService),
+            deleteScheduler = DeleteScheduler(notificationApiService),
+            scheduleNotification = ScheduleNotification(notificationApiService)
         )
     }
 }
