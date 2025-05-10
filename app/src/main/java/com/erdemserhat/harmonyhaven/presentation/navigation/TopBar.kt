@@ -108,18 +108,6 @@ fun MyAppBar(
         ),
         actions = {
 
-            if(isNotificationScreen){
-                IconButton(onClick = {
-                    navController.navigate(Screen.NotificationScheduler.route)
-                }) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings,
-                        contentDescription = "More options"
-                    )
-                }
-            }
-
-
             IconButton(onClick = { expanded = !expanded }) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,

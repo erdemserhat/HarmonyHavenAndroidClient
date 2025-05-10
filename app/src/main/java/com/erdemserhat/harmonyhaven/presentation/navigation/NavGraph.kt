@@ -159,15 +159,7 @@ fun SetupNavGraph(
 
         }
 
-        composable(
-            route = Screen.NotificationScheduler.route,
-            enterTransition = { fadeIn(animationSpec = tween(100)) },
-            exitTransition = { fadeOut(animationSpec = tween(100)) },
-            popEnterTransition = { fadeIn(animationSpec = tween(100)) },
-            popExitTransition = { fadeOut(animationSpec = tween(100)) }
-        ) {
-            NotificationSchedulerScreen(navController = navController)
-        }
+
 
         composable(route = Screen.Settings.route,
             enterTransition = { fadeIn(animationSpec = tween(100)) },

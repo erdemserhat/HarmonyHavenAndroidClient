@@ -74,7 +74,7 @@ import java.util.*
 @Composable
 fun NotificationSchedulerScreen(
     navController: NavController,
-    viewModel: NotificationSchedulerViewModel = hiltViewModel()
+    viewModel:NotificationSchedulerViewModel
 ) {
     val state by viewModel.state.collectAsState()
     val deletionStates by viewModel.deletionStates.collectAsState()
@@ -85,23 +85,6 @@ fun NotificationSchedulerScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Bildirim Zamanlaması", color = Color.White) },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Geri",
-                            tint = Color.White
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = harmonyHavenGreen
-                )
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showAddDialog = true },
@@ -120,7 +103,6 @@ fun NotificationSchedulerScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
                 .background(Color.White)
         ) {
             if (state.isLoadingSchedulers) {
@@ -224,7 +206,7 @@ fun SchedulerItem(
         modifier = Modifier
             .fillMaxWidth()
             .alpha(alpha)
-            .padding(vertical = 4.dp),
+            .padding(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(

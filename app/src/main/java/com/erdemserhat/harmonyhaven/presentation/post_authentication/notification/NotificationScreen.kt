@@ -24,6 +24,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
@@ -43,9 +44,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
+import androidx.compose.material.TabRowDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -83,6 +90,8 @@ import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import com.erdemserhat.harmonyhaven.presentation.navigation.MainScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.scheduler_screen.NotificationSchedulerScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.scheduler_screen.NotificationSchedulerViewModel
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenButton
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenProgressIndicator
 import com.erdemserhat.harmonyhaven.ui.theme.customFontInter
@@ -90,6 +99,11 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGradientGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.pagerTabIndicatorOffset
+import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
@@ -110,32 +124,32 @@ fun convertTimestampToTurkishDate(timestamp: Long): String {
     return sdf.format(date)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun NotificationScreen(
     navController: NavController,
-    viewModel: NotificationViewModel = hiltViewModel()
-
+    viewModel: NotificationViewModel = hiltViewModel(),
+    schedulerViewModel: NotificationSchedulerViewModel = hiltViewModel()
 ) {
-
-    //val notifications by viewModel.allNotifications.observeAsState(initial = emptyList())
     val notifications by viewModel.notifications.collectAsState()
     var permissionGranted by remember { mutableStateOf(viewModel.isPermissionGranted()) }
-
-
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
             permissionGranted = isGranted
             viewModel.updatePermissionStatus(isGranted)
-
         }
     )
 
-    val isLoading= viewModel.isLoading.collectAsState()
+    val isLoading = viewModel.isLoading.collectAsState()
+    var isRefreshing by rememberSaveable { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
+    // Pager setup for swipeable interface
+    val pagerState = rememberPagerState(initialPage = 0)
+    val tabTitles = listOf("Bildirimler", "Zamanlayıcı")
 
     LaunchedEffect(Unit) {
         viewModel.loadNotifications()
@@ -144,33 +158,108 @@ fun NotificationScreen(
         )
     }
 
-    var isRefreshing by rememberSaveable {
-        mutableStateOf(false)
-    }
-    val coroutineScope = rememberCoroutineScope()
-
-
-    PullToRefreshBox(
-        isRefreshing = isRefreshing,
-        onRefresh = {
-            isRefreshing = true
-            // Trigger refresh logic
-            coroutineScope.launch {
-                viewModel.refreshNotification {
-                    isRefreshing = false
-
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            ) {
+                // Tab Row with Indicator
+                TabRow(
+                    selectedTabIndex = pagerState.currentPage,
+                    backgroundColor = Color.White,
+                    contentColor = harmonyHavenGreen,
+                    indicator = { tabPositions ->
+                        TabRowDefaults.Indicator(
+                            modifier = Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
+                            height = 3.dp,
+                            color = harmonyHavenGreen
+                        )
+                    }
+                ) {
+                    tabTitles.forEachIndexed { index, title ->
+                        Tab(
+                            selected = pagerState.currentPage == index,
+                            onClick = {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            },
+                            text = {
+                                Text(
+                                    text = title,
+                                    color = if (pagerState.currentPage == index) Color.Black else Color.Black.copy(alpha = 0.7f),
+                                    fontWeight = if (pagerState.currentPage == index) FontWeight.Bold else FontWeight.Normal
+                                )
+                            },
+                            modifier = Modifier.padding(vertical = 12.dp)
+                        )
+                    }
                 }
 
-            }
-        },
-        modifier = Modifier.fillMaxSize() // Ensure it takes up the entire screen
-    ){
+                // Horizontal Pager
+                HorizontalPager(
+                    count = 2,
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize()
+                ) { page ->
+                    when (page) {
+                        0 -> NotificationsContent(
+                            navController = navController,
+                            notifications = notifications,
+                            isLoading = isLoading.value,
+                            permissionGranted = permissionGranted,
+                            isRefreshing = isRefreshing,
+                            onRefresh = {
+                                isRefreshing = true
+                                coroutineScope.launch {
+                                    viewModel.refreshNotification {
+                                        isRefreshing = false
+                                    }
+                                }
+                            },
+                            onRequestPermission = {
+                                notificationPermissionLauncher.launch(
+                                    Manifest.permission.POST_NOTIFICATIONS
+                                )
+                            },
+                            loadMoreNotifications = {
+                                if (!isLoading.value && viewModel.hasMoreData) {
+                                    viewModel.loadNotifications()
+                                }
+                            },
+                            viewModel = viewModel
+                        )
+                        1 -> NotificationSchedulerScreen(navController = navController,schedulerViewModel)
+                    }
+                }
+
+        }
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@Composable
+fun NotificationsContent(
+    navController: NavController,
+    notifications: List<NotificationDto>,
+    isLoading: Boolean,
+    permissionGranted: Boolean,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
+    onRequestPermission: () -> Unit,
+    loadMoreNotifications: () -> Unit,
+    viewModel: NotificationViewModel
+) {
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = Modifier.fillMaxSize()
+    ) {
         Column(
             Modifier
                 .fillMaxSize()
-                .background(
-                    Color.White
-                ),
+                .background(Color.White),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (Build.VERSION.SDK_INT >= 31 && !permissionGranted) {
@@ -180,7 +269,6 @@ fun NotificationScreen(
                         .verticalScroll(rememberScrollState())
                         .fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
-
                 ) {
                     Spacer(modifier = Modifier.size(25.dp))
                     Image(
@@ -190,31 +278,20 @@ fun NotificationScreen(
                     Spacer(modifier = Modifier.size(20.dp))
                     Text(
                         text = "Harmony Haven, size daha iyi bir deneyim sunmak için bildirimler gönderebilir. Bu bildirimler, ilgi alanlarınıza ve kullanım alışkanlıklarınıza göre özelleştirilmiştir.",
-                        modifier = Modifier.widthIn(max = 400.dp), // Metnin genişliği
-                        softWrap = true // Satır başı yapma
+                        modifier = Modifier.widthIn(max = 400.dp),
+                        softWrap = true
                     )
 
                     Spacer(modifier = Modifier.size(20.dp))
-                    HarmonyHavenButton(buttonText = "İzin Ver", onClick = {
-                        notificationPermissionLauncher.launch(
-                            Manifest.permission.POST_NOTIFICATIONS
-                        )
-                    }, isEnabled = true)
+                    HarmonyHavenButton(buttonText = "İzin Ver", onClick = onRequestPermission, isEnabled = true)
                     Spacer(modifier = Modifier.size(20.dp))
-
                 }
-
             } else {
-                if (notifications.isEmpty() && isLoading.value) {
-                    viewModel.loadNotifications()
-
-                   Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                       HarmonyHavenProgressIndicator()
-
-                   }
-
-
-                }else if (notifications.isEmpty()){
+                if (notifications.isEmpty() && isLoading) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        HarmonyHavenProgressIndicator()
+                    }
+                } else if (notifications.isEmpty()) {
                     Spacer(modifier = Modifier.size(20.dp))
                     Image(
                         painter = painterResource(id = R.drawable.no_mail),
@@ -224,25 +301,21 @@ fun NotificationScreen(
                     Text(
                         text = "Henüz bir bildirim yok, en kısa sürede bildirim almaya başlayacaksınız.",
                         textAlign = TextAlign.Center
-
                     )
-                }
-
-                else {
+                } else {
                     val scrollState = rememberLazyListState()
                     LazyColumn(state = scrollState) {
-                        items(notifications) {it
-                            NotificationContent(it,navController)
+                        items(notifications) { notification ->
+                            NotificationContent(notification, navController)
                         }
 
                         // Loading indicator or more items
                         item {
-                            if (isLoading.value) {
+                            if (isLoading) {
                                 // Show loading indicator
                                 Text(text = "...", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                             }
                         }
-
                     }
 
                     // Detect when user scrolls to the end
@@ -250,33 +323,16 @@ fun NotificationScreen(
                         snapshotFlow { scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
                             .collect { lastVisibleIndex ->
                                 if (lastVisibleIndex != null) {
-                                    if (lastVisibleIndex >= notifications.size - 1 && !isLoading.value && viewModel.hasMoreData) {
-                                        viewModel.loadNotifications()
+                                    if (lastVisibleIndex >= notifications.size - 1 && !isLoading && viewModel.hasMoreData) {
+                                        loadMoreNotifications()
                                     }
                                 }
                             }
                     }
-
-
-
-
                 }
-
-
             }
-
-
         }
-
     }
-
-
-
-
-
-
-
-
 }
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -289,13 +345,11 @@ fun NotificationScreenPreview() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NotificationContent(notification: NotificationDto,navController: NavController) {
+fun NotificationContent(notification: NotificationDto, navController: NavController) {
     Column(
         modifier = Modifier
             .padding(10.dp)
     ) {
-
-
         Box(
             modifier = Modifier
                 .width(380.dp)
@@ -304,19 +358,21 @@ fun NotificationContent(notification: NotificationDto,navController: NavControll
                 .background(color = Color.Transparent)
                 .clickable {
                     val shouldNavigateToPost = notification.screenCode.startsWith("-1")
-                    if(shouldNavigateToPost){
+                    if (shouldNavigateToPost) {
                         val postId = notification.screenCode.drop(2)
                         val bundleArticle = Bundle()
-                        bundleArticle.putParcelable("article",
+                        bundleArticle.putParcelable(
+                            "article",
                             ArticlePresentableUIModel(
-                                id =postId.toInt())
+                                id = postId.toInt()
+                            )
                         )
 
                         navController.navigate(
                             route = Screen.Article.route,
                             args = bundleArticle
                         )
-                    }else if(notification.screenCode != "1") {
+                    } else if (notification.screenCode != "1") {
                         val screenCode = notification.screenCode.toIntOrNull()
                         if (screenCode != null) {
                             val bundleMain = Bundle().apply {
@@ -332,15 +388,8 @@ fun NotificationContent(notification: NotificationDto,navController: NavControll
                             // İsteğe bağlı: kullanıcıyı hata ekranına yönlendirme veya görmezden gelme
                         }
                     }
-
-
                 },
-
-            ) {
-
-
-
-
+        ) {
             Column {
                 Text(
                     text = notification.title,
@@ -349,7 +398,6 @@ fun NotificationContent(notification: NotificationDto,navController: NavControll
                     fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                     modifier = Modifier
                         .padding(start = 10.dp, top = 5.dp, bottom = 10.dp)
-
                 )
                 Text(
                     text = notification.content,
@@ -359,42 +407,30 @@ fun NotificationContent(notification: NotificationDto,navController: NavControll
                     fontFamily = customFontInter,
                     color = Color.Black.copy(alpha = 0.7f),
                     fontSize = MaterialTheme.typography.bodyMedium.fontSize
-
                 )
 
                 Text(
                     text = convertTimestampToTurkishDate(notification.timeStamp),
-                    fontSize = 13.sp
-                    ,
+                    fontSize = 13.sp,
                     color = Color.Black.copy(alpha = 0.65f),
-
                     fontFamily = customFontInter,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier
                         .padding(bottom = 5.dp, start = 10.dp)
                 )
-
             }
 
-           // Image(
-              //  painter = painterResource(id = R.drawable.shareicon),
-              //  contentDescription = null,
-              //  Modifier
-               //     .size(50.dp)
-                //    .padding(10.dp)
-               //     .align(Alignment.BottomEnd),
-
-               // )
-
-
-            Box(modifier = Modifier.clip(CircleShape).background(harmonyHavenGreen.copy(alpha = 0.65f)).size(8.dp).align(Alignment.TopEnd).padding(5.dp))
-
-
-
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(harmonyHavenGreen.copy(alpha = 0.65f))
+                    .size(8.dp)
+                    .align(Alignment.TopEnd)
+                    .padding(5.dp)
+            )
         }
-        Divider(color =  Color.Black.copy(alpha = 0.07f))
+        Divider(color = Color.Black.copy(alpha = 0.07f))
     }
-
 }
 
 fun Activity.openAppSettings() {
@@ -404,7 +440,6 @@ fun Activity.openAppSettings() {
     ).also(::startActivity)
 }
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 fun unixToDateTime(unixTimestamp: Long, pattern: String = "yyyy-MM-dd HH:mm:ss"): String {
     val instant = Instant.ofEpochSecond(unixTimestamp)
@@ -412,6 +447,7 @@ fun unixToDateTime(unixTimestamp: Long, pattern: String = "yyyy-MM-dd HH:mm:ss")
     val formatter = DateTimeFormatter.ofPattern(pattern)
     return formatter.format(dateTime)
 }
+
 @Composable
 fun NotificationContentShimmer() {
     val baseColor = Color.LightGray // Base shimmer color
