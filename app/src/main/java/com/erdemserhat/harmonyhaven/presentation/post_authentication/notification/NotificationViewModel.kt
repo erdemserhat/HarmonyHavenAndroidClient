@@ -62,16 +62,16 @@ class NotificationViewModel @Inject constructor(
             }
         }
 
-        Log.d("testNotification",_notifications.value.toString())
+        Log.d("testNotification", _notifications.value.toString())
     }
 
-     @RequiresApi(Build.VERSION_CODES.O)
-     fun refreshNotification(onRefreshed:()->Unit){
-         currentPage = 1
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun refreshNotification(onRefreshed: () -> Unit) {
+
         viewModelScope.launch {
             try {
                 val newNotifications =
-                    notificationUseCases.getNotification.executeRequest(currentPage, pageSize)
+                    notificationUseCases.getNotification.executeRequest(0, pageSize)
                 if (newNotifications.isNotEmpty()) {
                     _notifications.value = newNotifications
                 } else {
@@ -81,6 +81,7 @@ class NotificationViewModel @Inject constructor(
             } finally {
                 onRefreshed()
                 hasMoreData = true
+
             }
 
 
@@ -107,9 +108,6 @@ class NotificationViewModel @Inject constructor(
         val key: String = "notificationPref"
         return sharedPreferences.getBoolean(key, false)
     }
-
-
-
 
 
 }

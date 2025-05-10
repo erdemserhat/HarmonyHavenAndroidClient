@@ -331,23 +331,6 @@ fun SchedulerItem(
                             color = harmonyHavenGreen,
                             strokeWidth = 2.dp
                         )
-                    } else if (showDeletionResult) {
-                        // Show result icon
-                        if (deletionSuccess == true) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Silindi",
-                                tint = Color.Green,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Hata",
-                                tint = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
                     } else {
                         // Show delete button normally
                         IconButton(
@@ -357,8 +340,8 @@ fun SchedulerItem(
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Sil",
-                                tint = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.size(24.dp)
+                                tint = Color.Gray.copy(1f),
+                                modifier = Modifier.size(24.dp),
                             )
                         }
                     }
@@ -1031,71 +1014,6 @@ fun AddSchedulerDialog(
     }
 }
 
-@Composable
-fun FlowRow(
-    modifier: Modifier = Modifier,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
-    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
-    content: @Composable () -> Unit
-) {
-    Layout(
-        content = content,
-        modifier = modifier
-    ) { measurables, constraints ->
-        val horizontalGapPx = 0
-        val verticalGapPx = 0
-        
-        val rows = mutableListOf<MutableList<Placeable>>()
-        val rowWidths = mutableListOf<Int>()
-        val rowHeights = mutableListOf<Int>()
-        
-        var currentRow = mutableListOf<Placeable>()
-        var currentRowWidth = 0
-        var currentRowHeight = 0
-        
-        measurables.forEach { measurable ->
-            val placeable = measurable.measure(constraints)
-            
-            if (currentRowWidth + placeable.width > constraints.maxWidth) {
-                rows.add(currentRow)
-                rowWidths.add(currentRowWidth)
-                rowHeights.add(currentRowHeight)
-                
-                currentRow = mutableListOf<Placeable>()
-                currentRowWidth = 0
-                currentRowHeight = 0
-            }
-            
-            currentRow.add(placeable)
-            currentRowWidth += placeable.width + horizontalGapPx
-            currentRowHeight = maxOf(currentRowHeight, placeable.height)
-        }
-        
-        if (currentRow.isNotEmpty()) {
-            rows.add(currentRow)
-            rowWidths.add(currentRowWidth)
-            rowHeights.add(currentRowHeight)
-        }
-        
-        val width = rowWidths.maxOrNull() ?: 0
-        val height = rowHeights.sumOf { it } + verticalGapPx * (rows.size - 1)
-        
-        layout(width, height) {
-            var y = 0
-            
-            rows.forEachIndexed { rowIndex, placeables ->
-                var x = 0
-                
-                placeables.forEach { placeable ->
-                    placeable.placeRelative(x, y)
-                    x += placeable.width + horizontalGapPx
-                }
-                
-                y += rowHeights[rowIndex] + verticalGapPx
-            }
-        }
-    }
-}
 
 @RequiresApi(Build.VERSION_CODES.O)
 private fun isFormValid(
