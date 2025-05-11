@@ -71,7 +71,7 @@ class NotificationViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val newNotifications =
-                    notificationUseCases.getNotification.executeRequest(0, pageSize)
+                    notificationUseCases.getNotification.executeRequest(1, pageSize)
                 if (newNotifications.isNotEmpty()) {
                     _notifications.value = newNotifications
                 } else {

@@ -6,5 +6,6 @@ data class NotificationUseCases(
     val getNotification: GetNotification,
     val getSchedulers: GetSchedulers,
     val deleteScheduler: DeleteScheduler,
-    val scheduleNotification: ScheduleNotification
+    val scheduleNotification: ScheduleNotification,
+    val updateScheduler: UpdateScheduler
 )

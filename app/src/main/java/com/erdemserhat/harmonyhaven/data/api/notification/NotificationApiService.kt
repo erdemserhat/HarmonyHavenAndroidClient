@@ -16,6 +16,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -52,6 +53,11 @@ interface NotificationApiService {
 
     @POST("v1/schedule-notification")
     suspend fun schedule(
+        @Body scheduler:NotificationSchedulerDto
+    ): Response<Void>
+
+    @PATCH("v1/schedule-notification")
+    suspend fun updateScheduler(
         @Body scheduler:NotificationSchedulerDto
     ): Response<Void>
 

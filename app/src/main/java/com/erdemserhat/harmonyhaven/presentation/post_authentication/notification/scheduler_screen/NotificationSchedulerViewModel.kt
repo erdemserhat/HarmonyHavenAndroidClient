@@ -40,43 +40,49 @@ class NotificationSchedulerViewModel @Inject constructor(
             try {
                 // Create a temporary ID to track this scheduler
                 val tempId = UUID.randomUUID().toString()
-                
+
                 // Create a temporary copy with the temp ID
                 val tempScheduler = scheduler.copy(id = tempId)
-                
+
                 // Add to pending map
                 pendingSchedulers[tempId] = tempScheduler
-                
+
                 // Add to UI immediately with the temporary ID
                 val currentList = _state.value.notificationScheduler.toMutableList()
                 currentList.add(tempScheduler)
-                
-                _state.update { it.copy(
-                    isSchedulingNotificationInProgress = true,
-                    notificationScheduler = currentList
-                )}
-                
+
+                _state.update {
+                    it.copy(
+                        isSchedulingNotificationInProgress = true,
+                        notificationScheduler = currentList
+                    )
+                }
+
                 // Make the actual API request
                 notificationUseCases.scheduleNotification.executeRequest(scheduler)
-                
+
                 // Get updated scheduler list from server
                 val newSchedulers = notificationUseCases.getSchedulers.executeRequest()
-                
+
                 // Update state with server data
-                _state.update { it.copy(
-                    isSchedulingNotificationInProgress = false,
-                    notificationScheduler = newSchedulers
-                )}
-                
+                _state.update {
+                    it.copy(
+                        isSchedulingNotificationInProgress = false,
+                        notificationScheduler = newSchedulers
+                    )
+                }
+
                 // Clear from pending
                 pendingSchedulers.remove(tempId)
-                
+
             } catch (e: Exception) {
                 Log.e("NotificationScheduler", "Error scheduling notification: ${e.message}")
                 // Keep the UI showing error state
-                _state.update { it.copy(
-                    isSchedulingNotificationInProgress = false
-                )}
+                _state.update {
+                    it.copy(
+                        isSchedulingNotificationInProgress = false
+                    )
+                }
             }
         }
     }
@@ -87,56 +93,66 @@ class NotificationSchedulerViewModel @Inject constructor(
             try {
                 // Update global deletion state
                 _state.update { it.copy(isDeletingSchedulerInProgress = true) }
-                
+
                 // Set this specific item's deletion state to in-progress
                 updateDeletionState(schedulerId, DeletionState(isDeleting = true))
 
 
-                
                 // Make the actual API request
                 val result = notificationUseCases.deleteScheduler.executeRequest(schedulerId)
-                
+
                 if (result) {
                     // If successful, update the deletion state
-                    updateDeletionState(schedulerId, DeletionState(isDeleting = false, isSuccess = true))
-                    
+                    updateDeletionState(
+                        schedulerId, DeletionState(isDeleting = false, isSuccess = true)
+                    )
+
                     // Fetch the latest data after deletion
                     val newSchedulers = notificationUseCases.getSchedulers.executeRequest()
-                    
-                    _state.update { it.copy(
-                        isDeletingSchedulerInProgress = false,
-                        notificationScheduler = newSchedulers
-                    )}
+
+                    _state.update {
+                        it.copy(
+                            isDeletingSchedulerInProgress = false,
+                            notificationScheduler = newSchedulers
+                        )
+                    }
                 } else {
                     // API returned false, update deletion state to failed
                     updateDeletionState(
-                        schedulerId, 
-                        DeletionState(isDeleting = false, isSuccess = false, errorMessage = "İşlem başarısız oldu")
+                        schedulerId, DeletionState(
+                            isDeleting = false,
+                            isSuccess = false,
+                            errorMessage = "İşlem başarısız oldu"
+                        )
                     )
-                    
+
                     // Revert the UI by getting fresh data
                     val updatedSchedulers = notificationUseCases.getSchedulers.executeRequest()
-                    _state.update { it.copy(
-                        isDeletingSchedulerInProgress = false,
-                        notificationScheduler = updatedSchedulers
-                    )}
+                    _state.update {
+                        it.copy(
+                            isDeletingSchedulerInProgress = false,
+                            notificationScheduler = updatedSchedulers
+                        )
+                    }
                 }
             } catch (e: Exception) {
                 Log.d("scheduler", e.message.toString())
-                
+
                 // Update deletion state to failed with error message
                 updateDeletionState(
-                    schedulerId, 
+                    schedulerId,
                     DeletionState(isDeleting = false, isSuccess = false, errorMessage = e.message)
                 )
-                
+
                 // On error, revert to fetching the full list again
                 try {
                     val updatedSchedulers = notificationUseCases.getSchedulers.executeRequest()
-                    _state.update { it.copy(
-                        isDeletingSchedulerInProgress = false,
-                        notificationScheduler = updatedSchedulers
-                    )}
+                    _state.update {
+                        it.copy(
+                            isDeletingSchedulerInProgress = false,
+                            notificationScheduler = updatedSchedulers
+                        )
+                    }
                 } catch (e: Exception) {
                     _state.update { it.copy(isDeletingSchedulerInProgress = false) }
                 }
@@ -149,24 +165,25 @@ class NotificationSchedulerViewModel @Inject constructor(
             try {
                 _state.update { it.copy(isLoadingSchedulers = true) }
                 val schedulers = notificationUseCases.getSchedulers.executeRequest()
-                _state.update { it.copy(
-                    isLoadingSchedulers = false,
-                    notificationScheduler = schedulers
-                )}
+                _state.update {
+                    it.copy(
+                        isLoadingSchedulers = false, notificationScheduler = schedulers
+                    )
+                }
             } catch (e: Exception) {
                 Log.d("scheduler", e.message.toString())
                 _state.update { it.copy(isLoadingSchedulers = false) }
             }
         }
     }
-    
+
     // Updates the deletion state for a specific scheduler ID
     private fun updateDeletionState(schedulerId: String, state: DeletionState) {
         val currentStates = _deletionStates.value.toMutableMap()
         currentStates[schedulerId] = state
         _deletionStates.value = currentStates
     }
-    
+
     // Helper method to get deletion state for a specific item
     fun getDeletionState(schedulerId: String?): DeletionState {
         return if (schedulerId != null) {
@@ -175,21 +192,34 @@ class NotificationSchedulerViewModel @Inject constructor(
             DeletionState()
         }
     }
-    
+
     // Helper method to check if a scheduler is pending
     fun isSchedulerPending(id: String): Boolean {
         return pendingSchedulers.containsKey(id)
     }
-    
+
     // Clear deletion state for an item
     fun clearDeletionState(schedulerId: String) {
         val currentStates = _deletionStates.value.toMutableMap()
         currentStates.remove(schedulerId)
         _deletionStates.value = currentStates
     }
-    
+
     // Edit scheduler - empty method to be filled in by the developer
     fun editScheduler(scheduler: NotificationSchedulerDto) {
+        viewModelScope.launch {
+
+            _state.update { it.copy(isUpdatingInProgress = true) }
+            notificationUseCases.updateScheduler.executeRequest(scheduler)
+            val newList = notificationUseCases.getSchedulers.executeRequest()
+            _state.update {
+                it.copy(
+                    isUpdatingInProgress = true, notificationScheduler = newList
+
+                )
+            }
+
+        }
 
     }
 }

@@ -356,23 +356,6 @@ fun SchedulerItem(
                             color = harmonyHavenGreen,
                             strokeWidth = 2.dp
                         )
-                    } else if (showDeletionResult) {
-                        // Show result icon
-                        if (deletionSuccess == true) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Silindi",
-                                tint = Color.Green,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Hata",
-                                tint = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
                     } else {
                         // Show edit button
                         IconButton(
