@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -74,11 +75,12 @@ import java.util.*
 @Composable
 fun NotificationSchedulerScreen(
     navController: NavController,
-    viewModel:NotificationSchedulerViewModel
+    viewModel: NotificationSchedulerViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val deletionStates by viewModel.deletionStates.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
+    var schedulerToEdit by remember { mutableStateOf<NotificationSchedulerDto?>(null) }
     
     LaunchedEffect(key1 = true) {
         viewModel.getSchedulers()
@@ -102,7 +104,7 @@ fun NotificationSchedulerScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding()
                 .background(Color.White)
         ) {
             if (state.isLoadingSchedulers) {
@@ -125,8 +127,11 @@ fun NotificationSchedulerScreen(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    item{
+                        Spacer(Modifier.size(4.dp))
+                    }
                     items(state.notificationScheduler) { scheduler ->
                         // Get deletion state for this item
                         val deletionState = deletionStates[scheduler.id] ?: DeletionState()
@@ -161,20 +166,40 @@ fun NotificationSchedulerScreen(
                                 scheduler.id?.let { id ->
                                     viewModel.clearDeletionState(id)
                                 }
+                            },
+                            onEdit = {
+                                schedulerToEdit = scheduler
+                                showAddDialog = true
                             }
                         )
                     }
+
+                    item{
+                        Spacer(Modifier.size(100.dp))
+                    }
                 }
+
             }
         }
 
         if (showAddDialog) {
             AddSchedulerDialog(
-                onDismiss = { showAddDialog = false },
+                onDismiss = { 
+                    showAddDialog = false 
+                    schedulerToEdit = null
+                },
                 onConfirm = { schedulerDto ->
-                    viewModel.scheduleNotification(schedulerDto)
+                    if (schedulerToEdit != null) {
+                        // If we're editing, call the edit method
+                        viewModel.editScheduler(schedulerDto.copy(id = schedulerToEdit?.id))
+                    } else {
+                        // Otherwise call the add method
+                        viewModel.scheduleNotification(schedulerDto)
+                    }
                     showAddDialog = false
-                }
+                    schedulerToEdit = null
+                },
+                initialScheduler = schedulerToEdit
             )
         }
     }
@@ -190,7 +215,8 @@ fun SchedulerItem(
     deletionSuccess: Boolean? = null,
     errorMessage: String? = null,
     showDeletionResult: Boolean = false,
-    onDismissDeletionResult: () -> Unit = {}
+    onDismissDeletionResult: () -> Unit = {},
+    onEdit: () -> Unit = {}
 ) {
     val alpha by animateFloatAsState(if (isDeleting || isPending) 0.6f else 1f)
     
@@ -206,7 +232,7 @@ fun SchedulerItem(
         modifier = Modifier
             .fillMaxWidth()
             .alpha(alpha)
-            .padding(8.dp),
+            .padding(start = 8.dp, end = 8.dp, bottom = 1.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
@@ -257,7 +283,7 @@ fun SchedulerItem(
                             imageVector = if (scheduler.type == NotificationType.MESSAGE) 
                                 Icons.Default.Email else Icons.Default.Notifications,
                             contentDescription = null,
-                            tint = harmonyHavenGreen.copy(alpha = 0.7f),
+                            tint = Color.Gray,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -276,7 +302,7 @@ fun SchedulerItem(
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = null,
-                            tint = harmonyHavenGreen.copy(alpha = 0.7f),
+                            tint = Color.Gray,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -297,7 +323,7 @@ fun SchedulerItem(
                         Icon(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = null,
-                            tint = harmonyHavenGreen.copy(alpha = 0.7f),
+                            tint =Color.Gray,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -310,12 +336,11 @@ fun SchedulerItem(
                     }
                 }
                 
-                // Delete/status column fixed width 
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .padding(top = 2.dp),
-                    contentAlignment = Alignment.TopEnd
+                // Action buttons column fixed width 
+                Column(
+                    modifier = Modifier.width(IntrinsicSize.Min),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (isDeleting) {
                         // Show loading spinner when deleting
@@ -331,8 +356,38 @@ fun SchedulerItem(
                             color = harmonyHavenGreen,
                             strokeWidth = 2.dp
                         )
+                    } else if (showDeletionResult) {
+                        // Show result icon
+                        if (deletionSuccess == true) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Silindi",
+                                tint = Color.Green,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Hata",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     } else {
-                        // Show delete button normally
+                        // Show edit button
+                        IconButton(
+                            onClick = onEdit,
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Düzenle",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                        
+                        // Show delete button
                         IconButton(
                             onClick = onDelete,
                             modifier = Modifier.size(40.dp)
@@ -340,8 +395,8 @@ fun SchedulerItem(
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Sil",
-                                tint = Color.Gray.copy(1f),
-                                modifier = Modifier.size(24.dp),
+                                tint = Color.Gray,
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }
@@ -383,21 +438,7 @@ fun SchedulerItem(
                     )
                 }
             }
-            
-            // Visual tag for notification type
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-                    .height(4.dp)
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(
-                        if (scheduler.type == NotificationType.MESSAGE) 
-                            harmonyHavenGreen.copy(alpha = 0.6f)
-                        else 
-                            MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
-                    )
-            )
+
         }
     }
 }
@@ -407,21 +448,26 @@ fun SchedulerItem(
 @Composable
 fun AddSchedulerDialog(
     onDismiss: () -> Unit,
-    onConfirm: (NotificationSchedulerDto) -> Unit
+    onConfirm: (NotificationSchedulerDto) -> Unit,
+    initialScheduler: NotificationSchedulerDto? = null
 ) {
     val context = LocalContext.current
-    var selectedDefinedType by remember { mutableStateOf<NotificationDefinedType?>(null) }
-    var selectedType by remember { mutableStateOf<NotificationType?>(null) }
-    var customSubject by remember { mutableStateOf("") }
-    var predefinedMessageSubject by remember { mutableStateOf<PredefinedMessageSubject?>(null) }
-    var predefinedReminderSubject by remember { mutableStateOf<PredefinedReminderSubject?>(null) }
+    var selectedDefinedType by remember { mutableStateOf<NotificationDefinedType?>(initialScheduler?.definedType) }
+    var selectedType by remember { mutableStateOf<NotificationType?>(initialScheduler?.type) }
+    var customSubject by remember { mutableStateOf(initialScheduler?.customSubject ?: "") }
+    var predefinedMessageSubject by remember { mutableStateOf<PredefinedMessageSubject?>(initialScheduler?.predefinedMessageSubject) }
+    var predefinedReminderSubject by remember { mutableStateOf<PredefinedReminderSubject?>(initialScheduler?.predefinedReminderSubject) }
     
     // Time selection
-    var selectedTime by remember { mutableStateOf(LocalTime.now()) }
+    var selectedTime by remember { mutableStateOf(initialScheduler?.preferredTime?.let { LocalTime.parse(it) } ?: LocalTime.now()) }
     val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:00") // Force seconds to 00
     
     // Day selection
-    val selectedDays = remember { mutableStateListOf<DayOfWeek>() }
+    val selectedDays = remember { 
+        mutableStateListOf<DayOfWeek>().apply {
+            initialScheduler?.daysOfWeek?.let { addAll(it) }
+        }
+    }
     val scrollState = rememberScrollState()
     
     // Map Turkish day names for better UI
@@ -475,7 +521,7 @@ fun AddSchedulerDialog(
                                 .padding(end = 8.dp)
                         )
                         Text(
-                            text = "Yeni Bildirim Zamanlama",
+                            text = if (initialScheduler != null) "Bildirimi Düzenle" else "Yeni Bildirim Zamanlama",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = harmonyHavenDarkGreenColor
@@ -1004,7 +1050,7 @@ fun AddSchedulerDialog(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        "Bildirim Planla",
+                        if (initialScheduler != null) "Güncelle" else "Bildirim Planla",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )

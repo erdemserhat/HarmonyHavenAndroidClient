@@ -24,6 +24,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -55,10 +56,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.InternalComposeApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.internal.enableLiveLiterals
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -124,7 +127,7 @@ fun convertTimestampToTurkishDate(timestamp: Long): String {
     return sdf.format(date)
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun NotificationScreen(
@@ -132,6 +135,7 @@ fun NotificationScreen(
     viewModel: NotificationViewModel = hiltViewModel(),
     schedulerViewModel: NotificationSchedulerViewModel = hiltViewModel()
 ) {
+
     val notifications by viewModel.notifications.collectAsState()
     var permissionGranted by remember { mutableStateOf(viewModel.isPermissionGranted()) }
 
@@ -158,82 +162,85 @@ fun NotificationScreen(
         )
     }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-            ) {
-                // Tab Row with Indicator
-                TabRow(
-                    selectedTabIndex = pagerState.currentPage,
-                    backgroundColor = Color.White,
-                    contentColor = harmonyHavenGreen,
-                    indicator = { tabPositions ->
-                        TabRowDefaults.Indicator(
-                            modifier = Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
-                            height = 3.dp,
-                            color = harmonyHavenGreen
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        // Tab Row with Indicator
+        TabRow(
+            selectedTabIndex = pagerState.currentPage,
+            backgroundColor = Color.White,
+            contentColor = harmonyHavenGreen,
+            indicator = { tabPositions ->
+                TabRowDefaults.Indicator(
+                    modifier = Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
+                    height = 3.dp,
+                    color = harmonyHavenGreen
+                )
+            }
+        ) {
+            tabTitles.forEachIndexed { index, title ->
+                Tab(
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(index)
+                        }
+                    },
+                    text = {
+                        Text(
+                            text = title,
+                            color = if (pagerState.currentPage == index) Color.Black else Color.Black.copy(
+                                alpha = 0.7f
+                            ),
+                            fontWeight = if (pagerState.currentPage == index) FontWeight.Bold else FontWeight.Normal
                         )
-                    }
-                ) {
-                    tabTitles.forEachIndexed { index, title ->
-                        Tab(
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            },
-                            text = {
-                                Text(
-                                    text = title,
-                                    color = if (pagerState.currentPage == index) Color.Black else Color.Black.copy(alpha = 0.7f),
-                                    fontWeight = if (pagerState.currentPage == index) FontWeight.Bold else FontWeight.Normal
-                                )
-                            },
-                            modifier = Modifier.padding(vertical = 12.dp)
-                        )
-                    }
-                }
-
-                // Horizontal Pager
-                HorizontalPager(
-                    count = 2,
-                    state = pagerState,
-                    modifier = Modifier.fillMaxSize()
-                ) { page ->
-                    when (page) {
-                        0 -> NotificationsContent(
-                            navController = navController,
-                            notifications = notifications,
-                            isLoading = isLoading.value,
-                            permissionGranted = permissionGranted,
-                            isRefreshing = isRefreshing,
-                            onRefresh = {
-                                isRefreshing = true
-                                coroutineScope.launch {
-                                    viewModel.refreshNotification {
-                                        isRefreshing = false
-                                    }
-                                }
-                            },
-                            onRequestPermission = {
-                                notificationPermissionLauncher.launch(
-                                    Manifest.permission.POST_NOTIFICATIONS
-                                )
-                            },
-                            loadMoreNotifications = {
-                                if (!isLoading.value && viewModel.hasMoreData) {
-                                    viewModel.loadNotifications()
-                                }
-                            },
-                            viewModel = viewModel
-                        )
-                        1 -> NotificationSchedulerScreen(navController = navController,schedulerViewModel)
-                    }
-                }
-
+                    },
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+            }
         }
+
+        // Horizontal Pager
+        HorizontalPager(
+            count = 2,
+            state = pagerState,
+            modifier = Modifier.fillMaxSize().background(Color.White)
+        ) { page ->
+            when (page) {
+                0 -> NotificationsContent(
+                    navController = navController,
+                    notifications = notifications,
+                    isLoading = isLoading.value,
+                    permissionGranted = permissionGranted,
+                    isRefreshing = isRefreshing,
+                    onRefresh = {
+                        isRefreshing = true
+                        coroutineScope.launch {
+                            viewModel.refreshNotification {
+                                isRefreshing = false
+                            }
+                        }
+                    },
+                    onRequestPermission = {
+                        notificationPermissionLauncher.launch(
+                            Manifest.permission.POST_NOTIFICATIONS
+                        )
+                    },
+                    loadMoreNotifications = {
+                        if (!isLoading.value && viewModel.hasMoreData) {
+                            viewModel.loadNotifications()
+                        }
+                    },
+                    viewModel = viewModel
+                )
+
+                1 -> NotificationSchedulerScreen(navController = navController, schedulerViewModel)
+            }
+        }
+
+    }
 
 }
 
@@ -254,7 +261,7 @@ fun NotificationsContent(
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(Color.White)
     ) {
         Column(
             Modifier
@@ -283,7 +290,11 @@ fun NotificationsContent(
                     )
 
                     Spacer(modifier = Modifier.size(20.dp))
-                    HarmonyHavenButton(buttonText = "İzin Ver", onClick = onRequestPermission, isEnabled = true)
+                    HarmonyHavenButton(
+                        buttonText = "İzin Ver",
+                        onClick = onRequestPermission,
+                        isEnabled = true
+                    )
                     Spacer(modifier = Modifier.size(20.dp))
                 }
             } else {
@@ -313,7 +324,11 @@ fun NotificationsContent(
                         item {
                             if (isLoading) {
                                 // Show loading indicator
-                                Text(text = "...", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                                Text(
+                                    text = "...",
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
                             }
                         }
                     }

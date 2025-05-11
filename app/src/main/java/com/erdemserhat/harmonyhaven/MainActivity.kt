@@ -78,6 +78,7 @@ import com.erdemserhat.harmonyhaven.domain.usecase.VersionControlUseCase
 import com.erdemserhat.harmonyhaven.presentation.common.NetworkErrorScreen
 import com.erdemserhat.harmonyhaven.presentation.common.UpdateAvailableScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.google.android.material.bottomsheet.BottomSheetBehavior.StableState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -243,6 +244,9 @@ class MainActivity : ComponentActivity() {
 
 
         }
+
+
+
 
 
     }

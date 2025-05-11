@@ -187,4 +187,9 @@ class NotificationSchedulerViewModel @Inject constructor(
         currentStates.remove(schedulerId)
         _deletionStates.value = currentStates
     }
+    
+    // Edit scheduler - empty method to be filled in by the developer
+    fun editScheduler(scheduler: NotificationSchedulerDto) {
+
+    }
 }
