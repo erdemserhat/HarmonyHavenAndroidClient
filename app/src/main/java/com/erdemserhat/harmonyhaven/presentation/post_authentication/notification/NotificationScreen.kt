@@ -236,7 +236,7 @@ fun NotificationScreen(
                     viewModel = viewModel
                 )
 
-                1 -> NotificationSchedulerScreen(navController = navController, schedulerViewModel)
+                1 -> NotificationSchedulerScreen(schedulerViewModel)
             }
         }
 

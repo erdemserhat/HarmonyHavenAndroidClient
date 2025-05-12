@@ -571,7 +571,7 @@ private val items = listOf(
 
 
     NavigationBarItem(
-        title = "Profile",
+        title = "Enneagram",
         hasNews = false,
         badgeCount = null,
         route = Screen.Profile.route,

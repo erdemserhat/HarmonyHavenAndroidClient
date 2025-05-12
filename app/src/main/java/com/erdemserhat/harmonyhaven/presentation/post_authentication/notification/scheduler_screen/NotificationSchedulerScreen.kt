@@ -2,6 +2,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.notificati
 
 import android.app.TimePickerDialog
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -36,6 +37,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -74,17 +76,13 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationSchedulerScreen(
-    navController: NavController,
     viewModel: NotificationSchedulerViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val deletionStates by viewModel.deletionStates.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
     var schedulerToEdit by remember { mutableStateOf<NotificationSchedulerDto?>(null) }
-    
-    LaunchedEffect(key1 = true) {
-        viewModel.getSchedulers()
-    }
+
 
     Scaffold(
         floatingActionButton = {
@@ -129,30 +127,32 @@ fun NotificationSchedulerScreen(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    item{
+                    item {
                         Spacer(Modifier.size(4.dp))
                     }
                     items(state.notificationScheduler) { scheduler ->
                         // Get deletion state for this item
                         val deletionState = deletionStates[scheduler.id] ?: DeletionState()
-                        
+
                         // Check if this item is being deleted
                         val isDeleting = deletionState.isDeleting
-                        
+
                         // Check if deletion just completed
-                        val deletionJustCompleted = deletionState.isDeleting == false && deletionState.isSuccess != null
-                        
+                        val deletionJustCompleted =
+                            deletionState.isDeleting == false && deletionState.isSuccess != null
+
                         // Check if this is a new item (UUID length > 30)
-                        val isPending = scheduler.id?.let { 
+                        val isPending = scheduler.id?.let {
                             it.length > 30 // UUID length check for temporary items
                         } ?: false
-                        
+
                         // Determines whether to show success/failure message for this item
-                        val showDeletionResult = deletionState.isSuccess != null && !deletionState.isDeleting
-                        
+                        val showDeletionResult =
+                            deletionState.isSuccess != null && !deletionState.isDeleting
+
                         SchedulerItem(
                             scheduler = scheduler,
-                            onDelete = { 
+                            onDelete = {
                                 scheduler.id?.let { id ->
                                     viewModel.deleteScheduler(id)
                                 }
@@ -174,7 +174,7 @@ fun NotificationSchedulerScreen(
                         )
                     }
 
-                    item{
+                    item {
                         Spacer(Modifier.size(100.dp))
                     }
                 }
@@ -184,8 +184,8 @@ fun NotificationSchedulerScreen(
 
         if (showAddDialog) {
             AddSchedulerDialog(
-                onDismiss = { 
-                    showAddDialog = false 
+                onDismiss = {
+                    showAddDialog = false
                     schedulerToEdit = null
                 },
                 onConfirm = { schedulerDto ->
@@ -219,7 +219,7 @@ fun SchedulerItem(
     onEdit: () -> Unit = {}
 ) {
     val alpha by animateFloatAsState(if (isDeleting || isPending) 0.6f else 1f)
-    
+
     // Effect to auto-dismiss deletion result after 3 seconds
     LaunchedEffect(showDeletionResult) {
         if (showDeletionResult) {
@@ -227,7 +227,7 @@ fun SchedulerItem(
             onDismissDeletionResult()
         }
     }
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -261,8 +261,10 @@ fun SchedulerItem(
                         text = when {
                             scheduler.definedType == NotificationDefinedType.DEFAULT && scheduler.type == NotificationType.MESSAGE ->
                                 "Mesaj: ${getMessageSubjectText(scheduler.predefinedMessageSubject)}"
+
                             scheduler.definedType == NotificationDefinedType.DEFAULT && scheduler.type == NotificationType.REMINDER ->
                                 "Hatırlatıcı: ${getReminderSubjectText(scheduler.predefinedReminderSubject)}"
+
                             else -> "Özel: ${scheduler.customSubject ?: ""}"
                         },
                         fontWeight = FontWeight.Bold,
@@ -273,14 +275,14 @@ fun SchedulerItem(
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
-                    
+
                     // Details section with icons
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(bottom = 4.dp)
                     ) {
                         Icon(
-                            imageVector = if (scheduler.type == NotificationType.MESSAGE) 
+                            imageVector = if (scheduler.type == NotificationType.MESSAGE)
                                 Icons.Default.Email else Icons.Default.Notifications,
                             contentDescription = null,
                             tint = Color.Gray,
@@ -293,7 +295,7 @@ fun SchedulerItem(
                             color = Color.DarkGray
                         )
                     }
-                    
+
                     // Time info
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -307,7 +309,8 @@ fun SchedulerItem(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         // Format time to show only HH:mm
-                        val timeString = scheduler.preferredTime.split(":").take(2).joinToString(":")
+                        val timeString =
+                            scheduler.preferredTime.split(":").take(2).joinToString(":")
                         Text(
                             text = "Saat: $timeString",
                             fontSize = 14.sp,
@@ -323,7 +326,7 @@ fun SchedulerItem(
                         Icon(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = null,
-                            tint =Color.Gray,
+                            tint = Color.Gray,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -335,7 +338,7 @@ fun SchedulerItem(
                         )
                     }
                 }
-                
+
                 // Action buttons column fixed width 
                 Column(
                     modifier = Modifier.width(IntrinsicSize.Min),
@@ -369,7 +372,7 @@ fun SchedulerItem(
                                 modifier = Modifier.size(24.dp)
                             )
                         }
-                        
+
                         // Show delete button
                         IconButton(
                             onClick = onDelete,
@@ -385,7 +388,7 @@ fun SchedulerItem(
                     }
                 }
             }
-            
+
             // Status messages at the bottom
             if (isDeleting) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -438,21 +441,41 @@ fun AddSchedulerDialog(
     var selectedDefinedType by remember { mutableStateOf<NotificationDefinedType?>(initialScheduler?.definedType) }
     var selectedType by remember { mutableStateOf<NotificationType?>(initialScheduler?.type) }
     var customSubject by remember { mutableStateOf(initialScheduler?.customSubject ?: "") }
-    var predefinedMessageSubject by remember { mutableStateOf<PredefinedMessageSubject?>(initialScheduler?.predefinedMessageSubject) }
-    var predefinedReminderSubject by remember { mutableStateOf<PredefinedReminderSubject?>(initialScheduler?.predefinedReminderSubject) }
-    
+    var predefinedMessageSubject by remember {
+        mutableStateOf<PredefinedMessageSubject?>(
+            initialScheduler?.predefinedMessageSubject
+        )
+    }
+    var predefinedReminderSubject by remember {
+        mutableStateOf<PredefinedReminderSubject?>(
+            initialScheduler?.predefinedReminderSubject
+        )
+    }
+
     // Time selection
-    var selectedTime by remember { mutableStateOf(initialScheduler?.preferredTime?.let { LocalTime.parse(it) } ?: LocalTime.now()) }
+    var selectedTime by remember {
+        mutableStateOf(initialScheduler?.preferredTime?.let {
+            LocalTime.parse(
+                it
+            )
+        } ?: LocalTime.now())
+    }
     val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:00") // Force seconds to 00
-    
+
     // Day selection
-    val selectedDays = remember { 
+    val selectedDays = remember {
         mutableStateListOf<DayOfWeek>().apply {
             initialScheduler?.daysOfWeek?.let { addAll(it) }
         }
     }
+
+    LaunchedEffect(selectedDays) {
+        Log.d("fdsfsd","fdsfsd")
+    }
+
+
     val scrollState = rememberScrollState()
-    
+
     // Map Turkish day names for better UI
     val dayNames = mapOf(
         DayOfWeek.MONDAY to "Pazartesi",
@@ -463,7 +486,7 @@ fun AddSchedulerDialog(
         DayOfWeek.SATURDAY to "Cumartesi",
         DayOfWeek.SUNDAY to "Pazar"
     )
-    
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -504,13 +527,13 @@ fun AddSchedulerDialog(
                                 .padding(end = 8.dp)
                         )
                         Text(
-                            text = if (initialScheduler != null) "Bildirimi Düzenle" else "Yeni Bildirim Zamanlama",
+                            text = if (initialScheduler != null) "Bildirimi Düzenle" else "Bildirim Zamanlama",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = harmonyHavenDarkGreenColor
                         )
                     }
-                    
+
                     Box(
                         modifier = Modifier
                             .padding(start = 8.dp)
@@ -518,7 +541,7 @@ fun AddSchedulerDialog(
                         IconButton(
                             onClick = onDismiss,
                             modifier = Modifier
-                                .size(36.dp)
+                                .size(48.dp)
                                 .clip(CircleShape)
                                 .background(Color(0xFFF5F5F5))
                         ) {
@@ -526,12 +549,12 @@ fun AddSchedulerDialog(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = "Kapat",
                                 tint = harmonyHavenGreen,
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }
                 }
-                
+
                 Divider(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -539,7 +562,7 @@ fun AddSchedulerDialog(
                     color = Color(0xFFEEEEEE),
                     thickness = 1.dp
                 )
-                
+
                 // Notification Type Section with Card
                 Card(
                     modifier = Modifier
@@ -564,7 +587,7 @@ fun AddSchedulerDialog(
                             color = harmonyHavenDarkGreenColor,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
-                        
+
                         // Notification Type Selection
                         Row(
                             modifier = Modifier
@@ -576,11 +599,15 @@ fun AddSchedulerDialog(
                             FilterChip(
                                 selected = selectedType == NotificationType.MESSAGE,
                                 onClick = { selectedType = NotificationType.MESSAGE },
-                                label = { 
+                                label = {
                                     Text(
-                                        "Mesaj", 
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                    ) 
+                                        textAlign = TextAlign.Center,
+                                        text="Mesaj",
+                                        modifier = Modifier.padding(
+                                            horizontal = 8.dp,
+                                            vertical = 4.dp
+                                        ).fillMaxWidth()
+                                    )
                                 },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = harmonyHavenGreen,
@@ -589,15 +616,19 @@ fun AddSchedulerDialog(
                                 ),
                                 modifier = Modifier.weight(1f)
                             )
-                            
+
                             FilterChip(
                                 selected = selectedType == NotificationType.REMINDER,
                                 onClick = { selectedType = NotificationType.REMINDER },
-                                label = { 
+                                label = {
                                     Text(
-                                        "Hatırlatma",
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                    ) 
+                                        textAlign = TextAlign.Center,
+                                        text = "Hatırlatma",
+                                        modifier = Modifier.padding(
+                                            horizontal = 8.dp,
+                                            vertical = 4.dp
+                                        ).fillMaxWidth()
+                                    )
                                 },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = harmonyHavenGreen,
@@ -607,7 +638,7 @@ fun AddSchedulerDialog(
                                 modifier = Modifier.weight(1f)
                             )
                         }
-                        
+
                         // Template type selection
                         Text(
                             text = "Tanımlama Tipi",
@@ -616,7 +647,7 @@ fun AddSchedulerDialog(
                             color = harmonyHavenDarkGreenColor,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
-                        
+
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -626,11 +657,15 @@ fun AddSchedulerDialog(
                             FilterChip(
                                 selected = selectedDefinedType == NotificationDefinedType.DEFAULT,
                                 onClick = { selectedDefinedType = NotificationDefinedType.DEFAULT },
-                                label = { 
+                                label = {
                                     Text(
-                                        "Hazır Şablonlar",
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                    ) 
+                                        textAlign = TextAlign.Center,
+                                        text = "Hazır Şablonlar",
+                                        modifier = Modifier.padding(
+                                            horizontal = 8.dp,
+                                            vertical = 4.dp
+                                        )
+                                    )
                                 },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = harmonyHavenGreen,
@@ -639,15 +674,19 @@ fun AddSchedulerDialog(
                                 ),
                                 modifier = Modifier.weight(1f)
                             )
-                            
+
                             FilterChip(
                                 selected = selectedDefinedType == NotificationDefinedType.CUSTOM,
                                 onClick = { selectedDefinedType = NotificationDefinedType.CUSTOM },
-                                label = { 
+                                label = {
                                     Text(
-                                        "Kendin Oluştur",
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                    ) 
+                                        textAlign = TextAlign.Center,
+                                        text = "Kendin Oluştur",
+                                        modifier = Modifier.padding(
+                                            horizontal = 8.dp,
+                                            vertical = 4.dp
+                                        )
+                                    )
                                 },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = harmonyHavenGreen,
@@ -659,7 +698,7 @@ fun AddSchedulerDialog(
                         }
                     }
                 }
-                
+
                 // Content Selection based on choices
                 AnimatedVisibility(
                     visible = selectedDefinedType == NotificationDefinedType.DEFAULT && selectedType == NotificationType.MESSAGE,
@@ -688,7 +727,7 @@ fun AddSchedulerDialog(
                                 color = harmonyHavenDarkGreenColor,
                                 modifier = Modifier.padding(bottom = 12.dp)
                             )
-                            
+
                             Column(modifier = Modifier.selectableGroup()) {
                                 PredefinedMessageSubject.values().forEach { subject ->
                                     Row(
@@ -696,7 +735,9 @@ fun AddSchedulerDialog(
                                             .fillMaxWidth()
                                             .clip(RoundedCornerShape(8.dp))
                                             .background(
-                                                if (predefinedMessageSubject == subject) Color(0xFFE8F5E9) 
+                                                if (predefinedMessageSubject == subject) Color(
+                                                    0xFFE8F5E9
+                                                )
                                                 else Color.Transparent
                                             )
                                             .selectable(
@@ -718,7 +759,7 @@ fun AddSchedulerDialog(
                                         Text(
                                             text = getMessageSubjectText(subject),
                                             fontSize = 16.sp,
-                                            color = if (predefinedMessageSubject == subject) 
+                                            color = if (predefinedMessageSubject == subject)
                                                 harmonyHavenDarkGreenColor else Color.Black
                                         )
                                     }
@@ -727,7 +768,7 @@ fun AddSchedulerDialog(
                         }
                     }
                 }
-                
+
                 AnimatedVisibility(
                     visible = selectedDefinedType == NotificationDefinedType.DEFAULT && selectedType == NotificationType.REMINDER,
                     enter = fadeIn() + expandVertically(),
@@ -755,7 +796,7 @@ fun AddSchedulerDialog(
                                 color = harmonyHavenDarkGreenColor,
                                 modifier = Modifier.padding(bottom = 12.dp)
                             )
-                            
+
                             Column(modifier = Modifier.selectableGroup()) {
                                 PredefinedReminderSubject.values().forEach { subject ->
                                     Row(
@@ -763,7 +804,9 @@ fun AddSchedulerDialog(
                                             .fillMaxWidth()
                                             .clip(RoundedCornerShape(8.dp))
                                             .background(
-                                                if (predefinedReminderSubject == subject) Color(0xFFE8F5E9) 
+                                                if (predefinedReminderSubject == subject) Color(
+                                                    0xFFE8F5E9
+                                                )
                                                 else Color.Transparent
                                             )
                                             .selectable(
@@ -785,7 +828,7 @@ fun AddSchedulerDialog(
                                         Text(
                                             text = getReminderSubjectText(subject),
                                             fontSize = 16.sp,
-                                            color = if (predefinedReminderSubject == subject) 
+                                            color = if (predefinedReminderSubject == subject)
                                                 harmonyHavenDarkGreenColor else Color.Black
                                         )
                                     }
@@ -794,7 +837,7 @@ fun AddSchedulerDialog(
                         }
                     }
                 }
-                
+
                 AnimatedVisibility(
                     visible = selectedDefinedType == NotificationDefinedType.CUSTOM,
                     enter = fadeIn() + expandVertically(),
@@ -822,20 +865,20 @@ fun AddSchedulerDialog(
                                 color = harmonyHavenDarkGreenColor,
                                 modifier = Modifier.padding(bottom = 12.dp)
                             )
-                            
+
                             OutlinedTextField(
                                 value = customSubject,
                                 onValueChange = { customSubject = it },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(120.dp),
-                                placeholder = { 
+                                placeholder = {
                                     Text(
                                         if (selectedType == NotificationType.REMINDER)
                                             "Örnek: bana toplantımı hatırlat"
                                         else
                                             "Örnek: beni motive eden bir mesaj yaz"
-                                    ) 
+                                    )
                                 },
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = harmonyHavenGreen,
@@ -852,7 +895,7 @@ fun AddSchedulerDialog(
                         }
                     }
                 }
-                
+
                 // Time and Day Selection Card
                 Card(
                     modifier = Modifier
@@ -877,10 +920,12 @@ fun AddSchedulerDialog(
                             color = harmonyHavenDarkGreenColor,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
-                        
+
                         // Show only hours and minutes in the button (format HH:mm)
-                        val displayTime = "${selectedTime.hour.toString().padStart(2, '0')}:${selectedTime.minute.toString().padStart(2, '0')}"
-                        
+                        val displayTime = "${
+                            selectedTime.hour.toString().padStart(2, '0')
+                        }:${selectedTime.minute.toString().padStart(2, '0')}"
+
                         Button(
                             onClick = {
                                 TimePickerDialog(
@@ -921,20 +966,65 @@ fun AddSchedulerDialog(
                                 )
                             }
                         }
-                        
+
                         Spacer(modifier = Modifier.height(24.dp))
-                        
-                        // Day Selection - Horizontal and Scrollable
-                        Text(
-                            text = "Bildirim Günleri",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            color = harmonyHavenDarkGreenColor,
-                            modifier = Modifier.padding(bottom = 12.dp)
-                        )
-                        
+
+
+                        var isCheckedAllDays by rememberSaveable {
+                            mutableStateOf(selectedDays.containsAll(DayOfWeek.values().toList()))
+                        }
+
+                        // Update isCheckedAllDays when selectedDays changes
+                        LaunchedEffect(selectedDays.size) {
+                            isCheckedAllDays = selectedDays.containsAll(DayOfWeek.values().toList())
+                        }
+
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Absolute.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Bildirim Günleri",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = harmonyHavenDarkGreenColor
+                            )
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "Hergün",
+                                    color = if (isCheckedAllDays) harmonyHavenDarkGreenColor else Color.Gray,
+                                    fontWeight = if (isCheckedAllDays) FontWeight.Medium else FontWeight.Normal
+                                )
+                                Checkbox(
+                                    checked = isCheckedAllDays,
+                                    onCheckedChange = {
+                                        if (!isCheckedAllDays) {
+                                            selectedDays.clear()
+                                            selectedDays.addAll(DayOfWeek.values().toList())
+                                        } else {
+                                            selectedDays.clear()
+                                        }
+                                        isCheckedAllDays = !isCheckedAllDays
+                                    },
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = harmonyHavenGreen,
+                                        uncheckedColor = Color.Gray,
+                                        checkmarkColor = Color.White
+                                    )
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
                         val daysScrollState = rememberScrollState()
-                        
+
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -956,7 +1046,9 @@ fun AddSchedulerDialog(
                                             )
                                             .border(
                                                 width = 1.dp,
-                                                color = if (isSelected) harmonyHavenGreen else Color(0xFFE0E0E0),
+                                                color = if (isSelected) harmonyHavenGreen else Color(
+                                                    0xFFE0E0E0
+                                                ),
                                                 shape = CircleShape
                                             )
                                             .clickable {
@@ -969,15 +1061,18 @@ fun AddSchedulerDialog(
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text(
-                                            text = day.getDisplayName(java.time.format.TextStyle.SHORT, Locale("tr", "TR")).first().toString(),
+                                            text = day.getDisplayName(
+                                                java.time.format.TextStyle.SHORT,
+                                                Locale("tr", "TR")
+                                            ).first().toString(),
                                             color = if (isSelected) Color.White else Color.Black,
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 16.sp
                                         )
                                     }
-                                    
+
                                     Spacer(modifier = Modifier.height(4.dp))
-                                    
+
                                     Text(
                                         text = dayNames[day]?.substring(0, 2) ?: "",
                                         fontSize = 12.sp,
@@ -988,7 +1083,7 @@ fun AddSchedulerDialog(
                         }
                     }
                 }
-                
+
                 // Submit Button
                 Button(
                     onClick = {
@@ -1056,21 +1151,24 @@ private fun isFormValid(
     if (selectedDefinedType == null || selectedType == null || selectedDays.isEmpty()) {
         return false
     }
-    
+
     return when {
-        selectedDefinedType == NotificationDefinedType.DEFAULT && selectedType == NotificationType.MESSAGE -> 
+        selectedDefinedType == NotificationDefinedType.DEFAULT && selectedType == NotificationType.MESSAGE ->
             predefinedMessageSubject != null
-        selectedDefinedType == NotificationDefinedType.DEFAULT && selectedType == NotificationType.REMINDER -> 
+
+        selectedDefinedType == NotificationDefinedType.DEFAULT && selectedType == NotificationType.REMINDER ->
             predefinedReminderSubject != null
-        selectedDefinedType == NotificationDefinedType.CUSTOM -> 
+
+        selectedDefinedType == NotificationDefinedType.CUSTOM ->
             customSubject.isNotBlank()
+
         else -> false
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 private fun formatDaysOfWeek(days: List<DayOfWeek>): String {
-    return days.joinToString(", ") { 
+    return days.joinToString(", ") {
         it.getDisplayName(TextStyle.SHORT, Locale("tr", "TR"))
     }
 }

@@ -25,6 +25,7 @@ data class DeletionState(
 class NotificationSchedulerViewModel @Inject constructor(
     private val notificationUseCases: NotificationUseCases
 ) : ViewModel() {
+
     private val _state = MutableStateFlow(SchedulerState())
     val state: StateFlow<SchedulerState> = _state
 
@@ -34,6 +35,10 @@ class NotificationSchedulerViewModel @Inject constructor(
 
     // Keep track of temporary schedulers
     private val pendingSchedulers = mutableMapOf<String, NotificationSchedulerDto>()
+
+    init {
+        getSchedulers()
+    }
 
     fun scheduleNotification(scheduler: NotificationSchedulerDto) {
         viewModelScope.launch {
