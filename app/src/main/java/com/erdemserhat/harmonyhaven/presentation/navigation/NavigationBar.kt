@@ -104,7 +104,7 @@ fun AppMainScreen(
 
 ) {
     val pagerState = rememberPagerState(
-        initialPage = 1
+        initialPage = 0
 
     )
     val coroutineScope = rememberCoroutineScope()
@@ -148,7 +148,7 @@ fun AppMainScreen(
 
     LaunchedEffect(pagerState.currentPage) {
         Log.d("dsdfsdfsdf", pagerState.currentPage.toString())
-        if (pagerState.currentPage != 1) {
+        if (pagerState.currentPage != 2) {
             volumeControlViewModel.saveLastCondition()
             volumeControlViewModel.mute()
         } else {
@@ -161,7 +161,7 @@ fun AppMainScreen(
 
     val screens: Map<Int, @Composable () -> Unit> = remember {
         mapOf(0 to { HomeScreenNew(navController) },
-            1 to {
+            2 to {
                 QuoteMainScreen(
                     volumeControllerViewModel = volumeControlViewModel,
                     navController = navController,
@@ -178,7 +178,7 @@ fun AppMainScreen(
                     viewmodel = quoteViewModel
                 )
             },
-            2 to { NotificationScreen(navController) },
+            1 to { NotificationScreen(navController) },
             3 to { ChatIntroScreen(navController = navController) },
             4 to {
                 UserProfileScreen(
@@ -192,7 +192,7 @@ fun AppMainScreen(
 
 
     //set status bar and system navbar color
-    if (pagerState.currentPage == 1) {
+    if (pagerState.currentPage == 2) {
         window.let {
             // content fill the system navbar- status bar
             //do not change this
@@ -235,7 +235,7 @@ fun AppMainScreen(
             Column(
                 modifier = Modifier
                     .background(
-                        color = if (pagerState.currentPage == 1) Color.Black
+                        color = if (pagerState.currentPage == 2) Color.Black
                         else Color.White.copy(
                             alpha = 0.05f
                         )
@@ -261,7 +261,7 @@ fun AppMainScreen(
                                     role = Role.Tab,
                                     onClick = {
                                         coroutineScope.launch {
-                                            if (index == 1) {
+                                            if (index == 2) {
                                                 val currentTime = System.currentTimeMillis()
                                                 if (currentTime - lastClickTime < doubleClickThreshold) {
                                                     // Double tap detected
@@ -280,14 +280,14 @@ fun AppMainScreen(
                                 ),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            val iconResource = if (pagerState.currentPage == 1) {
+                            val iconResource = if (pagerState.currentPage == 2) {
                                 if (pagerState.currentPage == index) item.selectedIconDarkIcon else item.unSelectedIconDarkIcon
                             } else {
                                 if (pagerState.currentPage == index) item.selectedIconWhiteIcon else item.unSelectedIconWhiteIcon
                             }
 
                             val isSelected = pagerState.currentPage == index
-                            val textColor = if (pagerState.currentPage == 1) {
+                            val textColor = if (pagerState.currentPage == 2) {
                                 if (isSelected) Color.White else Color.White.copy(alpha = 0.6f)
                             } else {
                                 if (isSelected) Color.Black else Color.Black.copy(alpha = 0.6f)
@@ -296,7 +296,7 @@ fun AppMainScreen(
                             // Indicator color animation
                             val indicatorColor = animateColorAsState(
                                 targetValue = if (isSelected) {
-                                    if (pagerState.currentPage == 1) Color.White else Color.Black
+                                    if (pagerState.currentPage == 2) Color.White else Color.Black
                                 } else Color.Transparent,
                                 label = "indicatorColor"
                             )
@@ -340,7 +340,10 @@ fun AppMainScreen(
                 Spacer(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding().value.dp)
+                        .height(
+                            WindowInsets.navigationBars.asPaddingValues()
+                                .calculateBottomPadding().value.dp
+                        )
                         .background(Color.Transparent),
                 )
             }
@@ -451,7 +454,7 @@ fun AppMainScreen(
             count = items.size,
             modifier = Modifier
                 .fillMaxSize()
-                .background(if (pagerState.currentPage == 1) Color.Black else Color.White.copy(alpha = 0.95f))
+                .background(if (pagerState.currentPage == 2) Color.Black else Color.White.copy(alpha = 0.95f))
                 .padding(padding)
                 .onGloballyPositioned {
                     Log.d("debugDelayRender", "ready")
@@ -538,16 +541,9 @@ private val items = listOf(
         unSelectedIconDarkIcon = R.drawable.homewhiteunfilled,
         unSelectedIconWhiteIcon = R.drawable.homeblackunfilled
 
-    ), NavigationBarItem(
-        title = "Sözler",
-        hasNews = false,
-        badgeCount = null,
-        Screen.Quotes.route,
-        selectedIconDarkIcon = R.drawable.quotewhitefilled,
-        selectedIconWhiteIcon = R.drawable.quoteblackfilled,
-        unSelectedIconDarkIcon = R.drawable.quotewhiteunfilled,
-        unSelectedIconWhiteIcon = R.drawable.quoteblackunfilled
-    ), NavigationBarItem(
+    ),
+
+    NavigationBarItem(
         title = "Bildirimler",
         hasNews = false,
         badgeCount = null,
@@ -557,6 +553,19 @@ private val items = listOf(
         unSelectedIconDarkIcon = R.drawable.notificationwhiteunfilled,
         unSelectedIconWhiteIcon = R.drawable.notificationblackunfilled
     ),
+
+
+    NavigationBarItem(
+        title = "Sözler",
+        hasNews = false,
+        badgeCount = null,
+        Screen.Quotes.route,
+        selectedIconDarkIcon = R.drawable.quotewhitefilled,
+        selectedIconWhiteIcon = R.drawable.quoteblackfilled,
+        unSelectedIconDarkIcon = R.drawable.quotewhiteunfilled,
+        unSelectedIconWhiteIcon = R.drawable.quoteblackunfilled
+    ),
+
 
     NavigationBarItem(
         title = "Harmonia",
@@ -575,10 +584,10 @@ private val items = listOf(
         hasNews = false,
         badgeCount = null,
         route = Screen.Profile.route,
-        selectedIconDarkIcon = R.drawable.profile_filled_white,
-        selectedIconWhiteIcon = R.drawable.profile_filled_black,
-        unSelectedIconDarkIcon = R.drawable.profile_unfilled_white,
-        unSelectedIconWhiteIcon = R.drawable.profile_unfilled_black
+        selectedIconDarkIcon = R.drawable.enneagram_unfilled_black,
+        selectedIconWhiteIcon = R.drawable.enneagran_filled_black,
+        unSelectedIconDarkIcon = R.drawable.enneagram_white,
+        unSelectedIconWhiteIcon = R.drawable.enneagram_unfilled_black
     )
 )
 
