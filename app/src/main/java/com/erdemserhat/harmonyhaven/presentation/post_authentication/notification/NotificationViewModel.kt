@@ -1,12 +1,18 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.notification
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.erdemserhat.harmonyhaven.data.api.notification.NotificationDefinedType
+import com.erdemserhat.harmonyhaven.data.api.notification.NotificationSchedulerDto
+import com.erdemserhat.harmonyhaven.data.api.notification.NotificationType
+import com.erdemserhat.harmonyhaven.data.api.notification.PredefinedReminderSubject
 import com.erdemserhat.harmonyhaven.domain.usecase.notification.NotificationUseCases
 import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.DayOfWeek
 import javax.inject.Inject
 
 
@@ -26,15 +33,6 @@ class NotificationViewModel @Inject constructor(
 ) : ViewModel() {
     private val _notifications = MutableStateFlow<List<NotificationDto>>(emptyList())
     val notifications: StateFlow<List<NotificationDto>> = _notifications
-
-    init {
-        viewModelScope.launch {
-            while (true){
-                delay(5_000)
-                loadNotifications()
-            }
-        }
-    }
 
     // Offset variables
     private var currentPage = 1
@@ -64,15 +62,16 @@ class NotificationViewModel @Inject constructor(
             }
         }
 
-        Log.d("testNotification",_notifications.value.toString())
+        Log.d("testNotification", _notifications.value.toString())
     }
 
-     fun refreshNotification(onRefreshed:()->Unit){
-         currentPage = 1
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun refreshNotification(onRefreshed: () -> Unit) {
+
         viewModelScope.launch {
             try {
                 val newNotifications =
-                    notificationUseCases.getNotification.executeRequest(currentPage, pageSize)
+                    notificationUseCases.getNotification.executeRequest(1, pageSize)
                 if (newNotifications.isNotEmpty()) {
                     _notifications.value = newNotifications
                 } else {
@@ -82,7 +81,10 @@ class NotificationViewModel @Inject constructor(
             } finally {
                 onRefreshed()
                 hasMoreData = true
+
             }
+
+
         }
 
     }
@@ -106,8 +108,6 @@ class NotificationViewModel @Inject constructor(
         val key: String = "notificationPref"
         return sharedPreferences.getBoolean(key, false)
     }
-
-
 
 
 }

@@ -3,6 +3,7 @@ package com.erdemserhat.harmonyhaven.presentation.navigation
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +39,7 @@ fun MyAppBar(
     isMainScreen: Boolean,
     modifier: Modifier = Modifier,
     onExitClicked: () -> Unit = {},
+    isNotificationScreen:Boolean
 
 
     ) {
@@ -105,6 +107,7 @@ fun MyAppBar(
             containerColor = topBarBackgroundColor
         ),
         actions = {
+
             IconButton(onClick = { expanded = !expanded }) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
@@ -137,12 +140,6 @@ fun MyAppBar(
 
                 })
 
-                //DropdownMenuItem(onClick = { /* Handle option 2 click */ }) {
-                //     Text("Option 2")
-                // }
-                // DropdownMenuItem(onClick = { /* Handle option 3 click */ }) {
-                //    Text("Option 3")
-                //  }
             }
         },
 

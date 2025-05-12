@@ -25,8 +25,6 @@ fun HomeScreenNew(
     val homeState by homeViewModel.homeState.collectAsState()
 
 
-
-
     HomeScreenContentNew(
         isArticlesReady = homeState.isArticleReady,
         isCategoryReady = homeState.isCategoryReady,

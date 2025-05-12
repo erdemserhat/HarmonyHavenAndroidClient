@@ -45,6 +45,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.p
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.test.EnneagramTestScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.scheduler_screen.NotificationSchedulerScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.SettingsScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.about_us.AboutUsScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles.SavedArticlesScreen
@@ -157,6 +158,8 @@ fun SetupNavGraph(
             NotificationScreen(navController = navController)
 
         }
+
+
 
         composable(route = Screen.Settings.route,
             enterTransition = { fadeIn(animationSpec = tween(100)) },

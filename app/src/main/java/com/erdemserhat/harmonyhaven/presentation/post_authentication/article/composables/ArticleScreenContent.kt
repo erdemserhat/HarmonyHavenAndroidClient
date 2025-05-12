@@ -212,6 +212,24 @@ fun ArticleScreenContent(
 
     }
 
+    DisposableEffect(Unit) {
+
+        onDispose {
+
+            window.let {
+                WindowCompat.setDecorFitsSystemWindows(
+                    it,
+                    false
+                ) // content fill the system navbar- status bar
+
+                it.statusBarColor = Color.Transparent.toArgb()
+                it.navigationBarColor = Color.Transparent.toArgb()
+
+
+
+            }
+        }
+    }
 
 
 

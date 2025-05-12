@@ -14,6 +14,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -84,6 +86,9 @@ import kotlinx.coroutines.launch
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Text
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
@@ -94,7 +99,7 @@ fun AppMainScreen(
     window: Window,
     viewModel: SharedViewModel = hiltViewModel(),
     quoteViewModel: QuoteMainViewModel = hiltViewModel(),
-    userProfileSharedViewModel :UserProfileScreenViewModel
+    userProfileSharedViewModel: UserProfileScreenViewModel
 
 
 ) {
@@ -175,7 +180,12 @@ fun AppMainScreen(
             },
             2 to { NotificationScreen(navController) },
             3 to { ChatIntroScreen(navController = navController) },
-            4 to { UserProfileScreen(navController,profileScreenViewModel = userProfileSharedViewModel) }
+            4 to {
+                UserProfileScreen(
+                    navController,
+                    profileScreenViewModel = userProfileSharedViewModel
+                )
+            }
 
         )
     }
@@ -190,7 +200,6 @@ fun AppMainScreen(
             val insetsController = WindowCompat.getInsetsController(it, it.decorView)
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
                 it.statusBarColor = Color.Black.toArgb()
-                it.navigationBarColor = Color.Black.toArgb()
             }
 
             insetsController.isAppearanceLightStatusBars = false
@@ -207,7 +216,6 @@ fun AppMainScreen(
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
                 it.statusBarColor = Color.Transparent.toArgb()
-                it.navigationBarColor = Color.Transparent.toArgb()
             }
 
 
@@ -221,142 +229,155 @@ fun AppMainScreen(
 
 
 
-    Scaffold(modifier = Modifier
-        .fillMaxSize()
-        .background(if (pagerState.currentPage == 1) Color.Black else Color.White.copy(alpha = 0.95f))
-        .padding(WindowInsets.navigationBars.asPaddingValues()), bottomBar = {
+    Scaffold(
+        bottomBar = {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    if (pagerState.currentPage == 1) Color.Black else Color.White.copy(
-                        alpha = 0.95f
-                    )
-                )
-                .padding(vertical = 4.dp)
-                .height(64.dp),  // Increased height to accommodate indicator
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            items.forEachIndexed { index, item ->
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() },
-                            role = Role.Tab,
-                            onClick = {
-                                coroutineScope.launch {
-                                    if (index == 1) {
-                                        val currentTime = System.currentTimeMillis()
-                                        if (currentTime - lastClickTime < doubleClickThreshold) {
-                                            // Double tap detected
-                                            coroutineScope.launch {
-                                                quoteViewModel.shouldScrollToStart()
-                                                quoteViewModel.refreshList()
-                                            }
-                                        }
-                                        lastClickTime = currentTime
-                                    }
-                                    keyboardController?.hide()
-                                    pagerState.scrollToPage(index)
-                                    params.screenNo = -1
-                                }
-                            }
+            Column(
+                modifier = Modifier
+                    .background(
+                        color = if (pagerState.currentPage == 1) Color.Black
+                        else Color.White.copy(
+                            alpha = 0.05f
                         )
-                       ,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    )
+                    .fillMaxWidth()
+
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                        .height(64.dp),  // Increased height to accommodate indicator
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    val iconResource = if (pagerState.currentPage == 1) {
-                        if (pagerState.currentPage == index) item.selectedIconDarkIcon else item.unSelectedIconDarkIcon
-                    } else {
-                        if (pagerState.currentPage == index) item.selectedIconWhiteIcon else item.unSelectedIconWhiteIcon
-                    }
-                    
-                    val isSelected = pagerState.currentPage == index
-                    val textColor = if (pagerState.currentPage == 1) {
-                        if (isSelected) Color.White else Color.White.copy(alpha = 0.6f)
-                    } else {
-                        if (isSelected) Color.Black else Color.Black.copy(alpha = 0.6f)
-                    }
-                    
-                    // Indicator color animation
-                    val indicatorColor = animateColorAsState(
-                        targetValue = if (isSelected) {
-                            if (pagerState.currentPage == 1) Color.White else Color.Black
-                        } else Color.Transparent,
-                        label = "indicatorColor"
-                    )
-                    
-                    // Indicator width animation
-                    val indicatorWidth = animateDpAsState(
-                        targetValue = if (isSelected) 24.dp else 0.dp,
-                        label = "indicatorWidth"
-                    )
-                    
-                    Image(
-                        modifier = Modifier.size(26.dp),
-                        painter = painterResource(id = iconResource),
-                        contentDescription = item.title
-                    )
-                    
-                    Text(
-                        text = item.title,
-                        color = textColor,
-                        fontSize = 10.sp,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        modifier = Modifier.padding(top = 2.dp)
-                    )
-                    
-                    // Indicator
-                    Box(
-                        modifier = Modifier
-                            .padding(top = 3.dp)
-                            .width(indicatorWidth.value)
-                            .height(2.dp)
-                            .background(
-                                color = indicatorColor.value,
-                                shape = RoundedCornerShape(1.dp)
+                    items.forEachIndexed { index, item ->
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    role = Role.Tab,
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            if (index == 1) {
+                                                val currentTime = System.currentTimeMillis()
+                                                if (currentTime - lastClickTime < doubleClickThreshold) {
+                                                    // Double tap detected
+                                                    coroutineScope.launch {
+                                                        quoteViewModel.shouldScrollToStart()
+                                                        quoteViewModel.refreshList()
+                                                    }
+                                                }
+                                                lastClickTime = currentTime
+                                            }
+                                            keyboardController?.hide()
+                                            pagerState.scrollToPage(index)
+                                            params.screenNo = -1
+                                        }
+                                    }
+                                ),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            val iconResource = if (pagerState.currentPage == 1) {
+                                if (pagerState.currentPage == index) item.selectedIconDarkIcon else item.unSelectedIconDarkIcon
+                            } else {
+                                if (pagerState.currentPage == index) item.selectedIconWhiteIcon else item.unSelectedIconWhiteIcon
+                            }
+
+                            val isSelected = pagerState.currentPage == index
+                            val textColor = if (pagerState.currentPage == 1) {
+                                if (isSelected) Color.White else Color.White.copy(alpha = 0.6f)
+                            } else {
+                                if (isSelected) Color.Black else Color.Black.copy(alpha = 0.6f)
+                            }
+
+                            // Indicator color animation
+                            val indicatorColor = animateColorAsState(
+                                targetValue = if (isSelected) {
+                                    if (pagerState.currentPage == 1) Color.White else Color.Black
+                                } else Color.Transparent,
+                                label = "indicatorColor"
                             )
-                    )
+
+                            // Indicator width animation
+                            val indicatorWidth = animateDpAsState(
+                                targetValue = if (isSelected) 24.dp else 0.dp,
+                                label = "indicatorWidth"
+                            )
+
+                            Image(
+                                modifier = Modifier.size(26.dp),
+                                painter = painterResource(id = iconResource),
+                                contentDescription = item.title
+                            )
+
+                            Text(
+                                text = item.title,
+                                color = textColor,
+                                fontSize = 10.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                textAlign = TextAlign.Center,
+                                maxLines = 1,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+
+                            // Indicator
+                            Box(
+                                modifier = Modifier
+                                    .padding(top = 3.dp)
+                                    .width(indicatorWidth.value)
+                                    .height(2.dp)
+                                    .background(
+                                        color = indicatorColor.value,
+                                        shape = RoundedCornerShape(1.dp)
+                                    )
+                            )
+                        }
+                    }
                 }
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding().value.dp)
+                        .background(Color.Transparent),
+                )
             }
-        }
 
 
-    }, topBar = {
+        },
+        topBar = {
 
-        if (pagerState.currentPage != 1) {
-            MyAppBar(
-                onExitClicked = {
-                    viewModel.logout()
-                },
-                modifier = Modifier.zIndex(1f),
-                navController = navController,
-                title = when (pagerState.currentPage) {
-                    0 -> "Harmony Haven"
-                    2 -> "Bildirimler"
-                    1 -> "Söz Akışı"
-                    3 -> "Harmonia"
-                    4 -> "Enneagram"
-                    else -> ""
-                },
-                topBarBackgroundColor = when (pagerState.currentPage) {
-                    2 -> Color.White
-                    1 -> Color.White
-                    0 -> Color.White
-                    else -> Color.White // do not laugh it will be a future :)
-                },
-                isMainScreen = pagerState.currentPage == 0
-            )
+            if (pagerState.currentPage !in listOf(1, 2)) {
+                MyAppBar(
+                    onExitClicked = {
+                        viewModel.logout()
+                    },
+                    modifier = Modifier.zIndex(1f),
+                    navController = navController,
+                    title = when (pagerState.currentPage) {
+                        0 -> "Harmony Haven"
+                        2 -> "Bildirimler"
+                        1 -> "Söz Akışı"
+                        3 -> "Harmonia"
+                        4 -> "Enneagram"
+                        else -> ""
+                    },
+                    topBarBackgroundColor = when (pagerState.currentPage) {
+                        2 -> Color.White
+                        1 -> Color.White
+                        0 -> Color.White
+                        else -> Color.White // do not laugh it will be a future :)
+                    },
+                    isMainScreen = pagerState.currentPage == 0,
+                    isNotificationScreen = pagerState.currentPage == 2
+                )
 
-        }
+            }
 
-    }) { padding ->
+        }) { padding ->
+
         var lastBackPressTime by remember { mutableLongStateOf(0L) } // Son basma zamanını tutacak değişken
         BackHandler {
             if (commentSheetState.isVisible) {
@@ -430,13 +451,14 @@ fun AppMainScreen(
             count = items.size,
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black)
+                .background(if (pagerState.currentPage == 1) Color.Black else Color.White.copy(alpha = 0.95f))
                 .padding(padding)
                 .onGloballyPositioned {
                     Log.d("debugDelayRender", "ready")
                 }) { page ->
 
-            Box {
+            Box(
+            ) {
 
                 screens[page]?.let { it() }
 
@@ -549,7 +571,7 @@ private val items = listOf(
 
 
     NavigationBarItem(
-        title = "Profile",
+        title = "Enneagram",
         hasNews = false,
         badgeCount = null,
         route = Screen.Profile.route,
