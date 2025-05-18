@@ -133,11 +133,24 @@ fun HomeScreenContentNew(
 
             // Enneagram Section
             Spacer(modifier = Modifier.height(24.dp))
-            
-            SectionHeader(
-                icon = R.drawable.enneagram_black,
-                title = "Enneagramı Keşfet"
-            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.enneag),
+                    contentDescription = null,
+                    modifier = Modifier.size(30.dp)
+                )
+                Spacer(Modifier.size(10.dp))
+                Text(
+                    text = "Enneagramı Keşfet",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF333333)
+                )
+            }
 
             LazyRow(
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
@@ -161,12 +174,24 @@ fun HomeScreenContentNew(
 
             // Popular Articles Section
             Spacer(modifier = Modifier.height(24.dp))
-            
-            SectionHeader(
-                icon = R.drawable.likedredfilled,
-                title = "Popüler İçerikler"
-            )
 
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.icon1),
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp)
+                )
+                Spacer(Modifier.size(10.dp))
+                Text(
+                    text = "İlginizi Çekebilecek İçerikler",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF333333)
+                )
+            }
             // Vertical articles section - using Column instead of LazyColumn for nested scrolling
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -203,10 +228,24 @@ fun AutoSlidingLatestContent(
     if (articles.isEmpty()) return
     
     Column {
-        SectionHeader(
-            icon = R.drawable.newspaper_3208799,
-            title = "Son Yayınlanan İçerikler"
-        )
+        Spacer(Modifier.size(10.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            Image(
+                painter = painterResource(R.drawable.mail),
+                contentDescription = null,
+                modifier = Modifier.size(30.dp)
+            )
+            Spacer(Modifier.size(10.dp))
+            Text(
+                text = "Son Yayınlanan İçerikler",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF333333)
+            )
+        }
         
         val pagerState = rememberPagerState(pageCount = { articles.size })
         val coroutineScope = rememberCoroutineScope()
@@ -411,7 +450,7 @@ fun SectionHeader(
         Image(
             painter = painterResource(icon),
             contentDescription = null,
-            modifier = Modifier.size(26.dp)
+            modifier = Modifier.size(30.dp)
         )
         Spacer(Modifier.size(10.dp))
         Text(
