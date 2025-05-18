@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -75,20 +76,11 @@ fun HomeScreenIntroCard(
             contentDescription = null
         )
 
-        // Notification bell
-        Icon(
-            imageVector = Icons.Default.Notifications,
-            contentDescription = "Notifications",
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
-                .size(28.dp),
-            tint = Color.White.copy(alpha = 0.9f)
-        )
 
         // Top greeting
         Column(
             modifier = Modifier
+                .statusBarsPadding()
                 .padding(16.dp)
                 .align(Alignment.TopStart)
         ) {

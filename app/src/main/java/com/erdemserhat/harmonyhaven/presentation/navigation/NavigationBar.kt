@@ -21,10 +21,13 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -88,6 +91,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Text
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.unit.LayoutDirection
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -455,7 +459,15 @@ fun AppMainScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(if (pagerState.currentPage == 2) Color.Black else Color.White.copy(alpha = 0.95f))
-                .padding(padding)
+                .padding(if (pagerState.currentPage==0) PaddingValues(
+                    top =0.dp,
+                    bottom = padding.calculateBottomPadding(),
+                    start = padding.calculateStartPadding(LayoutDirection.Ltr),
+                    end = padding.calculateEndPadding(LayoutDirection.Ltr)
+                )
+
+                else padding
+                )
                 .onGloballyPositioned {
                     Log.d("debugDelayRender", "ready")
                 }) { page ->

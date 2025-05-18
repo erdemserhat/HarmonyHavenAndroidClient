@@ -97,7 +97,7 @@ fun HomeScreenContentNew(
     val scrollState = rememberScrollState()
     val enneagramArticles = articles.filter { it.category == "Enneagram" }
     val nonEnneagramArticles = articles.filter { it.category != "Enneagram" }
-    
+
     // Get latest 4 articles for auto-slider
     val latestArticles = articles.take(4)
 
@@ -121,7 +121,6 @@ fun HomeScreenContentNew(
                 .verticalScroll(scrollState), // Make the main column scrollable
             horizontalAlignment = Alignment.Start,
         ) {
-            // Intro Card
             HomeScreenIntroCard()
             
             // Latest Content Auto-Slider
@@ -139,7 +138,7 @@ fun HomeScreenContentNew(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 Image(
-                    painter = painterResource(R.drawable.enneag),
+                    painter = painterResource(R.drawable.enneagram_black),
                     contentDescription = null,
                     modifier = Modifier.size(30.dp)
                 )
@@ -175,23 +174,15 @@ fun HomeScreenContentNew(
             // Popular Articles Section
             Spacer(modifier = Modifier.height(24.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.icon1),
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp)
-                )
                 Spacer(Modifier.size(10.dp))
                 Text(
+                    modifier = Modifier.padding(16.dp),
                     text = "İlginizi Çekebilecek İçerikler",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF333333)
                 )
-            }
+
             // Vertical articles section - using Column instead of LazyColumn for nested scrolling
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -229,23 +220,14 @@ fun AutoSlidingLatestContent(
     
     Column {
         Spacer(Modifier.size(10.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            Image(
-                painter = painterResource(R.drawable.mail),
-                contentDescription = null,
-                modifier = Modifier.size(30.dp)
-            )
-            Spacer(Modifier.size(10.dp))
             Text(
+                modifier = Modifier.padding(start = 16.dp),
                 text = "Son Yayınlanan İçerikler",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF333333)
             )
-        }
+
         
         val pagerState = rememberPagerState(pageCount = { articles.size })
         val coroutineScope = rememberCoroutineScope()
@@ -267,7 +249,7 @@ fun AutoSlidingLatestContent(
         }
         
         Box(
-            modifier = Modifier
+                    modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
                 .height(220.dp)
