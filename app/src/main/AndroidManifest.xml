@@ -19,14 +19,8 @@
     <uses-permission android:name="android.permission.CREDENTIAL_MANAGER_GET_CREDENTIALS" />
     <uses-permission android:name="android.permission.CREDENTIAL_MANAGER_SET_ORIGIN" />
 
-
-
-
-
-
-
-
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application
         android:theme="@style/Theme.HarmonyHaven.MySplash"
@@ -133,7 +127,12 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-
+        <!-- MediaPlayerService için tanımlama -->
+        <service
+            android:name=".presentation.post_authentication.player.MediaPlayerService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
 
     </application>
 

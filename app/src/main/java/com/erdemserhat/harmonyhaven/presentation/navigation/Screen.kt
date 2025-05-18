@@ -31,6 +31,7 @@ sealed class Screen(val route: String) {
     data object ChatIntroScreen : Screen("chat_intro_screen")
     data object EnneagramTestScreen : Screen("enneagram_test_screen")
     data object EnneagramIntroScreen : Screen("enneagram_intro_screen")
+    data object ChatWithHarmonia : Screen("chatWithHarmonia")
 
 
 }

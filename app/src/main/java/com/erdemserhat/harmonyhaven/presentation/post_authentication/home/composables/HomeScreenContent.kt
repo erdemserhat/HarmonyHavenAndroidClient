@@ -27,10 +27,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -62,6 +66,7 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.cards.ArticleCard
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.cards.ArticleSearchBarCard
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.player.MeditationMusic
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.placeholder
@@ -82,8 +87,6 @@ fun HomeScreenContentNew(
     allArticles: List<ArticlePresentableUIModel>,
     onRefreshed: (() -> Unit) -> Unit
 ) {
-
-
     var isRefreshing by rememberSaveable {
         mutableStateOf(false)
     }
@@ -97,9 +100,55 @@ fun HomeScreenContentNew(
     val scrollState = rememberScrollState()
     val enneagramArticles = articles.filter { it.category == "Enneagram" }
     val nonEnneagramArticles = articles.filter { it.category != "Enneagram" }
-
+    
     // Get latest 4 articles for auto-slider
     val latestArticles = articles.take(4)
+    
+    // Sample meditation music for demo
+    val meditationMusic = remember {
+        listOf(
+            MeditationMusic(
+                id = "1",
+                title = "Peaceful Rain Sounds",
+                artist = "Nature Sounds",
+                duration = "5:32",
+                imageUrl = "https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?q=80&w=300",
+                audioUrl = "https://example.com/music/rain.mp3"
+            ),
+            MeditationMusic(
+                id = "2",
+                title = "Deep Relaxation",
+                artist = "Meditation Masters",
+                duration = "10:15",
+                imageUrl = "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=300",
+                audioUrl = "https://example.com/music/relaxation.mp3"
+            ),
+            MeditationMusic(
+                id = "3",
+                title = "Calm Piano Melody",
+                artist = "Piano Meditation",
+                duration = "7:45",
+                imageUrl = "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?q=80&w=300",
+                audioUrl = "https://example.com/music/piano.mp3"
+            ),
+            MeditationMusic(
+                id = "4",
+                title = "Ocean Waves",
+                artist = "Ocean Sounds",
+                duration = "8:20",
+                imageUrl = "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?q=80&w=300",
+                audioUrl = "https://example.com/music/ocean.mp3"
+            ),
+            MeditationMusic(
+                id = "5",
+                title = "Mindful Breathing",
+                artist = "Mindfulness",
+                duration = "15:00",
+                imageUrl = "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=300",
+                audioUrl = "https://example.com/music/breathing.mp3"
+            )
+        )
+    }
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
@@ -121,6 +170,7 @@ fun HomeScreenContentNew(
                 .verticalScroll(scrollState), // Make the main column scrollable
             horizontalAlignment = Alignment.Start,
         ) {
+            // Intro Card
             HomeScreenIntroCard()
             
             // Latest Content Auto-Slider
@@ -133,23 +183,13 @@ fun HomeScreenContentNew(
             // Enneagram Section
             Spacer(modifier = Modifier.height(24.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.enneagram_black),
-                    contentDescription = null,
-                    modifier = Modifier.size(30.dp)
-                )
-                Spacer(Modifier.size(10.dp))
-                Text(
-                    text = "Enneagramı Keşfet",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF333333)
-                )
-            }
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = "Enneagramı Keşfet",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF333333)
+            )
 
             LazyRow(
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
@@ -170,18 +210,71 @@ fun HomeScreenContentNew(
                     )
                 }
             }
+            
+            // Meditation Music Section
+            Spacer(modifier = Modifier.height(24.dp))
+
+            //do not use touch it ( no icon required for this)
+
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = "Rahatlatıcı Meditasyon Müzikleri",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF333333)
+            )
+            
+            LazyRow(
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(meditationMusic) { music ->
+                    MeditationMusicCard(
+                        music = music,
+                        onMusicClick = {
+                            // Navigate to music player screen
+                            navController.navigate(
+                                route = "musicPlayer/${music.id}"
+                            )
+                        }
+                    )
+                }
+            }
+
+            // Chat with Harmonia Section
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = "Sohbet Arkadaşın",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF333333)
+            )
+            
+            ChatWithHarmoniaCard(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                onChatClick = {
+                    // Navigate to chat screen
+                    navController.navigate(
+                        route = Screen.ChatWithHarmonia.route
+                    )
+                }
+            )
 
             // Popular Articles Section
             Spacer(modifier = Modifier.height(24.dp))
 
-                Spacer(Modifier.size(10.dp))
-                Text(
-                    modifier = Modifier.padding(16.dp),
-                    text = "İlginizi Çekebilecek İçerikler",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF333333)
-                )
+
+
+            //do not use touch it ( no icon required for this)
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = "İlginizi Çekebilecek Diğer İçerikler",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF333333)
+            )
 
             // Vertical articles section - using Column instead of LazyColumn for nested scrolling
             Column(
@@ -420,29 +513,7 @@ fun AutoSlideCard(
     }
 }
 
-@Composable
-fun SectionHeader(
-    icon: Int,
-    title: String
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
-    ) {
-        Image(
-            painter = painterResource(icon),
-            contentDescription = null,
-            modifier = Modifier.size(30.dp)
-        )
-        Spacer(Modifier.size(10.dp))
-        Text(
-            text = title,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF333333)
-        )
-    }
-}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -690,6 +761,192 @@ fun ShimmerArticleCard(onItemClick: () -> Unit = {}) {
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         // Content of the card can be added here if needed
+    }
+}
+
+@Composable
+fun MeditationMusicCard(
+    music: MeditationMusic,
+    onMusicClick: () -> Unit
+) {
+    ElevatedCard(
+        onClick = { onMusicClick() },
+        modifier = Modifier
+            .width(160.dp)
+            .height(200.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 4.dp,
+            pressedElevation = 8.dp
+        ),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Color.White
+        )
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Music Image
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+            ) {
+                AsyncImage(
+                    model = music.imageUrl,
+                    contentDescription = music.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+                
+                // Duration badge - style similar to category badge in article cards
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(harmonyHavenGreen.copy(alpha = 0.8f))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = music.duration,
+                        color = Color.White,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                
+                // Play icon overlay
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .align(Alignment.Center)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        tint = Color.White.copy(alpha = 0.9f),
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
+            
+            // Music Content
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = music.title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = 20.sp
+                )
+                
+                Spacer(modifier = Modifier.height(6.dp))
+                
+                Text(
+                    text = music.artist,
+                    fontSize = 12.sp,
+                    color = Color(0xFF666666),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = 15.sp
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ChatWithHarmoniaCard(
+    modifier: Modifier = Modifier,
+    onChatClick: () -> Unit
+) {
+    ElevatedCard(
+        onClick = { onChatClick() },
+        modifier = modifier
+            .fillMaxWidth()
+            .height(120.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 4.dp,
+            pressedElevation = 8.dp
+        ),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Color.White
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Left side - Image with decorative border
+            Box(
+                modifier = Modifier
+                    .size(85.dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                harmonyHavenGreen.copy(alpha = 0.1f),
+                                harmonyHavenGreen.copy(alpha = 0.05f)
+                            )
+                        ),
+                        shape = CircleShape
+                    )
+                    .padding(4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.send_icon),
+                    contentDescription = "Harmonia",
+                    modifier = Modifier
+                        .size(75.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                    contentScale = ContentScale.Crop
+                )
+            }
+            
+            // Right side - Text content
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 16.dp)
+            ) {
+                Text(
+                    text = "Harmonia ile sohbet et",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF333333),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = 20.sp
+                )
+                
+                Spacer(modifier = Modifier.height(6.dp))
+                
+                Text(
+                    text = "Sorularını yanıtlayalım, meditasyon yapalım veya sadece sohbet edelim",
+                    fontSize = 12.sp,
+                    color = Color(0xFF666666),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = 15.sp
+                )
+            }
+            
+            // Chat icon with green background - similar to category badge in article cards
+         
+        }
     }
 }
 

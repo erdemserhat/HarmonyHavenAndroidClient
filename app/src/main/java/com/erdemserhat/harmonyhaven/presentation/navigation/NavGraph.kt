@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -55,6 +56,8 @@ import com.erdemserhat.harmonyhaven.presentation.prev_authentication.passwordres
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.RegisterScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.welcome.WelcomeScreen
 import kotlinx.parcelize.Parcelize
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.player.MeditationMusic
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.player.MusicPlayerScreen
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -292,7 +295,80 @@ fun SetupNavGraph(
 
         }
 
-
+        composable(
+            route = "musicPlayer/{musicId}",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) },
+        ) { backStackEntry ->
+            val musicId = backStackEntry.arguments?.getString("musicId")
+            // For simplicity, we'll find the music by ID from a predefined list
+            // In a real app, you might fetch this from a repository or viewModel
+            val meditationMusic = remember {
+                listOf(
+                    MeditationMusic(
+                        id = "1",
+                        title = "Peaceful Rain Sounds",
+                        artist = "Nature Sounds",
+                        duration = "5:32",
+                        imageUrl = "https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?q=80&w=300",
+                        audioUrl = "https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3"
+                    ),
+                    MeditationMusic(
+                        id = "2",
+                        title = "Deep Relaxation",
+                        artist = "Meditation Masters",
+                        duration = "10:15",
+                        imageUrl = "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=300",
+                        audioUrl = "https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3"
+                    ),
+                    MeditationMusic(
+                        id = "3",
+                        title = "Calm Piano Melody",
+                        artist = "Piano Meditation",
+                        duration = "7:45",
+                        imageUrl = "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?q=80&w=300",
+                        audioUrl = "https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3"
+                    ),
+                    MeditationMusic(
+                        id = "4",
+                        title = "Ocean Waves",
+                        artist = "Ocean Sounds",
+                        duration = "8:20",
+                        imageUrl = "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?q=80&w=300",
+                        audioUrl = "https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3"
+                    ),
+                    MeditationMusic(
+                        id = "5",
+                        title = "Mindful Breathing",
+                        artist = "Mindfulness",
+                        duration = "15:00",
+                        imageUrl = "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=300",
+                        audioUrl = "https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3"
+                    )
+                ).find { it.id == musicId } ?: MeditationMusic(
+                    id = "1",
+                    title = "Peaceful Rain Sounds",
+                    artist = "Nature Sounds",
+                    duration = "5:32",
+                    imageUrl = "https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?q=80&w=300",
+                    audioUrl = "https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3"
+                )
+            }
+            
+            MusicPlayerScreen(
+                navController = navController,
+                music = meditationMusic
+            )
+        }
+        
+        composable(
+            route = Screen.ChatWithHarmonia.route,
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) },
+        ) {
+            // Redirect to the existing ChatScreen for now, since we're using the same functionality
+            ChatScreen(navController = navController)
+        }
 
     }
 

@@ -92,6 +92,9 @@ dependencies {
     implementation(libs.lifecycle.process)
     implementation(libs.splashscreen)
 
+    // Notifications and Media
+    implementation("androidx.media:media:1.6.0")
+
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
@@ -177,6 +180,7 @@ dependencies {
     implementation ("io.noties.markwon:linkify:$markwon_version")
     implementation ("io.noties.markwon:ext-tasklist:$markwon_version")
     implementation (libs.androidx.autofill)
+    implementation ("androidx.media:media:1.6.0")
 
 
 }
