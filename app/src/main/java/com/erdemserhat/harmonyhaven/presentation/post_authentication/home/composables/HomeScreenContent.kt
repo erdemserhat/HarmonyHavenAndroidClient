@@ -5,11 +5,14 @@ import android.os.Bundle
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,13 +21,17 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -33,9 +40,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -45,7 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.WindowCompat
+import androidx.compose.ui.util.lerp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.R
@@ -59,10 +66,11 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.placeholder
 import com.google.accompanist.placeholder.shimmer
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.jetbrains.annotations.Async
+import kotlin.math.absoluteValue
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreenContentNew(
     isCategoryReady: Boolean,
@@ -74,7 +82,6 @@ fun HomeScreenContentNew(
     allArticles: List<ArticlePresentableUIModel>,
     onRefreshed: (() -> Unit) -> Unit
 ) {
-
 
 
     var isRefreshing by rememberSaveable {
@@ -90,6 +97,9 @@ fun HomeScreenContentNew(
     val scrollState = rememberScrollState()
     val enneagramArticles = articles.filter { it.category == "Enneagram" }
     val nonEnneagramArticles = articles.filter { it.category != "Enneagram" }
+    
+    // Get latest 4 articles for auto-slider
+    val latestArticles = articles.take(4)
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
@@ -113,9 +123,16 @@ fun HomeScreenContentNew(
         ) {
             // Intro Card
             HomeScreenIntroCard()
+            
+            // Latest Content Auto-Slider
+            Spacer(modifier = Modifier.height(16.dp))
+            AutoSlidingLatestContent(
+                articles = latestArticles,
+                navController = navController
+            )
 
             // Enneagram Section
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             
             SectionHeader(
                 icon = R.drawable.enneagram_black,
@@ -172,6 +189,211 @@ fun HomeScreenContentNew(
                 
                 // Add some space at the bottom
                 Spacer(modifier = Modifier.height(40.dp))
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun AutoSlidingLatestContent(
+    articles: List<ArticlePresentableUIModel>,
+    navController: NavController
+) {
+    if (articles.isEmpty()) return
+    
+    Column {
+        SectionHeader(
+            icon = R.drawable.newspaper_3208799,
+            title = "Son Yayınlanan İçerikler"
+        )
+        
+        val pagerState = rememberPagerState(pageCount = { articles.size })
+        val coroutineScope = rememberCoroutineScope()
+        
+        // Auto-sliding logic with softer transitions
+        LaunchedEffect(Unit) {
+            while (true) {
+                delay(4000) // Wait 4 seconds before starting transition
+                val nextPage = (pagerState.currentPage + 1) % articles.size
+                // Smoother, longer animation
+                pagerState.animateScrollToPage(
+                    page = nextPage,
+                    animationSpec = tween(
+                        durationMillis = 1000, // Longer animation (1 second)
+                        easing = FastOutSlowInEasing // Smoother easing curve
+                    )
+                )
+            }
+        }
+        
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .height(220.dp)
+        ) {
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize(),
+                // Add page spacing for better visual separation
+                pageSpacing = 8.dp
+            ) { page ->
+                val article = articles[page]
+                
+                // Calculate page offset for animation
+                val pageOffset = (
+                    (pagerState.currentPage - page) + pagerState
+                        .currentPageOffsetFraction
+                ).absoluteValue
+                
+                // Animate card properties based on offset
+                AutoSlideCard(
+                    article = article,
+                    pageOffset = pageOffset,
+                    onArticleClick = {
+                        val bundle = Bundle()
+                        bundle.putParcelable("article", article)
+                        navController.navigate(
+                            route = Screen.Article.route,
+                            args = bundle
+                        )
+                    }
+                )
+            }
+            
+            // Page indicators
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                articles.forEachIndexed { index, _ ->
+                    // Animated indicator size and color
+                    val selected = pagerState.currentPage == index
+                    val size by animateFloatAsState(
+                        targetValue = if (selected) 10f else 8f,
+                        animationSpec = tween(300, easing = FastOutSlowInEasing),
+                        label = "indicator size"
+                    )
+                    
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .size(size.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (selected) 
+                                    harmonyHavenGreen 
+                                else 
+                                    Color.LightGray.copy(alpha = 0.5f)
+                            )
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AutoSlideCard(
+    article: ArticlePresentableUIModel,
+    pageOffset: Float,
+    onArticleClick: () -> Unit
+) {
+    // Calculate smoother animation values
+    val scale = lerp(
+        start = 0.90f, // Less scaling difference
+        stop = 1f,
+        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+    )
+    val alpha = lerp(
+        start = 0.7f, // Higher minimum opacity
+        stop = 1f,
+        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+    )
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+                this.alpha = alpha
+                // Add subtle rotation for more dynamic feel
+                rotationY = pageOffset * 8f // Max 8 degree rotation
+            }
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onArticleClick() },
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Background image
+            AsyncImage(
+                model = article.imagePath,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            
+            // Content overlay with semi-transparent background - softer gradient
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Black.copy(alpha = 0.1f),
+                                Color.Black.copy(alpha = 0.7f)
+                            )
+                        )
+                    )
+                    .padding(20.dp),
+                contentAlignment = Alignment.BottomStart
+            ) {
+                Column {
+                    // Category badge
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(harmonyHavenGreen.copy(alpha = 0.9f))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = article.category ?: "Genel",
+                            color = Color.White,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    // Title
+                    Text(
+                        text = article.title,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    // Preview text
+                    Text(
+                        text = article.contentPreview ?: "",
+                        fontSize = 14.sp,
+                        color = Color.White.copy(alpha = 0.8f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
     }
