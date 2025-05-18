@@ -352,7 +352,7 @@ fun AppMainScreen(
         },
         topBar = {
 
-            if (pagerState.currentPage !in listOf(1, 2)) {
+            if (pagerState.currentPage !in listOf(0,1, 2)) {
                 MyAppBar(
                     onExitClicked = {
                         viewModel.logout()

@@ -160,8 +160,6 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
                             result.chartUrl.personalityImageUrl,
                             navController,
                             profileScreenState.article
-
-
                         )
 
                         Spacer(modifier = Modifier.height(24.dp))
@@ -192,29 +190,6 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
 
-                            /*
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 8.dp),
-                                elevation = CardDefaults.cardElevation(4.dp),
-                                colors = CardDefaults.cardColors(containerColor = Color.White)
-                            ) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(
-                                        ImageRequest.Builder(LocalContext.current)
-                                            .data(data = chartUrl)
-                                            .build()
-                                    ),
-                                    contentDescription = "Enneagram Chart",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(200.dp),
-                                    contentScale = ContentScale.Fit
-                                )
-                            }
-                              */
-
                         }
 
 
@@ -235,10 +210,6 @@ fun UserProfileScreen(navController: NavController, profileScreenViewModel: User
                         }
 
                         Spacer(modifier = Modifier.height(32.dp))
-
-                        // Exploration Tabs Section
-                       // ExplorationTabs(navController, result.result.dominantType.type)
-
                         Spacer(modifier = Modifier.height(24.dp))
                     }
 
