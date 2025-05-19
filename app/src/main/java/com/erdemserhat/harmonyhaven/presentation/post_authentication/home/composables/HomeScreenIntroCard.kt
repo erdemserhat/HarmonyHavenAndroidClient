@@ -66,6 +66,7 @@ data class MoodOption(
 fun HomeScreenIntroCard(
     userName: String = "Serhat",
     quoteText: String = "Tekrar iyi hissetmekten bir düşünce uzaktayız.",
+    onNotificationClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showMoodSelector by remember { mutableStateOf(false) }
@@ -91,29 +92,50 @@ fun HomeScreenIntroCard(
             contentDescription = null
         )
 
-
-        // Top greeting
-        Column(
+        // Top row with greeting and notifications
+        Row(
             modifier = Modifier
                 .statusBarsPadding()
                 .padding(16.dp)
-                .align(Alignment.TopStart)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
         ) {
-            Text(
-                "Merhaba, $userName!",
-                color = Color.White,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium
-            )
-            Row(
-                modifier = Modifier.clickable {
-                    showMoodSelector = true
-                }
-            ) {
+            // Left side - Greeting and mood selector
+            Column {
                 Text(
-                    "Modunu Seç ⌄",
-                    color = Color.White.copy(alpha = 0.8f),
-                    fontSize = 16.sp
+                    "Merhaba, $userName!",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Row(
+                    modifier = Modifier.clickable {
+                        showMoodSelector = true
+                    }
+                ) {
+                    Text(
+                        "Modunu Seç ⌄",
+                        color = Color.White.copy(alpha = 0.8f),
+                        fontSize = 16.sp
+                    )
+                }
+            }
+            
+            // Right side - Notification icon
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color.White.copy(alpha = 0.3f))
+                    .clickable { onNotificationClick() },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = "Bildirimler",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }

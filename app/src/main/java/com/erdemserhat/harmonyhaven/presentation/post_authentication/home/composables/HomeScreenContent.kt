@@ -172,7 +172,9 @@ fun HomeScreenContentNew(
             horizontalAlignment = Alignment.Start,
         ) {
             // Intro Card
-            HomeScreenIntroCard()
+            HomeScreenIntroCard( onNotificationClick = {
+                navController.navigate(Screen.Notification.route)
+            })
             
             // Latest Content Auto-Slider
             Spacer(modifier = Modifier.height(16.dp))

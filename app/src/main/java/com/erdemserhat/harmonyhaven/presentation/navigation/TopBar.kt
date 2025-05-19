@@ -39,7 +39,6 @@ fun MyAppBar(
     isMainScreen: Boolean,
     modifier: Modifier = Modifier,
     onExitClicked: () -> Unit = {},
-    isNotificationScreen:Boolean
 
 
     ) {

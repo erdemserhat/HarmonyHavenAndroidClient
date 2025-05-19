@@ -165,7 +165,7 @@ fun AppMainScreen(
 
     val screens: Map<Int, @Composable () -> Unit> = remember {
         mapOf(0 to { HomeScreenNew(navController) },
-            2 to {
+            1 to {
                 QuoteMainScreen(
                     volumeControllerViewModel = volumeControlViewModel,
                     navController = navController,
@@ -182,9 +182,8 @@ fun AppMainScreen(
                     viewmodel = quoteViewModel
                 )
             },
-            1 to { NotificationScreen(navController) },
-            3 to { ChatIntroScreen(navController = navController) },
-            4 to {
+            2 to { ChatIntroScreen(navController = navController) },
+            3 to {
                 UserProfileScreen(
                     navController,
                     profileScreenViewModel = userProfileSharedViewModel
@@ -196,7 +195,7 @@ fun AppMainScreen(
 
 
     //set status bar and system navbar color
-    if (pagerState.currentPage == 2) {
+    if (pagerState.currentPage == 1) {
         window.let {
             // content fill the system navbar- status bar
             //do not change this
@@ -239,7 +238,7 @@ fun AppMainScreen(
             Column(
                 modifier = Modifier
                     .background(
-                        color = if (pagerState.currentPage == 2) Color.Black
+                        color = if (pagerState.currentPage == 1) Color.Black
                         else Color.White.copy(
                             alpha = 0.05f
                         )
@@ -265,7 +264,7 @@ fun AppMainScreen(
                                     role = Role.Tab,
                                     onClick = {
                                         coroutineScope.launch {
-                                            if (index == 2) {
+                                            if (index == 1) {
                                                 val currentTime = System.currentTimeMillis()
                                                 if (currentTime - lastClickTime < doubleClickThreshold) {
                                                     // Double tap detected
@@ -284,14 +283,14 @@ fun AppMainScreen(
                                 ),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            val iconResource = if (pagerState.currentPage == 2) {
+                            val iconResource = if (pagerState.currentPage == 1) {
                                 if (pagerState.currentPage == index) item.selectedIconDarkIcon else item.unSelectedIconDarkIcon
                             } else {
                                 if (pagerState.currentPage == index) item.selectedIconWhiteIcon else item.unSelectedIconWhiteIcon
                             }
 
                             val isSelected = pagerState.currentPage == index
-                            val textColor = if (pagerState.currentPage == 2) {
+                            val textColor = if (pagerState.currentPage == 1) {
                                 if (isSelected) Color.White else Color.White.copy(alpha = 0.6f)
                             } else {
                                 if (isSelected) Color.Black else Color.Black.copy(alpha = 0.6f)
@@ -300,7 +299,7 @@ fun AppMainScreen(
                             // Indicator color animation
                             val indicatorColor = animateColorAsState(
                                 targetValue = if (isSelected) {
-                                    if (pagerState.currentPage == 2) Color.White else Color.Black
+                                    if (pagerState.currentPage == 1) Color.White else Color.Black
                                 } else Color.Transparent,
                                 label = "indicatorColor"
                             )
@@ -365,7 +364,6 @@ fun AppMainScreen(
                     navController = navController,
                     title = when (pagerState.currentPage) {
                         0 -> "Harmony Haven"
-                        2 -> "Bildirimler"
                         1 -> "Söz Akışı"
                         3 -> "Harmonia"
                         4 -> "Enneagram"
@@ -378,7 +376,6 @@ fun AppMainScreen(
                         else -> Color.White // do not laugh it will be a future :)
                     },
                     isMainScreen = pagerState.currentPage == 0,
-                    isNotificationScreen = pagerState.currentPage == 2
                 )
 
             }
@@ -458,7 +455,7 @@ fun AppMainScreen(
             count = items.size,
             modifier = Modifier
                 .fillMaxSize()
-                .background(if (pagerState.currentPage == 2) Color.Black else Color.White.copy(alpha = 0.95f))
+                .background(if (pagerState.currentPage == 1) Color.Black else Color.White.copy(alpha = 0.95f))
                 .padding(if (pagerState.currentPage==0) PaddingValues(
                     top =0.dp,
                     bottom = padding.calculateBottomPadding(),
@@ -553,17 +550,6 @@ private val items = listOf(
         unSelectedIconDarkIcon = R.drawable.homewhiteunfilled,
         unSelectedIconWhiteIcon = R.drawable.homeblackunfilled
 
-    ),
-
-    NavigationBarItem(
-        title = "Bildirimler",
-        hasNews = false,
-        badgeCount = null,
-        route = Screen.Notification.route,
-        selectedIconDarkIcon = R.drawable.notificationwhitefilled,
-        selectedIconWhiteIcon = R.drawable.notificationblackfilled,
-        unSelectedIconDarkIcon = R.drawable.notificationwhiteunfilled,
-        unSelectedIconWhiteIcon = R.drawable.notificationblackunfilled
     ),
 
 
