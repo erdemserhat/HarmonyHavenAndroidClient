@@ -68,7 +68,12 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.cards.ArticleCard
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.cards.ArticleSearchBarCard
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.player.MeditationMusic
+import com.erdemserhat.harmonyhaven.ui.theme.DefaultAppFont
+import com.erdemserhat.harmonyhaven.ui.theme.customFontInter
+import com.erdemserhat.harmonyhaven.ui.theme.customFontKumbhSans
+import com.erdemserhat.harmonyhaven.ui.theme.georgiaFont
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.placeholder
 import com.google.accompanist.placeholder.shimmer
@@ -187,11 +192,21 @@ fun HomeScreenContentNew(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 4.dp),
                 text = "Enneagramı Keşfet",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
+                fontFamily = ptSansFont,
                 color = Color(0xFF333333)
+            )
+            
+            Text(
+                modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 12.dp),
+                text = "Enneagram ile kendini keşfet",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                fontFamily = ptSansFont,
+                color = Color(0xFF666666)
             )
 
             LazyRow(
@@ -220,11 +235,21 @@ fun HomeScreenContentNew(
             //do not use touch it ( no icon required for this)
 
             Text(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 4.dp),
                 text = "Rahatlatıcı Meditasyon Müzikleri",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
+                fontFamily = ptSansFont,
                 color = Color(0xFF333333)
+            )
+            
+            Text(
+                modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 12.dp),
+                text = "Zihninizi rahatlatacak melodilere göz atın",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                fontFamily = ptSansFont,
+                color = Color(0xFF666666)
             )
             
             LazyRow(
@@ -248,18 +273,20 @@ fun HomeScreenContentNew(
             Spacer(modifier = Modifier.height(24.dp))
             
             Text(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 4.dp),
                 text = "Rutinler",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
+                fontFamily = ptSansFont,
                 color = Color(0xFF333333)
             )
             
             Text(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                text = "Kişiselleştirilmiş Sana Özel Alanlar",
-                fontSize = 16.sp,
+                modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 12.dp),
+                text = "Kişiselleştirilmiş sana özel alanlar",
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
+                fontFamily = ptSansFont,
                 color = Color(0xFF666666)
             )
             
@@ -295,17 +322,42 @@ fun HomeScreenContentNew(
                         }
                     )
                 }
+                
+                // Reminder Card
+                item {
+                    RoutineCard(
+                        title = "Hatırlatıcı",
+                        subtitle = "Önemli anlarını unutma",
+                        backgroundColor = Color(0xFFFF7D54),  // Orange color
+                        iconResId = null,
+                        iconPainter = painterResource(id = R.drawable.ic_journal), // Reusing journal icon for now
+                        onCardClick = {
+                            // Handle reminder card click
+                            // navController.navigate(route = "reminders")
+                        }
+                    )
+                }
             }
 
             // Chat with Harmonia Section
             Spacer(modifier = Modifier.height(24.dp))
             
             Text(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 4.dp),
                 text = "Sohbet Arkadaşın",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
+                fontFamily = ptSansFont,
                 color = Color(0xFF333333)
+            )
+            
+            Text(
+                modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 12.dp),
+                text = "Harmonia her konuda her zaman yanında",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                fontFamily = ptSansFont,
+                color = Color(0xFF666666)
             )
             
             ChatWithHarmoniaCard(
@@ -329,6 +381,7 @@ fun HomeScreenContentNew(
                 text = "İlginizi Çekebilecek Diğer İçerikler",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
+                fontFamily = ptSansFont,
                 color = Color(0xFF333333)
             )
 
@@ -370,11 +423,21 @@ fun AutoSlidingLatestContent(
     Column {
         Spacer(Modifier.size(10.dp))
             Text(
-                modifier = Modifier.padding(start = 16.dp),
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp),
                 text = "Son Yayınlanan İçerikler",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
+                fontFamily = ptSansFont,
                 color = Color(0xFF333333)
+            )
+            
+            Text(
+                modifier = Modifier.padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 12.dp),
+                text = "İlginizi çekebilecek içerikler",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                fontFamily = ptSansFont,
+                color = Color(0xFF666666)
             )
 
         
@@ -900,6 +963,7 @@ fun MeditationMusicCard(
                     text = music.title,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
+                    fontFamily = ptSansFont,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     lineHeight = 20.sp
@@ -910,6 +974,7 @@ fun MeditationMusicCard(
                 Text(
                     text = music.artist,
                     fontSize = 12.sp,
+                    fontFamily = ptSansFont,
                     color = Color(0xFF666666),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -982,6 +1047,7 @@ fun ChatWithHarmoniaCard(
                     text = "Harmonia ile sohbet et",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
+                    fontFamily = ptSansFont,
                     color = Color(0xFF333333),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -993,6 +1059,7 @@ fun ChatWithHarmoniaCard(
                 Text(
                     text = "Sorularını yanıtlayalım, meditasyon yapalım veya sadece sohbet edelim",
                     fontSize = 12.sp,
+                    fontFamily = ptSansFont,
                     color = Color(0xFF666666),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -1064,15 +1131,16 @@ fun RoutineCard(
                         text = title,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
+                        fontFamily = ptSansFont,
                         color = Color.White
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-
                         text = subtitle,
                         fontSize = 14.sp,
+                        fontFamily = ptSansFont,
                         color = Color.White.copy(alpha = 0.8f)
                     )
                 }

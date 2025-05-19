@@ -26,6 +26,7 @@ val DefaultAppFont = FontFamily(
     Font(R.font.inter_semibold, FontWeight.SemiBold),
     Font(R.font.inter_thin, FontWeight.Thin)
 )
+
 val customFontInter = FontFamily(
     Font(R.font.inter_bold, FontWeight.Bold),
     Font(R.font.inter_regular, FontWeight.Medium)
@@ -34,4 +35,10 @@ val customFontInter = FontFamily(
 val georgiaFont = FontFamily(
     Font(R.font.georgiai, FontWeight.Light),
     Font(R.font.georgiab, FontWeight.Bold),
+)
+
+val ptSansFont = FontFamily(
+    Font(R.font.ptsans_regular, FontWeight.Normal),
+    Font(R.font.ptsans_bold, FontWeight.Bold),
+    Font(R.font.ptsans_bold_italic, FontWeight.Bold)
 )

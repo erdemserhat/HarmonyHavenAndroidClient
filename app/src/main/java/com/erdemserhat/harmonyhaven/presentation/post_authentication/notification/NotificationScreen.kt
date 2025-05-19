@@ -36,9 +36,14 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -82,6 +87,8 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 
 fun convertTimestampToTurkishDate(timestamp: Long): String {
     val date = java.util.Date(timestamp * 1000) // Timestamp'i milisaniyeye çeviriyoruz
@@ -89,7 +96,7 @@ fun convertTimestampToTurkishDate(timestamp: Long): String {
     return sdf.format(date)
 }
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun NotificationScreen(
@@ -129,7 +136,31 @@ fun NotificationScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Spacer(modifier = Modifier.size(WindowInsets.systemBars.asPaddingValues().calculateTopPadding()))
+
+        // Top App Bar with back button
+        TopAppBar(
+            title = { 
+                Text(
+                    text = "Bildirimler ve Planlayıcılar",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 20.sp,
+                    color = Color.Black
+                )
+            },
+            navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Geri",
+                        tint = Color(0xFF2E3C59)
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.White
+            )
+        )
+        
         // Tab Row with Indicator
         TabRow(
             selectedTabIndex = pagerState.currentPage,

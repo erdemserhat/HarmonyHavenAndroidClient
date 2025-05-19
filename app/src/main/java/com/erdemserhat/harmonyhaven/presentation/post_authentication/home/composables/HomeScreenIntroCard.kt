@@ -52,7 +52,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.erdemserhat.harmonyhaven.ui.theme.DefaultAppFont
+import com.erdemserhat.harmonyhaven.ui.theme.customFontInter
+import com.erdemserhat.harmonyhaven.ui.theme.customFontKumbhSans
+import com.erdemserhat.harmonyhaven.ui.theme.georgiaFont
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
 import kotlinx.coroutines.launch
 
 data class MoodOption(
@@ -88,7 +93,9 @@ fun HomeScreenIntroCard(
         AsyncImage(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
-            model = "https://images.pexels.com/photos/2469122/pexels-photo-2469122.jpeg",
+
+            /// do not change this
+            model = "https://www.harmonyhavenapp.com/sources/bg.png",
             contentDescription = null
         )
 
@@ -107,7 +114,8 @@ fun HomeScreenIntroCard(
                     "Merhaba, $userName!",
                     color = Color.White,
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = ptSansFont
                 )
                 Row(
                     modifier = Modifier.clickable {
@@ -117,7 +125,8 @@ fun HomeScreenIntroCard(
                     Text(
                         "Modunu Seç ⌄",
                         color = Color.White.copy(alpha = 0.8f),
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        fontFamily = ptSansFont
                     )
                 }
             }
@@ -149,7 +158,8 @@ fun HomeScreenIntroCard(
             color = Color.White,
             fontSize = 22.sp,
             fontWeight = FontWeight.Medium,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontFamily = ptSansFont
         )
     }
 
@@ -201,6 +211,7 @@ fun MoodSelectorContent(
             fontSize = 22.sp,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center,
+            fontFamily = ptSansFont,
             modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
         )
         
@@ -209,6 +220,7 @@ fun MoodSelectorContent(
             fontSize = 16.sp,
             color = Color.Gray,
             textAlign = TextAlign.Center,
+            fontFamily = ptSansFont,
             modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)
         )
 
@@ -284,6 +296,7 @@ fun MoodItem(
                 fontWeight = FontWeight.Medium,
                 color = Color.White,
                 textAlign = TextAlign.Center,
+                fontFamily = ptSansFont,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 12.dp)
