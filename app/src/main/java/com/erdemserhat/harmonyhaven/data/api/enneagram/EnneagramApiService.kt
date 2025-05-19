@@ -65,10 +65,17 @@ data class EnneagramScore(
 )
 
 @Serializable
+data class EnneagramWingTypes(
+    val pointBasedWingType:Int,
+    val enneagramBasedWingType:Int,
+)
+
+
+@Serializable
 data class EnneagramTestResult(
     val typeScores: List<EnneagramScore>,
     val dominantType: EnneagramScore,
-    val wingType: EnneagramScore,
+    val wingType: EnneagramWingTypes,
 )
 
 @Serializable

@@ -47,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -80,6 +81,8 @@ import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramFamousPeople
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.foundation.layout.statusBarsPadding
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,6 +99,10 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
 
     var shouldShowIntroTestScreen by rememberSaveable {
         mutableStateOf(false)
+    }
+    
+    // For debugging
+    LaunchedEffect(profileScreenState.result?.detailedResult?.result?.wingType) {
     }
 
     BackHandler {
@@ -140,314 +147,350 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(scrollState)
-                        .padding(16.dp)
                 ) {
-                    profileScreenState.result?.detailedResult?.let { result ->
-                        // Greeting with username
-                        profileScreenState.username?.let { username ->
-                            Text(
-                                text = "Merhaba, $username",
-                                fontSize = 28.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = harmonyHavenDarkGreenColor,
-                                fontFamily = ptSansFont,
-                                modifier = Modifier
-                                    .padding(bottom = 8.dp)
-                            )
-                        }
+                    // Get the detailed result for easier access
+                    val detailedResult = profileScreenState.result?.detailedResult
+                    
+                    // Comprehensive logging of the data structure
+                    Log.d("EnneagramScreen", "Complete Result: ${profileScreenState.result}")
+                    Log.d("EnneagramScreen", "Detailed Result: $detailedResult")
+                    Log.d("EnneagramScreen", "Test Result: ${detailedResult?.result}")
+                    Log.d("EnneagramScreen", "All Type Scores: ${detailedResult?.result?.typeScores}")
+                    
+                    // Extract type information with direct access to the EnneagramScore objects
+                    val dominantTypeScore = detailedResult?.result?.dominantType
+                    val wingTypeScore = detailedResult?.result?.wingType
+                    
+                    Log.d("EnneagramScreen", "Dominant Type Score: $dominantTypeScore")
+                    Log.d("EnneagramScreen", "Wing Type Score: $wingTypeScore")
+                    
+                    // Extract type and score values
+                    val dominantType = dominantTypeScore?.type ?: 0
+                    val dominantScore = dominantTypeScore?.score ?: 0
+                    val wingType = wingTypeScore?.enneagramBasedWingType ?: 0
+                    val wingTypePoint = wingTypeScore?.pointBasedWingType ?: 0
+                    
+                    Log.d("EnneagramScreen", "Dominant Type: $dominantType, Score: $dominantScore")
+                    Log.d("EnneagramScreen", "Wing Type: $wingType, Score: $wingTypePoint")
+                    
+                    // Intro Card - always show the wing type even if it's 0
+                    EnneagramIntroCard(
+                        userName = profileScreenState.username ?: "",
+                        dominantType = dominantType,
+                        wingType = wingType,
+                        wingTypePoint = wingTypePoint,
+                        profileImageUrl = detailedResult?.chartUrl?.personalityImageUrl ?: ""
+                    )
+                    
+                    // Main Content
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        profileScreenState.result?.detailedResult?.let { result ->
 
-                        // Subtitle
-                        Text(
-                            text = "Enneagram ile kendini keşfet",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = Color.Gray,
-                            fontFamily = ptSansFont,
-                            modifier = Modifier.padding(bottom = 24.dp)
-                        )
-
-                        // Main Result Card
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            elevation = CardDefaults.cardElevation(
-                                defaultElevation = 2.dp
-                            ),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Column(
+                            // Main Result Card - Removed repeated type number and image
+                            Card(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(20.dp)
+                                    .fillMaxWidth(),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
+                                ),
+                                colors = CardDefaults.cardColors(containerColor = Color.White),
+                                shape = RoundedCornerShape(16.dp)
                             ) {
-                                Text(
-                                    text = "Senin Enneagram Tipin:",
-                                    fontSize = 16.sp,
-                                    color = Color.Gray,
-                                    fontFamily = ptSansFont
-                                )
-
-                                Row(
+                                Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(vertical = 12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
+                                        .padding(20.dp)
                                 ) {
+                                    // Removed "Senin Enneagram Tipin:" text and type display
+                                    // Removed the AsyncImage that showed the type again
+                                    
+                                    // Function to get type name based on type number
+                                    fun getTypeName(typeNumber: Int): String {
+                                        return when (typeNumber) {
+                                            1 -> "Kusursuzluğu Arayan / Reformcu"
+                                            2 -> "Seven / Sevilen / Yardım Sever"
+                                            3 -> "Başaran / İddialı"
+                                            4 -> "Bireyci / Özgün / Romantik"
+                                            5 -> "Araştırmacı / Gözlemci"
+                                            6 -> "Sadık / Sorgulayıcı"
+                                            7 -> "Maceracı / İyimser / Coşkulu"
+                                            8 -> "Meydan Okuyan / Lider"
+                                            9 -> "Barışçı / Arabulucu"
+                                            else -> ""
+                                        }
+                                    }
+                                    
+                                    // Display type name at the top
                                     Text(
-                                        text = "Tip ${result.result.dominantType.type}",
-                                        fontSize = 32.sp,
+                                        text = "Tip ${result.result.dominantType.type}: ${getTypeName(result.result.dominantType.type)}",
+                                        fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = harmonyHavenDarkGreenColor,
+                                        fontFamily = ptSansFont,
+                                        modifier = Modifier.padding(bottom = 16.dp)
+                                    )
+
+                                    HorizontalDivider(
+                                        modifier = Modifier.padding(vertical = 8.dp),
+                                        color = harmonyHavenGreen.copy(alpha = 0.2f),
+                                        thickness = 1.dp
+                                    )
+
+                                    val customStyle = TextStyle(
+                                        fontSize = 16.sp,
+                                        color = Color.DarkGray,
+                                        lineHeight = 25.sp,
                                         fontFamily = ptSansFont
                                     )
 
-                                    if (result.result.wingType.type > 0) {
-                                        Text(
-                                            text = " (Kanat ${result.result.wingType.type})",
-                                            fontSize = 22.sp,
-                                            color = harmonyHavenDarkGreenColor,
-                                            fontFamily = ptSansFont
-                                        )
-                                    }
-                                }
-
-                                // Header görseli
-                                AsyncImage(
-                                    model = result.chartUrl.personalityImageUrl,
-                                    contentDescription = "Enneagram Tipi",
-                                    modifier = Modifier
-                                        .size(240.dp)
-                                        .align(Alignment.CenterHorizontally)
-                                        .clip(RoundedCornerShape(16.dp)),
-                                    contentScale = ContentScale.FillBounds
-                                )
-
-                                Spacer(modifier = Modifier.height(20.dp))
-
-                                HorizontalDivider(
-                                    modifier = Modifier.padding(vertical = 8.dp),
-                                    color = harmonyHavenGreen.copy(alpha = 0.2f),
-                                    thickness = 1.dp
-                                )
-
-                                val customStyle = TextStyle(
-                                    fontSize = 16.sp,
-                                    color = Color.DarkGray,
-                                    lineHeight = 25.sp,
-                                    fontFamily = ptSansFont
-                                )
-
-                                MarkdownText(
-                                    maxLines = Int.MAX_VALUE,
-                                    syntaxHighlightColor = Color.Black.copy(0.18f),
-                                    style = customStyle,
-                                    markdown = result.description,
-                                    isTextSelectable = true,
-                                )
-                                
-                                profileScreenState.article?.let {article->
-                                    Spacer(modifier = Modifier.size(25.dp))
-                                    Button(
-                                        onClick = {
-                                                val bundle = Bundle()
-                                                bundle.putParcelable("article", article)
-                                                navController.navigate(
-                                                    route = Screen.Article.route,
-                                                    args = bundle
-                                                )
-                                        },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(50.dp),
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = harmonyHavenGreen
-                                        ),
-                                        shape = RoundedCornerShape(12.dp)
-                                    ) {
-                                        Text(
-                                            text = "Detaylı Açıklamaya Git",
-                                            color = Color.White,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.Medium,
-                                            fontFamily = ptSansFont
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        // Famous People Section
-                        Text(
-                            text = "Seninle Aynı Enneagram Tipindeki Ünlüler",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = harmonyHavenDarkGreenColor,
-                            fontFamily = ptSansFont,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-
-                        LazyRow(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            items(result.famousPeople) { person ->
-                                FamousPersonCard(person = person)
-                            }
-                        }
-                        
-                        // See All Button
-                        Button(
-                            onClick = {
-                                // Create a bundle with the famous people list
-                                val bundle = Bundle()
-                                // Convert the list to ArrayList
-                                val famousPeopleArrayList = ArrayList(result.famousPeople)
-                                bundle.putParcelableArrayList("famousPeople", famousPeopleArrayList)
-                                navController.navigate(
-                                    route = Screen.FamousPeopleScreen.route,
-                                    args = bundle
-                                )
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White,
-                                contentColor = harmonyHavenGreen
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            elevation = ButtonDefaults.buttonElevation(
-                                defaultElevation = 0.dp
-                            ),
-                            border = BorderStroke(1.dp, harmonyHavenGreen.copy(alpha = 0.3f))
-                        ) {
-                            Text(
-                                text = "Tümünü Görüntüle",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium,
-                                fontFamily = ptSansFont
-                            )
-                            
-                            Spacer(modifier = Modifier.width(8.dp))
-                            
-                            Icon(
-                                painter = painterResource(id = R.drawable.arrow_back),
-                                contentDescription = "Tümünü Görüntüle",
-                                modifier = Modifier
-                                    .size(18.dp)
-                                    .rotate(180f)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(32.dp))
-
-                        // All Type Scores
-                        Text(
-                            text = "Tüm Tip Skorların",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = harmonyHavenDarkGreenColor,
-                            fontFamily = ptSansFont,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                            ) {
-                                result.result.typeScores.forEach { score ->
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 8.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Box(
+                                    MarkdownText(
+                                        maxLines = Int.MAX_VALUE,
+                                        syntaxHighlightColor = Color.Black.copy(0.18f),
+                                        style = customStyle,
+                                        markdown = result.description,
+                                        isTextSelectable = true,
+                                    )
+                                    
+                                    profileScreenState.article?.let {article->
+                                        Spacer(modifier = Modifier.size(25.dp))
+                                        Button(
+                                            onClick = {
+                                                    val bundle = Bundle()
+                                                    bundle.putParcelable("article", article)
+                                                    navController.navigate(
+                                                        route = Screen.Article.route,
+                                                        args = bundle
+                                                    )
+                                            },
                                             modifier = Modifier
-                                                .size(32.dp)
-                                                .clip(CircleShape)
-                                                .background(harmonyHavenGreen.copy(alpha = 0.1f)),
-                                            contentAlignment = Alignment.Center
+                                                .fillMaxWidth()
+                                                .height(50.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = harmonyHavenGreen
+                                            ),
+                                            shape = RoundedCornerShape(12.dp)
                                         ) {
                                             Text(
-                                                text = "${score.type}",
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = harmonyHavenGreen,
+                                                text = "Detaylı Açıklamaya Git",
+                                                color = Color.White,
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.Medium,
                                                 fontFamily = ptSansFont
                                             )
                                         }
-                                        
-                                        Spacer(modifier = Modifier.width(12.dp))
-                                        
-                                        Box(
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .height(12.dp)
-                                                .clip(RoundedCornerShape(6.dp))
-                                                .background(Color(0xFFEEEEEE))
-                                        ) {
-                                            // Calculate percentage (assuming maximum score is 12 for enneagram)
-                                            val percentage = (score.score.toFloat() / 12).coerceIn(0f, 1f)
-
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxHeight()
-                                                    .fillMaxWidth(percentage)
-                                                    .clip(RoundedCornerShape(6.dp))
-                                                    .background(harmonyHavenGreen)
-                                            )
-                                        }
-
-                                        Text(
-                                            text = "${score.score}",
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = harmonyHavenDarkGreenColor,
-                                            fontFamily = ptSansFont,
-                                            modifier = Modifier.padding(start = 16.dp)
-                                        )
                                     }
                                 }
                             }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            // Famous People Section
+                            Text(
+                                text = "Seninle Aynı Enneagram Tipindeki Ünlüler",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = harmonyHavenDarkGreenColor,
+                                fontFamily = ptSansFont,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+
+                            LazyRow(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                items(result.famousPeople) { person ->
+                                    FamousPersonCard(person = person)
+                                }
+                            }
+                            
+                            // See All Button
+                            Button(
+                                onClick = {
+                                    // Create a bundle with the famous people list
+                                    val bundle = Bundle()
+                                    // Convert the list to ArrayList
+                                    val famousPeopleArrayList = ArrayList(result.famousPeople)
+                                    bundle.putParcelableArrayList("famousPeople", famousPeopleArrayList)
+                                    navController.navigate(
+                                        route = Screen.FamousPeopleScreen.route,
+                                        args = bundle
+                                    )
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.White,
+                                    contentColor = harmonyHavenGreen
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                elevation = ButtonDefaults.buttonElevation(
+                                    defaultElevation = 0.dp
+                                ),
+                                border = BorderStroke(1.dp, harmonyHavenGreen.copy(alpha = 0.3f))
+                            ) {
+                                Text(
+                                    text = "Tümünü Görüntüle",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    fontFamily = ptSansFont
+                                )
+                                
+                                Spacer(modifier = Modifier.width(8.dp))
+                                
+                                Icon(
+                                    painter = painterResource(id = R.drawable.arrow_back),
+                                    contentDescription = "Tümünü Görüntüle",
+                                    modifier = Modifier
+                                        .size(18.dp)
+                                        .rotate(180f)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(32.dp))
+
+                            // All Type Scores
+                            Text(
+                                text = "Tüm Tip Skorların",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = harmonyHavenDarkGreenColor,
+                                fontFamily = ptSansFont,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.White),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp)
+                                ) {
+                                    // Function to get type name based on type number
+                                    fun getTypeName(typeNumber: Int): String {
+                                        return when (typeNumber) {
+                                            1 -> "Kusursuzluğu Arayan / Reformcu"
+                                            2 -> "Seven / Sevilen / Yardım Sever"
+                                            3 -> "Başaran / İddialı"
+                                            4 -> "Bireyci / Özgün / Romantik"
+                                            5 -> "Araştırmacı / Gözlemci"
+                                            6 -> "Sadık / Sorgulayıcı"
+                                            7 -> "Maceracı / İyimser / Coşkulu"
+                                            8 -> "Meydan Okuyan / Lider"
+                                            9 -> "Barışçı / Arabulucu"
+                                            else -> ""
+                                        }
+                                    }
+                                    
+                                    result.result.typeScores.forEach { score ->
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 8.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(32.dp)
+                                                    .clip(CircleShape)
+                                                    .background(harmonyHavenGreen.copy(alpha = 0.1f)),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(
+                                                    text = "${score.type}",
+                                                    fontSize = 14.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = harmonyHavenGreen,
+                                                    fontFamily = ptSansFont
+                                                )
+                                            }
+                                            
+                                            Spacer(modifier = Modifier.width(12.dp))
+                                            
+                                            // Type name
+                                            Column(
+                                                modifier = Modifier.weight(1f)
+                                            ) {
+                                                Text(
+                                                    text = getTypeName(score.type),
+                                                    fontSize = 14.sp,
+                                                    color = Color.DarkGray,
+                                                    fontFamily = ptSansFont,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                                
+                                                Spacer(modifier = Modifier.height(4.dp))
+                                                
+                                                // Progress bar
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .height(12.dp)
+                                                        .clip(RoundedCornerShape(6.dp))
+                                                        .background(Color(0xFFEEEEEE))
+                                                ) {
+                                                    // Calculate percentage (assuming maximum score is 12 for enneagram)
+                                                    val percentage = (score.score.toFloat() / 12).coerceIn(0f, 1f)
+
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .fillMaxHeight()
+                                                            .fillMaxWidth(percentage)
+                                                            .clip(RoundedCornerShape(6.dp))
+                                                            .background(harmonyHavenGreen)
+                                                    )
+                                                }
+                                            }
+                                            
+                                            Text(
+                                                text = "${score.score}",
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = harmonyHavenDarkGreenColor,
+                                                fontFamily = ptSansFont,
+                                                modifier = Modifier.padding(start = 16.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(40.dp))
                         }
 
-                        Spacer(modifier = Modifier.height(40.dp))
+                        // Retake Test Button
+                        Button(
+                            onClick = { showBottomSheet = true },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = harmonyHavenGreen
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "Testi Tekrar Al",
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = ptSansFont
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
-
-                    // Retake Test Button
-                    Button(
-                        onClick = { showBottomSheet = true },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = harmonyHavenGreen
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = "Testi Tekrar Al",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFamily = ptSansFont
-                        )
-                    }
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }else{
                 TestIntroScreen(navController)
@@ -1010,16 +1053,16 @@ fun TestModeSelectionItem(
 fun FamousPersonCard(person: EnneagramFamousPeople) {
     Card(
         modifier = Modifier
-            .width(160.dp)
-            .height(200.dp),
+            .width(120.dp)
+            .height(160.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(12.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
+                .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -1031,16 +1074,16 @@ fun FamousPersonCard(person: EnneagramFamousPeople) {
                 ),
                 contentDescription = person.name,
                 modifier = Modifier
-                    .size(90.dp)
+                    .size(70.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
                 text = person.name,
-                fontSize = 14.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = harmonyHavenDarkGreenColor,
                 fontFamily = ptSansFont,
@@ -1049,17 +1092,193 @@ fun FamousPersonCard(person: EnneagramFamousPeople) {
                 overflow = TextOverflow.Ellipsis
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(2.dp))
 
             Text(
                 text = person.desc,
-                fontSize = 12.sp,
+                fontSize = 10.sp,
                 color = Color.DarkGray,
                 fontFamily = ptSansFont,
                 textAlign = TextAlign.Center,
-                maxLines = 3,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
+        }
+    }
+}
+
+@Composable
+fun EnneagramIntroCard(
+    userName: String,
+    dominantType: Int,
+    wingType: Int,
+    wingTypePoint: Int = 0,
+    profileImageUrl: String
+) {
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+    val introCardHeight = screenHeight / 4f  // Smaller height
+    
+    // Check if we should show multitype
+    val isMultitype = wingTypePoint != 0 && wingTypePoint != wingType
+    
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(introCardHeight)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(16.dp))  // Rounded corners for softer appearance
+    ) {
+        // Background with gradient
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            harmonyHavenDarkGreenColor.copy(alpha = 0.9f),  // Softer color
+                            harmonyHavenGreen.copy(alpha = 0.85f)  // Softer color
+                        )
+                    )
+                )
+        )
+        
+        // Content
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Left side - Profile Image
+            if (profileImageUrl.isNotEmpty()) {
+                AsyncImage(
+                    model = profileImageUrl,
+                    contentDescription = "Enneagram Tipi",
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+                
+                Spacer(modifier = Modifier.width(16.dp))
+            }
+            
+            // Right side - Type information (removed greeting)
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.Center
+            ) {
+                // Type boxes in a row
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Main Type Box
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Ana Tip",
+                            fontSize = 12.sp,
+                            color = Color.White.copy(alpha = 0.9f),
+                            fontFamily = ptSansFont,
+                            fontWeight = FontWeight.Medium
+                        )
+                        
+                        Spacer(modifier = Modifier.height(4.dp))
+                        
+                        Box(
+                            modifier = Modifier
+                                .size(50.dp)
+                                .background(
+                                    color = Color.White.copy(alpha = 0.2f),
+                                    shape = RoundedCornerShape(8.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "$dominantType",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontFamily = ptSansFont
+                            )
+                        }
+                    }
+                    
+                    // Wing Type Box (only if wingType > 0)
+                    if (wingType > 0) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Kanat",
+                                fontSize = 12.sp,
+                                color = Color.White.copy(alpha = 0.9f),
+                                fontFamily = ptSansFont,
+                                fontWeight = FontWeight.Medium
+                            )
+                            
+                            Spacer(modifier = Modifier.height(4.dp))
+                            
+                            Box(
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .background(
+                                        color = Color.White.copy(alpha = 0.2f),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "$wingType",
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    fontFamily = ptSansFont
+                                )
+                            }
+                        }
+                    }
+                }
+                
+                // If multitype exists, show it below
+                if (isMultitype) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Multitype: ",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.White.copy(alpha = 0.9f),
+                            fontFamily = ptSansFont
+                        )
+                        
+                        Box(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .background(
+                                    color = Color.White.copy(alpha = 0.2f),
+                                    shape = RoundedCornerShape(4.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "$wingTypePoint",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontFamily = ptSansFont
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
