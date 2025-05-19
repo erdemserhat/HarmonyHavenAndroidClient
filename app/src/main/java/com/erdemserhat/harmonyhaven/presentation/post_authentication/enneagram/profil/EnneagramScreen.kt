@@ -1054,8 +1054,8 @@ fun TestModeSelectionItem(
 fun FamousPersonCard(person: EnneagramFamousPeople) {
     Card(
         modifier = Modifier
-            .width(120.dp)
-            .height(160.dp),
+            .width(150.dp)
+            .height(190.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(12.dp)
@@ -1063,7 +1063,7 @@ fun FamousPersonCard(person: EnneagramFamousPeople) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp),
+                .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -1075,16 +1075,16 @@ fun FamousPersonCard(person: EnneagramFamousPeople) {
                 ),
                 contentDescription = person.name,
                 modifier = Modifier
-                    .size(70.dp)
+                    .size(85.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = person.name,
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = harmonyHavenDarkGreenColor,
                 fontFamily = ptSansFont,
@@ -1093,11 +1093,11 @@ fun FamousPersonCard(person: EnneagramFamousPeople) {
                 overflow = TextOverflow.Ellipsis
             )
 
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = person.desc,
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 color = Color.DarkGray,
                 fontFamily = ptSansFont,
                 textAlign = TextAlign.Center,
