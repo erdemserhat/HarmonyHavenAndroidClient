@@ -1120,8 +1120,8 @@ fun EnneagramIntroCard(
     val screenHeight = configuration.screenHeightDp.dp
     val introCardHeight = screenHeight / 3.5f  // Taller to fit the tab layout
     
-    // Check if we should show multitype
-    val isMultitype = wingTypePoint != 0 && wingTypePoint != wingType
+    // Check if Alt Tip is the same as Kanat Mizaç
+    val showAltTip = wingType != wingTypePoint && wingTypePoint > 0
     
     Card(
         modifier = Modifier
@@ -1174,9 +1174,9 @@ fun EnneagramIntroCard(
                 // Ana Mizaç Tab (active)
                 Box(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(if (showAltTip) 1f else 1.5f)
                         .fillMaxHeight()
-                        .background(harmonyHavenDarkGreenColor),
+                        .background(harmonyHavenGreen),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -1202,7 +1202,7 @@ fun EnneagramIntroCard(
                 // Kanat Mizaç Tab
                 Box(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(if (showAltTip) 1f else 1.5f)
                         .fillMaxHeight()
                         .background(Color.White),
                     contentAlignment = Alignment.Center
@@ -1227,54 +1227,38 @@ fun EnneagramIntroCard(
                     }
                 }
                 
-                // Alt Tip Tab
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .background(Color.White),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                // Alt Tip Tab - Only show if different from Kanat Mizaç
+                if (showAltTip) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .background(Color.White),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "Alt Tip:",
-                            fontSize = 16.sp,
-                            color = Color.Gray,
-                            fontFamily = ptSansFont
-                        )
-                        
-                        // For Alt Tip, use a descriptive text based on pointBasedWingType
-                        Text(
-                            text = getSubtypeName(wingTypePoint),
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = harmonyHavenDarkGreenColor,
-                            fontFamily = ptSansFont,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(horizontal = 4.dp)
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Alt Tip:",
+                                fontSize = 16.sp,
+                                color = Color.Gray,
+                                fontFamily = ptSansFont
+                            )
+                            
+                            // Display the Alt Tip as a number, like the other tabs
+                            Text(
+                                text = "$wingTypePoint",
+                                fontSize = 48.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = harmonyHavenDarkGreenColor,
+                                fontFamily = ptSansFont
+                            )
+                        }
                     }
                 }
             }
         }
-    }
-}
-
-// Function to get the subtype name based on the point based wing type
-fun getSubtypeName(pointBasedWingType: Int): String {
-    return when(pointBasedWingType) {
-        1 -> "Bireysel"
-        2 -> "Sosyal"
-        3 -> "Kendini Koruma"
-        4 -> "Cinsel"
-        5 -> "Akademik"
-        6 -> "Güvenlik"
-        7 -> "Eğlence"
-        8 -> "Güç"
-        9 -> "Uyum"
-        else -> "Sosyal" // Default to "Sosyal" if no value is specified
     }
 }
 
