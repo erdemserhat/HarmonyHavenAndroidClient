@@ -33,10 +33,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
-import androidx.compose.material.Tab
-import androidx.compose.material.TabRow
-import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -74,21 +72,14 @@ import com.erdemserhat.harmonyhaven.dto.responses.NotificationDto
 import com.erdemserhat.harmonyhaven.presentation.navigation.MainScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.scheduler_screen.NotificationSchedulerScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.scheduler_screen.NotificationSchedulerViewModel
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenButton
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.components.HarmonyHavenProgressIndicator
 import com.erdemserhat.harmonyhaven.ui.theme.customFontInter
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.pagerTabIndicatorOffset
-import com.google.accompanist.pager.rememberPagerState
+import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 
 fun convertTimestampToTurkishDate(timestamp: Long): String {
     val date = java.util.Date(timestamp * 1000) // Timestamp'i milisaniyeye çeviriyoruz
@@ -96,13 +87,12 @@ fun convertTimestampToTurkishDate(timestamp: Long): String {
     return sdf.format(date)
 }
 
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun NotificationScreen(
     navController: NavController,
-    viewModel: NotificationViewModel = hiltViewModel(),
-    schedulerViewModel: NotificationSchedulerViewModel = hiltViewModel()
+    viewModel: NotificationViewModel = hiltViewModel()
 ) {
 
     val notifications by viewModel.notifications.collectAsState()
@@ -119,10 +109,6 @@ fun NotificationScreen(
     val isLoading = viewModel.isLoading.collectAsState()
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
-
-    // Pager setup for swipeable interface
-    val pagerState = rememberPagerState(initialPage = 0)
-    val tabTitles = listOf("Bildirimler", "Zamanlayıcı")
 
     LaunchedEffect(Unit) {
         viewModel.loadNotifications()
@@ -141,9 +127,10 @@ fun NotificationScreen(
         TopAppBar(
             title = { 
                 Text(
-                    text = "Bildirimler ve Planlayıcılar",
+                    text = "Bildirimler",
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 20.sp,
+                    fontFamily = ptSansFont,
                     color = Color.Black
                 )
             },
@@ -160,84 +147,35 @@ fun NotificationScreen(
                 containerColor = Color.White
             )
         )
-        
-        // Tab Row with Indicator
-        TabRow(
-            selectedTabIndex = pagerState.currentPage,
-            backgroundColor = Color.White,
-            contentColor = harmonyHavenGreen,
-            indicator = { tabPositions ->
-                TabRowDefaults.Indicator(
-                    modifier = Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
-                    height = 3.dp,
-                    color = harmonyHavenGreen
+
+        // Notifications Content
+        NotificationsContent(
+            navController = navController,
+            notifications = notifications,
+            isLoading = isLoading.value,
+            permissionGranted = permissionGranted,
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                isRefreshing = true
+                coroutineScope.launch {
+                    viewModel.refreshNotification {
+                        isRefreshing = false
+                    }
+                }
+            },
+            onRequestPermission = {
+                notificationPermissionLauncher.launch(
+                    Manifest.permission.POST_NOTIFICATIONS
                 )
-            }
-        ) {
-            tabTitles.forEachIndexed { index, title ->
-                Tab(
-                    selected = pagerState.currentPage == index,
-                    onClick = {
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(index)
-                        }
-                    },
-                    text = {
-                        Text(
-                            text = title,
-                            color = if (pagerState.currentPage == index) Color.Black else Color.Black.copy(
-                                alpha = 0.7f
-                            ),
-                            fontWeight = if (pagerState.currentPage == index) FontWeight.Bold else FontWeight.Normal
-                        )
-                    },
-                    modifier = Modifier.padding(vertical = 12.dp)
-                )
-            }
-        }
-
-        // Horizontal Pager
-        HorizontalPager(
-            count = 2,
-            state = pagerState,
-            modifier = Modifier.fillMaxSize().background(Color.White)
-        ) { page ->
-            when (page) {
-                0 -> NotificationsContent(
-                    navController = navController,
-                    notifications = notifications,
-                    isLoading = isLoading.value,
-                    permissionGranted = permissionGranted,
-                    isRefreshing = isRefreshing,
-                    onRefresh = {
-                        isRefreshing = true
-                        coroutineScope.launch {
-                            viewModel.refreshNotification {
-                                isRefreshing = false
-                            }
-                        }
-                    },
-                    onRequestPermission = {
-                        notificationPermissionLauncher.launch(
-                            Manifest.permission.POST_NOTIFICATIONS
-                        )
-                    },
-                    loadMoreNotifications = {
-                        if (!isLoading.value && viewModel.hasMoreData) {
-                            viewModel.loadNotifications()
-                        }
-                    },
-                    viewModel = viewModel
-                )
-
-                1 -> NotificationSchedulerScreen(schedulerViewModel)
-            }
-        }
-
-
-
+            },
+            loadMoreNotifications = {
+                if (!isLoading.value && viewModel.hasMoreData) {
+                    viewModel.loadNotifications()
+                }
+            },
+            viewModel = viewModel
+        )
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

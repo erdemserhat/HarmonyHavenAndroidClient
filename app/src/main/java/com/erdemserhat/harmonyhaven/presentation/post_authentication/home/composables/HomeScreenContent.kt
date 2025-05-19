@@ -332,8 +332,8 @@ fun HomeScreenContentNew(
                         iconResId = null,
                         iconPainter = painterResource(id = R.drawable.ic_journal), // Reusing journal icon for now
                         onCardClick = {
-                            // Handle reminder card click
-                            // navController.navigate(route = "reminders")
+                            // Navigate to reminder/scheduler screen
+                            navController.navigate(route = Screen.NotificationScheduler.route)
                         }
                     )
                 }
