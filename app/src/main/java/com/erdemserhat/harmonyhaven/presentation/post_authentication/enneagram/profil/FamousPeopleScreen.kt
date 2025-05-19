@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +32,14 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,6 +62,7 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FamousPeopleScreen(navController: NavController, famousPeople: List<EnneagramFamousPeople>) {
     BackHandler {
@@ -65,8 +74,13 @@ fun FamousPeopleScreen(navController: NavController, famousPeople: List<Enneagra
     }
     
     val scaffoldState = rememberScaffoldState()
-
-
+    
+    // State for tracking selected person for popup
+    var selectedPerson by remember { mutableStateOf<EnneagramFamousPeople?>(null) }
+    
+    // Bottom sheet state
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    
     Scaffold(
         scaffoldState = scaffoldState,
         backgroundColor = Color(0xFFF8F8F8),
@@ -74,8 +88,7 @@ fun FamousPeopleScreen(navController: NavController, famousPeople: List<Enneagra
             Column {
                 // Add a spacer for the status bar height
                 Spacer(modifier = Modifier.fillMaxWidth().height(statusBarHeight).background(Color.White))
-
-
+ 
                 // App Bar
                 TopAppBar(
                     backgroundColor = Color.White,
@@ -112,18 +125,37 @@ fun FamousPeopleScreen(navController: NavController, famousPeople: List<Enneagra
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(famousPeople) { person ->
-                FamousPersonGridCard(person = person)
+                FamousPersonGridCard(
+                    person = person, 
+                    onClick = { selectedPerson = person }
+                )
             }
+        }
+    }
+    
+    // Show bottom sheet when a person is selected
+    if (selectedPerson != null) {
+        ModalBottomSheet(
+            onDismissRequest = { selectedPerson = null },
+            sheetState = bottomSheetState,
+            containerColor = Color.White,
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+        ) {
+            PersonDetailContent(person = selectedPerson!!)
         }
     }
 }
 
 @Composable
-fun FamousPersonGridCard(person: EnneagramFamousPeople) {
+fun FamousPersonGridCard(
+    person: EnneagramFamousPeople,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(220.dp),
+            .height(220.dp)
+            .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(16.dp)
@@ -176,5 +208,55 @@ fun FamousPersonGridCard(person: EnneagramFamousPeople) {
                 overflow = TextOverflow.Ellipsis
             )
         }
+    }
+}
+
+@Composable
+fun PersonDetailContent(person: EnneagramFamousPeople) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Profile image
+        Image(
+            painter = rememberAsyncImagePainter(
+                ImageRequest.Builder(LocalContext.current)
+                    .data(data = person.imageUrl)
+                    .build()
+            ),
+            contentDescription = person.name,
+            modifier = Modifier
+                .size(140.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
+        
+        Spacer(modifier = Modifier.height(20.dp))
+        
+        // Name
+        Text(
+            text = person.name,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = harmonyHavenDarkGreenColor,
+            fontFamily = ptSansFont,
+            textAlign = TextAlign.Center
+        )
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        // Description (full text)
+        Text(
+            text = person.desc,
+            fontSize = 16.sp,
+            color = Color.DarkGray,
+            fontFamily = ptSansFont,
+            textAlign = TextAlign.Center,
+            lineHeight = 24.sp
+        )
+        
+        Spacer(modifier = Modifier.height(40.dp))
     }
 } 
