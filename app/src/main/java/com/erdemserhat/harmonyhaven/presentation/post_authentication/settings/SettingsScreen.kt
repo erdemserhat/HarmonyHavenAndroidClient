@@ -1,80 +1,543 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.settings
 
+import android.app.Activity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.GifDecoder
+import coil.request.ImageRequest
+import coil.size.Scale
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.account_information.AccountInformationBottomSection
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.account_information.AccountInformationRowElement
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.account_information.AccountInformationViewModel
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.account_information.NameUpdatePopup
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.account_information.PasswordUpdatePopup
 import com.erdemserhat.harmonyhaven.ui.theme.DefaultAppFont
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, DelicateCoroutinesApi::class)
 @Composable
-fun SettingsScreen(navController: NavController) {
-  Column {
-      Scaffold(
-          topBar = {
-              TopAppBar(
-                  elevation = 0.dp,
-                  backgroundColor = Color.White,
-                  contentColor = Color.Transparent,
-                  title = { Text(text = "Ayarlar") },
-                  navigationIcon = {
-                      androidx.compose.material.IconButton(onClick = { /* Geri gitme işlemi */ }) {
-                          Icon(
-                              painter = painterResource(id = R.drawable.return_back_icon),
-                              contentDescription = "Geri",
-                              modifier = Modifier
-                                  .clip(RoundedCornerShape(50.dp))
-                                  .size(32.dp)
-                                  .clickable {
-                                      navController.popBackStack()
-                                  }
-                          )
-                      }
-                  }
-              )
-          }
+fun SettingsScreen(
+    navController: NavController,
+    viewModel: AccountInformationViewModel = hiltViewModel()
+) {
+    val scrollState = rememberScrollState()
+    var showLogoutDialog by remember { mutableStateOf(false) }
+    var showEmailInfoDialog by remember { mutableStateOf(false) }
+    
+    // Name and Password Update States
+    var shouldShowUpdateNamePopUp by rememberSaveable { mutableStateOf(false) }
+    var shouldShowUpdatePasswordPopUp by rememberSaveable { mutableStateOf(false) }
+    var shouldShowSuccessAnimation by rememberSaveable { mutableStateOf(false) }
+    
+    val passwordChangeResponse by viewModel.passwordChangeResponseModel
+    val nameChangeState by viewModel.nameChangeState
+    val context = LocalContext.current
+    
+    // Handle success states
+    if (passwordChangeResponse.isSuccessfullyChangedPassword) {
+        shouldShowUpdatePasswordPopUp = false
+        LaunchedEffect(passwordChangeResponse.isSuccessfullyChangedPassword) {
+            shouldShowSuccessAnimation = true
+            delay(1000)
+            shouldShowSuccessAnimation = false
+            viewModel.resetPasswordResetStates()
+        }
+    }
 
-      ){padding->
-          SettingsScreenContent(navController, modifier = Modifier.background(Color.White).padding(padding))
-      }
-  }
+    if (nameChangeState.result) {
+        shouldShowUpdateNamePopUp = false
+        LaunchedEffect(nameChangeState.result) {
+            shouldShowSuccessAnimation = true
+            delay(1000)
+            shouldShowSuccessAnimation = false
+            viewModel.resetNameState()
+        }
+    }
+    
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { 
+                    Text(
+                        text = "Hesap Detayları",
+                        fontFamily = ptSansFont,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF2E3C59)
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        androidx.compose.material3.Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Geri",
+                            tint = Color(0xFF2E3C59)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White
+                )
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(paddingValues)
+                .verticalScroll(scrollState)
+        ) {
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            // Personal Information Section
+            SectionTitle("Kişisel Bilgiler")
+            
+            // Name
+            SettingsItem(
+                icon = Icons.Default.Person,
+                title = "Ad: ${viewModel.userInfo.value.name}",
+                onClick = { shouldShowUpdateNamePopUp = true }
+            )
+            
+            // Email
+            SettingsItem(
+                icon = Icons.Default.Email,
+                title = "E-Posta: ${viewModel.userInfo.value.email}",
+                onClick = { showEmailInfoDialog = true }
+            )
+            
+            // Password
+            SettingsItem(
+                icon = Icons.Default.Lock,
+                title = "Şifre Değiştir",
+                onClick = { shouldShowUpdatePasswordPopUp = true }
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Notifications Section
+            SectionTitle("Bildirimler")
+            
+            SettingsItem(
+                icon = Icons.Default.Notifications,
+                title = "Bildirim Ayarları",
+                onClick = { 
+                    navController.navigate(Screen.NotificationScheduler.route)
+                }
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Support Section
+            SectionTitle("Destek")
+            
+            SettingsItem(
+                icon = Icons.Default.Star,
+                title = "Yardım ve Destek",
+                onClick = { /* Navigate to help */ }
+            )
+            
+            SettingsItem(
+                icon = Icons.Default.Share,
+                title = "Geri Bildirim Gönder",
+                onClick = { /* Navigate to feedback */ }
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Logout Section
+            SettingsItem(
+                icon = Icons.Default.ExitToApp,
+                title = "Çıkış Yap",
+                titleColor = Color.Red,
+                iconTint = Color.Red,
+                onClick = { showLogoutDialog = true }
+            )
+            
+            Spacer(modifier = Modifier.height(80.dp)) // Extra space for bottom nav
+        }
+    }
+    
+    // Email Info Dialog
+    if (showEmailInfoDialog) {
+        AlertDialog(
+            onDismissRequest = { showEmailInfoDialog = false },
+            title = { 
+                Text(
+                    text = "E-Posta Değişikliği",
+                    fontFamily = ptSansFont,
+                    fontWeight = FontWeight.Bold
+                ) 
+            },
+            text = { 
+                Text(
+                    text = "Güvenlik nedenlerinden dolayı e-posta adresinizi doğrudan güncellemiyoruz. Talebinizi bize e-posta göndererek iletebilirsiniz.",
+                    fontFamily = ptSansFont
+                ) 
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showEmailInfoDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = harmonyHavenGreen
+                    )
+                ) {
+                    Text(
+                        text = "Anladım",
+                        color = Color.White,
+                        fontFamily = ptSansFont,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+    
+    // Logout Dialog
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { 
+                Text(
+                    text = "Çıkış Yap",
+                    fontFamily = ptSansFont,
+                    fontWeight = FontWeight.Bold
+                ) 
+            },
+            text = { 
+                Text(
+                    text = "Çıkış yapmak istediğine emin misin?",
+                    fontFamily = ptSansFont
+                ) 
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showLogoutDialog = false
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(0) // Clear the back stack
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = harmonyHavenGreen
+                    )
+                ) {
+                    Text(
+                        text = "Çıkış Yap",
+                        color = Color.White,
+                        fontFamily = ptSansFont,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showLogoutDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.LightGray
+                    )
+                ) {
+                    Text(
+                        text = "Vazgeç",
+                        color = Color.White,
+                        fontFamily = ptSansFont
+                    )
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+    
+    // Name Update Popup
+    if (shouldShowUpdateNamePopUp) {
+        Box(
+            modifier = Modifier
+                .imePadding()
+                .navigationBarsPadding()
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f))
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        shouldShowUpdateNamePopUp = false
+                    })
+                },
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            NameUpdatePopup(
+                isError = !nameChangeState.isNameAppropriate,
+                onDismissRequest = {
+                    shouldShowUpdateNamePopUp = false
+                },
+                onPositiveButtonClicked = { newName ->
+                    viewModel.changeName(newName)
+                },
+                currentName = viewModel.userInfo.value.name,
+                backgroundColor = Color.White,
+                buttonColor = harmonyHavenGreen,
+                buttonTextColor = Color.White
+            )
+        }
+    }
+    
+    // Password Update Popup
+    if (shouldShowUpdatePasswordPopUp) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding()
+                .navigationBarsPadding()
+                .background(Color.Black.copy(alpha = 0.5f))
+                .pointerInput(Unit) {
+                    detectTapGestures(onDoubleTap = {
+                        shouldShowUpdatePasswordPopUp = false
+                        viewModel.resetPasswordResetStates()
+                    })
+                },
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            PasswordUpdatePopup(
+                onDismissRequest = {
+                    shouldShowUpdatePasswordPopUp = false
+                    viewModel.resetPasswordResetStates()
+                },
+                onSaveButtonClicked = { newPassword, confirmNewPassword, currentPassword ->
+                    viewModel.changePassword(newPassword, currentPassword, confirmNewPassword)
+                    GlobalScope.launch(Dispatchers.IO) {
+                        delay(3000)
+                        withContext(Dispatchers.Main) {
+                            viewModel.resetPasswordResetStates()
+                        }
+                    }
+                },
+                isNewPasswordAppropriate = viewModel.passwordChangeResponseModel.value.isNewPasswordAppropriate,
+                isCurrentPasswordCorrect = viewModel.passwordChangeResponseModel.value.isCurrentPasswordCorrect,
+                isNewPasswordsMatch = viewModel.passwordChangeResponseModel.value.isNewPasswordsMatch,
+                isLoading = passwordChangeResponse.isLoading,
+                isCurrentPasswordShort = passwordChangeResponse.isCurrentPasswordShort,
+                backgroundColor = Color.White,
+                buttonColor = harmonyHavenGreen,
+                buttonTextColor = Color.White
+            )
+        }
+    }
+    
+    // Success Animation
+    if (shouldShowSuccessAnimation) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            LocalGifImage(resId = R.raw.successfullygif)
+            LaunchedEffect(Unit) {
+                delay(1000)
+                shouldShowSuccessAnimation = false
+            }
+        }
+    }
+    
+    // Loading Animation
+    if (passwordChangeResponse.isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            LocalGifImage(resId = R.raw.loading)
+        }
+    }
+}
+
+@Composable
+fun RowDividingLine(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth(0.9f)
+            .border(1.dp, Color(0xFFEDEDED))
+            .height(1.dp)
+    )
+}
+
+@Composable
+fun LocalGifImage(resId: Int, modifier: Modifier = Modifier) {
+    val painter = rememberAsyncImagePainter(
+        ImageRequest.Builder(LocalContext.current)
+            .data(resId)
+            .decoderFactory(GifDecoder.Factory())
+            .scale(Scale.FIT)
+            .build()
+    )
+
+    Image(
+        painter = painter,
+        contentDescription = null,
+        modifier = modifier,
+        contentScale = ContentScale.Crop,
+    )
+}
+
+@Composable
+fun SectionTitle(title: String) {
+    Text(
+        text = title,
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp, top = 8.dp),
+        fontFamily = ptSansFont,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.Black
+    )
+}
+
+@Composable
+fun SettingsItem(
+    icon: ImageVector,
+    title: String,
+    titleColor: Color = Color.Black,
+    iconTint: Color = Color.DarkGray,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Circular icon background
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFF5F5F5)),
+            contentAlignment = Alignment.Center
+        ) {
+            androidx.compose.material3.Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = iconTint,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+        
+        Spacer(modifier = Modifier.width(16.dp))
+        
+        Text(
+            text = title,
+            fontFamily = ptSansFont,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = titleColor,
+            modifier = Modifier.weight(1f)
+        )
+        
+        androidx.compose.material3.Icon(
+            imageVector = Icons.Default.ArrowForward,
+            contentDescription = null,
+            tint = Color.Gray,
+            modifier = Modifier.size(16.dp)
+        )
+    }
+    
+    // Divider
+    Divider(
+        modifier = Modifier.padding(start = 72.dp, end = 16.dp),
+        color = Color.LightGray.copy(alpha = 0.5f)
+    )
+}
+
+@Composable
+private fun IconButton(onClick: () -> Unit, content: @Composable () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(48.dp)
+            .clip(CircleShape)
+            .clickable(onClick = onClick)
+            .padding(12.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        content()
+    }
 }
 
 @Preview(showBackground = true)
@@ -265,7 +728,7 @@ fun SettingsButton(
             )
             Text(
                 text = title,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.titleSmall,
                 color = titleColor,
                 modifier = Modifier.padding(start = 16.dp)
             )
@@ -290,7 +753,6 @@ fun AlertDialogBase(
     onDismissRequest: () -> Unit,
 ) {
     AlertDialog(
-        backgroundColor = Color.White,
         modifier = Modifier.clip(RoundedCornerShape(12.dp)),
         onDismissRequest = { onDismissRequest() },
         title = {
@@ -348,7 +810,6 @@ fun AccountInformation(
     onDismissRequest: () -> Unit,
 ) {
     AlertDialog(
-        backgroundColor = Color.White,
         modifier = Modifier.clip(RoundedCornerShape(12.dp)),
         onDismissRequest = { onDismissRequest() },
         title = {

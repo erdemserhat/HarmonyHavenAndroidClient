@@ -61,8 +61,10 @@ fun PasswordUpdatePopup(
     isNewPasswordAppropriate: Boolean = true,
     isNewPasswordsMatch: Boolean = true,
     isLoading: Boolean = false,
-    isCurrentPasswordShort:Boolean=false
-
+    isCurrentPasswordShort:Boolean=false,
+    backgroundColor: Color = Color.White,
+    buttonColor: Color = Color.Black,
+    buttonTextColor: Color = Color.White
 ) {
     Log.d("RecomposablePasswordUpdatePopUptest",isCurrentPasswordShort.toString())
     var showCurrentPasswordError by remember { mutableStateOf(false) }
@@ -162,7 +164,7 @@ fun PasswordUpdatePopup(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .background(Color.White, shape = RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp))
+            .background(backgroundColor, shape = RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp))
             .padding(16.dp)
             .focusable(true)
 
@@ -371,8 +373,8 @@ fun PasswordUpdatePopup(
                     },
                     enabled = !isLoading,
                     colors = ButtonDefaults.buttonColors(
-                        contentColor = Color.White,
-                        backgroundColor = Color.Black
+                        contentColor = buttonTextColor,
+                        backgroundColor = buttonColor
                     )
                 ) {
                     Text(text = "Kaydet")
@@ -384,8 +386,8 @@ fun PasswordUpdatePopup(
                     },
                     enabled = !isLoading,
                     colors = ButtonDefaults.buttonColors(
-                        contentColor = Color.White,
-                        backgroundColor = Color.Black
+                        contentColor = buttonTextColor,
+                        backgroundColor = buttonColor
                     )
                 ) {
                     Text(text = "Vazgeç")

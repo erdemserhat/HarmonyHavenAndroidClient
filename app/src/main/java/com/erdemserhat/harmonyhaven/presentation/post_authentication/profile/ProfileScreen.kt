@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -70,16 +71,16 @@ fun ProfileScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .padding(paddingValues)
+                .padding()
                 .verticalScroll(scrollState)
         ) {
             // Profile Header with Image
             ProfileHeader(userName = "Serhat")
             
             // User stats card
-            UserStatsCard()
+
             
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(70.dp))
             
             // Settings section
             SectionTitle(title = "Ayarlar")
@@ -87,7 +88,9 @@ fun ProfileScreen(navController: NavController) {
             SettingsItem(
                 icon = Icons.Default.AccountCircle,
                 title = "Hesap Detayları",
-                onClick = { /* Navigate to account details */ }
+                onClick = { 
+                    navController.navigate(Screen.Settings.route)
+                }
             )
             
             SettingsItem(
@@ -180,7 +183,7 @@ fun ProfileHeader(userName: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(320.dp)
     ) {
         // Background Image - using AsyncImage for remote URL loading
         AsyncImage(
@@ -227,13 +230,15 @@ fun ProfileHeader(userName: String) {
                 fontFamily = ptSansFont
             )
         }
+
+        UserStatsCard(modifier = Modifier.align(Alignment.BottomCenter).offset(y = 50.dp))
     }
 }
 
 @Composable
-fun UserStatsCard() {
+fun UserStatsCard(modifier: Modifier) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
         shape = RoundedCornerShape(16.dp),

@@ -39,7 +39,6 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.ac
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.account_information.AccountInformationRowElement
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.account_information.AccountInformationTopBar
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.account_information.AccountInformationViewModel
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.account_information.NameUpdatePopup
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.account_information.PasswordUpdatePopup
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -180,21 +179,7 @@ fun AccountInformationContent(
             contentAlignment = Alignment.BottomCenter
 
         ) {
-            NameUpdatePopup(
-                isError = !nameChangeState.isNameAppropriate,
-                onDismissRequest = {
-                    shouldShowUpdateNamePopUp = false
 
-                },
-
-                onPositiveButtonClicked = { newName ->
-                    viewModel.changeName(newName)
-
-
-                },
-                currentName = viewModel.userInfo.value.name,
-
-                )
         }
 
 

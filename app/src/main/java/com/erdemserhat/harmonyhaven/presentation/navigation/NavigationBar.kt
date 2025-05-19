@@ -353,7 +353,7 @@ fun AppMainScreen(
         },
         topBar = {
 
-            if (pagerState.currentPage !in listOf(0,1, 2)) {
+            if (pagerState.currentPage !in listOf(0,1, 2,4)) {
                 MyAppBar(
                     onExitClicked = {
                         viewModel.logout()
@@ -454,7 +454,7 @@ fun AppMainScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(if (pagerState.currentPage == 1) Color.Black else Color.White.copy(alpha = 0.95f))
-                .padding(if (pagerState.currentPage==0) PaddingValues(
+                .padding(if (pagerState.currentPage in listOf(0,4)) PaddingValues(
                     top =0.dp,
                     bottom = padding.calculateBottomPadding(),
                     start = padding.calculateStartPadding(LayoutDirection.Ltr),
