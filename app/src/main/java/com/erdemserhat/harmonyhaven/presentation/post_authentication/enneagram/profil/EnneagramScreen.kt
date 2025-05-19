@@ -620,8 +620,10 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                             LazyRow(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    .height(210.dp)
+                                    .padding(bottom = 8.dp, start = 4.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp)
                             ) {
                                 items(result.famousPeople) { person ->
                                     FamousPersonCard(person = person)
@@ -1394,16 +1396,16 @@ fun FamousPersonCard(person: EnneagramFamousPeople) {
                 ),
                 contentDescription = person.name,
                 modifier = Modifier
-                    .size(85.dp)
+                    .size(100.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
                 text = person.name,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = harmonyHavenDarkGreenColor,
                 fontFamily = ptSansFont,
@@ -1412,11 +1414,11 @@ fun FamousPersonCard(person: EnneagramFamousPeople) {
                 overflow = TextOverflow.Ellipsis
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
                 text = person.desc,
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 color = Color.DarkGray,
                 fontFamily = ptSansFont,
                 textAlign = TextAlign.Center,

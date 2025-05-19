@@ -181,6 +181,10 @@ dependencies {
     implementation ("io.noties.markwon:ext-tasklist:$markwon_version")
     implementation (libs.androidx.autofill)
     implementation ("androidx.media:media:1.6.0")
+    implementation("com.google.android.play:review:2.0.2")
+
+    // For Kotlin users, also import the Kotlin extensions library for Play In-App Review:
+    implementation("com.google.android.play:review-ktx:2.0.2")
 
 
 }

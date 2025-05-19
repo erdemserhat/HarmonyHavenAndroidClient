@@ -68,6 +68,47 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
 import coil.compose.AsyncImage
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.TextButton
+import android.app.Activity
+import androidx.compose.foundation.ExperimentalFoundationApi
+import com.google.android.play.core.review.ReviewInfo
+import com.google.android.play.core.review.ReviewManager
+import com.google.android.play.core.review.ReviewManagerFactory
+import androidx.compose.foundation.combinedClickable
+
+// Function to start Google Play In-App review flow
+private fun startInAppReview(activity: Activity) {
+    val manager = ReviewManagerFactory.create(activity)
+    val request = manager.requestReviewFlow()
+    request.addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+            // We got the ReviewInfo object
+            val reviewInfo = task.result
+            val flow = manager.launchReviewFlow(activity, reviewInfo)
+            flow.addOnCompleteListener { _ ->
+                // The flow has finished. The API does not indicate whether the user
+                // reviewed or not, or even whether the review dialog was shown.
+            }
+        } else {
+            // There was some problem, open the Play Store listing instead
+            openPlayStoreForRating(activity)
+        }
+    }
+}
+
+// Function to open Play Store for rating (fallback)
+private fun openPlayStoreForRating(context: Context) {
+    val appPackageName = "com.erdemserhat.harmonyhaven"
+    try {
+        // Try to open in Play Store app
+        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName")))
+    } catch (e: Exception) {
+        // If Play Store app is not available, open in browser
+        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")))
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,7 +116,7 @@ fun ProfileScreen(navController: NavController) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     
-    // Language dialog state
+    // State variables
     var showLanguageDialog by remember { mutableStateOf(false) }
     
     // Function to open Instagram
@@ -169,7 +210,22 @@ fun ProfileScreen(navController: NavController) {
             SettingsItem(
                 icon = Icons.Default.Star,
                 title = "Puanla",
-                onClick = { /* Open rating dialog */ }
+                onClick = { 
+                    // Önce in-app review'u deneyelim
+                    startInAppReview(context as Activity)
+                    
+                    // Not: Eğer in-app review gösterilmediyse, kullanıcı doğrudan Play Store'a gidebilir
+                    // İpucu olarak bunu Toast ile gösterebiliriz
+                    android.widget.Toast.makeText(
+                        context,
+                        "Uygulama içi değerlendirme şu anda kullanılamıyor olabilir. Uzun basarak Play Store'da değerlendirebilirsiniz.",
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                },
+                onLongClick = {
+                    // Doğrudan Play Store'a git
+                    openPlayStoreForRating(context)
+                }
             )
             
             SettingsItem(
@@ -197,7 +253,7 @@ fun ProfileScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(4.dp))
                 
                 Text(
-                    text = "Harmony Haven 2023 - All rights reserved",
+                    text = "Harmony Haven 2025 - All rights reserved",
                     fontFamily = ptSansFont,
                     fontSize = 12.sp,
                     color = Color.Gray
@@ -467,17 +523,28 @@ fun SectionTitle(title: String) {
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SettingsItem(
     icon: ImageVector,
     title: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(16.dp),
+            .padding(16.dp)
+            .then(
+                if (onLongClick != null) {
+                    Modifier.combinedClickable(
+                        onClick = { onClick() },
+                        onLongClick = { onLongClick() }
+                    )
+                } else {
+                    Modifier.clickable { onClick() }
+                }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Circular icon background
