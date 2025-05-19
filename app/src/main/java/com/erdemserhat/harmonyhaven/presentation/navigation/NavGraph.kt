@@ -124,7 +124,26 @@ fun SetupNavGraph(
             EnneagramTestScreen(navController = navController, sharedViewModel = sharedViewModelUserProfile)
         }
 
-
+        composable(
+            route = Screen.FamousPeopleScreen.route,
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) },
+        ) { backStackEntry ->
+            val bundle = backStackEntry.arguments
+            val famousPeople = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                bundle?.getParcelableArrayList("famousPeople", com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramFamousPeople::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                bundle?.getParcelableArrayList<com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramFamousPeople>("famousPeople")
+            }
+            
+            famousPeople?.let {
+                com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.FamousPeopleScreen(
+                    navController = navController,
+                    famousPeople = it
+                )
+            }
+        }
 
         composable(
             route = Screen.Home.route,

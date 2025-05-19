@@ -35,4 +35,5 @@ sealed class Screen(val route: String) {
     data object Journal : Screen("journal")
     data object JournalEditor : Screen("journalEditor")
     data object JournalDetail : Screen("journalDetail/{journalId}")
+    data object FamousPeopleScreen : Screen("famous_people_screen")
 }
