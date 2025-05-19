@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -236,6 +237,59 @@ fun HomeScreenContentNew(
                             navController.navigate(
                                 route = "musicPlayer/${music.id}"
                             )
+                        }
+                    )
+                }
+            }
+            
+            // Routines Section
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = "Rutinler",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF333333)
+            )
+            
+            Text(
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                text = "Kişiselleştirilmiş Sana Özel Alanlar",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color(0xFF666666)
+            )
+            
+            LazyRow(
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Journal Card
+                item {
+                    RoutineCard(
+                        title = "Günlük",
+                        subtitle = "Bugün neler oldu?",
+                        backgroundColor = harmonyHavenGreen,
+                        iconResId = null,
+                        iconPainter = painterResource(id = R.drawable.ic_journal),
+                        onCardClick = {
+                            // Navigate to journal screen
+                            navController.navigate(route = "journal")
+                        }
+                    )
+                }
+                
+                // Add more routine cards as needed
+                item {
+                    RoutineCard(
+                        title = "Günün Şanslı Sayısı",
+                        subtitle = "Işığı takip et",
+                        backgroundColor = Color(0xFF5271FF),
+                        iconResId = null,
+                        iconPainter = painterResource(id = R.drawable.ic_light),
+                        onCardClick = {
+                            // Handle lucky number card click
                         }
                     )
                 }
@@ -946,6 +1000,81 @@ fun ChatWithHarmoniaCard(
             
             // Chat icon with green background - similar to category badge in article cards
          
+        }
+    }
+}
+
+@Composable
+fun RoutineCard(
+    title: String,
+    subtitle: String,
+    backgroundColor: Color,
+    iconResId: Int? = null,
+    iconPainter: Painter? = null,
+    onCardClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .width(180.dp)
+            .height(220.dp)
+            .clickable { onCardClick() },
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            backgroundColor,
+                            backgroundColor.copy(alpha = 0.7f)
+                        )
+                    )
+                )
+        ) {
+
+            AsyncImage(model = "https://www.harmonyhavenapp.com/sources/journal.png",
+                modifier = Modifier.fillMaxSize(),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds
+
+
+            )
+
+
+
+
+            // Content
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+
+
+                // Bottom section with title and subtitle
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = title,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+
+                        text = subtitle,
+                        fontSize = 14.sp,
+                        color = Color.White.copy(alpha = 0.8f)
+                    )
+                }
+            }
         }
     }
 }

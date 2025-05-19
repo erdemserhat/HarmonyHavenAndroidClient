@@ -58,6 +58,8 @@ import com.erdemserhat.harmonyhaven.presentation.prev_authentication.welcome.Wel
 import kotlinx.parcelize.Parcelize
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.player.MeditationMusic
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.player.MusicPlayerScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.journal.JournalScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.journal.JournalEditorScreen
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -358,6 +360,35 @@ fun SetupNavGraph(
             MusicPlayerScreen(
                 navController = navController,
                 music = meditationMusic
+            )
+        }
+        
+        // Journal screens
+        composable(
+            route = "journal",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) },
+        ) {
+            JournalScreen(navController = navController)
+        }
+        
+        composable(
+            route = "journalEditor",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) },
+        ) {
+            JournalEditorScreen(navController = navController)
+        }
+        
+        composable(
+            route = "journalDetail/{journalId}",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) },
+        ) { backStackEntry ->
+            val journalId = backStackEntry.arguments?.getString("journalId")
+            JournalEditorScreen(
+                navController = navController,
+                journalId = journalId
             )
         }
         

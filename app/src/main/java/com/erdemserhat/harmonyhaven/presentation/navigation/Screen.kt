@@ -32,6 +32,7 @@ sealed class Screen(val route: String) {
     data object EnneagramTestScreen : Screen("enneagram_test_screen")
     data object EnneagramIntroScreen : Screen("enneagram_intro_screen")
     data object ChatWithHarmonia : Screen("chatWithHarmonia")
-
-
+    data object Journal : Screen("journal")
+    data object JournalEditor : Screen("journalEditor")
+    data object JournalDetail : Screen("journalDetail/{journalId}")
 }
