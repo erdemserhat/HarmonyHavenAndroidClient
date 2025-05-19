@@ -52,26 +52,48 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
-import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
-import coil.compose.AsyncImage
+import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
+import android.net.Uri
+import android.content.Context
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavController
+import com.erdemserhat.harmonyhaven.R
+import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
     
     // Language dialog state
     var showLanguageDialog by remember { mutableStateOf(false) }
+    
+    // Function to open Instagram
+    fun openInstagram(context: Context) {
+        val instagramUsername = "harmonyinhaven"
+        val instagramUri = Uri.parse("https://www.instagram.com/$instagramUsername")
+        
+        // Try to open in Instagram app first
+        val instagramIntent = Intent(Intent.ACTION_VIEW, Uri.parse("instagram://user?username=$instagramUsername"))
+        
+        try {
+            context.startActivity(instagramIntent)
+        } catch (e: Exception) {
+            // If Instagram app is not installed, open in browser
+            val browserIntent = Intent(Intent.ACTION_VIEW, instagramUri)
+            context.startActivity(browserIntent)
+        }
+    }
     
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -134,9 +156,9 @@ fun ProfileScreen(navController: NavController) {
             )
             
             SettingsItem(
-                icon = Icons.Default.Star,
+                icon = Icons.Default.Share,
                 title = "Bizi Takip Et",
-                onClick = { /* Open social media links */ }
+                onClick = { openInstagram(context) }
             )
             
             Spacer(modifier = Modifier.height(16.dp))
