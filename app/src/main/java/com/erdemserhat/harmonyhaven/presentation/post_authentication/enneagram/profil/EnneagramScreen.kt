@@ -83,6 +83,7 @@ import androidx.compose.foundation.lazy.items
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramFamousPeople
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.ui.graphics.ColorFilter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -168,17 +169,17 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                     val dominantType = dominantTypeScore?.type ?: 0
                     val dominantScore = dominantTypeScore?.score ?: 0
                     val wingType = wingTypeScore?.enneagramBasedWingType ?: 0
-                    val wingTypePoint = wingTypeScore?.pointBasedWingType ?: 0
+                    val pointBasedWingType = wingTypeScore?.pointBasedWingType ?: 0
                     
                     Log.d("EnneagramScreen", "Dominant Type: $dominantType, Score: $dominantScore")
-                    Log.d("EnneagramScreen", "Wing Type: $wingType, Score: $wingTypePoint")
+                    Log.d("EnneagramScreen", "Wing Type: $wingType, Score: $pointBasedWingType")
                     
-                    // Intro Card - always show the wing type even if it's 0
+                    // Intro Card - passing pointBasedWingType as the fourth parameter
                     EnneagramIntroCard(
                         userName = profileScreenState.username ?: "",
                         dominantType = dominantType,
                         wingType = wingType,
-                        wingTypePoint = wingTypePoint,
+                        wingTypePoint = pointBasedWingType,
                         profileImageUrl = detailedResult?.chartUrl?.personalityImageUrl ?: ""
                     )
                     
@@ -1117,169 +1118,163 @@ fun EnneagramIntroCard(
 ) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
-    val introCardHeight = screenHeight / 4f  // Smaller height
+    val introCardHeight = screenHeight / 3.5f  // Taller to fit the tab layout
     
     // Check if we should show multitype
     val isMultitype = wingTypePoint != 0 && wingTypePoint != wingType
     
-    Box(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(introCardHeight)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clip(RoundedCornerShape(16.dp))  // Rounded corners for softer appearance
-    ) {
-        // Background with gradient
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            harmonyHavenDarkGreenColor.copy(alpha = 0.9f),  // Softer color
-                            harmonyHavenGreen.copy(alpha = 0.85f)  // Softer color
-                        )
-                    )
-                )
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
         )
-        
-        // Content
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            // Left side - Profile Image
-            if (profileImageUrl.isNotEmpty()) {
-                AsyncImage(
-                    model = profileImageUrl,
-                    contentDescription = "Enneagram Tipi",
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-                
-                Spacer(modifier = Modifier.width(16.dp))
+            // Header with name and test type
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // Name
+                    Text(
+                        text = "$userName",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        fontFamily = ptSansFont
+                    )
+                    
+                    // Test type
+                    Text(
+                        text = "için Mizaç Testi",
+                        fontSize = 16.sp,
+                        color = Color.Gray,
+                        fontFamily = ptSansFont
+                    )
+                }
             }
             
-            // Right side - Type information (removed greeting)
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.Center
+            // Tab layout
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(110.dp)
             ) {
-                // Type boxes in a row
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                // Ana Mizaç Tab (active)
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(harmonyHavenDarkGreenColor),
+                    contentAlignment = Alignment.Center
                 ) {
-                    // Main Type Box
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Ana Tip",
-                            fontSize = 12.sp,
-                            color = Color.White.copy(alpha = 0.9f),
-                            fontFamily = ptSansFont,
-                            fontWeight = FontWeight.Medium
-                        )
-                        
-                        Spacer(modifier = Modifier.height(4.dp))
-                        
-                        Box(
-                            modifier = Modifier
-                                .size(50.dp)
-                                .background(
-                                    color = Color.White.copy(alpha = 0.2f),
-                                    shape = RoundedCornerShape(8.dp)
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "$dominantType",
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                fontFamily = ptSansFont
-                            )
-                        }
-                    }
-                    
-                    // Wing Type Box (only if wingType > 0)
-                    if (wingType > 0) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "Kanat",
-                                fontSize = 12.sp,
-                                color = Color.White.copy(alpha = 0.9f),
-                                fontFamily = ptSansFont,
-                                fontWeight = FontWeight.Medium
-                            )
-                            
-                            Spacer(modifier = Modifier.height(4.dp))
-                            
-                            Box(
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .background(
-                                        color = Color.White.copy(alpha = 0.2f),
-                                        shape = RoundedCornerShape(8.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "$wingType",
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White,
-                                    fontFamily = ptSansFont
-                                )
-                            }
-                        }
-                    }
-                }
-                
-                // If multitype exists, show it below
-                if (isMultitype) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Multitype: ",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.White.copy(alpha = 0.9f),
+                            text = "Ana Mizaç:",
+                            fontSize = 16.sp,
+                            color = Color.White.copy(alpha = 0.8f),
                             fontFamily = ptSansFont
                         )
                         
-                        Box(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .background(
-                                    color = Color.White.copy(alpha = 0.2f),
-                                    shape = RoundedCornerShape(4.dp)
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "$wingTypePoint",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                fontFamily = ptSansFont
-                            )
-                        }
+                        Text(
+                            text = "$dominantType",
+                            fontSize = 48.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            fontFamily = ptSansFont
+                        )
+                    }
+                }
+                
+                // Kanat Mizaç Tab
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Kanat Mizaç:",
+                            fontSize = 16.sp,
+                            color = Color.Gray,
+                            fontFamily = ptSansFont
+                        )
+                        
+                        Text(
+                            text = if (wingType > 0) "$wingType" else "-",
+                            fontSize = 48.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = harmonyHavenDarkGreenColor,
+                            fontFamily = ptSansFont
+                        )
+                    }
+                }
+                
+                // Alt Tip Tab
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Alt Tip:",
+                            fontSize = 16.sp,
+                            color = Color.Gray,
+                            fontFamily = ptSansFont
+                        )
+                        
+                        // For Alt Tip, use a descriptive text based on pointBasedWingType
+                        Text(
+                            text = getSubtypeName(wingTypePoint),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = harmonyHavenDarkGreenColor,
+                            fontFamily = ptSansFont,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+// Function to get the subtype name based on the point based wing type
+fun getSubtypeName(pointBasedWingType: Int): String {
+    return when(pointBasedWingType) {
+        1 -> "Bireysel"
+        2 -> "Sosyal"
+        3 -> "Kendini Koruma"
+        4 -> "Cinsel"
+        5 -> "Akademik"
+        6 -> "Güvenlik"
+        7 -> "Eğlence"
+        8 -> "Güç"
+        9 -> "Uyum"
+        else -> "Sosyal" // Default to "Sosyal" if no value is specified
     }
 }
 
