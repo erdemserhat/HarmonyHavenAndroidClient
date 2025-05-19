@@ -32,9 +32,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,6 +67,7 @@ import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.ui.text.TextStyle
@@ -82,9 +85,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramFamousPeople
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.ui.graphics.ColorFilter
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserProfileScreenViewModel) {
@@ -93,6 +93,7 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
     val coroutineScope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showBottomSheet by rememberSaveable { mutableStateOf(false) }
+
 
     var isRefreshing by rememberSaveable {
         mutableStateOf(false)
@@ -127,6 +128,8 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
             .background(Color(0xFFF8F8F8)),
         contentAlignment = Alignment.Center
     ) {
+
+
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = {
@@ -151,29 +154,29 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                 ) {
                     // Get the detailed result for easier access
                     val detailedResult = profileScreenState.result?.detailedResult
-                    
+
                     // Comprehensive logging of the data structure
                     Log.d("EnneagramScreen", "Complete Result: ${profileScreenState.result}")
                     Log.d("EnneagramScreen", "Detailed Result: $detailedResult")
                     Log.d("EnneagramScreen", "Test Result: ${detailedResult?.result}")
                     Log.d("EnneagramScreen", "All Type Scores: ${detailedResult?.result?.typeScores}")
-                    
+
                     // Extract type information with direct access to the EnneagramScore objects
                     val dominantTypeScore = detailedResult?.result?.dominantType
                     val wingTypeScore = detailedResult?.result?.wingType
-                    
+
                     Log.d("EnneagramScreen", "Dominant Type Score: $dominantTypeScore")
                     Log.d("EnneagramScreen", "Wing Type Score: $wingTypeScore")
-                    
+
                     // Extract type and score values
                     val dominantType = dominantTypeScore?.type ?: 0
                     val dominantScore = dominantTypeScore?.score ?: 0
                     val wingType = wingTypeScore?.enneagramBasedWingType ?: 0
                     val pointBasedWingType = wingTypeScore?.pointBasedWingType ?: 0
-                    
+
                     Log.d("EnneagramScreen", "Dominant Type: $dominantType, Score: $dominantScore")
                     Log.d("EnneagramScreen", "Wing Type: $wingType, Score: $pointBasedWingType")
-                    
+
                     // Intro Card - passing pointBasedWingType as the fourth parameter
                     EnneagramIntroCard(
                         userName = profileScreenState.username ?: "",
@@ -182,7 +185,7 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                         wingTypePoint = pointBasedWingType,
                         profileImageUrl = detailedResult?.chartUrl?.personalityImageUrl ?: ""
                     )
-                    
+
                     // Main Content
                     Column(
                         modifier = Modifier
@@ -190,6 +193,321 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                             .padding(16.dp)
                     ) {
                         profileScreenState.result?.detailedResult?.let { result ->
+
+                            // MOVED HERE: New Section - Relationship Compatibility
+                            Text(
+                                text = "Diğer Tiplerle İlişki Durumu",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = harmonyHavenDarkGreenColor,
+                                fontFamily = ptSansFont,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+
+                            // Compatibility Matching Card
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.White),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(20.dp)
+                                ) {
+                                    Text(
+                                        text = "Eşleşme Kodunu Girerek Uyumu Göster",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = harmonyHavenDarkGreenColor,
+                                        fontFamily = ptSansFont,
+                                        modifier = Modifier.padding(bottom = 12.dp)
+                                    )
+
+                                    // Code input section
+                                    var matchCode by remember { mutableStateOf("") }
+                                    var showCompatibilitySheet by remember { mutableStateOf(false) }
+                                    val compatibilitySheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        // Text field for entering code
+                                        OutlinedTextField(
+                                            value = matchCode,
+                                            onValueChange = { matchCode = it },
+                                            placeholder = { Text("Eşleşme kodunu gir...") },
+                                            modifier = Modifier.weight(1f),
+                                            shape = RoundedCornerShape(8.dp),
+                                            singleLine = true
+                                        )
+
+                                        Spacer(modifier = Modifier.width(12.dp))
+
+                                        // Button to submit code
+                                        Button(
+                                            onClick = {
+                                                if (matchCode.isNotEmpty()) {
+                                                    showCompatibilitySheet = true
+                                                }
+                                            },
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = harmonyHavenGreen
+                                            ),
+                                            shape = RoundedCornerShape(8.dp),
+                                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                                        ) {
+                                            Text(
+                                                text = "Karşılaştır",
+                                                color = Color.White,
+                                                fontFamily = ptSansFont
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    // Your matching code to share
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(
+                                                color = harmonyHavenGreen.copy(alpha = 0.1f),
+                                                shape = RoundedCornerShape(8.dp)
+                                            )
+                                            .padding(12.dp)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 8.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Column {
+                                                Text(
+                                                    text = "Senin Eşleşme Kodun:",
+                                                    fontSize = 14.sp,
+                                                    color = Color.DarkGray,
+                                                    fontFamily = ptSansFont
+                                                )
+
+                                                Text(
+                                                    text = "ENNE-${dominantType}${wingType}-${profileScreenState.username?.take(3)?.uppercase() ?: "XXX"}",
+                                                    fontSize = 16.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = harmonyHavenDarkGreenColor,
+                                                    fontFamily = ptSansFont
+                                                )
+                                            }
+
+                                            Button(
+                                                onClick = { /* Copy to clipboard functionality */ },
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = harmonyHavenGreen.copy(alpha = 0.2f),
+                                                    contentColor = harmonyHavenDarkGreenColor
+                                                ),
+                                                shape = RoundedCornerShape(8.dp),
+                                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                                            ) {
+                                                Text(
+                                                    text = "Kopyala",
+                                                    fontSize = 14.sp,
+                                                    fontFamily = ptSansFont
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    // Bottom Sheet for Compatibility Results - now inside the Column
+                                    if (showCompatibilitySheet) {
+                                        ModalBottomSheet(
+                                            onDismissRequest = { showCompatibilitySheet = false },
+                                            sheetState = compatibilitySheetState,
+                                            containerColor = Color.White,
+                                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                                        ) {
+                                            Column(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(20.dp)
+                                                    .padding(bottom = 40.dp)
+                                            ) {
+                                                // Header
+                                                Text(
+                                                    text = "Uyum Analizi",
+                                                    fontSize = 22.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = harmonyHavenDarkGreenColor,
+                                                    fontFamily = ptSansFont,
+                                                    modifier = Modifier.padding(bottom = 20.dp)
+                                                )
+
+                                                // Match info
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(vertical = 8.dp),
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    // Your type
+                                                    Column(
+                                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                                        modifier = Modifier.weight(1f)
+                                                    ) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .size(60.dp)
+                                                                .background(
+                                                                    color = harmonyHavenGreen,
+                                                                    shape = CircleShape
+                                                                ),
+                                                            contentAlignment = Alignment.Center
+                                                        ) {
+                                                            Text(
+                                                                text = "$dominantType",
+                                                                fontSize = 24.sp,
+                                                                fontWeight = FontWeight.Bold,
+                                                                color = Color.White,
+                                                                fontFamily = ptSansFont
+                                                            )
+                                                        }
+
+                                                        Spacer(modifier = Modifier.height(4.dp))
+
+                                                        Text(
+                                                            text = "Sen",
+                                                            fontSize = 14.sp,
+                                                            color = Color.DarkGray,
+                                                            fontFamily = ptSansFont
+                                                        )
+                                                    }
+
+                                                    // Compatibility indicator
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .weight(1f)
+                                                            .padding(horizontal = 8.dp),
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        Column(
+                                                            horizontalAlignment = Alignment.CenterHorizontally
+                                                        ) {
+                                                            Text(
+                                                                text = "%76",
+                                                                fontSize = 32.sp,
+                                                                fontWeight = FontWeight.Bold,
+                                                                color = harmonyHavenDarkGreenColor,
+                                                                fontFamily = ptSansFont
+                                                            )
+
+                                                            Text(
+                                                                text = "Uyum",
+                                                                fontSize = 14.sp,
+                                                                color = Color.DarkGray,
+                                                                fontFamily = ptSansFont
+                                                            )
+                                                        }
+                                                    }
+
+                                                    // Their type
+                                                    Column(
+                                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                                        modifier = Modifier.weight(1f)
+                                                    ) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .size(60.dp)
+                                                                .background(
+                                                                    color = Color(0xFF6C8EBF),
+                                                                    shape = CircleShape
+                                                                ),
+                                                            contentAlignment = Alignment.Center
+                                                        ) {
+                                                            Text(
+                                                                text = "4",
+                                                                fontSize = 24.sp,
+                                                                fontWeight = FontWeight.Bold,
+                                                                color = Color.White,
+                                                                fontFamily = ptSansFont
+                                                            )
+                                                        }
+
+                                                        Spacer(modifier = Modifier.height(4.dp))
+
+                                                        Text(
+                                                            text = "Ayşe",
+                                                            fontSize = 14.sp,
+                                                            color = Color.DarkGray,
+                                                            fontFamily = ptSansFont
+                                                        )
+                                                    }
+                                                }
+
+                                                Spacer(modifier = Modifier.height(24.dp))
+
+                                                HorizontalDivider(
+                                                    modifier = Modifier.padding(vertical = 8.dp),
+                                                    color = harmonyHavenGreen.copy(alpha = 0.2f),
+                                                    thickness = 1.dp
+                                                )
+
+                                                Spacer(modifier = Modifier.height(8.dp))
+
+                                                // Compatibility details
+                                                CompatibilityDetail(
+                                                    title = "İş Birliği",
+                                                    percentage = 85,
+                                                    description = "İş arkadaşlığı için çok uyumlu bir kombinasyon oluşturuyorsunuz."
+                                                )
+
+                                                CompatibilityDetail(
+                                                    title = "İlişki",
+                                                    percentage = 72,
+                                                    description = "Yakın ilişkilerde bazı zorluklar yaşanabilir ancak genellikle birbirinizi tamamlıyorsunuz."
+                                                )
+
+                                                CompatibilityDetail(
+                                                    title = "İletişim",
+                                                    percentage = 68,
+                                                    description = "İletişim stilleriniz farklı olsa da anlayış gösterirseniz etkili iletişim kurabilirsiniz."
+                                                )
+
+                                                CompatibilityDetail(
+                                                    title = "Günlük Yaşam",
+                                                    percentage = 79,
+                                                    description = "Günlük rutinlerde ve alışkanlıklarda birbirinize destek olabilirsiniz."
+                                                )
+
+                                                Spacer(modifier = Modifier.height(16.dp))
+
+                                                // Close button
+                                                Button(
+                                                    onClick = { showCompatibilitySheet = false },
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    colors = ButtonDefaults.buttonColors(
+                                                        containerColor = harmonyHavenGreen
+                                                    ),
+                                                    shape = RoundedCornerShape(12.dp)
+                                                ) {
+                                                    Text(
+                                                        text = "Kapat",
+                                                        color = Color.White,
+                                                        fontSize = 16.sp,
+                                                        fontWeight = FontWeight.Medium,
+                                                        fontFamily = ptSansFont
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
 
                             // Main Result Card - Removed repeated type number and image
                             Card(
@@ -208,7 +526,7 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                                 ) {
                                     // Removed "Senin Enneagram Tipin:" text and type display
                                     // Removed the AsyncImage that showed the type again
-                                    
+
                                     // Function to get type name based on type number
                                     fun getTypeName(typeNumber: Int): String {
                                         return when (typeNumber) {
@@ -224,7 +542,7 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                                             else -> ""
                                         }
                                     }
-                                    
+
                                     // Display type name at the top
                                     Text(
                                         text = "Tip ${result.result.dominantType.type}: ${getTypeName(result.result.dominantType.type)}",
@@ -255,7 +573,7 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                                         markdown = result.description,
                                         isTextSelectable = true,
                                     )
-                                    
+
                                     profileScreenState.article?.let {article->
                                         Spacer(modifier = Modifier.size(25.dp))
                                         Button(
@@ -309,7 +627,7 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                                     FamousPersonCard(person = person)
                                 }
                             }
-                            
+
                             // See All Button
                             Button(
                                 onClick = {
@@ -342,9 +660,9 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                                     fontWeight = FontWeight.Medium,
                                     fontFamily = ptSansFont
                                 )
-                                
+
                                 Spacer(modifier = Modifier.width(8.dp))
-                                
+
                                 Icon(
                                     painter = painterResource(id = R.drawable.arrow_back),
                                     contentDescription = "Tümünü Görüntüle",
@@ -392,7 +710,7 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                                             else -> ""
                                         }
                                     }
-                                    
+
                                     result.result.typeScores.forEach { score ->
                                         Row(
                                             modifier = Modifier
@@ -415,9 +733,9 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                                                     fontFamily = ptSansFont
                                                 )
                                             }
-                                            
+
                                             Spacer(modifier = Modifier.width(12.dp))
-                                            
+
                                             // Type name
                                             Column(
                                                 modifier = Modifier.weight(1f)
@@ -430,9 +748,9 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                                                     maxLines = 1,
                                                     overflow = TextOverflow.Ellipsis
                                                 )
-                                                
+
                                                 Spacer(modifier = Modifier.height(4.dp))
-                                                
+
                                                 // Progress bar
                                                 Box(
                                                     modifier = Modifier
@@ -453,7 +771,7 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                                                     )
                                                 }
                                             }
-                                            
+
                                             Text(
                                                 text = "${score.score}",
                                                 fontSize = 16.sp,
@@ -489,7 +807,7 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                                 fontFamily = ptSansFont
                             )
                         }
-                        
+
                         Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
@@ -574,13 +892,14 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
             }
         }
     }
+
 }
 
 @Composable
 fun ExplorationTabs(navController: NavController, dominantType: Int) {
     var selectedTabIndex by remember { mutableStateOf(0) }
     val tabs = listOf("Enneagramı Keşfet")
-    
+
     Column {
         TabRow(
             selectedTabIndex = selectedTabIndex,
@@ -603,20 +922,20 @@ fun ExplorationTabs(navController: NavController, dominantType: Int) {
                 Tab(
                     selected = selectedTabIndex == index,
                     onClick = { selectedTabIndex = index },
-                    text = { 
+                    text = {
                         Text(
                             text = title,
                             fontSize = 16.sp,
                             fontWeight = if (selectedTabIndex == index) FontWeight.Bold else FontWeight.Normal,
                             fontFamily = ptSansFont
-                        ) 
+                        )
                     },
                     selectedContentColor = harmonyHavenDarkGreenColor,
                     unselectedContentColor = Color.Gray
                 )
             }
         }
-        
+
         when (selectedTabIndex) {
             0 -> EnneagramExploreContent(navController)
             1 -> SelfDiscoveryContent(navController, dominantType)
@@ -637,7 +956,7 @@ fun EnneagramExploreContent(navController: NavController) {
         "Enneagram tipimizi bilmek bize ne kazandırır",
         "Enneagram hakkında sıkça sorular sorular"
     )
-    
+
     Column(modifier = Modifier.padding(top = 16.dp)) {
         topicList.forEachIndexed { index, topic ->
             Card(
@@ -677,9 +996,9 @@ fun EnneagramExploreContent(navController: NavController) {
                             modifier = Modifier.size(16.dp)
                         )
                     }
-                    
+
                     Spacer(modifier = Modifier.width(16.dp))
-                    
+
                     Text(
                         text = topic,
                         fontSize = 16.sp,
@@ -687,7 +1006,7 @@ fun EnneagramExploreContent(navController: NavController) {
                         fontFamily = ptSansFont,
                         modifier = Modifier.weight(1f)
                     )
-                    
+
                     Icon(
                         painter = painterResource(id = R.drawable.arrow_back),
                         contentDescription = "Go to detail",
@@ -718,7 +1037,7 @@ fun SelfDiscoveryContent(navController: NavController, dominantType: Int) {
         "Hangi kısıtlılıklar görülebilir",
         "Olumlu özelliklerin"
     )
-    
+
     Column(modifier = Modifier.padding(top = 16.dp)) {
         topicList.forEachIndexed { index, topic ->
             Card(
@@ -754,9 +1073,9 @@ fun SelfDiscoveryContent(navController: NavController, dominantType: Int) {
                             fontFamily = ptSansFont
                         )
                     }
-                    
+
                     Spacer(modifier = Modifier.width(16.dp))
-                    
+
                     Text(
                         text = topic,
                         fontSize = 16.sp,
@@ -764,7 +1083,7 @@ fun SelfDiscoveryContent(navController: NavController, dominantType: Int) {
                         fontFamily = ptSansFont,
                         modifier = Modifier.weight(1f)
                     )
-                    
+
                     Icon(
                         painter = painterResource(id = R.drawable.arrow_back),
                         contentDescription = "Go to detail",
@@ -790,7 +1109,7 @@ fun CareerManagementContent(navController: NavController, dominantType: Int) {
         "İş yapma tarzın",
         "Prensiplerin"
     )
-    
+
     Column(modifier = Modifier.padding(top = 16.dp)) {
         topicList.forEachIndexed { index, topic ->
             Card(
@@ -836,9 +1155,9 @@ fun CareerManagementContent(navController: NavController, dominantType: Int) {
                             fontFamily = ptSansFont
                         )
                     }
-                    
+
                     Spacer(modifier = Modifier.width(16.dp))
-                    
+
                     Text(
                         text = topic,
                         fontSize = 16.sp,
@@ -846,7 +1165,7 @@ fun CareerManagementContent(navController: NavController, dominantType: Int) {
                         fontFamily = ptSansFont,
                         modifier = Modifier.weight(1f)
                     )
-                    
+
                     Icon(
                         painter = painterResource(id = R.drawable.arrow_back),
                         contentDescription = "Go to detail",
@@ -898,16 +1217,16 @@ fun TopicCard(
                     modifier = Modifier.size(8.dp)
                 )
             }
-            
+
             Spacer(modifier = Modifier.padding(horizontal = 8.dp))
-            
+
             Text(
                 text = title,
                 fontSize = 16.sp,
                 color = Color.DarkGray,
                 modifier = Modifier.weight(1f)
             )
-            
+
             Icon(
                 painter = painterResource(id = R.drawable.arrow_back),
                 contentDescription = "Go to detail",
@@ -1259,6 +1578,74 @@ fun EnneagramIntroCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun CompatibilityDetail(
+    title: String,
+    percentage: Int,
+    description: String
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = title,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = harmonyHavenDarkGreenColor,
+                fontFamily = ptSansFont
+            )
+            
+            Text(
+                text = "%$percentage",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = harmonyHavenDarkGreenColor,
+                fontFamily = ptSansFont
+            )
+        }
+        
+        // Progress bar
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp)
+                .padding(vertical = 2.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(Color(0xFFEEEEEE))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(percentage / 100f)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                harmonyHavenGreen,
+                                harmonyHavenDarkGreenColor
+                            )
+                        )
+                    )
+            )
+        }
+        
+        Text(
+            text = description,
+            fontSize = 14.sp,
+            color = Color.DarkGray,
+            fontFamily = ptSansFont,
+            modifier = Modifier.padding(top = 4.dp)
+        )
     }
 }
 

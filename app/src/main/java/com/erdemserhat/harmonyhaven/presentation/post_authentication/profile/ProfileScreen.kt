@@ -58,11 +58,20 @@ import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
 import coil.compose.AsyncImage
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.window.DialogProperties
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController) {
     val scrollState = rememberScrollState()
+    
+    // Language dialog state
+    var showLanguageDialog by remember { mutableStateOf(false) }
     
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -110,7 +119,7 @@ fun ProfileScreen(navController: NavController) {
             SettingsItem(
                 icon = Icons.Default.Star,
                 title = "Dili Değiştir",
-                onClick = { /* Open language selection */ }
+                onClick = { showLanguageDialog = true }
             )
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -175,6 +184,117 @@ fun ProfileScreen(navController: NavController) {
             
             Spacer(modifier = Modifier.height(80.dp)) // Space for bottom navigation
         }
+    }
+    
+    // Language selection dialog (pop-up)
+    if (showLanguageDialog) {
+        AlertDialog(
+            onDismissRequest = { showLanguageDialog = false },
+            properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true
+            ),
+            containerColor = Color.White,
+            shape = RoundedCornerShape(16.dp),
+            title = {
+                Text(
+                    text = "Dil Seçimi / Language Selection",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = harmonyHavenGreen,
+                    fontFamily = ptSansFont,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // Information icon
+                    Box(
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(CircleShape)
+                            .background(harmonyHavenGreen.copy(alpha = 0.1f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Information",
+                            tint = harmonyHavenGreen,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Message in Turkish
+                    Text(
+                        text = "Şu anda sadece Türkçe dil desteği sunulmaktadır.",
+                        fontSize = 16.sp,
+                        color = Color.Black,
+                        fontFamily = ptSansFont,
+                        textAlign = TextAlign.Center
+                    )
+                    
+                    Text(
+                        text = "İngilizce dil desteği yakında eklenecektir.",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = harmonyHavenGreen,
+                        fontFamily = ptSansFont,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = harmonyHavenGreen.copy(alpha = 0.2f),
+                        thickness = 1.dp
+                    )
+                    
+                    // Message in English
+                    Text(
+                        text = "Currently, only Turkish language is supported.",
+                        fontSize = 16.sp,
+                        color = Color.Black,
+                        fontFamily = ptSansFont,
+                        textAlign = TextAlign.Center
+                    )
+                    
+                    Text(
+                        text = "English language support will be added soon.",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = harmonyHavenGreen,
+                        fontFamily = ptSansFont,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showLanguageDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = harmonyHavenGreen
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Tamam / OK",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = ptSansFont
+                    )
+                }
+            }
+        )
     }
 }
 
@@ -373,7 +493,7 @@ fun SettingsItem(
     }
     
     // Divider
-    Divider(
+    HorizontalDivider(
         modifier = Modifier.padding(start = 72.dp, end = 16.dp),
         color = Color.LightGray.copy(alpha = 0.5f)
     )
