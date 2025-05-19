@@ -193,13 +193,31 @@ fun ProfileScreen(navController: NavController) {
             SettingsItem(
                 icon = Icons.Default.Star,
                 title = "Arkadaşlarını Davet Et",
-                onClick = { /* Open invite dialog */ }
+                onClick = { 
+                    val shareIntent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        val shareMessage = "Harmony Haven'a katıl ve her gün en iyi versiyonuna bir adım daha yaklaş! " +
+                                "https://play.google.com/store/apps/details?id=com.erdemserhat.harmonyhaven"
+                        putExtra(Intent.EXTRA_TEXT, shareMessage)
+                        type = "text/plain"
+                    }
+                    context.startActivity(Intent.createChooser(shareIntent, "Arkadaşlarını Davet Et"))
+                }
             )
             
             SettingsItem(
                 icon = Icons.Default.Share,
                 title = "Bizi Takip Et",
                 onClick = { openInstagram(context) }
+            )
+            
+            SettingsItem(
+                icon = Icons.Default.Star,
+                title = "Websitesini Ziyaret Et",
+                onClick = { 
+                    val websiteIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.harmonyhavenapp.com/"))
+                    context.startActivity(websiteIntent)
+                }
             )
             
             Spacer(modifier = Modifier.height(16.dp))
