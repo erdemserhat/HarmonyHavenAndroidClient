@@ -14,9 +14,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,11 +69,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatIntroScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.EnneagramScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreenViewModel
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.test.EnneagramTestScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VolumeControlViewModel
@@ -87,12 +83,9 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Text
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.LayoutDirection
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.ProfileScreen
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
@@ -184,10 +177,15 @@ fun AppMainScreen(
             },
             2 to { ChatIntroScreen(navController = navController) },
             3 to {
-                UserProfileScreen(
+                EnneagramScreen(
                     navController,
                     profileScreenViewModel = userProfileSharedViewModel
                 )
+            },
+
+            4 to {
+                ProfileScreen(
+                    navController)
             }
 
         )
@@ -581,12 +579,25 @@ private val items = listOf(
         title = "Enneagram",
         hasNews = false,
         badgeCount = null,
-        route = Screen.Profile.route,
+        route = Screen.AccountInformationScreen.route,
         selectedIconDarkIcon = R.drawable.enneagram_unfilled_black,
         selectedIconWhiteIcon = R.drawable.enneagran_filled_black,
         unSelectedIconDarkIcon = R.drawable.enneagram_white,
         unSelectedIconWhiteIcon = R.drawable.enneagram_unfilled_black
+    ),
+
+    NavigationBarItem(
+        title = "Profile",
+        hasNews = false,
+        badgeCount = null,
+        route = Screen.AccountInformationScreen.route,
+        selectedIconDarkIcon = R.drawable.profile_unfilled_black,
+        selectedIconWhiteIcon = R.drawable.profile_filled_black,
+        unSelectedIconDarkIcon = R.drawable.profile_unfilled_white,
+        unSelectedIconWhiteIcon = R.drawable.profile_unfilled_black
     )
+
+
 )
 
 

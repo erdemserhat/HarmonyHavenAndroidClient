@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.account_information
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.account_information
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf

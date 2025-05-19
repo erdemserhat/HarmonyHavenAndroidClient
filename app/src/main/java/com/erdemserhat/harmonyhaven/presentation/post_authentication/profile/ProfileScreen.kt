@@ -1,9 +1,10 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,384 +13,363 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
-import com.erdemserhat.harmonyhaven.ui.theme.DefaultAppFont
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(navController: NavController) {
-  Column {
-      Scaffold(
-          topBar = {
-              TopAppBar(
-                  elevation = 0.dp,
-                  backgroundColor = Color.White,
-                  contentColor = Color.Transparent,
-                  title = { Text(text = "Ayarlar") },
-                  navigationIcon = {
-                      androidx.compose.material.IconButton(onClick = { /* Geri gitme işlemi */ }) {
-                          Icon(
-                              painter = painterResource(id = R.drawable.return_back_icon),
-                              contentDescription = "Geri",
-                              modifier = Modifier
-                                  .clip(RoundedCornerShape(50.dp))
-                                  .size(32.dp)
-                                  .clickable {
-                                      navController.popBackStack()
-                                  }
-                          )
-                      }
-                  }
-              )
-          }
-
-      ){padding->
-          SettingsScreenContent(navController, modifier = Modifier.background(Color.White).padding(padding))
-      }
-  }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SettingsScreenPreview() {
-    val navController = rememberNavController()
-
+fun ProfileScreen(navController: NavController) {
+    val scrollState = rememberScrollState()
     
-}
-
-@Composable
-fun SettingsScreenContent(navController: NavController,modifier: Modifier) {
-
-    var shouldShowLogoutAlertDialog by rememberSaveable {
-        mutableStateOf(false)
-    }
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-    ) {
-
-///////////////////////////////Exit Alert Dialog/////////////////////////////
-        if (shouldShowLogoutAlertDialog) {
-            AlertDialogBase(
-                alertTitle = "Çıkış Yap",
-                alertBody = "Çıkış yapmak istediğine emin misin?",
-                positiveButtonText = "Çıkış Yap",
-                negativeButtonText = "Vazgeç",
-                onPositiveButtonClicked = {
-
-                    navController.navigate(Screen.Login.route)
-                    
-                    navController.navigate("Login")
-
-
-                    shouldShowLogoutAlertDialog = false
-
-                },
-                onNegativeButtonClicked = {
-                    shouldShowLogoutAlertDialog = false
-                }) {
-
-            }
-        }
-///////////////////////////////Exit Alert Dialog/////////////////////////////
-
-
-
-        // Border ile ayrılmış 3 adet buton
+    Scaffold(
+        modifier = Modifier.fillMaxSize()
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .border(1.dp, Color(0xFFD9D9D9), RoundedCornerShape(12.dp))
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(paddingValues)
+                .verticalScroll(scrollState)
         ) {
-            SettingsButton(
-                icon = painterResource(id = R.drawable.account_icon),
-                title = "Hesap Bilgileri",
-                modifier = Modifier
-                    .clip(
-                        RoundedCornerShape(
-                            12.dp, 12.dp, 0.dp, 0.dp
-                        )
-                    ),
-                onButtonClicked = {
-                    navController.navigate(Screen.Profile.route)
+            // Profile Header with Image
+            ProfileHeader(userName = "Serhat")
+            
+            // User stats card
+            UserStatsCard()
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Settings section
+            SectionTitle(title = "Ayarlar")
+            
+            SettingsItem(
+                icon = Icons.Default.AccountCircle,
+                title = "Hesap Detayları",
+                onClick = { /* Navigate to account details */ }
+            )
+            
+            SettingsItem(
+                icon = Icons.Default.Notifications,
+                title = "Bildirim ve Hatırlatıcılar",
+                onClick = { 
+                    navController.navigate(Screen.NotificationScheduler.route)
                 }
             )
-
-            Divider(
-                color = Color(0xFFD9D9D9),
-                thickness = 1.dp,
-                modifier = Modifier.padding(horizontal = 16.dp)
+            
+            SettingsItem(
+                icon = Icons.Default.Favorite,
+                title = "Favoriler",
+                onClick = { /* Navigate to favorites */ }
             )
-
-          //  SettingsButton(
-            //    icon = painterResource(id = R.drawable.saved_articles_icon),
-             //   title = "Saved articles",
-             //   modifier = Modifier.clip(
-              //      RoundedCornerShape(
-               //         0.dp, 0.dp, 12.dp, 12.dp
-                //    )
-               // ),
-               // onButtonClicked = {
-                //    navController.navigate(Screen.SavedArticles.route)
-               // }
-          //  )
-        }
-
-        Spacer(modifier = Modifier.size(25.dp))
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(1.dp, Color(0xFFD9D9D9), RoundedCornerShape(12.dp))
-        ) {
-            //SettingsButton(
-              //  icon = painterResource(id = R.drawable.information_icon),
-               // title = "Hakkımızda",
-               // modifier = Modifier.clip(
-                 //   RoundedCornerShape(
-                   //     12.dp, 12.dp, 0.dp, 0.dp
-                  //  )
-              //  ),
-              //  onButtonClicked = {
-              //     navController.navigate(Screen.AboutUs.route)
-              //  }
-          //  )
-
-           // Divider(
-            //    color = Color(0xFFD9D9D9),
-           //     thickness = 1.dp,
-            //    modifier = Modifier.padding(horizontal = 16.dp)
-         //   )
-
-         //   SettingsButton(
-              //  icon = painterResource(id = R.drawable.report_icon),
-              //  title = "Report problem",
-              //  modifier = Modifier
-           // )
-
-            Divider(
-                color = Color(0xFFD9D9D9),
-                thickness = 1.dp,
-                modifier = Modifier.padding(horizontal = 16.dp)
+            
+            SettingsItem(
+                icon = Icons.Default.Star,
+                title = "Dili Değiştir",
+                onClick = { /* Open language selection */ }
             )
-
-          //  SettingsButton(
-             //   icon = painterResource(id = R.drawable.terms_icon),
-              //  title = "Terms and conditions",
-               // modifier = Modifier.clip(
-                //    RoundedCornerShape(
-                  //      0.dp, 0.dp, 12.dp, 12.dp
-                  //  )
-              //  )
-           // )
-        }
-
-        Spacer(modifier = Modifier.size(25.dp))
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(1.dp, Color(0xFFD9D9D9), RoundedCornerShape(12.dp))
-        ) {
-            SettingsButton(
-                icon = painterResource(id = R.drawable.logout_icon),
-                iconColor = Color.Red,
-                title = "Çıkış Yap",
-                titleColor = Color.Red,
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            // Ratings section
+            SectionTitle(title = "Bizi Değerlendir")
+            
+            SettingsItem(
+                icon = Icons.Default.Star,
+                title = "Arkadaşlarını Davet Et",
+                onClick = { /* Open invite dialog */ }
+            )
+            
+            SettingsItem(
+                icon = Icons.Default.Star,
+                title = "Bizi Takip Et",
+                onClick = { /* Open social media links */ }
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            // Feedback section
+            SectionTitle(title = "Geri Bildirim")
+            
+            SettingsItem(
+                icon = Icons.Default.Star,
+                title = "Puanla",
+                onClick = { /* Open rating dialog */ }
+            )
+            
+            SettingsItem(
+                icon = Icons.Default.Star,
+                title = "Yardım",
+                onClick = { /* Navigate to help */ }
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Version info
+            Column(
                 modifier = Modifier
-                    .clip(
-                        RoundedCornerShape(
-                            12.dp, 12.dp, 12.dp, 12.dp
-                        )
-                    ),
-                onButtonClicked = {shouldShowLogoutAlertDialog=true}
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Versiyon 3.6.4 995",
+                    fontFamily = ptSansFont,
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+                
+                Spacer(modifier = Modifier.height(4.dp))
+                
+                Text(
+                    text = "Harmony Haven 2023 - All rights reserved",
+                    fontFamily = ptSansFont,
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(80.dp)) // Space for bottom navigation
+        }
+    }
+}
 
+@Composable
+fun ProfileHeader(userName: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+    ) {
+        // Background Image - using AsyncImage for remote URL loading
+        AsyncImage(
+            model = "https://images.pexels.com/photos/2469122/pexels-photo-2469122.jpeg", // Starry sky image
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+        )
+        
+        // Overlay gradient
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.3f),
+                            Color.Black.copy(alpha = 0.5f)
+                        )
+                    )
+                )
+        )
+        
+        // Greeting Text
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Merhaba,",
+                color = Color.White,
+                fontSize = 24.sp,
+                fontFamily = ptSansFont
+            )
+            
+            Text(
+                text = userName,
+                color = Color.White,
+                fontSize = 36.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = ptSansFont
             )
         }
     }
 }
 
 @Composable
-fun SettingsButton(
-    icon: Painter,
-    title: String,
-    titleColor: Color = Color.Black,
-    iconColor: Color = Color(0xFF222222),
-    modifier: Modifier = Modifier,
-    onButtonClicked:()->Unit ={}
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier
+fun UserStatsCard() {
+    Card(
+        modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp)
-            .clickable(onClick = { onButtonClicked() })
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(16.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                painter = icon,
-                contentDescription = null,
-                tint = iconColor,
-                modifier = Modifier.size(24.dp)
+        // User stats with equal width columns
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            StatColumn(
+                value = "247",
+                label = "Aktif Gün",
+                modifier = Modifier.weight(1f)
             )
-            Text(
-                text = title,
-                style = MaterialTheme.typography.subtitle1,
-                color = titleColor,
-                modifier = Modifier.padding(start = 16.dp)
+            
+            // Vertical divider
+            Box(
+                modifier = Modifier
+                    .height(50.dp)
+                    .width(1.dp)
+                    .background(Color.LightGray)
+            )
+            
+            StatColumn(
+                value = "2",
+                label = "Favori Mesajların",
+                modifier = Modifier.weight(1f)
+            )
+            
+            // Vertical divider
+            Box(
+                modifier = Modifier
+                    .height(50.dp)
+                    .width(1.dp)
+                    .background(Color.LightGray)
+            )
+            
+            StatColumn(
+                value = "0",
+                label = "Özel Mesajların",
+                modifier = Modifier.weight(1f)
             )
         }
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = null,
-            tint = Color(0xFFD9D9D9)
+    }
+}
+
+@Composable
+fun StatColumn(value: String, label: String, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = value,
+            fontFamily = ptSansFont,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
+        
+        Text(
+            text = label,
+            fontFamily = ptSansFont,
+            fontSize = 12.sp,
+            color = Color.Gray,
+            fontWeight = FontWeight.Normal
         )
     }
 }
 
-
 @Composable
-fun AlertDialogBase(
-    alertTitle: String,
-    alertBody: String,
-    positiveButtonText: String,
-    negativeButtonText: String,
-    onPositiveButtonClicked: () -> Unit,
-    onNegativeButtonClicked: () -> Unit,
-    onDismissRequest: () -> Unit,
-) {
-    AlertDialog(
-        backgroundColor = Color.White,
-        modifier = Modifier.clip(RoundedCornerShape(12.dp)),
-        onDismissRequest = { onDismissRequest() },
-        title = {
-            Text(
-                text = alertTitle,
-                fontFamily = DefaultAppFont,
-                color = Color.Black
-
-            )
-        },
-        text = {
-            Text(
-                text = alertBody,
-                fontFamily = DefaultAppFont,
-                color = Color.Black
-
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = {
-                onPositiveButtonClicked()
-            }
-            ) {
-                Text(
-                    text = positiveButtonText,
-                    color = Color.Red,
-                    fontFamily = DefaultAppFont
-
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                onNegativeButtonClicked()
-            }) {
-                Text(
-                    text = negativeButtonText,
-                    fontFamily = DefaultAppFont
-
-                )
-            }
-        }
+fun SectionTitle(title: String) {
+    Text(
+        text = title,
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp, top = 8.dp),
+        fontFamily = ptSansFont,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.Black
     )
 }
 
-
 @Composable
-fun AccountInformation(
-    alertTitle: String,
-    alertBody: String,
-    positiveButtonText: String,
-    negativeButtonText: String,
-    onPositiveButtonClicked: () -> Unit,
-    onNegativeButtonClicked: () -> Unit,
-    onDismissRequest: () -> Unit,
+fun SettingsItem(
+    icon: ImageVector,
+    title: String,
+    onClick: () -> Unit
 ) {
-    AlertDialog(
-        backgroundColor = Color.White,
-        modifier = Modifier.clip(RoundedCornerShape(12.dp)),
-        onDismissRequest = { onDismissRequest() },
-        title = {
-            Text(
-                text = alertTitle,
-                fontFamily = DefaultAppFont
-
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Circular icon background
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFF5F5F5)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = Color.DarkGray,
+                modifier = Modifier.size(20.dp)
             )
-        },
-        text = {
-            Text(
-                text = alertBody,
-                fontFamily = DefaultAppFont
-
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = {
-                onPositiveButtonClicked()
-            }
-            ) {
-                Text(
-                    text = positiveButtonText,
-                    color = Color.Red,
-                    fontFamily = DefaultAppFont
-
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                onNegativeButtonClicked()
-            }) {
-                Text(
-                    text = negativeButtonText,
-                    fontFamily = DefaultAppFont
-
-                )
-            }
         }
+        
+        Spacer(modifier = Modifier.width(16.dp))
+        
+        Text(
+            text = title,
+            fontFamily = ptSansFont,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f)
+        )
+        
+        Icon(
+            imageVector = Icons.Default.ArrowForward,
+            contentDescription = null,
+            tint = Color.Gray,
+            modifier = Modifier.size(16.dp)
+        )
+    }
+    
+    // Divider
+    Divider(
+        modifier = Modifier.padding(start = 72.dp, end = 16.dp),
+        color = Color.LightGray.copy(alpha = 0.5f)
     )
 }
-
-

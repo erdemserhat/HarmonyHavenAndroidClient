@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.account_information
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.account_information
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight

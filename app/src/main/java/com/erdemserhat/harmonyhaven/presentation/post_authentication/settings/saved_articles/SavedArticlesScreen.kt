@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.saved_articles
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
@@ -29,7 +29,7 @@ import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.cards.ArticleSearchBarCard
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles.MockSavedArticles.mockArticle
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.saved_articles.MockSavedArticles.mockArticle
 
 //To mock data///
 object MockSavedArticles {

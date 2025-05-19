@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.about_us
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.about_us
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image

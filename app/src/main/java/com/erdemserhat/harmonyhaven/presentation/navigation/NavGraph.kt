@@ -3,7 +3,6 @@ package com.erdemserhat.harmonyhaven.presentation.navigation
 import AccountInformationScreen
 import QuoteShareScreen
 import android.graphics.Bitmap
-import android.media.Image
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -16,19 +15,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.toArgb
-import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -47,10 +39,9 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.t
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.scheduler_screen.NotificationSchedulerScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.SettingsScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.about_us.AboutUsScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles.SavedArticlesScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.SettingsScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.about_us.AboutUsScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.saved_articles.SavedArticlesScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.LoginScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.passwordreset.mail.ForgotPasswordMailScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.RegisterScreen
@@ -109,7 +100,7 @@ fun SetupNavGraph(
             //ForgotPasswordResetScreen(navController = navController)
         }
 
-        composable(route = Screen.Profile.route) {
+        composable(route = Screen.AccountInformationScreen.route) {
             AccountInformationScreen(navController)
         }
 
