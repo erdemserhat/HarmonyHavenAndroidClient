@@ -65,6 +65,7 @@ import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.layout.WindowInsets
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -126,8 +127,9 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                     )
                 )
             )
-
-            .imePadding(),
+            .navigationBarsPadding()
+            .imePadding()
+            .systemBarsPadding(),
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -187,31 +189,46 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
             )
         },
         bottomBar = {
-            // Input field
-            InputField(
-                text = text,
-                onTextValueChanged = { text = it },
-                onFocusChange = { focused ->
-                    isKeyboardVisible = focused
-                    if (focused && state.value.messages.isNotEmpty()) {
-                        scope.launch {
-                            listState.animateScrollToItem(state.value.messages.size - 1)
+            // Input field - WindowInsets'i doğru şekilde yapılandırıyoruz
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding() // Navigasyon çubuğu padding'i burada
+            ) {
+                InputField(
+                    text = text,
+                    onTextValueChanged = { text = it },
+                    onFocusChange = { focused ->
+                        isKeyboardVisible = focused
+                        if (focused && state.value.messages.isNotEmpty()) {
+                            scope.launch {
+                                listState.animateScrollToItem(state.value.messages.size - 1)
+                            }
                         }
-                    }
-                },
-                onSend = {
-                    if (text.isNotBlank()) {
-                        viewModel.sendMessage(message = text)
-                        text = ""
-                        scope.launch {
-                            listState.animateScrollToItem(state.value.messages.size)
+                    },
+                    onSend = {
+                        if (text.isNotBlank()) {
+                            val currentText = text // Geçici bir değişkende sakla
+                            text = "" // UI'ı hemen güncelle
+                            
+                            // Mesajı gönder
+                            scope.launch {
+                                viewModel.sendMessage(message = currentText)
+                                
+                                // Mesaj listesinin boyutu değiştiğinde scroll
+                                delay(150) // Küçük bir gecikme ekleyerek mesajın listeye eklenmesini bekle
+                                val newSize = state.value.messages.size
+                                if (newSize > 0) {
+                                    listState.animateScrollToItem(newSize - 1)
+                                }
+                            }
                         }
-                    }
-                },
-                isLoading = state.value.isLoading
-            )
-
-        }
+                    },
+                    isLoading = state.value.isLoading
+                )
+            }
+        },
+        contentWindowInsets = WindowInsets.navigationBars
     ) { paddingValues ->
         // Messages
         LazyColumn(
@@ -402,7 +419,8 @@ fun InputField(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val sendButtonScale = remember { Animatable(1f) }
-
+    val scope = rememberCoroutineScope()
+    
     LaunchedEffect(text.isNotBlank()) {
         if (text.isNotBlank()) {
             sendButtonScale.animateTo(
@@ -416,11 +434,16 @@ fun InputField(
         }
     }
 
-    Column {
+    // InputField için SafeArea oluşturuyoruz
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .imePadding(), // Ek ime padding burada da sağlıyoruz
+        color = Color.Transparent
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .navigationBarsPadding()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Card(
@@ -485,8 +508,14 @@ fun InputField(
                                 else Color.Gray.copy(alpha = 0.5f)
                             )
                             .clickable(enabled = text.isNotBlank() && !isLoading) {
-                                onSend(text)
-                                keyboardController?.hide()
+                                scope.launch {
+                                    // Önce mesajı gönder
+                                    onSend(text)
+                                    
+                                    // Küçük bir gecikmeyle klavyeyi kapat
+                                    delay(100)
+                                    keyboardController?.hide()
+                                }
                             }
                             .padding(8.dp),
                         contentAlignment = Alignment.Center
@@ -502,27 +531,9 @@ fun InputField(
                         )
                     }
                 }
-
             }
         }
-
-        /*
-
-        androidx.compose.animation.AnimatedVisibility(!WindowInsets.isImeVisible) {
-            Spacer(
-                modifier = Modifier
-                    .height(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())
-                    .fillMaxWidth()
-                    .background(Color.Transparent)
-            )
-        }
-
-         */
-
-
     }
-
-
 }
 
 @Composable
