@@ -178,23 +178,6 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                                 modifier = Modifier.size(20.dp)
                             )
                         }
-                        
-                        // Save current chat button (only show if there are messages)
-                        if (state.value.messages.isNotEmpty()) {
-                            IconButton(
-                                onClick = {
-                                    // In a real app, this would save the current chat to history
-                                },
-                                modifier = Modifier.size(36.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Star,
-                                    contentDescription = "Sohbeti Kaydet",
-                                    tint = harmonyHavenDarkGreenColor,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
 
                         // Chat history icon button
                         IconButton(
