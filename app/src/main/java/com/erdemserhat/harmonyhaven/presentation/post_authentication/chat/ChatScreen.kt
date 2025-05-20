@@ -1,5 +1,6 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.chat
 
+import android.app.Activity
 import android.os.VibrationEffect
 import android.widget.Toast
 import androidx.compose.animation.*
@@ -35,6 +36,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -49,6 +51,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -72,18 +75,22 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
     val scope = rememberCoroutineScope()
     var isKeyboardVisible by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
-    
+    val context = LocalContext.current
+    val localFocusManager = LocalFocusManager.current
+    val activity = context as? Activity
+    val window = activity?.window!!
+
     // Auto-scroll to bottom when new messages arrive or current message updates
     LaunchedEffect(state.value.messages.size, state.value.currentMessage) {
         if (state.value.messages.isNotEmpty() || state.value.currentMessage.isNotEmpty()) {
             val messageCount = state.value.messages.size
             val hasPartialMessage = state.value.currentMessage.isNotEmpty()
-            
+
             // Add 1 to account for the partial message item if it exists
             val targetIndex = if (messageCount > 0) {
                 messageCount - 1 + (if (hasPartialMessage) 1 else 0)
             } else 0
-            
+
             if (targetIndex > 0) {
                 listState.animateScrollToItem(targetIndex)
             }
@@ -98,12 +105,15 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
             val targetIndex = if (messageCount > 0) {
                 messageCount - 1 + (if (hasPartialMessage) 1 else 0)
             } else 0
-            
+
             if (targetIndex > 0) {
                 listState.animateScrollToItem(targetIndex)
             }
         }
     }
+
+
+
 
     Scaffold(
         modifier = Modifier
@@ -116,11 +126,13 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                     )
                 )
             )
+
             .imePadding(),
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent),
+                    containerColor = Color.Transparent
+                ),
                 title = {
                     Text("Harmonia")
                 },
@@ -141,7 +153,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                         // Save current chat button (only show if there are messages)
                         if (state.value.messages.isNotEmpty()) {
                             IconButton(
-                                onClick = { 
+                                onClick = {
                                     // In a real app, this would save the current chat to history
                                 },
                                 modifier = Modifier.size(36.dp)
@@ -154,10 +166,10 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                                 )
                             }
                         }
-                        
+
                         // Chat history icon button
                         IconButton(
-                            onClick = { 
+                            onClick = {
                                 // Navigate to ChatHistoryScreen
                                 navController.navigate(Screen.ChatHistoryScreen.route)
                             },
@@ -198,6 +210,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                 },
                 isLoading = state.value.isLoading
             )
+
         }
     ) { paddingValues ->
         // Messages
@@ -212,7 +225,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
             item {
                 Spacer(modifier = Modifier.height(4.dp))
             }
-            
+
             if (state.value.messages.isEmpty() && state.value.currentMessage.isEmpty()) {
                 item {
                     WelcomeMessage(
@@ -222,7 +235,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                     )
                 }
             }
-            
+
             itemsIndexed(state.value.messages) { index, message ->
                 AnimatedVisibility(
                     visible = true,
@@ -234,7 +247,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                     }
                 }
             }
-            
+
             // Show current partial message if it exists
             if (state.value.currentMessage.isNotEmpty()) {
                 item {
@@ -255,12 +268,13 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                     }
                 }
             }
-            
-            item {
-                Spacer(modifier = Modifier.height(4.dp))
-            }
+
+
         }
+
+
     }
+
 }
 
 @Composable
@@ -285,9 +299,9 @@ fun WelcomeMessage(onExampleClick: (String) -> Unit) {
                 modifier = Modifier.size(48.dp)
             )
         }
-        
+
         Spacer(modifier = Modifier.height(20.dp))
-        
+
         Text(
             text = "Merhaba! Size nasıl yardımcı olabilirim?",
             style = TextStyle(
@@ -298,9 +312,9 @@ fun WelcomeMessage(onExampleClick: (String) -> Unit) {
                 fontFamily = ptSansFont
             )
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = "Herhangi bir konuda soru sorabilirsiniz",
             style = TextStyle(
@@ -310,9 +324,9 @@ fun WelcomeMessage(onExampleClick: (String) -> Unit) {
                 fontFamily = ptSansFont
             )
         )
-        
+
         Spacer(modifier = Modifier.height(28.dp))
-        
+
         Text(
             text = "Örnek Sorular:",
             style = TextStyle(
@@ -322,14 +336,17 @@ fun WelcomeMessage(onExampleClick: (String) -> Unit) {
                 fontFamily = ptSansFont
             )
         )
-        
+
         Spacer(modifier = Modifier.height(12.dp))
-        
+
         // Example messages that user can click on
         ExampleMessageChip("Bugün kendimi kötü hissediyorum.", onExampleClick)
         ExampleMessageChip("Motivasyonumu artırmak için ne yapabilirim?", onExampleClick)
         ExampleMessageChip("Stresle nasıl başa çıkabilirim?", onExampleClick)
-        ExampleMessageChip("Günlük rutinime ekleyebileceğim faydalı alışkanlıklar nelerdir?", onExampleClick)
+        ExampleMessageChip(
+            "Günlük rutinime ekleyebileceğim faydalı alışkanlıklar nelerdir?",
+            onExampleClick
+        )
     }
 }
 
@@ -358,9 +375,9 @@ fun ExampleMessageChip(message: String, onClick: (String) -> Unit) {
                 tint = harmonyHavenGreen,
                 modifier = Modifier.size(16.dp)
             )
-            
+
             Spacer(modifier = Modifier.width(10.dp))
-            
+
             Text(
                 text = message,
                 style = TextStyle(
@@ -374,6 +391,7 @@ fun ExampleMessageChip(message: String, onClick: (String) -> Unit) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun InputField(
     text: String,
@@ -384,7 +402,7 @@ fun InputField(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val sendButtonScale = remember { Animatable(1f) }
-    
+
     LaunchedEffect(text.isNotBlank()) {
         if (text.isNotBlank()) {
             sendButtonScale.animateTo(
@@ -398,99 +416,120 @@ fun InputField(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        Card(
+    Column {
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadow(elevation = 4.dp, shape = RoundedCornerShape(20.dp)),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            ),
-            shape = RoundedCornerShape(20.dp)
+                .navigationBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            Row(
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(4.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .shadow(elevation = 4.dp, shape = RoundedCornerShape(20.dp)),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                ),
+                shape = RoundedCornerShape(20.dp)
             ) {
-                TextField(
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(20.dp))
-                        .onFocusChanged { focusState ->
-                            onFocusChange(focusState.isFocused)
-                        },
-                    value = text,
-                    onValueChange = onTextValueChanged,
-                    placeholder = {
-                        Text(
-                            text = "Mesajınızı buraya girin",
-                            color = Color.Gray,
-                            fontFamily = ptSansFont,
-                            fontSize = 15.sp
-                        )
-                    },
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        cursorColor = harmonyHavenGreen,
-                        selectionColors = TextSelectionColors(
-                            handleColor = harmonyHavenGreen,
-                            backgroundColor = harmonyHavenGreen.copy(alpha = 0.2f)
-                        )
-                    ),
-                    textStyle = TextStyle(
-                        color = Color.DarkGray,
-                        fontSize = 15.sp,
-                        fontFamily = ptSansFont
-                    ),
-                    maxLines = 3
-                )
-
-                Spacer(modifier = Modifier.width(4.dp))
-
-                Box(
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (text.isNotBlank() && !isLoading) harmonyHavenGreen
-                            else Color.Gray.copy(alpha = 0.5f)
-                        )
-                        .clickable(enabled = text.isNotBlank() && !isLoading) {
-                            onSend(text)
-                            keyboardController?.hide()
-                        }
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Send,
-                        contentDescription = "Send",
-                        tint = Color.White,
+                    TextField(
                         modifier = Modifier
-                            .size(20.dp)
-                            .rotate(-45f)
-                            .scale(sendButtonScale.value)
+                            .weight(1f)
+                            .clip(RoundedCornerShape(20.dp))
+                            .onFocusChanged { focusState ->
+                                onFocusChange(focusState.isFocused)
+                            },
+                        value = text,
+                        onValueChange = onTextValueChanged,
+                        placeholder = {
+                            Text(
+                                text = "Mesajınızı buraya girin",
+                                color = Color.Gray,
+                                fontFamily = ptSansFont,
+                                fontSize = 15.sp
+                            )
+                        },
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
+                            cursorColor = harmonyHavenGreen,
+                            selectionColors = TextSelectionColors(
+                                handleColor = harmonyHavenGreen,
+                                backgroundColor = harmonyHavenGreen.copy(alpha = 0.2f)
+                            )
+                        ),
+                        textStyle = TextStyle(
+                            color = Color.DarkGray,
+                            fontSize = 15.sp,
+                            fontFamily = ptSansFont
+                        ),
+                        maxLines = 3
                     )
+
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .size(42.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (text.isNotBlank() && !isLoading) harmonyHavenGreen
+                                else Color.Gray.copy(alpha = 0.5f)
+                            )
+                            .clickable(enabled = text.isNotBlank() && !isLoading) {
+                                onSend(text)
+                                keyboardController?.hide()
+                            }
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Send,
+                            contentDescription = "Send",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .size(20.dp)
+                                .rotate(-45f)
+                                .scale(sendButtonScale.value)
+                        )
+                    }
                 }
+
             }
         }
+
+        /*
+
+        androidx.compose.animation.AnimatedVisibility(!WindowInsets.isImeVisible) {
+            Spacer(
+                modifier = Modifier
+                    .height(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())
+                    .fillMaxWidth()
+                    .background(Color.Transparent)
+            )
+        }
+
+         */
+
+
     }
+
+
 }
 
 @Composable
 fun BotMessageBox(message: String, modifier: Modifier = Modifier) {
     // Markdown metni için satır düzenlemelerini koru
     val processedMessage = message
-    
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -556,7 +595,7 @@ fun UserMessageBox(message: String = "", modifier: Modifier = Modifier) {
                 color = Color.White,
                 modifier = Modifier.padding(12.dp),
                 style = TextStyle(
-                    fontSize = 15.sp, 
+                    fontSize = 15.sp,
                     fontFamily = ptSansFont,
                     lineHeight = 22.sp
                 )
@@ -595,14 +634,14 @@ fun TypingIndicator() {
 @Composable
 fun BouncingDots() {
     val infiniteTransition = rememberInfiniteTransition(label = "bouncingDots")
-    
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         repeat(3) { index ->
             val delay = index * 150
-            
+
             val offsetY by infiniteTransition.animateFloat(
                 initialValue = 0f,
                 targetValue = 0f,
@@ -618,7 +657,7 @@ fun BouncingDots() {
                 ),
                 label = "dot$index"
             )
-            
+
             Box(
                 modifier = Modifier
                     .padding(horizontal = 2.dp)
