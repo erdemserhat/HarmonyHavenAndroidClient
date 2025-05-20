@@ -31,6 +31,7 @@ import androidx.navigation.compose.composable
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.presentation.feature.google_auth.TestScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.article.composables.ArticleScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatExperienceCustomizationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatHistoryScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatIntroScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatScreen
@@ -124,6 +125,10 @@ fun SetupNavGraph(
 
         composable(route = Screen.EnneagramTestScreen.route) {
             EnneagramTestScreen(navController = navController, sharedViewModel = sharedViewModelUserProfile)
+        }
+
+        composable(route = Screen.ChatExperienceCustomizationScreen.route) {
+            ChatExperienceCustomizationScreen(navController = navController)
         }
 
         composable(
