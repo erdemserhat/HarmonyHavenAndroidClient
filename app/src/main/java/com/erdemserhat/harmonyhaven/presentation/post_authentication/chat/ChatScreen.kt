@@ -5,6 +5,7 @@ import android.os.VibrationEffect
 import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -50,6 +52,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -80,6 +83,9 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
     val localFocusManager = LocalFocusManager.current
     val activity = context as? Activity
     val window = activity?.window!!
+    
+    // State for customization dialog
+    var showCustomizationDialog by remember { mutableStateOf(false) }
 
     // Auto-scroll to bottom when new messages arrive or current message updates
     LaunchedEffect(state.value.messages.size, state.value.currentMessage) {
@@ -112,9 +118,17 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
             }
         }
     }
-
-
-
+    
+    // Customization dialog
+    if (showCustomizationDialog) {
+        CustomizationDialog(
+            onDismiss = { showCustomizationDialog = false },
+            onNavigateToCustomization = {
+                showCustomizationDialog = false
+                navController.navigate(Screen.ChatExperienceCustomizationScreen.route)
+            }
+        )
+    }
 
     Scaffold(
         modifier = Modifier
@@ -152,6 +166,19 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
+                        // Settings icon button
+                        IconButton(
+                            onClick = { showCustomizationDialog = true },
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Harmonia'yı Özelleştir",
+                                tint = harmonyHavenDarkGreenColor,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        
                         // Save current chat button (only show if there are messages)
                         if (state.value.messages.isNotEmpty()) {
                             IconButton(
@@ -690,5 +717,160 @@ fun BouncingDots() {
                     )
             )
         }
+    }
+}
+
+@Composable
+fun CustomizationDialog(
+    onDismiss: () -> Unit,
+    onNavigateToCustomization: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Header with icon
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(harmonyHavenGreen.copy(alpha = 0.1f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Customize",
+                        tint = harmonyHavenGreen,
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Title
+                Text(
+                    text = "Harmonia'yı Özelleştir",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = harmonyHavenDarkGreenColor,
+                        textAlign = TextAlign.Center,
+                        fontFamily = ptSansFont
+                    )
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Description
+                Text(
+                    text = "Kişiselleştirme size daha özel bir deneyim sunar. Birkaç basit soru yanıtlayarak Harmonia'nın size daha iyi hizmet etmesini sağlayabilirsiniz.",
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center,
+                        fontFamily = ptSansFont,
+                        lineHeight = 22.sp
+                    )
+                )
+                
+                Spacer(modifier = Modifier.height(20.dp))
+                
+                // Benefits list
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    CustomizationBenefitItem("Kişiselleştirilmiş tavsiyeler")
+                    CustomizationBenefitItem("Size özgü yanıtlar")
+                    CustomizationBenefitItem("Daha uyumlu bir sohbet deneyimi")
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                // Buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, harmonyHavenGreen),
+                        contentPadding = PaddingValues(horizontal = 10.dp)
+                    ) {
+                        Text(
+                            text = "Daha Sonra",
+                            color = harmonyHavenGreen,
+                            fontFamily = ptSansFont,
+                            fontSize = 14.sp,
+                            maxLines = 1
+                        )
+                    }
+                    
+                    Button(
+                        onClick = onNavigateToCustomization,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = harmonyHavenGreen
+                        )
+                    ) {
+                        Text(
+                            text = "Özelleştir",
+                            color = Color.White,
+                            fontFamily = ptSansFont,
+                            fontSize = 14.sp,
+                            maxLines = 1
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CustomizationBenefitItem(text: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(6.dp)
+                .clip(CircleShape)
+                .background(harmonyHavenGreen)
+        )
+        
+        Spacer(modifier = Modifier.width(10.dp))
+        
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            color = Color.DarkGray,
+            fontFamily = ptSansFont
+        )
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -52,6 +53,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.ui.text.style.TextOverflow
 
 @Composable
@@ -64,9 +67,7 @@ fun ChatIntroScreen(navController: NavController) {
     val textColor = Color(0xFF333333)
     val cardColor = Color(0xFFF9F9F9)
 
-    // State for showing the customization screen
-
-    Box(
+    Scaffold(
         modifier = Modifier
             .fillMaxSize()
             .background(
@@ -76,19 +77,76 @@ fun ChatIntroScreen(navController: NavController) {
                         Color(0xFFF5F7F9)
                     )
                 )
-            )
-    ) {
+            ),
+        bottomBar = {
+            // Fixed bottom button
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
+            ) {
+                Button(
+                    onClick = { navController.navigate(Screen.ChatScreen.route) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = primaryColor,
+                        contentColor = Color.White
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 2.dp
+                    )
+                ) {
+                    Text(
+                        text = "Sohbete Başla",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White,
+                        fontFamily = ptSansFont
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "Start",
+                        tint = Color.White
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Text(
+                    text = "Harmonia ile ihtiyacınız olan her konuda sohbet edin",
+                    fontSize = 14.sp,
+                    color = textColor.copy(alpha = 0.7f),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                    fontFamily = ptSansFont
+                )
+            }
+        }
+    ) { paddingValues ->
+        // Main scrollable content
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp)
+                .background(Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White,
+                        Color(0xFFF5F7F9)
+                    )
+                ))
+                .padding(paddingValues)
+                .padding(top = 24.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Top section with title and icon
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(top = 32.dp)
+                modifier = Modifier.padding(horizontal = 24.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -130,12 +188,195 @@ fun ChatIntroScreen(navController: NavController) {
             }
 
             Spacer(modifier = Modifier.height(24.dp))
+            
+            // İletişim Seçenekleri başlığı
+            Text(
+                text = "İletişim Seçenekleri",
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = darkPrimaryColor,
+                    textAlign = TextAlign.Start,
+                    fontFamily = ptSansFont
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+            )
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            // İletişim seçenekleri kartları
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Metin ile Konuş kartı
+                Card(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { navController.navigate(Screen.ChatScreen.route) },
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .background(lightGreen),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Create,
+                                contentDescription = "Text Chat",
+                                tint = primaryColor,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        Text(
+                            text = "Metin ile Konuş",
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = darkPrimaryColor,
+                                textAlign = TextAlign.Center,
+                                fontFamily = ptSansFont
+                            )
+                        )
+                        
+                        Spacer(modifier = Modifier.height(4.dp))
+                        
+                        Text(
+                            text = "Yazarak iletişim kur",
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center,
+                                fontFamily = ptSansFont
+                            )
+                        )
+                    }
+                }
+                
+                // Sesli Konuşma kartı
+                Card(
+                    modifier = Modifier
+                        .weight(1f),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        // Card content
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(CircleShape)
+                                    .background(lightGreen),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Share,
+                                    contentDescription = "Voice Chat",
+                                    tint = primaryColor,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            
+                            Spacer(modifier = Modifier.height(12.dp))
+                            
+                            Text(
+                                text = "Sesli Konuş",
+                                style = TextStyle(
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = darkPrimaryColor.copy(alpha = 0.7f),
+                                    textAlign = TextAlign.Center,
+                                    fontFamily = ptSansFont
+                                )
+                            )
+                            
+                            Spacer(modifier = Modifier.height(4.dp))
+                            
+                            Text(
+                                text = "Sesli komutlar gönder",
+                                style = TextStyle(
+                                    fontSize = 12.sp,
+                                    color = Color.Gray,
+                                    textAlign = TextAlign.Center,
+                                    fontFamily = ptSansFont
+                                )
+                            )
+                        }
+                        
+                        // Yakında etiketi
+                        Surface(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(8.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            color = harmonyHavenDarkGreenColor
+                        ) {
+                            Text(
+                                text = "Yakında",
+                                style = TextStyle(
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    fontFamily = ptSansFont
+                                ),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
+                }
+            }
 
-            // Harmonia Özellikleri card
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Harmonia Özellikleri section
+            Text(
+                text = "Harmonia Özellikleri",
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = darkPrimaryColor,
+                    textAlign = TextAlign.Start,
+                    fontFamily = ptSansFont
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+            )
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            // Single feature card centered
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
+                    .padding(horizontal = 24.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 shape = RoundedCornerShape(16.dp)
@@ -144,15 +385,7 @@ fun ChatIntroScreen(navController: NavController) {
                     modifier = Modifier.padding(20.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(
-                        text = "Harmonia Özellikleri",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = darkPrimaryColor,
-                        fontFamily = ptSansFont
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     BulletPoint(
                         "Enneagram kişilik analizi altyapısı",
@@ -177,139 +410,11 @@ fun ChatIntroScreen(navController: NavController) {
                 }
             }
 
-            // Harmonia'yı Özelleştir card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .clickable { navController.navigate(Screen.ChatExperienceCustomizationScreen.route) },
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Harmonia'yı Özelleştir",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = darkPrimaryColor,
-                            fontFamily = ptSansFont,
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(lightGreen),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Settings,
-                                contentDescription = "Customize",
-                                tint = primaryColor,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(
-                        text = "Kişiselleştirme size daha özel bir deneyim sunar. Birkaç basit soru yanıtlayarak Harmonia'nın size daha iyi hizmet etmesini sağlayabilirsiniz.",
-                        fontSize = 15.sp,
-                        color = textColor,
-                        lineHeight = 22.sp,
-                        fontFamily = ptSansFont
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        BulletPointSmall(
-                            "Kişiselleştirilmiş tavsiyeler",
-                            primaryColor,
-                            textColor
-                        )
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        BulletPointSmall("Size özgü yanıtlar", primaryColor, textColor)
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        BulletPointSmall(
-                            "Daha uyumlu bir sohbet deneyimi",
-                            primaryColor,
-                            textColor
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Bottom section with button
-            Button(
-                onClick = { navController.navigate(Screen.ChatScreen.route) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = primaryColor,
-                    contentColor = Color.White
-                ),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 2.dp
-                )
-            ) {
-                Text(
-                    text = "Sohbete Başla",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White,
-                    fontFamily = ptSansFont
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    contentDescription = "Start",
-                    tint = Color.White
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "Harmonia ile ihtiyacınız olan her konuda sohbet edin",
-                fontSize = 14.sp,
-                color = textColor.copy(alpha = 0.7f),
-                textAlign = TextAlign.Center,
-                fontFamily = ptSansFont
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
+            // Add extra spacing at the bottom to account for the fixed button
+            Spacer(modifier = Modifier.height(120.dp))
         }
     }
 }
-
 
 @Composable
 private fun BulletPoint(text: String, bulletColor: Color, textColor: Color) {
