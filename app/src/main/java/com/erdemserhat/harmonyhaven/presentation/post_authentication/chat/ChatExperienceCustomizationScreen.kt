@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,12 +25,17 @@ import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatExperienceCustomizationScreen(navController: NavController) {
     var currentStep by remember { mutableStateOf(0) }
     val steps = listOf("Ülke", "Yaş", "İlişki Durumu", "İnanç Önemi", "İnanç", "Beklenti")
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    var showSavedDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier
@@ -91,6 +97,9 @@ fun ChatExperienceCustomizationScreen(navController: NavController) {
                     }
                 }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         }
     ) { paddingValues ->
         Column(
@@ -118,8 +127,6 @@ fun ChatExperienceCustomizationScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-
-
                 when (currentStep) {
                     0 -> CountrySelectionStep()
                     1 -> AgeSelectionStep()
@@ -130,7 +137,6 @@ fun ChatExperienceCustomizationScreen(navController: NavController) {
                 }
 
             // Question content
-
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -169,7 +175,20 @@ fun ChatExperienceCustomizationScreen(navController: NavController) {
                         if (currentStep < steps.size - 1) {
                             currentStep++
                         } else {
-                            navController.navigateUp() // Tamamlandığında ana ekrana dön
+                            // Tamamlandığında
+                            showSavedDialog = true
+                            
+                            // SnackBar göster
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = "Test sonuçlarınız başarıyla kaydedildi!",
+                                    duration = SnackbarDuration.Short
+                                )
+                                
+                                // 1.5 saniye sonra sayfadan çık
+                                delay(1500)
+                                navController.navigateUp()
+                            }
                         }
                     },
                     modifier = Modifier
@@ -190,6 +209,50 @@ fun ChatExperienceCustomizationScreen(navController: NavController) {
                 }
             }
         }
+    }
+    
+    // Test sonuçları kaydedildi dialonu
+    if (showSavedDialog) {
+        AlertDialog(
+            onDismissRequest = { 
+                showSavedDialog = false
+                navController.navigateUp()
+            },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = null,
+                    tint = harmonyHavenGreen,
+                    modifier = Modifier.size(48.dp)
+                )
+            },
+            title = {
+                Text(
+                    text = "Sonuçlar Kaydedildi",
+                    fontFamily = ptSansFont,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = "Test sonuçlarınız başarıyla kaydedildi. Harmonia artık size daha kişiselleştirilmiş yanıtlar sunabilecek.",
+                    fontFamily = ptSansFont
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showSavedDialog = false
+                        navController.navigateUp()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = harmonyHavenGreen
+                    )
+                ) {
+                    Text("Anladım", fontFamily = ptSansFont)
+                }
+            }
+        )
     }
 }
 
