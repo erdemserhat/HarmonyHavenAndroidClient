@@ -96,5 +96,13 @@ class ChatViewModel @Inject constructor(
             }
         }
     }
+    
+    /**
+     * Resets the chat state to its initial state, clearing all messages
+     * Used when starting a new chat
+     */
+    fun resetChat() {
+        _chatState.value = ChatState()
+    }
 }
 
