@@ -63,16 +63,17 @@ fun ChatIntroScreen(navController: NavController) {
     val backgroundColor = Color.White
     val textColor = Color(0xFF333333)
     val cardColor = Color(0xFFF9F9F9)
-    
+
     // State for showing the customization screen
     var showCustomizationScreen by remember { mutableStateOf(false) }
-    
+
     when {
         showCustomizationScreen -> {
             CustomizationScreen(
                 onBackClick = { showCustomizationScreen = false }
             )
         }
+
         else -> {
             Box(
                 modifier = Modifier
@@ -136,9 +137,9 @@ fun ChatIntroScreen(navController: NavController) {
                             fontFamily = ptSansFont
                         )
                     }
-                    
+
                     Spacer(modifier = Modifier.height(24.dp))
-                    
+
                     // Harmonia Özellikleri card
                     Card(
                         modifier = Modifier
@@ -159,16 +160,32 @@ fun ChatIntroScreen(navController: NavController) {
                                 color = darkPrimaryColor,
                                 fontFamily = ptSansFont
                             )
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
-                            BulletPoint("Enneagram kişilik analizi altyapısı", primaryColor, textColor)
-                            BulletPoint("Kişisel gelişim ve motivasyon konularında destek", primaryColor, textColor)
-                            BulletPoint("Günlük yaşam için pratik tavsiyeler ve yönlendirmeler", primaryColor, textColor)
-                            BulletPoint("Sorularınıza akıllı ve kişiselleştirilmiş yanıtlar", primaryColor, textColor)
+
+                            BulletPoint(
+                                "Enneagram kişilik analizi altyapısı",
+                                primaryColor,
+                                textColor
+                            )
+                            BulletPoint(
+                                "Kişisel gelişim ve motivasyon konularında destek",
+                                primaryColor,
+                                textColor
+                            )
+                            BulletPoint(
+                                "Günlük yaşam için pratik tavsiyeler ve yönlendirmeler",
+                                primaryColor,
+                                textColor
+                            )
+                            BulletPoint(
+                                "Sorularınıza akıllı ve kişiselleştirilmiş yanıtlar",
+                                primaryColor,
+                                textColor
+                            )
                         }
                     }
-                    
+
                     // Harmonia'yı Özelleştir card
                     Card(
                         modifier = Modifier
@@ -195,7 +212,7 @@ fun ChatIntroScreen(navController: NavController) {
                                     fontFamily = ptSansFont,
                                     modifier = Modifier.weight(1f)
                                 )
-                                
+
                                 Box(
                                     modifier = Modifier
                                         .size(36.dp)
@@ -211,9 +228,9 @@ fun ChatIntroScreen(navController: NavController) {
                                     )
                                 }
                             }
-                            
+
                             Spacer(modifier = Modifier.height(12.dp))
-                            
+
                             Text(
                                 text = "Kişiselleştirme size daha özel bir deneyim sunar. Birkaç basit soru yanıtlayarak Harmonia'nın size daha iyi hizmet etmesini sağlayabilirsiniz.",
                                 fontSize = 15.sp,
@@ -221,34 +238,42 @@ fun ChatIntroScreen(navController: NavController) {
                                 lineHeight = 22.sp,
                                 fontFamily = ptSansFont
                             )
-                            
+
                             Spacer(modifier = Modifier.height(12.dp))
-                            
+
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                BulletPointSmall("Kişiselleştirilmiş tavsiyeler", primaryColor, textColor)
+                                BulletPointSmall(
+                                    "Kişiselleştirilmiş tavsiyeler",
+                                    primaryColor,
+                                    textColor
+                                )
                             }
-                            
+
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 BulletPointSmall("Size özgü yanıtlar", primaryColor, textColor)
                             }
-                            
+
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                BulletPointSmall("Daha uyumlu bir sohbet deneyimi", primaryColor, textColor)
+                                BulletPointSmall(
+                                    "Daha uyumlu bir sohbet deneyimi",
+                                    primaryColor,
+                                    textColor
+                                )
                             }
                         }
                     }
-                    
+
                     Spacer(modifier = Modifier.height(24.dp))
-                    
+
                     // Bottom section with button
                     Button(
                         onClick = { navController.navigate(Screen.ChatScreen.route) },
@@ -278,9 +303,9 @@ fun ChatIntroScreen(navController: NavController) {
                             tint = Color.White
                         )
                     }
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     Text(
                         text = "Harmonia ile ihtiyacınız olan her konuda sohbet edin",
                         fontSize = 14.sp,
@@ -288,7 +313,7 @@ fun ChatIntroScreen(navController: NavController) {
                         textAlign = TextAlign.Center,
                         fontFamily = ptSansFont
                     )
-                    
+
                     Spacer(modifier = Modifier.height(24.dp))
                 }
             }
@@ -300,7 +325,7 @@ fun ChatIntroScreen(navController: NavController) {
 fun CustomizationScreen(onBackClick: () -> Unit) {
     var currentStep by remember { mutableStateOf(0) }
     val steps = listOf("Ülke", "Yaş", "İlişki Durumu", "İnanç Önemi", "İnanç", "Beklenti")
-    
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -326,7 +351,7 @@ fun CustomizationScreen(onBackClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    onClick = { 
+                    onClick = {
                         if (currentStep > 0) {
                             currentStep--
                         } else {
@@ -340,7 +365,7 @@ fun CustomizationScreen(onBackClick: () -> Unit) {
                         tint = harmonyHavenDarkGreenColor
                     )
                 }
-                
+
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "Harmonia'yı Özelleştir",
@@ -349,7 +374,7 @@ fun CustomizationScreen(onBackClick: () -> Unit) {
                         color = harmonyHavenDarkGreenColor,
                         fontFamily = ptSansFont
                     )
-                    
+
                     Text(
                         text = "Adım ${currentStep + 1}/${steps.size}",
                         fontSize = 14.sp,
@@ -358,7 +383,7 @@ fun CustomizationScreen(onBackClick: () -> Unit) {
                     )
                 }
             }
-            
+
             // Progress bar
             LinearProgressIndicator(
                 progress = (currentStep + 1) / steps.size.toFloat(),
@@ -369,9 +394,9 @@ fun CustomizationScreen(onBackClick: () -> Unit) {
                 color = harmonyHavenGreen,
                 trackColor = Color.LightGray.copy(alpha = 0.3f)
             )
-            
+
             Spacer(modifier = Modifier.height(32.dp))
-            
+
             // Question content
             when (currentStep) {
                 0 -> CountrySelectionStep()
@@ -381,9 +406,9 @@ fun CustomizationScreen(onBackClick: () -> Unit) {
                 4 -> ReligionSelectionStep()
                 5 -> ExpectationSelectionStep()
             }
-            
+
             Spacer(modifier = Modifier.weight(1f))
-            
+
             // Navigation buttons
             Row(
                 modifier = Modifier
@@ -413,7 +438,7 @@ fun CustomizationScreen(onBackClick: () -> Unit) {
                         fontWeight = FontWeight.Medium
                     )
                 }
-                
+
                 Button(
                     onClick = {
                         if (currentStep < steps.size - 1) {
@@ -446,8 +471,9 @@ fun CustomizationScreen(onBackClick: () -> Unit) {
 @Composable
 fun CountrySelectionStep() {
     var selectedCountry by remember { mutableStateOf("") }
-    val countries = listOf("Türkiye", "ABD", "Almanya", "Fransa", "Birleşik Krallık", "İtalya", "İspanya")
-    
+    val countries =
+        listOf("Türkiye", "ABD", "Almanya", "Fransa", "Birleşik Krallık", "İtalya", "İspanya")
+
     Column {
         Text(
             text = "Hangi ülkedesin?",
@@ -456,18 +482,18 @@ fun CountrySelectionStep() {
             color = harmonyHavenDarkGreenColor,
             fontFamily = ptSansFont
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = "Bulunduğunuz konuma göre daha uygun yanıtlar almak için ülkenizi seçin.",
             fontSize = 16.sp,
             color = Color.Gray,
             fontFamily = ptSansFont
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -498,9 +524,9 @@ fun CountrySelectionStep() {
                                 selectedColor = harmonyHavenGreen
                             )
                         )
-                        
+
                         Spacer(modifier = Modifier.width(12.dp))
-                        
+
                         Text(
                             text = country,
                             fontSize = 16.sp,
@@ -517,7 +543,7 @@ fun CountrySelectionStep() {
 fun AgeSelectionStep() {
     var selectedAgeRange by remember { mutableStateOf("") }
     val ageRanges = listOf("16-18", "19-24", "25-34", "35+")
-    
+
     Column {
         Text(
             text = "Kaç yaşındasın?",
@@ -526,18 +552,18 @@ fun AgeSelectionStep() {
             color = harmonyHavenDarkGreenColor,
             fontFamily = ptSansFont
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = "Yaş aralığınızı seçerek size daha uygun tavsiyeler almanızı sağlayacağız.",
             fontSize = 16.sp,
             color = Color.Gray,
             fontFamily = ptSansFont
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -568,9 +594,9 @@ fun AgeSelectionStep() {
                                 selectedColor = harmonyHavenGreen
                             )
                         )
-                        
+
                         Spacer(modifier = Modifier.width(12.dp))
-                        
+
                         Text(
                             text = ageRange,
                             fontSize = 16.sp,
@@ -586,8 +612,9 @@ fun AgeSelectionStep() {
 @Composable
 fun RelationshipStatusStep() {
     var selectedStatus by remember { mutableStateOf("") }
-    val relationshipStatuses = listOf("Bekar", "İlişkisi var", "Nişanlı", "Evli", "Boşanmış", "Belirtmek istemiyorum")
-    
+    val relationshipStatuses =
+        listOf("Bekar", "İlişkisi var", "Nişanlı", "Evli", "Boşanmış", "Belirtmek istemiyorum")
+
     Column {
         Text(
             text = "Mevcut ilişki durumun nedir?",
@@ -596,18 +623,18 @@ fun RelationshipStatusStep() {
             color = harmonyHavenDarkGreenColor,
             fontFamily = ptSansFont
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = "İlişki durumunuz hakkında bilgi vererek kişiselleştirilmiş ilişki tavsiyeleri alabilirsiniz.",
             fontSize = 16.sp,
             color = Color.Gray,
             fontFamily = ptSansFont
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -638,9 +665,9 @@ fun RelationshipStatusStep() {
                                 selectedColor = harmonyHavenGreen
                             )
                         )
-                        
+
                         Spacer(modifier = Modifier.width(12.dp))
-                        
+
                         Text(
                             text = status,
                             fontSize = 16.sp,
@@ -659,11 +686,11 @@ fun FaithImportanceStep() {
     val importanceLevels = listOf(
         "Çok önemli - Hayatımın merkezi",
         "Önemli - Düzenli olarak pratik ederim",
-        "Biraz önemli - Zaman zaman pratik ederim", 
+        "Biraz önemli - Zaman zaman pratik ederim",
         "Önemli değil - İnancım var ama pratik etmiyorum",
         "İnanmıyorum"
     )
-    
+
     Column {
         Text(
             text = "İnançlar hayatında ne kadar önemli?",
@@ -672,18 +699,18 @@ fun FaithImportanceStep() {
             color = harmonyHavenDarkGreenColor,
             fontFamily = ptSansFont
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = "İnanç ve değerlerinizin sizin için önem seviyesini belirtin.",
             fontSize = 16.sp,
             color = Color.Gray,
             fontFamily = ptSansFont
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -714,9 +741,9 @@ fun FaithImportanceStep() {
                                 selectedColor = harmonyHavenGreen
                             )
                         )
-                        
+
                         Spacer(modifier = Modifier.width(12.dp))
-                        
+
                         Text(
                             text = level,
                             fontSize = 16.sp,
@@ -733,18 +760,18 @@ fun FaithImportanceStep() {
 fun ReligionSelectionStep() {
     var selectedReligion by remember { mutableStateOf("") }
     val religions = listOf(
-        "İslam", 
-        "Hristiyanlık", 
-        "Musevilik", 
-        "Budizm", 
-        "Hinduizm", 
-        "Spiritüel ama dindar değil", 
-        "Ateizm", 
-        "Agnostisizm", 
+        "İslam",
+        "Hristiyanlık",
+        "Musevilik",
+        "Budizm",
+        "Hinduizm",
+        "Spiritüel ama dindar değil",
+        "Ateizm",
+        "Agnostisizm",
         "Diğer",
         "Belirtmek istemiyorum"
     )
-    
+
     Column {
         Text(
             text = "Mevcut inancın nedir?",
@@ -753,18 +780,18 @@ fun ReligionSelectionStep() {
             color = harmonyHavenDarkGreenColor,
             fontFamily = ptSansFont
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = "İnancınıza uygun tavsiyeler alabilmek için seçim yapın.",
             fontSize = 16.sp,
             color = Color.Gray,
             fontFamily = ptSansFont
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -797,9 +824,9 @@ fun ReligionSelectionStep() {
                                 selectedColor = harmonyHavenGreen
                             )
                         )
-                        
+
                         Spacer(modifier = Modifier.width(12.dp))
-                        
+
                         Text(
                             text = religion,
                             fontSize = 16.sp,
@@ -823,7 +850,7 @@ fun ExpectationSelectionStep() {
         "Pratik tavsiyelerde bulun",
         "Bilgi ve eğitim konusunda destek ol"
     )
-    
+
     Column {
         Text(
             text = "Harmonia'dan ne bekliyorsun?",
@@ -832,18 +859,18 @@ fun ExpectationSelectionStep() {
             color = harmonyHavenDarkGreenColor,
             fontFamily = ptSansFont
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = "Harmonia'dan beklentilerinizi belirterek size nasıl yardımcı olabileceğimizi anlamamıza yardımcı olun.",
             fontSize = 16.sp,
             color = Color.Gray,
             fontFamily = ptSansFont
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -874,9 +901,9 @@ fun ExpectationSelectionStep() {
                                 selectedColor = harmonyHavenGreen
                             )
                         )
-                        
+
                         Spacer(modifier = Modifier.width(12.dp))
-                        
+
                         Text(
                             text = expectation,
                             fontSize = 16.sp,
@@ -903,9 +930,9 @@ private fun BulletPoint(text: String, bulletColor: Color, textColor: Color) {
                 .clip(CircleShape)
                 .background(bulletColor)
         )
-        
+
         Spacer(modifier = Modifier.width(12.dp))
-        
+
         Text(
             text = text,
             fontSize = 15.sp,
@@ -930,9 +957,9 @@ private fun BulletPointSmall(text: String, bulletColor: Color, textColor: Color)
                 .clip(CircleShape)
                 .background(bulletColor)
         )
-        
+
         Spacer(modifier = Modifier.width(10.dp))
-        
+
         Text(
             text = text,
             fontSize = 14.sp,
@@ -959,9 +986,9 @@ private fun ChatHistoryItem(title: String, timestamp: String, preview: String) {
                 .clip(CircleShape)
                 .background(harmonyHavenGreen)
         )
-        
+
         Spacer(modifier = Modifier.width(12.dp))
-        
+
         // Sağ taraftaki içerik
         Column(
             modifier = Modifier.weight(1f)
@@ -979,7 +1006,7 @@ private fun ChatHistoryItem(title: String, timestamp: String, preview: String) {
                     color = Color.Black,
                     fontFamily = ptSansFont
                 )
-                
+
                 Text(
                     text = timestamp,
                     fontSize = 12.sp,
@@ -987,9 +1014,9 @@ private fun ChatHistoryItem(title: String, timestamp: String, preview: String) {
                     fontFamily = ptSansFont
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(4.dp))
-            
+
             // Önizleme metni
             Text(
                 text = preview,
@@ -1005,8 +1032,8 @@ private fun ChatHistoryItem(title: String, timestamp: String, preview: String) {
 
 @Composable
 fun FeatureItem(
-    icon: ImageVector, 
-    title: String, 
+    icon: ImageVector,
+    title: String,
     description: String,
     primaryColor: Color,
     surfaceColor: Color,
@@ -1044,9 +1071,9 @@ fun FeatureItem(
                     modifier = Modifier.size(28.dp)
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
@@ -1055,9 +1082,9 @@ fun FeatureItem(
                     color = primaryColor,
                     fontFamily = ptSansFont
                 )
-                
+
                 Spacer(modifier = Modifier.height(4.dp))
-                
+
                 Text(
                     text = description,
                     fontSize = 14.sp,

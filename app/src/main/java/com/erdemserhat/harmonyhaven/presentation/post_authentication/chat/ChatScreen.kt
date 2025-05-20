@@ -671,8 +671,7 @@ fun ChatHistoryScreen(onBackClick: () -> Unit, viewModel: ChatViewModel = hiltVi
             // Top bar with back button and title
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
