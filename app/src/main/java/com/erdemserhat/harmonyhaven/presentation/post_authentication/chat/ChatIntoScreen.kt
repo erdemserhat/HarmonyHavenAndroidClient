@@ -37,7 +37,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -45,6 +47,7 @@ import kotlinx.coroutines.launch
 fun ChatIntroScreen(navController: NavController) {
     // Color scheme
     val primaryColor = harmonyHavenGreen
+    val darkPrimaryColor = harmonyHavenDarkGreenColor
     val lightGreen = harmonyHavenGreen.copy(alpha = 0.1f)
     val backgroundColor = Color.White
     val textColor = Color(0xFF333333)
@@ -53,7 +56,14 @@ fun ChatIntroScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White,
+                        Color(0xFFF5F7F9)
+                    )
+                )
+            )
     ) {
         Column(
             modifier = Modifier
@@ -70,26 +80,27 @@ fun ChatIntroScreen(navController: NavController) {
                 Box(
                     modifier = Modifier
                         .size(80.dp)
-                        .clip(CircleShape)
+                        .clip(RoundedCornerShape(16.dp))
                         .background(lightGreen),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         painter = painterResource(R.drawable.send_icon),
                         contentDescription = "Assistant",
-                        modifier = Modifier.size(50.dp),
+                        modifier = Modifier.size(48.dp),
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
                     text = "Harmonia ile Tanışın",
                     style = TextStyle(
-                        fontSize = 26.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = primaryColor,
-                        textAlign = TextAlign.Center
+                        color = darkPrimaryColor,
+                        textAlign = TextAlign.Center,
+                        fontFamily = ptSansFont
                     )
                 )
 
@@ -100,7 +111,8 @@ fun ChatIntroScreen(navController: NavController) {
                     fontSize = 16.sp,
                     color = textColor,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    fontFamily = ptSansFont
                 )
             }
             
@@ -109,7 +121,7 @@ fun ChatIntroScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
-                colors = CardDefaults.cardColors(containerColor = cardColor),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -121,12 +133,13 @@ fun ChatIntroScreen(navController: NavController) {
                         text = "Harmonia Özellikleri",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = primaryColor
+                        color = darkPrimaryColor,
+                        fontFamily = ptSansFont
                     )
                     
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                     
-                    BulletPoint("Enneagram kişilik analizi altyapısı (Yakında)", primaryColor, textColor)
+                    BulletPoint("Enneagram kişilik analizi altyapısı", primaryColor, textColor)
                     BulletPoint("Kişisel gelişim ve motivasyon konularında destek", primaryColor, textColor)
                     BulletPoint("Günlük yaşam için pratik tavsiyeler ve yönlendirmeler", primaryColor, textColor)
                     BulletPoint("Sorularınıza akıllı ve kişiselleştirilmiş yanıtlar", primaryColor, textColor)
@@ -143,19 +156,21 @@ fun ChatIntroScreen(navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    shape = RoundedCornerShape(28.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = primaryColor
+                        containerColor = primaryColor,
+                        contentColor = Color.White
                     ),
                     elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = 4.dp
+                        defaultElevation = 2.dp
                     )
                 ) {
                     Text(
                         text = "Sohbete Başla",
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.White
+                        color = Color.White,
+                        fontFamily = ptSansFont
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
@@ -171,7 +186,8 @@ fun ChatIntroScreen(navController: NavController) {
                     text = "Harmonia ile ihtiyacınız olan her konuda sohbet edin",
                     fontSize = 14.sp,
                     color = textColor.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    fontFamily = ptSansFont
                 )
             }
         }
@@ -183,7 +199,7 @@ private fun BulletPoint(text: String, bulletColor: Color, textColor: Color) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -199,7 +215,8 @@ private fun BulletPoint(text: String, bulletColor: Color, textColor: Color) {
             text = text,
             fontSize = 15.sp,
             color = textColor,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            fontFamily = ptSansFont
         )
     }
 }
@@ -253,7 +270,8 @@ fun FeatureItem(
                     text = title,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = primaryColor
+                    color = primaryColor,
+                    fontFamily = ptSansFont
                 )
                 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -262,7 +280,8 @@ fun FeatureItem(
                     text = description,
                     fontSize = 14.sp,
                     color = textColor.copy(alpha = 0.7f),
-                    lineHeight = 20.sp
+                    lineHeight = 20.sp,
+                    fontFamily = ptSansFont
                 )
             }
         }
