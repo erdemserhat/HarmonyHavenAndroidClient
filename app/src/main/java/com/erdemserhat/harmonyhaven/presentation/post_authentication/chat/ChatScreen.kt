@@ -69,6 +69,8 @@ import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.ui.layout.ContentScale
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.LocalGifImage
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -329,15 +331,15 @@ fun WelcomeMessage(onExampleClick: (String) -> Unit) {
         // Harmonia icon
         Box(
             modifier = Modifier
-                .size(80.dp)
+                .size(120.dp)
                 .clip(RoundedCornerShape(20.dp))
                 .background(harmonyHavenGreen.copy(alpha = 0.1f)),
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.send_icon),
-                contentDescription = "Welcome",
-                modifier = Modifier.size(48.dp)
+                contentScale = ContentScale.FillBounds,
+                painter = painterResource(R.drawable.ex),
+                contentDescription = null
             )
         }
 
@@ -572,6 +574,23 @@ fun BotMessageBox(message: String, modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.Top
     ) {
+        // Bot profile picture
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(harmonyHavenGreen.copy(alpha = 0.1f))
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ex),
+                contentDescription = "Bot Profile",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
         Card(
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(

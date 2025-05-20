@@ -1,7 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.chat
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,9 +14,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
@@ -53,9 +55,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.platform.LocalConfiguration
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.LocalGifImage
+import kotlin.math.ceil
 
 @Composable
 fun ChatIntroScreen(navController: NavController) {
@@ -150,22 +157,22 @@ fun ChatIntroScreen(navController: NavController) {
             ) {
                 Box(
                     modifier = Modifier
-                        .size(80.dp)
+                        .size(120.dp)
                         .clip(RoundedCornerShape(16.dp))
                         .background(lightGreen),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(R.drawable.send_icon),
-                        contentDescription = "Assistant",
-                        modifier = Modifier.size(48.dp),
+                        contentScale = ContentScale.FillBounds,
+                        painter = painterResource(R.drawable.ex),
+                        contentDescription = null
                     )
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
-                    text = "Harmonia ile Tanışın",
+                    text = "Serhat, Harmonia Yanında",
                     style = TextStyle(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
@@ -235,10 +242,9 @@ fun ChatIntroScreen(navController: NavController) {
                                 .background(lightGreen),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Create,
+                            Image(
+                                painter = painterResource(R.drawable.chat_message),
                                 contentDescription = "Text Chat",
-                                tint = primaryColor,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -296,10 +302,9 @@ fun ChatIntroScreen(navController: NavController) {
                                     .background(lightGreen),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Share,
+                                Image(
+                                    painter = painterResource(R.drawable.speaker),
                                     contentDescription = "Voice Chat",
-                                    tint = primaryColor,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
@@ -593,6 +598,157 @@ fun FeatureItem(
                     fontFamily = ptSansFont
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun ContinuousScrollingRow(
+    topics: List<String>,
+    isRightToLeft: Boolean,
+    speed: Float,
+    cardColor: Color,
+    textColor: Color
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "scroll")
+    
+    // Fixed spacing for train-like effect
+    val cardSpacing = 8.dp
+    val cardSpacingPx = with(LocalDensity.current) { cardSpacing.toPx() }
+    
+    // Set fixed card width
+    val cardWidth = 120.dp
+    val cardWidthPx = with(LocalDensity.current) { cardWidth.toPx() }
+    
+    // Calculate total width of one cycle
+    val totalItemWidthPx = cardWidthPx + cardSpacingPx
+    val totalWidthPx = topics.size * totalItemWidthPx
+    
+    // Calculate screen width to know how many copies we need
+    val screenWidthPx = LocalConfiguration.current.screenWidthDp * with(LocalDensity.current) { 1.dp.toPx() }
+    val requiredCopies = ceil(screenWidthPx / totalWidthPx + 2).toInt().coerceAtLeast(2)
+    
+    // Animation state
+    val animatedOffset by infiniteTransition.animateValue(
+        initialValue = 0,
+        targetValue = totalWidthPx.toInt(),
+        typeConverter = Int.VectorConverter,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = (totalWidthPx * 100 / speed).toInt(),
+                easing = LinearEasing
+            ),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "scrolling"
+    )
+    
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .clipToBounds()
+    ) {
+        // We'll create multiple copies of the row to ensure perfect looping
+        for (i in 0 until requiredCopies) {
+            val offsetX = if (isRightToLeft) {
+                // For right-to-left: start at right edge, move left
+                -animatedOffset + (i * totalWidthPx).toInt()
+            } else {
+                // For left-to-right: start at left edge, move right
+                animatedOffset - totalWidthPx.toInt() + (i * totalWidthPx).toInt()
+            }
+            
+            Row(
+                modifier = Modifier
+                    .offset { IntOffset(offsetX, 0) }
+                    .wrapContentWidth(),
+                horizontalArrangement = Arrangement.spacedBy(cardSpacing)
+            ) {
+                topics.forEach { topic ->
+                    Topic(
+                        topic = topic,
+                        cardColor = cardColor,
+                        textColor = textColor,
+                        cardWidth = cardWidth
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun Topic(
+    topic: String,
+    cardColor: Color,
+    textColor: Color,
+    cardWidth: Dp
+) {
+    Card(
+        modifier = Modifier
+            .height(46.dp)
+            .width(cardWidth)
+            .clickable { /* Potentially navigate to chat with this topic */ },
+        colors = CardDefaults.cardColors(containerColor = cardColor),
+        shape = RoundedCornerShape(10.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = topic,
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = textColor,
+                    textAlign = TextAlign.Center,
+                    fontFamily = ptSansFont
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+@Composable
+fun TopicCard(
+    topic: String,
+    cardColor: Color,
+    textColor: Color
+) {
+    Card(
+        modifier = Modifier
+            .height(46.dp)
+            .widthIn(min = 100.dp)
+            .wrapContentWidth()
+            .clickable { /* Potentially navigate to chat with this topic */ },
+        colors = CardDefaults.cardColors(containerColor = cardColor),
+        shape = RoundedCornerShape(10.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = topic,
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = textColor,
+                    textAlign = TextAlign.Center,
+                    fontFamily = ptSansFont
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
