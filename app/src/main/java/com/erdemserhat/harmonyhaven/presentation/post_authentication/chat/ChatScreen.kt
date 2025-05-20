@@ -188,10 +188,10 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                         .padding(top = 60.dp, bottom = 80.dp)
                         .padding(horizontal = 16.dp),
                     state = listState,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     item {
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
                     }
                     
                     if (state.value.messages.isEmpty() && state.value.currentMessage.isEmpty()) {
@@ -238,7 +238,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                     }
                     
                     item {
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
 
@@ -281,21 +281,31 @@ fun WelcomeMessage(onExampleClick: (String) -> Unit) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.send_icon),
-            contentDescription = "Welcome",
+        // Harmonia icon
+        Box(
             modifier = Modifier
                 .size(80.dp)
-                .padding(bottom = 16.dp)
-        )
+                .clip(RoundedCornerShape(20.dp))
+                .background(harmonyHavenGreen.copy(alpha = 0.1f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.send_icon),
+                contentDescription = "Welcome",
+                modifier = Modifier.size(48.dp)
+            )
+        }
+        
+        Spacer(modifier = Modifier.height(20.dp))
         
         Text(
             text = "Merhaba! Size nasıl yardımcı olabilirim?",
             style = TextStyle(
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
-                color = Color.DarkGray
+                color = harmonyHavenDarkGreenColor,
+                fontFamily = ptSansFont
             )
         )
         
@@ -304,20 +314,22 @@ fun WelcomeMessage(onExampleClick: (String) -> Unit) {
         Text(
             text = "Herhangi bir konuda soru sorabilirsiniz",
             style = TextStyle(
-                fontSize = 14.sp,
+                fontSize = 15.sp,
                 color = Color.Gray,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontFamily = ptSansFont
             )
         )
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(28.dp))
         
         Text(
             text = "Örnek Sorular:",
             style = TextStyle(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.DarkGray
+                color = harmonyHavenDarkGreenColor,
+                fontFamily = ptSansFont
             )
         )
         
@@ -338,7 +350,7 @@ fun ExampleMessageChip(message: String, onClick: (String) -> Unit) {
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .clickable { onClick(message) },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = harmonyHavenGreen.copy(alpha = 0.1f)
         ),
@@ -347,23 +359,24 @@ fun ExampleMessageChip(message: String, onClick: (String) -> Unit) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 12.dp, horizontal = 16.dp),
+                .padding(vertical = 10.dp, horizontal = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = Icons.Default.Send,
                 contentDescription = null,
                 tint = harmonyHavenGreen,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(16.dp)
             )
             
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(10.dp))
             
             Text(
                 text = message,
                 style = TextStyle(
                     fontSize = 14.sp,
-                    color = Color.DarkGray
+                    color = harmonyHavenDarkGreenColor,
+                    fontFamily = ptSansFont
                 ),
                 modifier = Modifier.weight(1f)
             )
@@ -399,16 +412,16 @@ fun InputField(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp , vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(24.dp)),
+                .shadow(elevation = 4.dp, shape = RoundedCornerShape(20.dp)),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
             ),
-            shape = RoundedCornerShape(24.dp)
+            shape = RoundedCornerShape(20.dp)
         ) {
             Row(
                 modifier = Modifier
@@ -419,7 +432,7 @@ fun InputField(
                 TextField(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(24.dp))
+                        .clip(RoundedCornerShape(20.dp))
                         .onFocusChanged { focusState ->
                             onFocusChange(focusState.isFocused)
                         },
@@ -428,7 +441,9 @@ fun InputField(
                     placeholder = {
                         Text(
                             text = "Mesajınızı buraya girin",
-                            color = Color.Gray
+                            color = Color.Gray,
+                            fontFamily = ptSansFont,
+                            fontSize = 15.sp
                         )
                     },
                     colors = TextFieldDefaults.colors(
@@ -443,17 +458,18 @@ fun InputField(
                         )
                     ),
                     textStyle = TextStyle(
-                        color = Color.Black,
-                        fontSize = 16.sp
+                        color = Color.DarkGray,
+                        fontSize = 15.sp,
+                        fontFamily = ptSansFont
                     ),
                     maxLines = 3
                 )
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(4.dp))
 
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(42.dp)
                         .clip(CircleShape)
                         .background(
                             if (text.isNotBlank() && !isLoading) harmonyHavenGreen
@@ -461,8 +477,9 @@ fun InputField(
                         )
                         .clickable(enabled = text.isNotBlank() && !isLoading) {
                             onSend(text)
+                            keyboardController?.hide()
                         }
-                        .padding(12.dp),
+                        .padding(8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -470,7 +487,7 @@ fun InputField(
                         contentDescription = "Send",
                         tint = Color.White,
                         modifier = Modifier
-                            .size(24.dp)
+                            .size(20.dp)
                             .rotate(-45f)
                             .scale(sendButtonScale.value)
                     )
@@ -488,27 +505,29 @@ fun BotMessageBox(message: String, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(end = 64.dp),
-        horizontalArrangement = Arrangement.Start
+            .padding(end = 64.dp, bottom = 4.dp),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.Top
     ) {
         Card(
             shape = RoundedCornerShape(
                 topStart = 4.dp,
-                topEnd = 16.dp,
-                bottomEnd = 16.dp,
-                bottomStart = 16.dp
+                topEnd = 12.dp,
+                bottomEnd = 12.dp,
+                bottomStart = 12.dp
             ),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
             ),
             elevation = CardDefaults.cardElevation(
-                defaultElevation = 2.dp
+                defaultElevation = 1.dp
             )
         ) {
             val customStyle = TextStyle(
-                fontSize = 16.sp,
-                color = Color.Black,
-                lineHeight = 24.sp  // Satır yüksekliğini artırarak okunabilirliği iyileştir
+                fontSize = 15.sp,
+                color = Color.DarkGray,
+                lineHeight = 22.sp,
+                fontFamily = ptSansFont
             )
 
             // Markdown text renderlama
@@ -526,28 +545,32 @@ fun UserMessageBox(message: String = "", modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 64.dp),
-        horizontalArrangement = Arrangement.End
+            .padding(start = 64.dp, bottom = 4.dp),
+        horizontalArrangement = Arrangement.End,
     ) {
         Card(
             shape = RoundedCornerShape(
-                topStart = 16.dp,
+                topStart = 12.dp,
                 topEnd = 4.dp,
-                bottomEnd = 16.dp,
-                bottomStart = 16.dp
+                bottomEnd = 12.dp,
+                bottomStart = 12.dp
             ),
             colors = CardDefaults.cardColors(
                 containerColor = harmonyHavenGreen
             ),
             elevation = CardDefaults.cardElevation(
-                defaultElevation = 2.dp
+                defaultElevation = 1.dp
             )
         ) {
             Text(
                 text = message,
                 color = Color.White,
                 modifier = Modifier.padding(12.dp),
-                style = TextStyle(fontSize = 16.sp)
+                style = TextStyle(
+                    fontSize = 15.sp, 
+                    fontFamily = ptSansFont,
+                    lineHeight = 22.sp
+                )
             )
         }
     }
@@ -557,21 +580,21 @@ fun UserMessageBox(message: String = "", modifier: Modifier = Modifier) {
 fun TypingIndicator() {
     Row(
         modifier = Modifier
-            .padding(end = 64.dp)
-            .padding(start = 8.dp),
-        horizontalArrangement = Arrangement.Start
+            .padding(end = 64.dp, bottom = 4.dp),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Card(
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
             ),
             elevation = CardDefaults.cardElevation(
-                defaultElevation = 2.dp
+                defaultElevation = 1.dp
             )
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 BouncingDots()
