@@ -825,23 +825,61 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
             onDismissRequest = { showBottomSheet = false },
             sheetState = bottomSheetState,
             containerColor = Color.White,
-            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 32.dp)
+                    .padding(bottom = 40.dp)
             ) {
-                // Header
+                // Header with icon
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(60.dp)
+                            .background(
+                                color = harmonyHavenGreen.copy(alpha = 0.1f),
+                                shape = RoundedCornerShape(12.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.enneagram_black),
+                            contentDescription = "Enneagram Icon",
+                            tint = harmonyHavenGreen,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                }
+                
+                // Title
                 Text(
                     text = "Test Modunu Seçin",
-                    fontSize = 22.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = harmonyHavenDarkGreenColor,
                     fontFamily = ptSansFont,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp, vertical = 16.dp),
+                    textAlign = TextAlign.Center
+                )
+                
+                // Subtitle
+                Text(
+                    text = "Test türünü seçerek kişilik analizinizi başlatın",
+                    fontSize = 16.sp,
+                    color = Color.DarkGray,
+                    fontFamily = ptSansFont,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = 16.dp),
                     textAlign = TextAlign.Center
                 )
                 
@@ -856,7 +894,7 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 8.dp)
+                        .padding(horizontal = 24.dp, vertical = 16.dp)
                 ) {
                     // Basit Test - Active
                     TestModeSelectionItem(
@@ -890,6 +928,29 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                         comingSoonText = "Yakında",
                         onClick = {}
                     )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Cancel button
+                    Button(
+                        onClick = { showBottomSheet = false },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.LightGray.copy(alpha = 0.3f),
+                            contentColor = Color.DarkGray
+                        ),
+                        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+                    ) {
+                        Text(
+                            text = "Vazgeç",
+                            fontSize = 16.sp,
+                            fontFamily = ptSansFont,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
         }
@@ -1278,10 +1339,10 @@ fun TestModeSelectionItem(
             .clickable(enabled = isEnabled, onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isEnabled) Color.White else Color.White.copy(alpha = 0.9f)
+            containerColor = if (isEnabled) Color.White else Color(0xFFF8F8F8)
         ),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, if (isEnabled) harmonyHavenGreen.copy(alpha = 0.3f) else Color.Gray.copy(alpha = 0.3f))
+        border = BorderStroke(1.dp, if (isEnabled) harmonyHavenGreen.copy(alpha = 0.3f) else Color.Gray.copy(alpha = 0.2f))
     ) {
         Box {
             Row(
@@ -1290,23 +1351,37 @@ fun TestModeSelectionItem(
                     .padding(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Icon
+                // Icon with gradient background for enabled items
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (isEnabled) harmonyHavenGreen.copy(alpha = 0.1f) else Color.Gray.copy(
-                                alpha = 0.1f
-                            )
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background( brush =
+                            if (isEnabled) 
+                                Brush.linearGradient(
+                                    colors = listOf(
+                                        harmonyHavenGreen.copy(alpha = 0.15f),
+                                        harmonyHavenGreen.copy(alpha = 0.05f)
+                                    )
+                                )
+                            else
+                                Brush.linearGradient(
+                                    colors = listOf(
+                                        Color.Gray.copy(alpha = 0.1f),
+                                        Color.Gray.copy(alpha = 0.1f)
+                                    )
+                                )
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.check),
-                        contentDescription = "Icon",
-                        tint = if (isEnabled) harmonyHavenGreen else Color.Gray,
-                        modifier = Modifier.size(24.dp)
+                    // Use a dot icon for all test types
+                    Box(
+                        modifier = Modifier
+                            .size(20.dp)
+                            .background(
+                                color = if (isEnabled) harmonyHavenGreen else Color.Gray,
+                                shape = CircleShape
+                            )
                     )
                 }
                 
@@ -1324,25 +1399,36 @@ fun TestModeSelectionItem(
                         fontFamily = ptSansFont
                     )
                     
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
                     
                     Text(
                         text = description,
                         fontSize = 14.sp,
                         color = if (isEnabled) Color.DarkGray else Color.Gray,
-                        fontFamily = ptSansFont
+                        fontFamily = ptSansFont,
+                        lineHeight = 20.sp
                     )
                 }
                 
                 if (isEnabled) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow_back),
-                        contentDescription = "Başla",
-                        tint = harmonyHavenGreen,
+                    Box(
                         modifier = Modifier
-                            .size(28.dp)
-                            .rotate(180f)
-                    )
+                            .size(40.dp)
+                            .background(
+                                color = harmonyHavenGreen.copy(alpha = 0.1f),
+                                shape = RoundedCornerShape(10.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_back),
+                            contentDescription = "Başla",
+                            tint = harmonyHavenGreen,
+                            modifier = Modifier
+                                .size(20.dp)
+                                .rotate(180f)
+                        )
+                    }
                 }
             }
             
@@ -1353,7 +1439,7 @@ fun TestModeSelectionItem(
                         .align(Alignment.TopEnd)
                         .padding(12.dp)
                         .background(
-                            color = harmonyHavenGreen.copy(alpha = 0.2f),
+                            color = harmonyHavenGreen.copy(alpha = 0.1f),
                             shape = RoundedCornerShape(8.dp)
                         )
                         .padding(horizontal = 10.dp, vertical = 5.dp)
