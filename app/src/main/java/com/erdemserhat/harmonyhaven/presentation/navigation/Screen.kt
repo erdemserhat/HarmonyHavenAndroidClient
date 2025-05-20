@@ -28,6 +28,7 @@ sealed class Screen(val route: String) {
     data object Test : Screen("test_screen")
     data object QuoteShareScreen : Screen("quote_share_screen")
     data object ChatScreen : Screen("chat_screen")
+    data object ChatHistoryScreen : Screen("chat_history_screen")
     data object ChatIntroScreen : Screen("chat_intro_screen")
     data object EnneagramTestScreen : Screen("enneagram_test_screen")
     data object EnneagramIntroScreen : Screen("enneagram_intro_screen")

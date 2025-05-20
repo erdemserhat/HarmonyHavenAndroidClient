@@ -63,7 +63,7 @@ fun ChatIntroScreen(navController: NavController) {
     val backgroundColor = Color.White
     val textColor = Color(0xFF333333)
     val cardColor = Color(0xFFF9F9F9)
-
+    
     // State for showing the customization screen
     var showCustomizationScreen by remember { mutableStateOf(false) }
 
@@ -75,9 +75,9 @@ fun ChatIntroScreen(navController: NavController) {
         }
 
         else -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
@@ -86,77 +86,77 @@ fun ChatIntroScreen(navController: NavController) {
                             )
                         )
                     )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
                         .padding(horizontal = 24.dp)
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Top section with title and icon
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(top = 32.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(80.dp)
+        ) {
+            // Top section with title and icon
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(top = 32.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(80.dp)
                                 .clip(RoundedCornerShape(16.dp))
-                                .background(lightGreen),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.send_icon),
-                                contentDescription = "Assistant",
+                        .background(lightGreen),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.send_icon),
+                        contentDescription = "Assistant",
                                 modifier = Modifier.size(48.dp),
-                            )
-                        }
+                    )
+                }
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        Text(
-                            text = "Harmonia ile Tanışın",
-                            style = TextStyle(
+                Text(
+                    text = "Harmonia ile Tanışın",
+                    style = TextStyle(
                                 fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Bold,
                                 color = darkPrimaryColor,
                                 textAlign = TextAlign.Center,
                                 fontFamily = ptSansFont
-                            )
-                        )
+                    )
+                )
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                        Text(
-                            text = "Size destek olmak ve tavsiye vermek için tasarlanmış özel asistanınız",
-                            fontSize = 16.sp,
-                            color = textColor,
-                            textAlign = TextAlign.Center,
+                Text(
+                    text = "Size destek olmak ve tavsiye vermek için tasarlanmış özel asistanınız",
+                    fontSize = 16.sp,
+                    color = textColor,
+                    textAlign = TextAlign.Center,
                             modifier = Modifier.padding(horizontal = 16.dp),
                             fontFamily = ptSansFont
-                        )
-                    }
-
+                )
+            }
+            
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // Harmonia Özellikleri card
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
                             .padding(vertical = 8.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(20.dp),
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                text = "Harmonia Özellikleri",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.SemiBold,
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        text = "Harmonia Özellikleri",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
                                 color = darkPrimaryColor,
                                 fontFamily = ptSansFont
                             )
@@ -237,10 +237,10 @@ fun ChatIntroScreen(navController: NavController) {
                                 color = textColor,
                                 lineHeight = 22.sp,
                                 fontFamily = ptSansFont
-                            )
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
+                    )
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth()
@@ -273,43 +273,43 @@ fun ChatIntroScreen(navController: NavController) {
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
-
-                    // Bottom section with button
-                    Button(
-                        onClick = { navController.navigate(Screen.ChatScreen.route) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
+            
+            // Bottom section with button
+                Button(
+                    onClick = { navController.navigate(Screen.ChatScreen.route) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
+                    colors = ButtonDefaults.buttonColors(
                             containerColor = primaryColor,
                             contentColor = Color.White
-                        ),
-                        elevation = ButtonDefaults.buttonElevation(
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(
                             defaultElevation = 2.dp
-                        )
-                    ) {
-                        Text(
-                            text = "Sohbete Başla",
+                    )
+                ) {
+                    Text(
+                        text = "Sohbete Başla",
                             fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
+                        fontWeight = FontWeight.Medium,
                             color = Color.White,
                             fontFamily = ptSansFont
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            imageVector = Icons.Default.ArrowForward,
-                            contentDescription = "Start",
-                            tint = Color.White
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "Harmonia ile ihtiyacınız olan her konuda sohbet edin",
-                        fontSize = 14.sp,
-                        color = textColor.copy(alpha = 0.7f),
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "Start",
+                        tint = Color.White
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Text(
+                    text = "Harmonia ile ihtiyacınız olan her konuda sohbet edin",
+                    fontSize = 14.sp,
+                    color = textColor.copy(alpha = 0.7f),
                         textAlign = TextAlign.Center,
                         fontFamily = ptSansFont
                     )
@@ -930,9 +930,9 @@ private fun BulletPoint(text: String, bulletColor: Color, textColor: Color) {
                 .clip(CircleShape)
                 .background(bulletColor)
         )
-
+        
         Spacer(modifier = Modifier.width(12.dp))
-
+        
         Text(
             text = text,
             fontSize = 15.sp,
@@ -1032,8 +1032,8 @@ private fun ChatHistoryItem(title: String, timestamp: String, preview: String) {
 
 @Composable
 fun FeatureItem(
-    icon: ImageVector,
-    title: String,
+    icon: ImageVector, 
+    title: String, 
     description: String,
     primaryColor: Color,
     surfaceColor: Color,
@@ -1071,9 +1071,9 @@ fun FeatureItem(
                     modifier = Modifier.size(28.dp)
                 )
             }
-
+            
             Spacer(modifier = Modifier.width(16.dp))
-
+            
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
@@ -1082,9 +1082,9 @@ fun FeatureItem(
                     color = primaryColor,
                     fontFamily = ptSansFont
                 )
-
+                
                 Spacer(modifier = Modifier.height(4.dp))
-
+                
                 Text(
                     text = description,
                     fontSize = 14.sp,
