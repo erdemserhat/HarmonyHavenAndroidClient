@@ -122,8 +122,8 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFFF8F9FA),
-                        Color(0xFFE9ECEF)
+                        Color.White,
+                        Color(0xFFF5F7F9)
                     )
                 )
             )
@@ -233,6 +233,12 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
         // Messages
         LazyColumn(
             modifier = Modifier
+                .background( Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White,
+                        Color(0xFFF5F7F9)
+                    )
+                ))
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp),
@@ -299,7 +305,15 @@ fun WelcomeMessage(onExampleClick: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(16.dp)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White,
+                        Color(0xFFF5F7F9)
+                    )
+                )
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Harmonia icon
@@ -376,7 +390,7 @@ fun ExampleMessageChip(message: String, onClick: (String) -> Unit) {
             .clickable { onClick(message) },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = harmonyHavenGreen.copy(alpha = 0.1f)
+            containerColor = Color.White.copy(alpha = 0.7f)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -392,9 +406,9 @@ fun ExampleMessageChip(message: String, onClick: (String) -> Unit) {
                 tint = harmonyHavenGreen,
                 modifier = Modifier.size(16.dp)
             )
-
+            
             Spacer(modifier = Modifier.width(10.dp))
-
+            
             Text(
                 text = message,
                 style = TextStyle(
@@ -549,12 +563,7 @@ fun BotMessageBox(message: String, modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.Top
     ) {
         Card(
-            shape = RoundedCornerShape(
-                topStart = 4.dp,
-                topEnd = 12.dp,
-                bottomEnd = 12.dp,
-                bottomStart = 12.dp
-            ),
+            shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
             ),
@@ -619,6 +628,7 @@ fun UserMessageBox(message: String = "", modifier: Modifier = Modifier) {
 fun TypingIndicator() {
     Row(
         modifier = Modifier
+            .fillMaxWidth()
             .padding(end = 64.dp, bottom = 4.dp),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically

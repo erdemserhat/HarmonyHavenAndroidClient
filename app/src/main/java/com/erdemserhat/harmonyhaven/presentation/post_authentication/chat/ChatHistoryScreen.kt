@@ -40,7 +40,7 @@ fun ChatHistoryScreen(navController: NavController, viewModel: ChatViewModel = h
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(
+                Brush.verticalGradient(
                     colors = listOf(
                         Color.White,
                         Color(0xFFF5F7F9)
@@ -72,12 +72,23 @@ fun ChatHistoryScreen(navController: NavController, viewModel: ChatViewModel = h
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background( Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White,
+                        Color(0xFFF5F7F9)
+                    )
+                ))
                 .padding(paddingValues)
                 .padding(horizontal = 24.dp)
         ) {
             // Search bar and New Chat button in same row
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                       Color.Transparent
+                    )
+                    .padding(bottom = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -95,6 +106,10 @@ fun ChatHistoryScreen(navController: NavController, viewModel: ChatViewModel = h
                             tint = Color.Gray
                         )
                     },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
+                    ),
                     singleLine = true
                 )
                 
@@ -126,7 +141,16 @@ fun ChatHistoryScreen(navController: NavController, viewModel: ChatViewModel = h
             
             // Chat history list with grouping by date
             LazyColumn(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.White,
+                                Color(0xFFF5F7F9)
+                            )
+                        )
+                    )
             ) {
                 items(20) { index ->
                     val isToday = index < 3
@@ -245,7 +269,8 @@ private fun DetailedChatHistoryItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 8.dp),
+            .padding(vertical = 8.dp)
+            .background(Color.White.copy(alpha = 0.5f)),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Left side dot indicator
