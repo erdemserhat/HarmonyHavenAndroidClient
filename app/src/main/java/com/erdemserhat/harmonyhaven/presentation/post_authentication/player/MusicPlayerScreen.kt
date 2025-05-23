@@ -33,24 +33,30 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -97,6 +103,14 @@ fun MusicPlayerScreen(
     var currentPositionText by remember { mutableStateOf("0:00") }
     val animatedProgress by animateFloatAsState(targetValue = progress, label = "progress")
     
+    // Timer related states
+    var showTimerBottomSheet by remember { mutableStateOf(false) }
+    val timerSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var selectedHours by remember { mutableIntStateOf(0) }
+    var selectedMinutes by remember { mutableIntStateOf(0) }
+    var timerActive by remember { mutableStateOf(false) }
+    var remainingTime by remember { mutableStateOf<Long?>(null) }
+    
     // Loading state
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -107,6 +121,21 @@ fun MusicPlayerScreen(
     
     // Debugging state
     var debugMessage by remember { mutableStateOf("Bağlanıyor...") }
+    
+    // Timer countdown effect
+    LaunchedEffect(remainingTime, timerActive) {
+        if (timerActive && remainingTime != null && remainingTime!! > 0) {
+            delay(1000)
+            remainingTime = remainingTime!! - 1
+            
+            // When timer reaches 0, stop the music
+            if (remainingTime == 0L) {
+                mediaPlayerService?.pause()
+                timerActive = false
+                remainingTime = null
+            }
+        }
+    }
     
     // Define service connection
     val serviceConnection = remember {
@@ -505,20 +534,146 @@ fun MusicPlayerScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         IconButton(
-                            onClick = { /* Sleep timer */ },
+                            onClick = { showTimerBottomSheet = true },
                             enabled = !isLoading
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Star,
                                 contentDescription = "Sleep Timer",
-                                tint = Color.White.copy(alpha = 0.7f)
+                                tint = if (timerActive) harmonyHavenGreen else Color.White.copy(alpha = 0.7f)
                             )
                         }
                         Text(
-                            text = "Uyku Zamanlayıcı",
-                            color = Color.White.copy(alpha = 0.7f),
+                            text = if (timerActive && remainingTime != null) {
+                                val hours = remainingTime!! / 3600
+                                val minutes = (remainingTime!! % 3600) / 60
+                                val seconds = remainingTime!! % 60
+                                if (hours > 0) {
+                                    String.format("%d:%02d:%02d", hours, minutes, seconds)
+                                } else {
+                                    String.format("%02d:%02d", minutes, seconds)
+                                }
+                            } else "Uyku Zamanlayıcı",
+                            color = if (timerActive) harmonyHavenGreen else Color.White.copy(alpha = 0.7f),
                             fontSize = 12.sp
                         )
+                    }
+                }
+            }
+        }
+
+        // Timer Bottom Sheet
+        if (showTimerBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showTimerBottomSheet = false },
+                sheetState = timerSheetState,
+                containerColor = Color.Black.copy(alpha = 0.95f),
+                scrimColor = Color.Black.copy(alpha = 0.4f),
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "Uyku Zamanlayıcı",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 24.dp)
+                    )
+
+                    // Hours selector
+                    Text(
+                        "Saat",
+                        color = Color.White.copy(alpha = 0.7f),
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Slider(
+                        value = selectedHours.toFloat(),
+                        onValueChange = { selectedHours = it.toInt() },
+                        valueRange = 0f..12f,
+                        steps = 11,
+                        colors = SliderDefaults.colors(
+                            thumbColor = harmonyHavenGreen,
+                            activeTrackColor = harmonyHavenGreen,
+                            inactiveTrackColor = Color.White.copy(alpha = 0.2f)
+                        )
+                    )
+                    Text(
+                        "$selectedHours saat",
+                        color = Color.White,
+                        modifier = Modifier.padding(bottom = 24.dp)
+                    )
+
+                    // Minutes selector
+                    Text(
+                        "Dakika",
+                        color = Color.White.copy(alpha = 0.7f),
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Slider(
+                        value = selectedMinutes.toFloat(),
+                        onValueChange = { selectedMinutes = it.toInt() },
+                        valueRange = 0f..55f,
+                        steps = 11,
+                        colors = SliderDefaults.colors(
+                            thumbColor = harmonyHavenGreen,
+                            activeTrackColor = harmonyHavenGreen,
+                            inactiveTrackColor = Color.White.copy(alpha = 0.2f)
+                        )
+                    )
+                    Text(
+                        "$selectedMinutes dakika",
+                        color = Color.White,
+                        modifier = Modifier.padding(bottom = 32.dp)
+                    )
+
+                    // Start timer button
+                    Button(
+                        onClick = {
+                            val totalSeconds = (selectedHours * 3600 + selectedMinutes * 60).toLong()
+                            if (totalSeconds > 0) {
+                                remainingTime = totalSeconds
+                                timerActive = true
+                                showTimerBottomSheet = false
+                            } else {
+                                Toast.makeText(context, "Lütfen bir süre seçin", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = harmonyHavenGreen
+                        ),
+                        shape = RoundedCornerShape(28.dp)
+                    ) {
+                        Text(
+                            if (timerActive) "Zamanlayıcıyı Güncelle" else "Zamanlayıcıyı Başlat",
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    if (timerActive) {
+                        TextButton(
+                            onClick = {
+                                timerActive = false
+                                remainingTime = null
+                                showTimerBottomSheet = false
+                            },
+                            modifier = Modifier.padding(top = 8.dp)
+                        ) {
+                            Text(
+                                "Zamanlayıcıyı İptal Et",
+                                color = Color.Red,
+                                fontSize = 14.sp
+                            )
+                        }
                     }
                 }
             }
