@@ -201,15 +201,13 @@ fun MoodSelectorContent(
 ) {
     val moods = remember {
         listOf(
-            MoodOption(1, "Mutlu", "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?q=80&w=300"),
-            MoodOption(2, "Keyifli", "https://images.unsplash.com/photo-1546190255-451a91afc548?q=80&w=300"),
-            MoodOption(3, "Sakin", "https://images.unsplash.com/photo-1587300003388-59208cc962cb?q=80&w=300"),
-            MoodOption(4, "Öfkeli", "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?q=80&w=300"),
-            MoodOption(5, "Tükenmiş", "https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=300"),
-            MoodOption(6, "Üzgün", "https://images.unsplash.com/photo-1611003228941-98852ba62227?q=80&w=300"),
-            MoodOption(7, "Mutsuz", "https://images.unsplash.com/photo-1573865526739-10659fec78a5?q=80&w=300"),
-            MoodOption(8, "Yorgun", "https://images.unsplash.com/photo-1548681528-6a5c45b66b42?q=80&w=300"),
-            MoodOption(9, "Heyecanlı", "https://images.unsplash.com/photo-1583511655826-05700442b31b?q=80&w=300")
+            MoodOption(1, "Mutlu", "https://harmonyhavenapp.com/sources/moods/happy.png"),
+            MoodOption(3, "Sakin", "https://harmonyhavenapp.com/sources/moods/calm.png"),
+            MoodOption(4, "Öfkeli", "https://harmonyhavenapp.com/sources/moods/angry.png"),
+            MoodOption(5, "Tükenmiş", "https://harmonyhavenapp.com/sources/moods/exhausted.png"),
+            MoodOption(7, "Üzgün", "https://harmonyhavenapp.com/sources/moods/unhappy.png"),
+            MoodOption(8, "Yorgun", "https://harmonyhavenapp.com/sources/moods/tired.png"),
+            MoodOption(9, "Heyecanlı", "https://harmonyhavenapp.com/sources/moods/pleasant.png")
         )
     }
 

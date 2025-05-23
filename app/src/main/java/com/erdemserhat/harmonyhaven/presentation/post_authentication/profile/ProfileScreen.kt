@@ -411,7 +411,7 @@ fun ProfileHeader(userName: String) {
     ) {
         // Background Image - using AsyncImage for remote URL loading
         AsyncImage(
-            model = "https://images.pexels.com/photos/2469122/pexels-photo-2469122.jpeg", // Starry sky image
+            model = "https://harmonyhavenapp.com/sources/set-bg.png", // Starry sky image
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = androidx.compose.ui.layout.ContentScale.Crop
