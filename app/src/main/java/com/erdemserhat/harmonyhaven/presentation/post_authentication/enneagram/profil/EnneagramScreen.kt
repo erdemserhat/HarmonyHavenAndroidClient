@@ -195,6 +195,7 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                         profileScreenState.result?.detailedResult?.let { result ->
 
                             // MOVED HERE: New Section - Relationship Compatibility
+                            /*
                             Text(
                                 text = "Diğer Tiplerle İlişki Durumu",
                                 fontSize = 20.sp,
@@ -508,6 +509,7 @@ fun EnneagramScreen(navController: NavController, profileScreenViewModel: UserPr
                             }
 
                             Spacer(modifier = Modifier.height(24.dp))
+                            */
 
                             // Main Result Card - Removed repeated type number and image
                             Card(

@@ -288,6 +288,7 @@ fun HomeScreenContentNew(
             }
             
             // Routines Section
+            /*
             Spacer(modifier = Modifier.height(24.dp))
             
             Text(
@@ -356,6 +357,7 @@ fun HomeScreenContentNew(
                     )
                 }
             }
+            */
 
             // Chat with Harmonia Section
             Spacer(modifier = Modifier.height(24.dp))

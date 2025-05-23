@@ -163,6 +163,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                     }
                 },
                 actions = {
+                    /*
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -197,6 +198,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavCon
                             )
                         }
                     }
+                    */
                 }
             )
         },
