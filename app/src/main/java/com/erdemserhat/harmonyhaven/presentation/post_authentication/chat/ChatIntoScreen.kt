@@ -61,6 +61,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreenViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.LocalGifImage
 import kotlin.math.ceil
 
@@ -73,6 +75,8 @@ fun ChatIntroScreen(navController: NavController) {
     val backgroundColor = Color.White
     val textColor = Color(0xFF333333)
     val cardColor = Color(0xFFF9F9F9)
+    val userViewModel:UserProfileScreenViewModel = hiltViewModel()
+    val name = userViewModel.state.value.username
 
     Scaffold(
         modifier = Modifier
@@ -145,8 +149,7 @@ fun ChatIntroScreen(navController: NavController) {
                         Color(0xFFF5F7F9)
                     )
                 ))
-                .padding(paddingValues)
-                .padding(top = 24.dp)
+                .padding()
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -157,6 +160,7 @@ fun ChatIntroScreen(navController: NavController) {
             ) {
                 Box(
                     modifier = Modifier
+                        .padding(top = 20.dp)
                         .size(120.dp)
                         .clip(RoundedCornerShape(16.dp))
                         .background(lightGreen),
@@ -172,7 +176,7 @@ fun ChatIntroScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
-                    text = "Serhat, Harmonia Yanında",
+                    text = "$name, Harmonia Yanında",
                     style = TextStyle(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,

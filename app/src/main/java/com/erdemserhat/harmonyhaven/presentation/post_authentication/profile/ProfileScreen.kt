@@ -83,6 +83,8 @@ import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import androidx.compose.foundation.combinedClickable
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreenViewModel
 
 // Function to start Google Play In-App review flow
 private fun startInAppReview(activity: Activity) {
@@ -118,7 +120,7 @@ private fun openPlayStoreForRating(context: Context) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(navController: NavController, userViewModel : UserProfileScreenViewModel = hiltViewModel()) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     
@@ -153,7 +155,7 @@ fun ProfileScreen(navController: NavController) {
                 .verticalScroll(scrollState)
         ) {
             // Profile Header with Image
-            ProfileHeader(userName = "Serhat")
+            ProfileHeader(userName = userViewModel.state.value.username?:"")
             
             // User stats card
 

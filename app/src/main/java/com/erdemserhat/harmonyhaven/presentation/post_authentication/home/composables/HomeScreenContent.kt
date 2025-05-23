@@ -58,6 +58,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.R
@@ -65,6 +66,7 @@ import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
 import com.erdemserhat.harmonyhaven.domain.model.rest.Category
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreenViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.cards.ArticleCard
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.cards.ArticleSearchBarCard
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.player.MeditationMusic
@@ -106,7 +108,10 @@ fun HomeScreenContentNew(
     val scrollState = rememberScrollState()
     val enneagramArticles = articles.filter { it.category == "Enneagram" }
     val nonEnneagramArticles = articles.filter { it.category != "Enneagram" }
-    
+
+    val userViewModel : UserProfileScreenViewModel = hiltViewModel()
+
+
     // Get latest 4 articles for auto-slider
     val latestArticles = articles.take(4)
     
@@ -188,7 +193,11 @@ fun HomeScreenContentNew(
             // Intro Card
             HomeScreenIntroCard( onNotificationClick = {
                 navController.navigate(Screen.Notification.route)
-            })
+            },
+                userName = userViewModel.state.value.username?:""
+
+
+            )
             
             // Latest Content Auto-Slider
             Spacer(modifier = Modifier.height(16.dp))

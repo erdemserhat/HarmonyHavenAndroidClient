@@ -69,10 +69,10 @@ data class MoodOption(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenIntroCard(
-    userName: String = "Serhat",
+    userName: String = "",
     quoteText: String = "Tekrar iyi hissetmekten bir düşünce uzaktayız.",
     onNotificationClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var showMoodSelector by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
@@ -176,7 +176,8 @@ fun HomeScreenIntroCard(
                         sheetState.hide()
                         showMoodSelector = false
                     }
-                }
+                },
+                name = userName
             )
         }
     }
@@ -185,7 +186,8 @@ fun HomeScreenIntroCard(
 @Composable
 fun MoodSelectorContent(
     selectedMoodId: Int? = null,
-    onMoodSelected: (Int) -> Unit
+    onMoodSelected: (Int) -> Unit,
+    name:String
 ) {
     val moods = remember {
         listOf(
@@ -207,7 +209,7 @@ fun MoodSelectorContent(
             .padding(16.dp)
     ) {
         Text(
-            text = "Seni merak ettim, Serhat",
+            text = "Seni merak ettim, $name",
             fontSize = 22.sp,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center,
