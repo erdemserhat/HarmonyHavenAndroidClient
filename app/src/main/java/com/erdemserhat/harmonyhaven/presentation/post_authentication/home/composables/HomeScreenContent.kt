@@ -123,35 +123,43 @@ fun HomeScreenContentNew(
             ),
             MeditationMusic(
                 id = "2",
-                title = "Deep Relaxation",
-                artist = "Meditation Masters",
-                duration = "10:15",
-                imageUrl = "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=300",
-                audioUrl = "https://example.com/music/relaxation.mp3"
+                title = "White Noise Black Screen",
+                artist = "Sleep, Study, Focus",
+                duration = "10:00:00",
+                imageUrl = "https://www.harmonyhavenapp.com/sources/musics/med2.jpg",
+                audioUrl = "https://www.harmonyhavenapp.com/sources/musics/med2.mp3"
             ),
             MeditationMusic(
                 id = "3",
-                title = "Calm Piano Melody",
-                artist = "Piano Meditation",
-                duration = "7:45",
-                imageUrl = "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?q=80&w=300",
-                audioUrl = "https://example.com/music/piano.mp3"
+                title = "Deep, Comforting Black Noise",
+                artist = "Study, Sleep, Tinnitus Relief and Focus",
+                duration = "12:00:00",
+                imageUrl = "https://www.harmonyhavenapp.com/sources/musics/med3.jpg",
+                audioUrl = "https://www.harmonyhavenapp.com/sources/musics/med3.mp3"
             ),
             MeditationMusic(
                 id = "4",
-                title = "Ocean Waves",
-                artist = "Ocean Sounds",
-                duration = "8:20",
-                imageUrl = "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?q=80&w=300",
-                audioUrl = "https://example.com/music/ocean.mp3"
+                title = "Relaxing Sleep Music",
+                artist = "Relaxing Sleep Music",
+                duration = "3:00:21",
+                imageUrl = "https://www.harmonyhavenapp.com/sources/musics/med4.jpg",
+                audioUrl = "https://www.harmonyhavenapp.com/sources/musics/med4.mp3"
             ),
             MeditationMusic(
                 id = "5",
-                title = "Mindful Breathing",
-                artist = "Mindfulness",
-                duration = "15:00",
-                imageUrl = "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=300",
-                audioUrl = "https://example.com/music/breathing.mp3"
+                title = "50 Classical Music Masterpieces for Relaxation & the Soul",
+                artist = "Beethoven, Mozart, Chopin, Bach, Vivaldi",
+                duration = "3:25:27",
+                imageUrl = "https://www.harmonyhavenapp.com/sources/musics/med5.jpg",
+                audioUrl = "https://www.harmonyhavenapp.com/sources/musics/med5.mp3"
+            ),
+            MeditationMusic(
+                id = "6",
+                title = "Ambient Study Music To Concentrate",
+                artist = "Studying, Concentration and Memory",
+                duration = "3:57:51",
+                imageUrl = "https://www.harmonyhavenapp.com/sources/musics/med6.jpg",
+                audioUrl = "https://www.harmonyhavenapp.com/sources/musics/med6.mp3"
             )
         )
     }
