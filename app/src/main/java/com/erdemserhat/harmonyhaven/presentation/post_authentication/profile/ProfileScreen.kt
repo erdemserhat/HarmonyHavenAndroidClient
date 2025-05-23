@@ -158,7 +158,7 @@ fun ProfileScreen(navController: NavController) {
             SectionTitle(title = "Ayarlar")
             
             SettingsItem(
-                icon = Icons.Default.AccountCircle,
+                drawableRes = R.drawable.account,
                 title = "Hesap Detayları",
                 onClick = { 
                     navController.navigate(Screen.Settings.route)
@@ -180,7 +180,7 @@ fun ProfileScreen(navController: NavController) {
             )
             
             SettingsItem(
-                icon = Icons.Default.Star,
+                drawableRes = R.drawable.language,
                 title = "Dili Değiştir",
                 onClick = { showLanguageDialog = true }
             )
@@ -247,7 +247,7 @@ fun ProfileScreen(navController: NavController) {
             )
             
             SettingsItem(
-                icon = Icons.Default.Star,
+                drawableRes = R.drawable.support,
                 title = "Yardım",
                 onClick = { /* Navigate to help */ }
             )
@@ -577,6 +577,70 @@ fun SettingsItem(
                 imageVector = icon,
                 contentDescription = null,
                 tint = Color.DarkGray,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+        
+        Spacer(modifier = Modifier.width(16.dp))
+        
+        Text(
+            text = title,
+            fontFamily = ptSansFont,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f)
+        )
+        
+        Icon(
+            imageVector = Icons.Default.ArrowForward,
+            contentDescription = null,
+            tint = Color.Gray,
+            modifier = Modifier.size(16.dp)
+        )
+    }
+    
+    // Divider
+    HorizontalDivider(
+        modifier = Modifier.padding(start = 72.dp, end = 16.dp),
+        color = Color.LightGray.copy(alpha = 0.5f)
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun SettingsItem(
+    drawableRes: Int,
+    title: String,
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .then(
+                if (onLongClick != null) {
+                    Modifier.combinedClickable(
+                        onClick = { onClick() },
+                        onLongClick = { onLongClick() }
+                    )
+                } else {
+                    Modifier.clickable { onClick() }
+                }
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Circular icon background
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFF5F5F5)),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = drawableRes),
+                contentDescription = null,
                 modifier = Modifier.size(20.dp)
             )
         }

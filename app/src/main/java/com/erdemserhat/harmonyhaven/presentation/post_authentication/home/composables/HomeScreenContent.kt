@@ -115,11 +115,11 @@ fun HomeScreenContentNew(
         listOf(
             MeditationMusic(
                 id = "1",
-                title = "Peaceful Rain Sounds",
-                artist = "Nature Sounds",
-                duration = "5:32",
+                title = "Meditation Ambient Music",
+                artist = "Deep Healing Relaxing Music",
+                duration = "60:00",
                 imageUrl = "https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?q=80&w=300",
-                audioUrl = "https://example.com/music/rain.mp3"
+                audioUrl = "https://www.harmonyhavenapp.com/sources/musics/med1.mp3"
             ),
             MeditationMusic(
                 id = "2",
