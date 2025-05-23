@@ -266,7 +266,7 @@ fun MusicPlayerScreen(
             containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
-                    title = { Text("Meditasyon Müzikleri", color = Color.White) },
+                    title = { },  // Empty title
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(
