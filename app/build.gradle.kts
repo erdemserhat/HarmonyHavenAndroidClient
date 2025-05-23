@@ -185,6 +185,8 @@ dependencies {
 
     // For Kotlin users, also import the Kotlin extensions library for Play In-App Review:
     implementation("com.google.android.play:review-ktx:2.0.2")
+    implementation (libs.androidx.material.icons.extended)
+
 
 
 }

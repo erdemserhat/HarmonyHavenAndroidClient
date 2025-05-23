@@ -30,9 +30,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.RepeatOn
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -422,9 +427,9 @@ fun MusicPlayerScreen(
                     ) {
                         Icon(
                             imageVector = when (repeatMode) {
-                                0 -> Icons.Default.Star
-                                1 -> Icons.Default.Star
-                                else -> Icons.Default.Star
+                                0 -> Icons.Default.Repeat
+                                1 -> Icons.Default.RepeatOn
+                                else -> Icons.Default.RepeatOn
                             },
                             contentDescription = "Repeat",
                             tint = if (repeatMode > 0) harmonyHavenGreen else Color.White.copy(alpha = 0.7f),
@@ -445,7 +450,7 @@ fun MusicPlayerScreen(
                         enabled = !isLoading
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Star,
+                            imageVector = Icons.Default.SkipPrevious,
                             contentDescription = "Previous",
                             tint = Color.White,
                             modifier = Modifier.size(40.dp)
@@ -472,7 +477,7 @@ fun MusicPlayerScreen(
                             color = harmonyHavenGreen
                         ) {
                             Icon(
-                                imageVector = if (isPlaying) Icons.Default.Star else Icons.Default.PlayArrow,
+                                imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                                 contentDescription = if (isPlaying) "Pause" else "Play",
                                 tint = Color.White,
                                 modifier = Modifier
@@ -495,7 +500,7 @@ fun MusicPlayerScreen(
                         enabled = !isLoading
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Star,
+                            imageVector = Icons.Default.SkipNext,
                             contentDescription = "Next",
                             tint = Color.White,
                             modifier = Modifier.size(40.dp)
@@ -550,7 +555,7 @@ fun MusicPlayerScreen(
                             enabled = !isLoading
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Star,
+                                imageVector = Icons.Default.Schedule,
                                 contentDescription = "Sleep Timer",
                                 tint = if (timerActive) harmonyHavenGreen else Color.White.copy(alpha = 0.7f)
                             )
