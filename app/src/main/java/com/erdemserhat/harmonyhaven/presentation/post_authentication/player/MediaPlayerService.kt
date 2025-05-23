@@ -9,6 +9,8 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.media.MediaPlayer
 import android.os.Binder
 import android.os.Build
@@ -19,6 +21,9 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import coil.ImageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
 import com.erdemserhat.harmonyhaven.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -193,9 +198,22 @@ class MediaPlayerService : Service() {
                 
                 setOnCompletionListener {
                     Log.d(TAG, "Media playback completed")
-                    pause()
-                    seekTo(0)
+                    // Update service state
+                    this@MediaPlayerService.isPlaying = false
+                    stopProgressTracking()
+                    
+                    // Reset to beginning
+                    try {
+                        seekTo(0)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error seeking to start after completion", e)
+                    }
+                    
+                    // Notify UI about state changes
+                    onPlayStateChanged?.invoke(false)
                     updateNotification()
+                    
+                    Log.d(TAG, "Track completed - reset to beginning and paused")
                 }
                 
                 // Start preparing asynchronously
@@ -240,24 +258,34 @@ class MediaPlayerService : Service() {
             return
         }
         
-        mediaPlayer?.let {
-            if (!it.isPlaying) {
-                try {
+        mediaPlayer?.let { player ->
+            try {
+                // Check if we're at the end of the track (completion state)
+                val currentPos = player.currentPosition
+                val duration = player.duration
+                
+                if (currentPos >= duration - 100 && duration > 0) {
+                    // We're at the end, seek to beginning first
+                    Log.d(TAG, "At end of track, seeking to beginning")
+                    player.seekTo(0)
+                }
+                
+                if (!player.isPlaying) {
                     Log.d(TAG, "Starting playback")
-                    it.start()
+                    player.start()
                     isPlaying = true
                     startForeground(NOTIFICATION_ID, createNotification())
                     startProgressTracking()
                     onPlayStateChanged?.invoke(true)
                     Log.d(TAG, "Playback started successfully")
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error starting playback", e)
-                    isPlaying = false
-                    onErrorOccurred?.invoke("Çalma hatası: ${e.message}")
-                    onPlayStateChanged?.invoke(false)
+                } else {
+                    Log.d(TAG, "Already playing")
                 }
-            } else {
-                Log.d(TAG, "Already playing")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error starting playback", e)
+                isPlaying = false
+                onErrorOccurred?.invoke("Çalma hatası: ${e.message}")
+                onPlayStateChanged?.invoke(false)
             }
         } ?: run {
             Log.e(TAG, "MediaPlayer is null, can't play")
@@ -504,7 +532,147 @@ class MediaPlayerService : Service() {
                 .setShowActionsInCompactView(0, 1, 2) // 0, 1, 2 indekslerindeki butonları kompakt görünümde göster
         )
         
+        // Load cover art asynchronously and update notification
+        loadCoverArtForNotification(music.imageUrl)
+        
         return builder.build()
+    }
+    
+    private fun loadCoverArtForNotification(imageUrl: String) {
+        serviceScope.launch {
+            try {
+                val imageLoader = ImageLoader(this@MediaPlayerService)
+                val request = ImageRequest.Builder(this@MediaPlayerService)
+                    .data(imageUrl)
+                    .build()
+                
+                val result = imageLoader.execute(request)
+                if (result is SuccessResult) {
+                    val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
+                    bitmap?.let {
+                        // Resize bitmap for notification (recommend max 256x256)
+                        val resizedBitmap = Bitmap.createScaledBitmap(it, 256, 256, true)
+                        
+                        // Update notification with cover art
+                        withContext(Dispatchers.Main) {
+                            updateNotificationWithCoverArt(resizedBitmap)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error loading cover art for notification", e)
+                // Notification will show without cover art, which is fine
+            }
+        }
+    }
+    
+    private fun updateNotificationWithCoverArt(coverArt: Bitmap) {
+        val music = currentMusic ?: return
+        
+        // Create intent for when notification is tapped
+        val packageName = applicationContext.packageName
+        val launchIntent = packageName?.let { 
+            applicationContext.packageManager.getLaunchIntentForPackage(it)
+        }
+        val pendingContentIntent = PendingIntent.getActivity(
+            this, 0, launchIntent, 
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        
+        // Play/Pause action
+        val playPauseIntent = Intent(this, MediaPlayerService::class.java).apply {
+            action = ACTION_PLAY_PAUSE
+        }
+        val pendingPlayPauseIntent = PendingIntent.getService(
+            this, 0, playPauseIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        
+        // Previous track action
+        val prevIntent = Intent(this, MediaPlayerService::class.java).apply {
+            action = ACTION_PREVIOUS
+        }
+        val pendingPrevIntent = PendingIntent.getService(
+            this, 1, prevIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        
+        // Next track action
+        val nextIntent = Intent(this, MediaPlayerService::class.java).apply {
+            action = ACTION_NEXT
+        }
+        val pendingNextIntent = PendingIntent.getService(
+            this, 2, nextIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        
+        // Stop action
+        val stopIntent = Intent(this, MediaPlayerService::class.java).apply {
+            action = ACTION_STOP
+        }
+        val pendingStopIntent = PendingIntent.getService(
+            this, 3, stopIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        
+        // Build the notification with cover art
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(music.title)
+            .setContentText(music.artist)
+            .setSmallIcon(R.drawable.objects)
+            .setLargeIcon(coverArt) // Set the cover art as large icon
+            .setContentIntent(pendingContentIntent)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            
+        // Add actions
+        builder.addAction(
+            NotificationCompat.Action.Builder(
+                android.R.drawable.ic_media_previous,
+                "Previous",
+                pendingPrevIntent
+            ).build()
+        )
+            
+        builder.addAction(
+            NotificationCompat.Action.Builder(
+                if (isPlaying) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play,
+                if (isPlaying) "Pause" else "Play",
+                pendingPlayPauseIntent
+            ).build()
+        )
+        
+        builder.addAction(
+            NotificationCompat.Action.Builder(
+                android.R.drawable.ic_media_next,
+                "Next",
+                pendingNextIntent
+            ).build()
+        )
+        
+        builder.addAction(
+            NotificationCompat.Action.Builder(
+                android.R.drawable.ic_menu_close_clear_cancel,
+                "Stop",
+                pendingStopIntent
+            ).build()
+        )
+        
+        // Add media style
+        builder.setStyle(
+            androidx.media.app.NotificationCompat.MediaStyle()
+                .setMediaSession(mediaSession?.sessionToken)
+                .setShowActionsInCompactView(0, 1, 2)
+        )
+        
+        // Update notification
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            NotificationManagerCompat.from(this).notify(NOTIFICATION_ID, builder.build())
+        }
     }
     
     private fun updateNotification() {

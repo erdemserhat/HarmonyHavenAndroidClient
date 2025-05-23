@@ -363,8 +363,22 @@ fun MusicPlayerScreen(
                         onValueChangeFinished = {
                             // When user finishes dragging, update the actual player position
                             if (!isLoading) {
-                                val newPosition = (mediaPlayerService?.getDuration() ?: 0) * progress
-                                mediaPlayerService?.seekTo(newPosition.toInt())
+                                val duration = mediaPlayerService?.getDuration() ?: 0
+                                // Prevent seeking to the very end (leave 2 seconds buffer)
+                                val maxProgress = if (duration > 2000) {
+                                    (duration - 2000).toFloat() / duration.toFloat()
+                                } else {
+                                    0.95f // 95% if duration is very short
+                                }
+                                
+                                val clampedProgress = progress.coerceAtMost(maxProgress)
+                                val newPosition = (duration * clampedProgress).toInt()
+                                
+                                // Update the progress to the clamped value
+                                progress = clampedProgress
+                                
+                                Log.d(TAG, "Seeking to position: $newPosition / $duration (progress: $clampedProgress)")
+                                mediaPlayerService?.seekTo(newPosition)
                             }
                         },
                         colors = SliderDefaults.colors(
@@ -599,7 +613,9 @@ fun MusicPlayerScreen(
                         colors = SliderDefaults.colors(
                             thumbColor = harmonyHavenGreen,
                             activeTrackColor = harmonyHavenGreen,
-                            inactiveTrackColor = Color.White.copy(alpha = 0.2f)
+                            inactiveTrackColor = Color.White.copy(alpha = 0.2f),
+                            activeTickColor = Color.White.copy(alpha = 0.6f),
+                            inactiveTickColor = Color.White.copy(alpha = 0.3f)
                         )
                     )
                     Text(
@@ -622,7 +638,9 @@ fun MusicPlayerScreen(
                         colors = SliderDefaults.colors(
                             thumbColor = harmonyHavenGreen,
                             activeTrackColor = harmonyHavenGreen,
-                            inactiveTrackColor = Color.White.copy(alpha = 0.2f)
+                            inactiveTrackColor = Color.White.copy(alpha = 0.2f),
+                            activeTickColor = Color.White.copy(alpha = 0.6f),
+                            inactiveTickColor = Color.White.copy(alpha = 0.3f)
                         )
                     )
                     Text(
