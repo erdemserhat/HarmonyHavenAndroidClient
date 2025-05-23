@@ -33,11 +33,11 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -216,7 +216,7 @@ fun SettingsScreen(
             SectionTitle("Destek")
             
             SettingsItem(
-                icon = Icons.Default.Star,
+                icon = Icons.Default.Help,
                 title = "Yardım ve Destek",
                 onClick = { /* Navigate to help */ }
             )

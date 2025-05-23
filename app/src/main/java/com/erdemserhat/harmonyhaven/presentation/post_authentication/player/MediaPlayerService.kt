@@ -48,6 +48,9 @@ class MediaPlayerService : Service() {
     private var remainingTimeSeconds: Long? = null
     private var isTimerActive: Boolean = false
     
+    // Repeat mode: 0 = no repeat, 1 = repeat all (loop), 2 = repeat one
+    private var repeatMode: Int = 0
+    
     // Callback for client to receive updates
     var onProgressChanged: ((Float) -> Unit)? = null
     var onPlayStateChanged: ((Boolean) -> Unit)? = null
@@ -55,6 +58,7 @@ class MediaPlayerService : Service() {
     var onLoadingStateChanged: ((Boolean) -> Unit)? = null // New callback for loading state
     var onTimerChanged: ((Long?) -> Unit)? = null // Timer remaining time callback
     var onTimerActiveChanged: ((Boolean) -> Unit)? = null // Timer active state callback
+    var onRepeatModeChanged: ((Int) -> Unit)? = null
     
     companion object {
         private const val CHANNEL_ID = "meditation_player_channel"
@@ -208,22 +212,49 @@ class MediaPlayerService : Service() {
                 
                 setOnCompletionListener {
                     Log.d(TAG, "Media playback completed")
-                    // Update service state
-                    this@MediaPlayerService.isPlaying = false
-                    stopProgressTracking()
-                    
-                    // Reset to beginning
-                    try {
-                        seekTo(0)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error seeking to start after completion", e)
+                    // Handle repeat mode
+                    when (repeatMode) {
+                        1 -> {
+                            // Repeat all (loop) - restart the same track
+                            Log.d(TAG, "Repeat mode: looping current track")
+                            try {
+                                seekTo(0)
+                                start()
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Error restarting track in loop mode", e)
+                            }
+                        }
+                        2 -> {
+                            // Repeat one - same as repeat all for single track
+                            Log.d(TAG, "Repeat one: restarting current track")
+                            try {
+                                seekTo(0)
+                                start()
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Error restarting track in repeat one mode", e)
+                            }
+                        }
+                        else -> {
+                            // No repeat - just stop
+                            Log.d(TAG, "No repeat: stopping playback")
+                            // Update service state
+                            this@MediaPlayerService.isPlaying = false
+                            stopProgressTracking()
+                            
+                            // Reset to beginning
+                            try {
+                                seekTo(0)
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Error seeking to start after completion", e)
+                            }
+                            
+                            // Notify UI about state changes
+                            onPlayStateChanged?.invoke(false)
+                            updateNotification()
+                            
+                            Log.d(TAG, "Track completed - reset to beginning and paused")
+                        }
                     }
-                    
-                    // Notify UI about state changes
-                    onPlayStateChanged?.invoke(false)
-                    updateNotification()
-                    
-                    Log.d(TAG, "Track completed - reset to beginning and paused")
                 }
                 
                 // Start preparing asynchronously
@@ -838,4 +869,18 @@ class MediaPlayerService : Service() {
     
     fun getTimerRemainingTime(): Long? = remainingTimeSeconds
     fun isTimerActive(): Boolean = isTimerActive
+    
+    // Repeat Mode Functions
+    fun setRepeatMode(mode: Int) {
+        Log.d(TAG, "Setting repeat mode to: $mode")
+        repeatMode = mode
+        onRepeatModeChanged?.invoke(repeatMode)
+    }
+    
+    fun getRepeatMode(): Int = repeatMode
+    
+    fun toggleRepeatMode() {
+        val newMode = (repeatMode + 1) % 3
+        setRepeatMode(newMode)
+    }
 } 

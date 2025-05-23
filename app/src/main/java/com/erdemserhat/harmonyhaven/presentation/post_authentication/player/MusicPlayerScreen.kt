@@ -176,9 +176,15 @@ fun MusicPlayerScreen(
                         timerActive = active
                     }
                     
-                    // Get current timer state
+                    // Repeat mode callback
+                    mediaPlayerService?.onRepeatModeChanged = { mode ->
+                        repeatMode = mode
+                    }
+                    
+                    // Get current timer and repeat state
                     remainingTime = mediaPlayerService?.getTimerRemainingTime()
                     timerActive = mediaPlayerService?.isTimerActive() ?: false
+                    repeatMode = mediaPlayerService?.getRepeatMode() ?: 0
                     
                     // Initialize with the music
                     isLoading = true
@@ -421,7 +427,9 @@ fun MusicPlayerScreen(
                 ) {
                     IconButton(
                         onClick = { 
-                            repeatMode = (repeatMode + 1) % 3
+                            if (!isLoading) {
+                                mediaPlayerService?.toggleRepeatMode()
+                            }
                         },
                         enabled = !isLoading
                     ) {

@@ -25,10 +25,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarRate
+import androidx.compose.material.icons.filled.Web
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -158,7 +164,7 @@ fun ProfileScreen(navController: NavController) {
             SectionTitle(title = "Ayarlar")
             
             SettingsItem(
-                drawableRes = R.drawable.account,
+                icon = Icons.Default.AccountCircle,
                 title = "Hesap Detayları",
                 onClick = { 
                     navController.navigate(Screen.Settings.route)
@@ -180,7 +186,7 @@ fun ProfileScreen(navController: NavController) {
             )
             
             SettingsItem(
-                drawableRes = R.drawable.language,
+                icon = Icons.Default.Language,
                 title = "Dili Değiştir",
                 onClick = { showLanguageDialog = true }
             )
@@ -191,7 +197,7 @@ fun ProfileScreen(navController: NavController) {
             SectionTitle(title = "Bizi Değerlendir")
             
             SettingsItem(
-                icon = Icons.Default.Star,
+                icon = Icons.Default.Group,
                 title = "Arkadaşlarını Davet Et",
                 onClick = { 
                     val shareIntent = Intent().apply {
@@ -212,7 +218,7 @@ fun ProfileScreen(navController: NavController) {
             )
             
             SettingsItem(
-                icon = Icons.Default.Star,
+                icon = Icons.Default.Web,
                 title = "Websitesini Ziyaret Et",
                 onClick = { 
                     val websiteIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.harmonyhavenapp.com/"))
@@ -226,7 +232,7 @@ fun ProfileScreen(navController: NavController) {
             SectionTitle(title = "Geri Bildirim")
             
             SettingsItem(
-                icon = Icons.Default.Star,
+                icon = Icons.Default.StarRate,
                 title = "Puanla",
                 onClick = { 
                     // Önce in-app review'u deneyelim
@@ -247,7 +253,7 @@ fun ProfileScreen(navController: NavController) {
             )
             
             SettingsItem(
-                drawableRes = R.drawable.support,
+                icon = Icons.Default.Help,
                 title = "Yardım",
                 onClick = { /* Navigate to help */ }
             )
@@ -319,7 +325,7 @@ fun ProfileScreen(navController: NavController) {
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Star,
+                            imageVector = Icons.Default.Info,
                             contentDescription = "Information",
                             tint = harmonyHavenGreen,
                             modifier = Modifier.size(32.dp)
