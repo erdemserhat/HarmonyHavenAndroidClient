@@ -43,11 +43,18 @@ class MediaPlayerService : Service() {
     private val serviceScope = CoroutineScope(Dispatchers.Main)
     private var isPreparing = false // Flag to track if mediaPlayer is currently preparing
     
+    // Timer related properties
+    private var timerJob: Job? = null
+    private var remainingTimeSeconds: Long? = null
+    private var isTimerActive: Boolean = false
+    
     // Callback for client to receive updates
     var onProgressChanged: ((Float) -> Unit)? = null
     var onPlayStateChanged: ((Boolean) -> Unit)? = null
     var onErrorOccurred: ((String) -> Unit)? = null
     var onLoadingStateChanged: ((Boolean) -> Unit)? = null // New callback for loading state
+    var onTimerChanged: ((Long?) -> Unit)? = null // Timer remaining time callback
+    var onTimerActiveChanged: ((Boolean) -> Unit)? = null // Timer active state callback
     
     companion object {
         private const val CHANNEL_ID = "meditation_player_channel"
@@ -73,6 +80,9 @@ class MediaPlayerService : Service() {
         Log.d(TAG, "onCreate: Service created")
         createNotificationChannel()
         setupMediaSession()
+        
+        // Start as foreground service immediately with basic notification
+        startForeground(NOTIFICATION_ID, createBasicNotification())
     }
     
     private fun setupMediaSession() {
@@ -274,7 +284,7 @@ class MediaPlayerService : Service() {
                     Log.d(TAG, "Starting playback")
                     player.start()
                     isPlaying = true
-                    startForeground(NOTIFICATION_ID, createNotification())
+                    updateNotification() // Just update notification, don't start foreground again
                     startProgressTracking()
                     onPlayStateChanged?.invoke(true)
                     Log.d(TAG, "Playback started successfully")
@@ -429,10 +439,7 @@ class MediaPlayerService : Service() {
     
     private fun createNotification(): Notification {
         Log.v(TAG, "Creating notification")
-        val music = currentMusic ?: return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Meditation Player")
-            .setSmallIcon(R.drawable.objects) // Uygulama logosu
-            .build()
+        val music = currentMusic ?: return createBasicNotification()
         
         // Create intent for when notification is tapped
         val packageName = applicationContext.packageName
@@ -480,14 +487,29 @@ class MediaPlayerService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         
+        // Create content text with timer info
+        val contentText = if (isTimerActive && remainingTimeSeconds != null) {
+            val hours = remainingTimeSeconds!! / 3600
+            val minutes = (remainingTimeSeconds!! % 3600) / 60
+            val timerText = if (hours > 0) {
+                "${hours}h ${minutes}m kaldı"
+            } else {
+                "${minutes}m kaldı"
+            }
+            "${music.artist} • $timerText"
+        } else {
+            music.artist
+        }
+        
         // Build the notification with smaller icons for controls
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(music.title)
-            .setContentText(music.artist)
+            .setContentText(contentText)
             .setSmallIcon(R.drawable.objects) // Uygulama logosu
             .setContentIntent(pendingContentIntent)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true) // Make notification persistent
             
         // Önceki parça butonu
         builder.addAction(
@@ -536,6 +558,16 @@ class MediaPlayerService : Service() {
         loadCoverArtForNotification(music.imageUrl)
         
         return builder.build()
+    }
+    
+    private fun createBasicNotification(): Notification {
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("Harmony Haven")
+            .setContentText("Müzik çalar hazır")
+            .setSmallIcon(R.drawable.objects)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
+            .build()
     }
     
     private fun loadCoverArtForNotification(imageUrl: String) {
@@ -615,17 +647,32 @@ class MediaPlayerService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         
+        // Create content text with timer info
+        val contentText = if (isTimerActive && remainingTimeSeconds != null) {
+            val hours = remainingTimeSeconds!! / 3600
+            val minutes = (remainingTimeSeconds!! % 3600) / 60
+            val timerText = if (hours > 0) {
+                "${hours}h ${minutes}m kaldı"
+            } else {
+                "${minutes}m kaldı"
+            }
+            "${music.artist} • $timerText"
+        } else {
+            music.artist
+        }
+        
         // Build the notification with cover art
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(music.title)
-            .setContentText(music.artist)
+            .setContentText(contentText)
             .setSmallIcon(R.drawable.objects)
             .setLargeIcon(coverArt) // Set the cover art as large icon
             .setContentIntent(pendingContentIntent)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true) // Make notification persistent
             
-        // Add actions
+        // Önceki parça butonu
         builder.addAction(
             NotificationCompat.Action.Builder(
                 android.R.drawable.ic_media_previous,
@@ -634,6 +681,7 @@ class MediaPlayerService : Service() {
             ).build()
         )
             
+        // Oynat/Duraklat butonu
         builder.addAction(
             NotificationCompat.Action.Builder(
                 if (isPlaying) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play,
@@ -642,6 +690,7 @@ class MediaPlayerService : Service() {
             ).build()
         )
         
+        // Sonraki parça butonu
         builder.addAction(
             NotificationCompat.Action.Builder(
                 android.R.drawable.ic_media_next,
@@ -650,6 +699,7 @@ class MediaPlayerService : Service() {
             ).build()
         )
         
+        // Durdur butonu
         builder.addAction(
             NotificationCompat.Action.Builder(
                 android.R.drawable.ic_menu_close_clear_cancel,
@@ -677,44 +727,12 @@ class MediaPlayerService : Service() {
     
     private fun updateNotification() {
         Log.v(TAG, "Updating notification")
-        if (isPlaying) {
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return
-            }
-            NotificationManagerCompat.from(this).notify(NOTIFICATION_ID, createNotification())
-        } else {
-            // For API 26+ use STOP_FOREGROUND_DETACH instead of false
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                stopForeground(STOP_FOREGROUND_DETACH)
-            } else {
-                @Suppress("DEPRECATION")
-                stopForeground(false)
-            }
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return
-            }
+        // Always update notification since we're a foreground service
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             NotificationManagerCompat.from(this).notify(NOTIFICATION_ID, createNotification())
         }
     }
@@ -724,7 +742,10 @@ class MediaPlayerService : Service() {
         intent?.let {
             when (it.action) {
                 ACTION_PLAY_PAUSE -> togglePlayPause()
-                ACTION_STOP -> stopSelf()
+                ACTION_STOP -> {
+                    stopTimer()
+                    stopSelf()
+                }
                 ACTION_PREVIOUS -> {
                     // Önceki parçaya geçme işlevi buraya eklenebilir
                     // Şimdilik başa sarıyoruz
@@ -743,15 +764,78 @@ class MediaPlayerService : Service() {
             }
         }
         
-        return START_NOT_STICKY
+        return START_STICKY // Service will be restarted if killed by system
     }
     
     override fun onDestroy() {
         Log.d(TAG, "Service being destroyed")
         stopProgressTracking()
+        stopTimer()
         releaseMediaPlayer()
         mediaSession?.release()
         mediaSession = null
         super.onDestroy()
     }
+    
+    // Timer Functions
+    fun startTimer(hours: Int, minutes: Int) {
+        val totalSeconds = (hours * 3600 + minutes * 60).toLong()
+        if (totalSeconds <= 0) return
+        
+        Log.d(TAG, "Starting timer: ${hours}h ${minutes}m ($totalSeconds seconds)")
+        
+        stopTimer() // Stop any existing timer
+        
+        remainingTimeSeconds = totalSeconds
+        isTimerActive = true
+        
+        // Notify UI
+        onTimerActiveChanged?.invoke(true)
+        onTimerChanged?.invoke(remainingTimeSeconds)
+        
+        // Update notification with timer info
+        updateNotification()
+        
+        // Start countdown
+        timerJob = serviceScope.launch {
+            while (remainingTimeSeconds != null && remainingTimeSeconds!! > 0 && isTimerActive) {
+                delay(1000) // Wait 1 second
+                remainingTimeSeconds = remainingTimeSeconds!! - 1
+                
+                // Update UI
+                onTimerChanged?.invoke(remainingTimeSeconds)
+                
+                // Update notification every 30 seconds to avoid too frequent updates
+                if (remainingTimeSeconds!! % 30 == 0L) {
+                    updateNotification()
+                }
+                
+                // Check if timer finished
+                if (remainingTimeSeconds == 0L) {
+                    Log.d(TAG, "Timer finished - stopping music")
+                    pause() // Stop the music
+                    stopTimer()
+                    break
+                }
+            }
+        }
+    }
+    
+    fun stopTimer() {
+        Log.d(TAG, "Stopping timer")
+        timerJob?.cancel()
+        timerJob = null
+        remainingTimeSeconds = null
+        isTimerActive = false
+        
+        // Notify UI
+        onTimerActiveChanged?.invoke(false)
+        onTimerChanged?.invoke(null)
+        
+        // Update notification to remove timer info
+        updateNotification()
+    }
+    
+    fun getTimerRemainingTime(): Long? = remainingTimeSeconds
+    fun isTimerActive(): Boolean = isTimerActive
 } 

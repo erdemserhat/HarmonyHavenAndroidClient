@@ -122,21 +122,6 @@ fun MusicPlayerScreen(
     // Debugging state
     var debugMessage by remember { mutableStateOf("Bağlanıyor...") }
     
-    // Timer countdown effect
-    LaunchedEffect(remainingTime, timerActive) {
-        if (timerActive && remainingTime != null && remainingTime!! > 0) {
-            delay(1000)
-            remainingTime = remainingTime!! - 1
-            
-            // When timer reaches 0, stop the music
-            if (remainingTime == 0L) {
-                mediaPlayerService?.pause()
-                timerActive = false
-                remainingTime = null
-            }
-        }
-    }
-    
     // Define service connection
     val serviceConnection = remember {
         object : ServiceConnection {
@@ -176,6 +161,19 @@ fun MusicPlayerScreen(
                         isLoading = loading
                         debugMessage = if (loading) "Yükleniyor..." else "Hazır"
                     }
+                    
+                    // Timer callbacks
+                    mediaPlayerService?.onTimerChanged = { newRemainingTime ->
+                        remainingTime = newRemainingTime
+                    }
+                    
+                    mediaPlayerService?.onTimerActiveChanged = { active ->
+                        timerActive = active
+                    }
+                    
+                    // Get current timer state
+                    remainingTime = mediaPlayerService?.getTimerRemainingTime()
+                    timerActive = mediaPlayerService?.isTimerActive() ?: false
                     
                     // Initialize with the music
                     isLoading = true
@@ -654,8 +652,7 @@ fun MusicPlayerScreen(
                         onClick = {
                             val totalSeconds = (selectedHours * 3600 + selectedMinutes * 60).toLong()
                             if (totalSeconds > 0) {
-                                remainingTime = totalSeconds
-                                timerActive = true
+                                mediaPlayerService?.startTimer(selectedHours, selectedMinutes)
                                 showTimerBottomSheet = false
                             } else {
                                 Toast.makeText(context, "Lütfen bir süre seçin", Toast.LENGTH_SHORT).show()
@@ -680,8 +677,7 @@ fun MusicPlayerScreen(
                     if (timerActive) {
                         TextButton(
                             onClick = {
-                                timerActive = false
-                                remainingTime = null
+                                mediaPlayerService?.stopTimer()
                                 showTimerBottomSheet = false
                             },
                             modifier = Modifier.padding(top = 8.dp)
