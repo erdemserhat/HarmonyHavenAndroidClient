@@ -81,12 +81,30 @@ class MediaPlayerService : Service() {
     
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "onCreate: Service created")
+        Log.d(TAG, "onCreate: Service created for API level ${Build.VERSION.SDK_INT}")
+        
+        // Android 14+ için bildirim izni kontrolü
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) 
+                != PackageManager.PERMISSION_GRANTED) {
+                Log.w(TAG, "POST_NOTIFICATIONS permission not granted")
+            }
+        }
+        
         createNotificationChannel()
         setupMediaSession()
         
-        // Start as foreground service immediately with basic notification
-        startForeground(NOTIFICATION_ID, createBasicNotification())
+        try {
+            // Start as foreground service immediately with basic notification
+            startForeground(NOTIFICATION_ID, createBasicNotification())
+            Log.d(TAG, "Foreground service started successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error starting foreground service", e)
+            // Android 14'te foreground service başlatma hatası durumunda
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                Log.e(TAG, "Android 14+ foreground service restrictions may apply")
+            }
+        }
     }
     
     private fun setupMediaSession() {
@@ -94,36 +112,79 @@ class MediaPlayerService : Service() {
         mediaSession = MediaSessionCompat(this, "MeditationPlayerSession").apply {
             setCallback(object : MediaSessionCompat.Callback() {
                 override fun onPlay() {
+                    Log.d(TAG, "MediaSession onPlay called")
                     play()
                 }
                 
                 override fun onPause() {
+                    Log.d(TAG, "MediaSession onPause called")
                     pause()
                 }
                 
                 override fun onStop() {
+                    Log.d(TAG, "MediaSession onStop called")
+                    pause()
                     stopSelf()
                 }
                 
                 override fun onSeekTo(pos: Long) {
+                    Log.d(TAG, "MediaSession onSeekTo called: $pos")
                     mediaPlayer?.seekTo(pos.toInt())
+                    updatePlaybackState()
                     updateNotification()
+                }
+                
+                override fun onSkipToNext() {
+                    Log.d(TAG, "MediaSession onSkipToNext called")
+                    // 30 saniye ileri sar
+                    val currentPosition = mediaPlayer?.currentPosition ?: 0
+                    val duration = mediaPlayer?.duration ?: 0
+                    val newPosition = (currentPosition + 30000).coerceAtMost(duration)
+                    mediaPlayer?.seekTo(newPosition)
+                    updatePlaybackState()
+                }
+                
+                override fun onSkipToPrevious() {
+                    Log.d(TAG, "MediaSession onSkipToPrevious called")
+                    // Başa sar
+                    mediaPlayer?.seekTo(0)
+                    updatePlaybackState()
                 }
             })
             
-            setPlaybackState(
-                PlaybackStateCompat.Builder()
-                    .setActions(
-                        PlaybackStateCompat.ACTION_PLAY or
-                                PlaybackStateCompat.ACTION_PAUSE or
-                                PlaybackStateCompat.ACTION_STOP or
-                                PlaybackStateCompat.ACTION_SEEK_TO
-                    )
-                    .build()
-            )
-            
+            // Android 14+ için gerekli metadata'yı ayarla
             isActive = true
+            updatePlaybackState()
         }
+    }
+    
+    private fun updatePlaybackState() {
+        val state = if (isPreparing) {
+            PlaybackStateCompat.STATE_BUFFERING
+        } else if (isPlaying) {
+            PlaybackStateCompat.STATE_PLAYING
+        } else {
+            PlaybackStateCompat.STATE_PAUSED
+        }
+        
+        val currentPosition = mediaPlayer?.currentPosition?.toLong() ?: 0L
+        val duration = mediaPlayer?.duration?.toLong() ?: 0L
+        
+        val playbackState = PlaybackStateCompat.Builder()
+            .setActions(
+                PlaybackStateCompat.ACTION_PLAY or
+                PlaybackStateCompat.ACTION_PAUSE or
+                PlaybackStateCompat.ACTION_STOP or
+                PlaybackStateCompat.ACTION_SEEK_TO or
+                PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
+                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+            )
+            .setState(state, currentPosition, 1.0f)
+            .build()
+            
+        mediaSession?.setPlaybackState(playbackState)
+        
+        Log.v(TAG, "Updated playback state: state=$state, position=$currentPosition, duration=$duration")
     }
     
     fun initializePlayer(music: MeditationMusic) {
@@ -197,7 +258,6 @@ class MediaPlayerService : Service() {
                 setOnPreparedListener {
                     Log.d(TAG, "Media player prepared successfully")
                     isPreparing = false
-                    updateNotification()
                     
                     // Notify that loading is finished
                     onLoadingStateChanged?.invoke(false)
@@ -205,6 +265,8 @@ class MediaPlayerService : Service() {
                     // Start playing automatically after prepared
                     this@MediaPlayerService.isPlaying = true
                     start()
+                    updatePlaybackState() // Android 14+ için kritik
+                    updateNotification()
                     startProgressTracking()
                     onPlayStateChanged?.invoke(true)
                     Log.d(TAG, "Auto-started playback after preparation")
@@ -220,6 +282,7 @@ class MediaPlayerService : Service() {
                             try {
                                 seekTo(0)
                                 start()
+                                updatePlaybackState()
                             } catch (e: Exception) {
                                 Log.e(TAG, "Error restarting track in loop mode", e)
                             }
@@ -230,6 +293,7 @@ class MediaPlayerService : Service() {
                             try {
                                 seekTo(0)
                                 start()
+                                updatePlaybackState()
                             } catch (e: Exception) {
                                 Log.e(TAG, "Error restarting track in repeat one mode", e)
                             }
@@ -249,6 +313,7 @@ class MediaPlayerService : Service() {
                             }
                             
                             // Notify UI about state changes
+                            updatePlaybackState() // Android 14+ için kritik
                             onPlayStateChanged?.invoke(false)
                             updateNotification()
                             
@@ -295,6 +360,7 @@ class MediaPlayerService : Service() {
         if (isPreparing) {
             Log.d(TAG, "Still preparing, will play when ready")
             isPlaying = true
+            updatePlaybackState()
             onPlayStateChanged?.invoke(true)
             return
         }
@@ -315,22 +381,27 @@ class MediaPlayerService : Service() {
                     Log.d(TAG, "Starting playback")
                     player.start()
                     isPlaying = true
-                    updateNotification() // Just update notification, don't start foreground again
+                    updatePlaybackState() // Android 14+ için kritik
+                    updateNotification()
                     startProgressTracking()
                     onPlayStateChanged?.invoke(true)
                     Log.d(TAG, "Playback started successfully")
                 } else {
                     Log.d(TAG, "Already playing")
+                    isPlaying = true
+                    updatePlaybackState()
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error starting playback", e)
                 isPlaying = false
+                updatePlaybackState()
                 onErrorOccurred?.invoke("Çalma hatası: ${e.message}")
                 onPlayStateChanged?.invoke(false)
             }
         } ?: run {
             Log.e(TAG, "MediaPlayer is null, can't play")
             isPlaying = false
+            updatePlaybackState()
             onPlayStateChanged?.invoke(false)
             
             // Eğer MediaPlayer null ise, muhtemelen hazırlama başarısız olmuştur.
@@ -348,6 +419,7 @@ class MediaPlayerService : Service() {
         if (isPreparing) {
             Log.d(TAG, "Still preparing, canceling pending play")
             isPlaying = false
+            updatePlaybackState()
             onPlayStateChanged?.invoke(false)
             return
         }
@@ -358,17 +430,25 @@ class MediaPlayerService : Service() {
                     it.pause()
                     isPlaying = false
                     stopProgressTracking()
+                    updatePlaybackState() // Android 14+ için kritik
                     updateNotification()
                     onPlayStateChanged?.invoke(false)
                     Log.d(TAG, "Playback paused successfully")
                 } catch (e: Exception) {
                     Log.e(TAG, "Error pausing playback", e)
+                    isPlaying = false
+                    updatePlaybackState()
+                    onPlayStateChanged?.invoke(false)
                 }
             } else {
                 Log.d(TAG, "Already paused")
+                isPlaying = false
+                updatePlaybackState()
             }
         } ?: run {
             Log.d(TAG, "MediaPlayer is null, can't pause")
+            isPlaying = false
+            updatePlaybackState()
         }
     }
     
@@ -390,6 +470,7 @@ class MediaPlayerService : Service() {
         try {
             Log.d(TAG, "Seeking to position $position")
             mediaPlayer?.seekTo(position)
+            updatePlaybackState()
             updateNotification()
         } catch (e: Exception) {
             Log.e(TAG, "Error seeking", e)
@@ -425,6 +506,7 @@ class MediaPlayerService : Service() {
         progressUpdateJob = serviceScope.launch {
             Log.d(TAG, "Starting progress tracking")
             try {
+                var updateCounter = 0
                 while (true) {
                     if (mediaPlayer == null) {
                         Log.d(TAG, "Progress tracking stopped - mediaPlayer is null")
@@ -436,6 +518,12 @@ class MediaPlayerService : Service() {
                         val currentPosition = mediaPlayer?.currentPosition ?: 0
                         val progress = currentPosition.toFloat() / duration.toFloat()
                         onProgressChanged?.invoke(progress)
+                        
+                        // Android 14+ için playback state'i periyodik olarak güncelle
+                        updateCounter++
+                        if (updateCounter % 50 == 0) { // Her 5 saniyede bir güncelle (50 * 100ms = 5s)
+                            updatePlaybackState()
+                        }
                     }
                     delay(100) // Update every 100ms
                 }
@@ -453,18 +541,30 @@ class MediaPlayerService : Service() {
     
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.d(TAG, "Creating notification channel")
+            Log.d(TAG, "Creating notification channel for API level ${Build.VERSION.SDK_INT}")
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Meditation Player",
-                NotificationManager.IMPORTANCE_LOW // LOW importance prevents sound/vibration
+                "Harmony Haven Medya Oynatıcı",
+                NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Controls for the meditation player"
+                description = "Meditasyon müzik oynatıcısı için kontroller"
                 setShowBadge(false)
+                
+                // Android 14 için özel ayarlar
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    setBlockable(false) // Kullanıcının kanalı engellemesini zorlaştır
+                }
+                
+                // Medya oynatıcı için gerekli ayarlar
+                enableLights(false)
+                enableVibration(false)
+                setSound(null, null) // Medya bildirimleri sessiz olmalı
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             }
             
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
+            Log.d(TAG, "Notification channel created successfully")
         }
     }
     
@@ -772,26 +872,30 @@ class MediaPlayerService : Service() {
         Log.d(TAG, "onStartCommand: ${intent?.action}")
         intent?.let {
             when (it.action) {
-                ACTION_PLAY_PAUSE -> togglePlayPause()
+                ACTION_PLAY_PAUSE -> {
+                    Log.d(TAG, "ACTION_PLAY_PAUSE received")
+                    togglePlayPause()
+                    updatePlaybackState() // Android 14+ için ek güncelleme
+                }
                 ACTION_STOP -> {
+                    Log.d(TAG, "ACTION_STOP received")
+                    pause()
                     stopTimer()
                     stopSelf()
                 }
                 ACTION_PREVIOUS -> {
-                    // Önceki parçaya geçme işlevi buraya eklenebilir
-                    // Şimdilik başa sarıyoruz
-                    mediaPlayer?.seekTo(0)
+                    Log.d(TAG, "ACTION_PREVIOUS received")
+                    // MediaSession callback'ini tetikle
+                    mediaSession?.controller?.transportControls?.skipToPrevious()
                 }
                 ACTION_NEXT -> {
-                    // Sonraki parçaya geçme işlevi buraya eklenebilir
-                    // Şimdilik ileri sarmak için kullanıyoruz
-                    val currentPosition = mediaPlayer?.currentPosition ?: 0
-                    val duration = mediaPlayer?.duration ?: 0
-                    val newPosition = (currentPosition + 30000).coerceAtMost(duration)
-                    mediaPlayer?.seekTo(newPosition)
+                    Log.d(TAG, "ACTION_NEXT received")
+                    // MediaSession callback'ini tetikle
+                    mediaSession?.controller?.transportControls?.skipToNext()
                 }
- 
-                else -> {}
+                else -> {
+                    Log.d(TAG, "Unknown action: ${it.action}")
+                }
             }
         }
         

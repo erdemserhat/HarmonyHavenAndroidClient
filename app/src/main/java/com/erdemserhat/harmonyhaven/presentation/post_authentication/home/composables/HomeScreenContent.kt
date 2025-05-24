@@ -514,37 +514,36 @@ fun AutoSlidingLatestContent(
                     }
                 )
             }
-            
-            // Page indicators
-            Row(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 16.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                articles.forEachIndexed { index, _ ->
-                    // Animated indicator size and color
-                    val selected = pagerState.currentPage == index
-                    val size by animateFloatAsState(
-                        targetValue = if (selected) 10f else 8f,
-                        animationSpec = tween(300, easing = FastOutSlowInEasing),
-                        label = "indicator size"
-                    )
-                    
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = 4.dp)
-                            .size(size.dp)
-                            .clip(CircleShape)
-                            .background(
-                                if (selected) 
-                                    harmonyHavenGreen 
-                                else 
-                                    Color.LightGray.copy(alpha = 0.5f)
-                            )
-                    )
-                }
+        }
+        
+        // Page indicators - moved outside the carousel
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            articles.forEachIndexed { index, _ ->
+                // Animated indicator size and color
+                val selected = pagerState.currentPage == index
+                val size by animateFloatAsState(
+                    targetValue = if (selected) 10f else 8f,
+                    animationSpec = tween(300, easing = FastOutSlowInEasing),
+                    label = "indicator size"
+                )
+                
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .size(size.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (selected) 
+                                harmonyHavenGreen 
+                            else 
+                                Color.LightGray.copy(alpha = 0.5f)
+                        )
+                )
             }
         }
     }
