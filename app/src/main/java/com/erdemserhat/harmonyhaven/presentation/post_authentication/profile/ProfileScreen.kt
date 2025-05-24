@@ -187,6 +187,7 @@ fun ProfileScreen(navController: NavController, userViewModel : UserProfileScree
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color(0xFFF8F8F8))
                 .verticalScroll(scrollState)
         ) {
             // Profile Header with Image
