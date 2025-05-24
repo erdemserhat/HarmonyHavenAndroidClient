@@ -15,6 +15,7 @@ import android.media.MediaPlayer
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
@@ -130,7 +131,13 @@ class MediaPlayerService : Service() {
                 override fun onSeekTo(pos: Long) {
                     Log.d(TAG, "MediaSession onSeekTo called: $pos")
                     mediaPlayer?.seekTo(pos.toInt())
+                    
+                    // Seek sonrası immediate state update
                     updatePlaybackState()
+                    
+                    // MediaMetadata'yı da güncelle (duration değişmiş olabilir)
+                    currentMusic?.let { updateMediaMetadata(it) }
+                    
                     updateNotification()
                 }
                 
@@ -170,6 +177,9 @@ class MediaPlayerService : Service() {
         val currentPosition = mediaPlayer?.currentPosition?.toLong() ?: 0L
         val duration = mediaPlayer?.duration?.toLong() ?: 0L
         
+        // Android 14+ için playback speed'i set et (progress tracking için kritik)
+        val playbackSpeed = if (isPlaying && !isPreparing) 1.0f else 0.0f
+        
         val playbackState = PlaybackStateCompat.Builder()
             .setActions(
                 PlaybackStateCompat.ACTION_PLAY or
@@ -179,12 +189,29 @@ class MediaPlayerService : Service() {
                 PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
                 PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
             )
-            .setState(state, currentPosition, 1.0f)
+            .setState(state, currentPosition, playbackSpeed)
             .build()
             
         mediaSession?.setPlaybackState(playbackState)
         
-        Log.v(TAG, "Updated playback state: state=$state, position=$currentPosition, duration=$duration")
+        Log.v(TAG, "Updated playback state: state=$state, position=$currentPosition, duration=$duration, speed=$playbackSpeed")
+    }
+    
+    private fun updateMediaMetadata(music: MeditationMusic) {
+        Log.d(TAG, "Updating MediaMetadata for: ${music.title}")
+        
+        val duration = mediaPlayer?.duration?.toLong() ?: 0L
+        
+        val metadata = MediaMetadataCompat.Builder()
+            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, music.title)
+            .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, music.artist)
+            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "Harmony Haven")
+            .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
+            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, music.id)
+            .build()
+            
+        mediaSession?.setMetadata(metadata)
+        Log.d(TAG, "MediaMetadata updated - Duration: $duration ms")
     }
     
     fun initializePlayer(music: MeditationMusic) {
@@ -235,6 +262,16 @@ class MediaPlayerService : Service() {
         // so that we retain the info for the notification
         currentMusic = music
         
+        // MediaMetadata'yı hemen set et (basic bilgilerle)
+        val basicMetadata = MediaMetadataCompat.Builder()
+            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, music.title)
+            .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, music.artist)
+            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "Harmony Haven")
+            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, music.id)
+            .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0L) // Will be updated when prepared
+            .build()
+        mediaSession?.setMetadata(basicMetadata)
+        
         // Release the existing player
         releaseMediaPlayer()
         
@@ -258,6 +295,9 @@ class MediaPlayerService : Service() {
                 setOnPreparedListener {
                     Log.d(TAG, "Media player prepared successfully")
                     isPreparing = false
+                    
+                    // MediaMetadata'yı güncelle (duration bilgisi için kritik)
+                    currentMusic?.let { updateMediaMetadata(it) }
                     
                     // Notify that loading is finished
                     onLoadingStateChanged?.invoke(false)
@@ -519,10 +559,20 @@ class MediaPlayerService : Service() {
                         val progress = currentPosition.toFloat() / duration.toFloat()
                         onProgressChanged?.invoke(progress)
                         
-                        // Android 14+ için playback state'i periyodik olarak güncelle
+                        // Android 14+ için playback state'i daha sık güncelle (notification progress için)
                         updateCounter++
-                        if (updateCounter % 50 == 0) { // Her 5 saniyede bir güncelle (50 * 100ms = 5s)
+                        if (updateCounter % 10 == 0) { // Her 1 saniyede bir güncelle (10 * 100ms = 1s)
                             updatePlaybackState()
+                        }
+                        
+                        // MediaMetadata'da duration değişikliği varsa güncelle
+                        if (updateCounter % 100 == 0) { // Her 10 saniyede bir kontrol et
+                            currentMusic?.let { 
+                                val sessionDuration = mediaSession?.controller?.metadata?.getLong(MediaMetadataCompat.METADATA_KEY_DURATION) ?: 0L
+                                if (sessionDuration != duration.toLong()) {
+                                    updateMediaMetadata(it)
+                                }
+                            }
                         }
                     }
                     delay(100) // Update every 100ms
@@ -685,6 +735,21 @@ class MediaPlayerService : Service() {
                 .setShowActionsInCompactView(0, 1, 2) // 0, 1, 2 indekslerindeki butonları kompakt görünümde göster
         )
         
+        // Android 14+ için progress tracking etkinleştir
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val currentPosition = mediaPlayer?.currentPosition?.toLong() ?: 0L
+            val duration = mediaPlayer?.duration?.toLong() ?: 0L
+            
+            if (isPlaying && duration > 0) {
+                builder.setWhen(System.currentTimeMillis() - currentPosition)
+                    .setShowWhen(true)
+                    .setUsesChronometer(true)
+            } else {
+                builder.setShowWhen(false)
+                    .setUsesChronometer(false)
+            }
+        }
+        
         // Load cover art asynchronously and update notification
         loadCoverArtForNotification(music.imageUrl)
         
@@ -845,6 +910,21 @@ class MediaPlayerService : Service() {
                 .setMediaSession(mediaSession?.sessionToken)
                 .setShowActionsInCompactView(0, 1, 2)
         )
+        
+        // Android 14+ için progress tracking etkinleştir
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val currentPosition = mediaPlayer?.currentPosition?.toLong() ?: 0L
+            val duration = mediaPlayer?.duration?.toLong() ?: 0L
+            
+            if (isPlaying && duration > 0) {
+                builder.setWhen(System.currentTimeMillis() - currentPosition)
+                    .setShowWhen(true)
+                    .setUsesChronometer(true)
+            } else {
+                builder.setShowWhen(false)
+                    .setUsesChronometer(false)
+            }
+        }
         
         // Update notification
         if (ActivityCompat.checkSelfPermission(
