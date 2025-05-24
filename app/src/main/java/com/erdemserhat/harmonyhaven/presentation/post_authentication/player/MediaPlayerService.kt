@@ -49,6 +49,9 @@ class MediaPlayerService : Service() {
     private var remainingTimeSeconds: Long? = null
     private var isTimerActive: Boolean = false
     
+    // Timeout için job
+    private var loadingTimeoutJob: Job? = null
+    
     // Repeat mode: 0 = no repeat, 1 = repeat all (loop), 2 = repeat one
     private var repeatMode: Int = 0
     
@@ -95,17 +98,9 @@ class MediaPlayerService : Service() {
         createNotificationChannel()
         setupMediaSession()
         
-        try {
-            // Start as foreground service immediately with basic notification
-            startForeground(NOTIFICATION_ID, createBasicNotification())
-            Log.d(TAG, "Foreground service started successfully")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error starting foreground service", e)
-            // Android 14'te foreground service başlatma hatası durumunda
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                Log.e(TAG, "Android 14+ foreground service restrictions may apply")
-            }
-        }
+        // Foreground service'i temel notification ile başlatmayalım
+        // Müzik yüklendiğinde başlatacağız
+        Log.d(TAG, "Service created, waiting for music to initialize")
     }
     
     private fun setupMediaSession() {
@@ -221,6 +216,29 @@ class MediaPlayerService : Service() {
         isPreparing = true
         onLoadingStateChanged?.invoke(true)
         
+        // Loading timeout'u başlat (30 saniye)
+        loadingTimeoutJob?.cancel()
+        loadingTimeoutJob = serviceScope.launch {
+            delay(30000) // 30 saniye bekle
+            if (isPreparing) {
+                Log.w(TAG, "Loading timeout - stopping service")
+                onErrorOccurred?.invoke("Müzik yüklenemiyor. Lütfen tekrar deneyin.")
+                stopForeground(STOP_FOREGROUND_REMOVE)
+                stopSelf()
+            }
+        }
+        
+        // Foreground service'i müzik ile birlikte başlat
+        try {
+            startForeground(NOTIFICATION_ID, createBasicNotification())
+            Log.d(TAG, "Foreground service started with music initialization")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error starting foreground service", e)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                Log.e(TAG, "Android 14+ foreground service restrictions may apply")
+            }
+        }
+        
         // Eğer hazırlanma işlemi devam ediyorsa işlemi iptal et
         if (isPreparing && mediaPlayer != null) {
             Log.d(TAG, "Previous preparation in progress, releasing old player first")
@@ -296,6 +314,9 @@ class MediaPlayerService : Service() {
                     Log.d(TAG, "Media player prepared successfully")
                     isPreparing = false
                     
+                    // Loading timeout'u iptal et
+                    loadingTimeoutJob?.cancel()
+                    
                     // MediaMetadata'yı güncelle (duration bilgisi için kritik)
                     currentMusic?.let { updateMediaMetadata(it) }
                     
@@ -306,7 +327,11 @@ class MediaPlayerService : Service() {
                     this@MediaPlayerService.isPlaying = true
                     start()
                     updatePlaybackState() // Android 14+ için kritik
+                    
+                    // Gerçek müzik notification ile güncelle
                     updateNotification()
+                    Log.d(TAG, "Updated to music notification")
+                    
                     startProgressTracking()
                     onPlayStateChanged?.invoke(true)
                     Log.d(TAG, "Auto-started playback after preparation")
@@ -757,12 +782,32 @@ class MediaPlayerService : Service() {
     }
     
     private fun createBasicNotification(): Notification {
+        // Stop action
+        val stopIntent = Intent(this, MediaPlayerService::class.java).apply {
+            action = ACTION_STOP
+        }
+        val pendingStopIntent = PendingIntent.getService(
+            this, 3, stopIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Harmony Haven")
-            .setContentText("Müzik çalar hazır")
+            .setContentText("Müzik yükleniyor...")
             .setSmallIcon(R.drawable.objects)
             .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setOngoing(true)
+            .setOngoing(false) // Kullanıcı kapatabilsin
+            .addAction(
+                NotificationCompat.Action.Builder(
+                    android.R.drawable.ic_menu_close_clear_cancel,
+                    "Durdur",
+                    pendingStopIntent
+                ).build()
+            )
+            .setStyle(
+                androidx.media.app.NotificationCompat.MediaStyle()
+                    .setShowActionsInCompactView(0)
+            )
             .build()
     }
     
@@ -961,6 +1006,11 @@ class MediaPlayerService : Service() {
                     Log.d(TAG, "ACTION_STOP received")
                     pause()
                     stopTimer()
+                    
+                    // Notification'ı temizle ve foreground'dan çık
+                    stopForeground(STOP_FOREGROUND_REMOVE)
+                    
+                    // Service'i durdur
                     stopSelf()
                 }
                 ACTION_PREVIOUS -> {
@@ -984,12 +1034,34 @@ class MediaPlayerService : Service() {
     
     override fun onDestroy() {
         Log.d(TAG, "Service being destroyed")
+        
+        // Foreground service'ten çık
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        
+        // Notification'ı temizle
+        try {
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancel(NOTIFICATION_ID)
+            Log.d(TAG, "Notification cleared")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error clearing notification", e)
+        }
+        
+        // Resources'ları temizle
         stopProgressTracking()
         stopTimer()
+        loadingTimeoutJob?.cancel() // Loading timeout'u temizle
         releaseMediaPlayer()
-        mediaSession?.release()
+        
+        // MediaSession'ı temizle
+        mediaSession?.apply {
+            isActive = false
+            release()
+        }
         mediaSession = null
+        
         super.onDestroy()
+        Log.d(TAG, "Service destroyed successfully")
     }
     
     // Timer Functions

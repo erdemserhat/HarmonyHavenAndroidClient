@@ -18,14 +18,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -290,16 +296,79 @@ fun MusicPlayerScreen(
                     ),
                     modifier = Modifier.statusBarsPadding()
                 )
+            },
+            bottomBar = {
+                // Additional controls
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        IconButton(
+                            onClick = { /* Share */ },
+                            enabled = !isLoading
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = "Share",
+                                tint = Color.White.copy(alpha = 0.7f)
+                            )
+                        }
+                        Text(
+                            text = "Paylaş",
+                            color = Color.White.copy(alpha = 0.7f),
+                            fontSize = 12.sp
+                        )
+                    }
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        IconButton(
+                            onClick = { showTimerBottomSheet = true },
+                            enabled = !isLoading
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Schedule,
+                                contentDescription = "Sleep Timer",
+                                tint = if (timerActive) harmonyHavenGreen else Color.White.copy(alpha = 0.7f)
+                            )
+                        }
+                        Text(
+                            text = if (timerActive && remainingTime != null) {
+                                val hours = remainingTime!! / 3600
+                                val minutes = (remainingTime!! % 3600) / 60
+                                val seconds = remainingTime!! % 60
+                                if (hours > 0) {
+                                    String.format("%d:%02d:%02d", hours, minutes, seconds)
+                                } else {
+                                    String.format("%02d:%02d", minutes, seconds)
+                                }
+                            } else "Uyku Zamanlayıcı",
+                            color = if (timerActive) harmonyHavenGreen else Color.White.copy(alpha = 0.7f),
+                            fontSize = 12.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
             }
         ) { padding ->
+
             Column(
+                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .padding(padding)
                     .padding(horizontal = 24.dp)
                     .fillMaxSize()
             ) {
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 
                 // Album art
                 Surface(
@@ -417,7 +486,7 @@ fun MusicPlayerScreen(
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 
                 // Controls
                 Row(
@@ -528,62 +597,11 @@ fun MusicPlayerScreen(
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(32.dp))
+
+
                 
-                // Additional controls
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        IconButton(
-                            onClick = { /* Share */ },
-                            enabled = !isLoading
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Share,
-                                contentDescription = "Share",
-                                tint = Color.White.copy(alpha = 0.7f)
-                            )
-                        }
-                        Text(
-                            text = "Paylaş",
-                            color = Color.White.copy(alpha = 0.7f),
-                            fontSize = 12.sp
-                        )
-                    }
-                    
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        IconButton(
-                            onClick = { showTimerBottomSheet = true },
-                            enabled = !isLoading
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Schedule,
-                                contentDescription = "Sleep Timer",
-                                tint = if (timerActive) harmonyHavenGreen else Color.White.copy(alpha = 0.7f)
-                            )
-                        }
-                        Text(
-                            text = if (timerActive && remainingTime != null) {
-                                val hours = remainingTime!! / 3600
-                                val minutes = (remainingTime!! % 3600) / 60
-                                val seconds = remainingTime!! % 60
-                                if (hours > 0) {
-                                    String.format("%d:%02d:%02d", hours, minutes, seconds)
-                                } else {
-                                    String.format("%02d:%02d", minutes, seconds)
-                                }
-                            } else "Uyku Zamanlayıcı",
-                            color = if (timerActive) harmonyHavenGreen else Color.White.copy(alpha = 0.7f),
-                            fontSize = 12.sp
-                        )
-                    }
-                }
+                // Extra bottom spacer to ensure content doesn't overlap with navigation bar
+                Spacer(modifier = Modifier.height(32.dp))
             }
         }
 
