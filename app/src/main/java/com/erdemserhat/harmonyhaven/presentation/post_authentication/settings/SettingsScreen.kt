@@ -53,6 +53,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -90,6 +92,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.ac
 import com.erdemserhat.harmonyhaven.ui.theme.DefaultAppFont
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -106,6 +109,16 @@ fun SettingsScreen(
     val scrollState = rememberScrollState()
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showEmailInfoDialog by remember { mutableStateOf(false) }
+
+
+    val systemUiController = rememberSystemUiController()
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = Color.Transparent,
+            darkIcons = true
+        )
+    }
     
     // Name and Password Update States
     var shouldShowUpdateNamePopUp by rememberSaveable { mutableStateOf(false) }

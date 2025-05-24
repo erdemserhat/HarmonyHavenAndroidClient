@@ -65,6 +65,7 @@ import com.erdemserhat.harmonyhaven.data.api.notification.PredefinedMessageSubje
 import com.erdemserhat.harmonyhaven.data.api.notification.PredefinedReminderSubject
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 import java.time.DayOfWeek
 import java.time.LocalTime
@@ -84,6 +85,14 @@ fun NotificationSchedulerScreen(
     var showAddDialog by remember { mutableStateOf(false) }
     var schedulerToEdit by remember { mutableStateOf<NotificationSchedulerDto?>(null) }
 
+    val systemUiController = rememberSystemUiController()
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = Color.Transparent,
+            darkIcons = true
+        )
+    }
 
     Scaffold(
         topBar = {
