@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -46,9 +47,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -321,17 +326,45 @@ fun TestQuestionsScreen(
                         .fillMaxWidth()
                         .padding(20.dp)
                 ) {
+                    // Soru metnini "Örneğin" kelimesinden sonrası için farklı stil uygula
+                    val styledQuestionText = remember(question.content) {
+                        buildAnnotatedString {
+                            val content = question.content
+                            val orneginIndex = content.indexOf("Örneğin", ignoreCase = true)
+                            
+                            if (orneginIndex != -1) {
+                                // "Örneğin" kelimesinden önceki kısım
+                                append(content.substring(0, orneginIndex))
+                                
+                                // "Örneğin" kelimesinden sonraki kısım - daha küçük ve şeffaf
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontSize = 14.sp,
+                                        color = Color.Black.copy(alpha = 0.6f),
+                                        fontWeight = FontWeight.Normal
+                                    )
+                                ) {
+                                    append(content.substring(orneginIndex))
+                                }
+                            } else {
+                                // "Örneğin" kelimesi yoksa normal stil
+                                append(content)
+                            }
+                        }
+                    }
+                    
                     Text(
-                        text = question.content,
+                        text = styledQuestionText,
                         fontSize = 17.sp,
                         textAlign = TextAlign.Left,
                         modifier = Modifier.fillMaxWidth(),
                         fontFamily = ptSansFont,
                         fontWeight = FontWeight.Medium,
-                        color = Color.Black
+                        color = Color.Black,
+                        lineHeight = 24.sp
                     )
                     
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     
                     // Açıklayıcı metin
                     Text(
@@ -344,38 +377,43 @@ fun TestQuestionsScreen(
                         fontFamily = ptSansFont
                     )
                     
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                     
                     // Answer options
                     val selectedAnswer = answers.find { it.questionId == question.id }?.score
                     
-                    AnswerOption(
-                        text = "Hiç yansıtmıyor",
-                        score = 0,
-                        isSelected = selectedAnswer == 0,
-                        onSelected = { onAnswerSelected(question.id, 0) }
-                    )
-                    
-                    AnswerOption(
-                        text = "Biraz yansıtıyor",
-                        score = 1,
-                        isSelected = selectedAnswer == 1,
-                        onSelected = { onAnswerSelected(question.id, 1) }
-                    )
-                    
-                    AnswerOption(
-                        text = "Kısmen yansıtıyor",
-                        score = 2,
-                        isSelected = selectedAnswer == 2,
-                        onSelected = { onAnswerSelected(question.id, 2) }
-                    )
-                    
-                    AnswerOption(
-                        text = "Tam olarak yansıtıyor ",
-                        score = 3,
-                        isSelected = selectedAnswer == 3,
-                        onSelected = { onAnswerSelected(question.id, 3) }
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        AnswerOption(
+                            text = "Hiç yansıtmıyor",
+                            score = 0,
+                            isSelected = selectedAnswer == 0,
+                            onSelected = { onAnswerSelected(question.id, 0) }
+                        )
+                        
+                        AnswerOption(
+                            text = "Biraz yansıtıyor",
+                            score = 1,
+                            isSelected = selectedAnswer == 1,
+                            onSelected = { onAnswerSelected(question.id, 1) }
+                        )
+                        
+                        AnswerOption(
+                            text = "Kısmen yansıtıyor",
+                            score = 2,
+                            isSelected = selectedAnswer == 2,
+                            onSelected = { onAnswerSelected(question.id, 2) }
+                        )
+                        
+                        AnswerOption(
+                            text = "Tam olarak yansıtıyor ",
+                            score = 3,
+                            isSelected = selectedAnswer == 3,
+                            onSelected = { onAnswerSelected(question.id, 3) }
+                        )
+                    }
                 }
             }
         }
@@ -388,7 +426,8 @@ fun TestQuestionsScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 24.dp),
+                .padding(top = 8.dp)
+                .navigationBarsPadding(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             // Back button
@@ -546,16 +585,16 @@ fun AnswerOption(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 5.dp)
+            .padding(vertical = 3.dp)
             .selectable(
                 selected = isSelected,
                 onClick = onSelected
             )
             .background(
                 color = if (isSelected) harmonyHavenGreen.copy(alpha = 0.1f) else Color.White,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(10.dp)
             )
-            .padding(12.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
@@ -564,14 +603,15 @@ fun AnswerOption(
             colors = RadioButtonDefaults.colors(
                 selectedColor = harmonyHavenGreen,
                 unselectedColor = Color.Gray
-            )
+            ),
+            modifier = Modifier.size(20.dp)
         )
         
         Spacer(modifier = Modifier.width(8.dp))
         
         Text(
             text = text,
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             color = if (isSelected) harmonyHavenDarkGreenColor else Color.DarkGray,
             modifier = Modifier.weight(1f),
             fontFamily = ptSansFont,
@@ -584,7 +624,7 @@ fun AnswerOption(
                 imageVector = Icons.Default.Check,
                 contentDescription = "Seçildi",
                 tint = harmonyHavenGreen,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(16.dp)
             )
         }
     }

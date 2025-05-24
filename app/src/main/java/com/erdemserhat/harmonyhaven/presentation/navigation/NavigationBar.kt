@@ -232,7 +232,6 @@ fun AppMainScreen(
 
     Scaffold(
         bottomBar = {
-
             Column(
                 modifier = Modifier
                     .background(
@@ -457,8 +456,6 @@ fun AppMainScreen(
                 .padding(if (pagerState.currentPage in listOf(0,4)) PaddingValues(
                     top =0.dp,
                     bottom = padding.calculateBottomPadding(),
-                    start = padding.calculateStartPadding(LayoutDirection.Ltr),
-                    end = padding.calculateEndPadding(LayoutDirection.Ltr)
                 )
 
                 else padding

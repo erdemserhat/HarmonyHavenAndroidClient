@@ -83,6 +83,11 @@ import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreenViewModel
 
@@ -123,6 +128,27 @@ private fun openPlayStoreForRating(context: Context) {
 fun ProfileScreen(navController: NavController, userViewModel : UserProfileScreenViewModel = hiltViewModel()) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val localFocusManager = LocalFocusManager.current
+    val activity = context as? Activity
+    val window = activity?.window!!
+
+
+    LaunchedEffect(Unit) {
+        window.let {
+            WindowCompat.setDecorFitsSystemWindows(
+                it,
+                false
+            ) // content fill the system navbar- status bar
+            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+
+            insetsController.isAppearanceLightStatusBars =false
+
+
+        }
+    }
+
+
+
     
     // State variables
     var showLanguageDialog by remember { mutableStateOf(false) }
@@ -150,8 +176,6 @@ fun ProfileScreen(navController: NavController, userViewModel : UserProfileScree
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
-                .padding()
                 .verticalScroll(scrollState)
         ) {
             // Profile Header with Image
@@ -407,14 +431,17 @@ fun ProfileHeader(userName: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(320.dp)
+            .height(320.dp),
+        contentAlignment = Alignment.Center
     ) {
         // Background Image - using AsyncImage for remote URL loading
+
         AsyncImage(
             model = "https://harmonyhavenapp.com/sources/set-bg.png", // Starry sky image
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+            modifier = Modifier.fillMaxSize().padding(),
+            contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+
         )
         
         // Overlay gradient
@@ -430,7 +457,7 @@ fun ProfileHeader(userName: String) {
                     )
                 )
         )
-        
+
         // Greeting Text
         Column(
             modifier = Modifier
@@ -445,7 +472,7 @@ fun ProfileHeader(userName: String) {
                 fontSize = 24.sp,
                 fontFamily = ptSansFont
             )
-            
+
             Text(
                 text = userName,
                 color = Color.White,
@@ -455,7 +482,9 @@ fun ProfileHeader(userName: String) {
             )
         }
 
-        UserStatsCard(modifier = Modifier.align(Alignment.BottomCenter).offset(y = 50.dp))
+        UserStatsCard(modifier = Modifier.align(Alignment.BottomCenter).onSizeChanged {
+
+        }.offset(y = 55.dp))
     }
 }
 
