@@ -83,13 +83,20 @@ import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource.Companion.SideEffect
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreenViewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.delay
 
 // Function to start Google Play In-App review flow
 private fun startInAppReview(activity: Activity) {
@@ -128,24 +135,28 @@ private fun openPlayStoreForRating(context: Context) {
 fun ProfileScreen(navController: NavController, userViewModel : UserProfileScreenViewModel = hiltViewModel()) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
-    val localFocusManager = LocalFocusManager.current
-    val activity = context as? Activity
-    val window = activity?.window!!
 
+    val density = LocalDensity.current
+    val systemUiController = rememberSystemUiController()
 
-    LaunchedEffect(Unit) {
-        window.let {
-            WindowCompat.setDecorFitsSystemWindows(
-                it,
-                false
-            ) // content fill the system navbar- status bar
-            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+    val thresholdPx = with(density) { 320.dp.toPx() }
 
-            insetsController.isAppearanceLightStatusBars =false
-
-
+    // Scroll konumuna göre status bar rengi belirle
+    val isInTopRegion by remember {
+        derivedStateOf {
+            scrollState.value <= thresholdPx
         }
     }
+
+    val darkIcons = isInTopRegion
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = Color.Transparent,
+            darkIcons = !darkIcons
+        )
+    }
+
 
 
 

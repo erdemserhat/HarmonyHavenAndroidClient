@@ -50,6 +50,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -58,6 +59,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -110,6 +112,25 @@ fun HomeScreenContentNew(
     val nonEnneagramArticles = articles.filter { it.category != "Enneagram" }
 
     val userViewModel : UserProfileScreenViewModel = hiltViewModel()
+
+
+
+
+    LaunchedEffect(Unit) {
+        delay(10)
+        window.let {
+            WindowCompat.setDecorFitsSystemWindows(
+                it,
+                false
+            ) // content fill the system navbar- status bar
+            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+
+            // Set status bar to white background with dark content
+            insetsController.isAppearanceLightStatusBars = false
+
+
+        }
+    }
 
 
     // Get latest 4 articles for auto-slider

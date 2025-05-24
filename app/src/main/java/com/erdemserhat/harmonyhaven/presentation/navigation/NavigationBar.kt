@@ -86,6 +86,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.ui.unit.LayoutDirection
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.ProfileScreen
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
@@ -191,7 +192,6 @@ fun AppMainScreen(
         )
     }
 
-
     //set status bar and system navbar color
     if (pagerState.currentPage == 1) {
         window.let {
@@ -208,7 +208,7 @@ fun AppMainScreen(
 
 
         }
-    } else {
+    } else if (listOf(2,3).contains(pagerState.currentPage)) {
         window.let {
             WindowCompat.setDecorFitsSystemWindows(
                 it, false
@@ -225,6 +225,31 @@ fun AppMainScreen(
 
 
         }
+
+    }else if (listOf(0,4).contains(pagerState.currentPage)){
+        window.let {
+            WindowCompat.setDecorFitsSystemWindows(
+                it, false
+            ) // content fill the system navbar- status bar
+            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                it.statusBarColor = Color.Transparent.toArgb()
+            }
+
+
+            insetsController.isAppearanceLightStatusBars = false
+            insetsController.isAppearanceLightNavigationBars = true
+
+
+        }
+        val systemUiController = rememberSystemUiController()
+
+        systemUiController.setStatusBarColor(
+            color = Color.Transparent,
+            darkIcons = false
+        )
+
 
     }
 
