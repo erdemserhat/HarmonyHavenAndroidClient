@@ -43,6 +43,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -1034,81 +1035,177 @@ fun ChatWithHarmoniaCard(
         onClick = { onChatClick() },
         modifier = modifier
             .fillMaxWidth()
-            .height(120.dp),
-        shape = RoundedCornerShape(16.dp),
+            .height(140.dp),
+        shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 4.dp,
-            pressedElevation = 8.dp
+            defaultElevation = 6.dp,
+            pressedElevation = 12.dp
         ),
         colors = CardDefaults.elevatedCardColors(
             containerColor = Color.White
         )
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            // Left side - Image with decorative border
+            // Subtle gradient background
             Box(
                 modifier = Modifier
-                    .size(85.dp)
+                    .fillMaxSize()
                     .background(
-                        brush = Brush.radialGradient(
+                        brush = Brush.linearGradient(
                             colors = listOf(
-                                harmonyHavenGreen.copy(alpha = 0.1f),
-                                harmonyHavenGreen.copy(alpha = 0.05f)
+                                harmonyHavenGreen.copy(alpha = 0.03f),
+                                harmonyHavenGreen.copy(alpha = 0.08f),
+                                harmonyHavenGreen.copy(alpha = 0.03f)
+                            ),
+                            start = Offset(0f, 0f),
+                            end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                        )
+                    )
+            )
+            
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Left side - Enhanced Harmonia logo with elegant design
+                Box(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    harmonyHavenGreen.copy(alpha = 0.15f),
+                                    harmonyHavenGreen.copy(alpha = 0.08f),
+                                    Color.Transparent
+                                ),
+                                radius = 120f
+                            ),
+                            shape = CircleShape
+                        )
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Outer decorative ring
+                    Box(
+                        modifier = Modifier
+                            .size(84.dp)
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        harmonyHavenGreen.copy(alpha = 0.2f),
+                                        harmonyHavenGreen.copy(alpha = 0.1f)
+                                    )
+                                ),
+                                shape = CircleShape
                             )
-                        ),
+                            .padding(2.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        // Inner circle with logo
+                        Box(
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(CircleShape)
+                                .background(Color.White)
+                                .padding(6.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ex),
+                                contentDescription = "Harmonia",
+                                modifier = Modifier
+                                    .size(68.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
+                }
+                
+                // Right side - Enhanced text content
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 20.dp)
+                ) {
+                    // Title with enhanced styling
+                    Text(
+                        text = "Harmonia ile Sohbet Et",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = ptSansFont,
+                        color = Color(0xFF2E3C59),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 22.sp
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    // Subtitle with better formatting
+                    Text(
+                        text = "Sorularını yanıtlayalım, sohbet edelim ve duygularını paylaş",
+                        fontSize = 13.sp,
+                        fontFamily = ptSansFont,
+                        color = Color(0xFF666666),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 18.sp
+                    )
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    // Call-to-action button
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        harmonyHavenGreen,
+                                        harmonyHavenGreen.copy(alpha = 0.8f)
+                                    )
+                                )
+                            )
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        Text(
+                            text = "Sohbete Başla →",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = ptSansFont,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+            
+            // Decorative elements
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .align(Alignment.TopEnd)
+                    .offset(x = 20.dp, y = (-20).dp)
+                    .background(
+                        harmonyHavenGreen.copy(alpha = 0.1f),
                         shape = CircleShape
                     )
-                    .padding(4.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.send_icon),
-                    contentDescription = "Harmonia",
-                    modifier = Modifier
-                        .size(75.dp)
-                        .clip(CircleShape)
-                        .background(Color.White),
-                    contentScale = ContentScale.Crop
-                )
-            }
+            )
             
-            // Right side - Text content
-            Column(
+            Box(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 16.dp)
-            ) {
-                Text(
-                    text = "Harmonia ile sohbet et",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = ptSansFont,
-                    color = Color(0xFF333333),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    lineHeight = 20.sp
-                )
-                
-                Spacer(modifier = Modifier.height(6.dp))
-                
-                Text(
-                    text = "Sorularını yanıtlayalım, meditasyon yapalım veya sadece sohbet edelim",
-                    fontSize = 12.sp,
-                    fontFamily = ptSansFont,
-                    color = Color(0xFF666666),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    lineHeight = 15.sp
-                )
-            }
-            
-            // Chat icon with green background - similar to category badge in article cards
-         
+                    .size(24.dp)
+                    .align(Alignment.BottomStart)
+                    .offset(x = (-12).dp, y = 12.dp)
+                    .background(
+                        harmonyHavenGreen.copy(alpha = 0.15f),
+                        shape = CircleShape
+                    )
+            )
         }
     }
 }
