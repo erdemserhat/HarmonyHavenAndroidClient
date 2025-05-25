@@ -63,6 +63,7 @@ import androidx.compose.ui.platform.LocalContext
 import android.content.Intent
 import android.net.Uri
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -192,6 +193,53 @@ fun ProfileScreen(
             // If Instagram app is not installed, open in browser
             val browserIntent = Intent(Intent.ACTION_VIEW, instagramUri)
             context.startActivity(browserIntent)
+        }
+    }
+    
+    // Function to get app version
+    fun getAppVersion(context: Context): String {
+        return try {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            "${packageInfo.versionName} (${packageInfo.longVersionCode})"
+        } catch (e: PackageManager.NameNotFoundException) {
+            "Bilinmiyor"
+        }
+    }
+    
+    // Function to send help email
+    fun sendHelpEmail(context: Context) {
+        val appVersion = getAppVersion(context)
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf("info@harmonyhavenapp.com"))
+            putExtra(Intent.EXTRA_SUBJECT, "Harmony Haven - Yardım Talebi")
+            putExtra(Intent.EXTRA_TEXT, """
+                Merhaba Harmony Haven Ekibi,
+                
+                Uygulama ile ilgili yardıma ihtiyacım var.
+                
+                Sorunum/Talebim:
+                [Lütfen buraya sorunuzu veya talebinizi yazın]
+                
+                Cihaz Bilgileri:
+                - Uygulama Versiyonu: $appVersion
+                - İşletim Sistemi: Android ${android.os.Build.VERSION.RELEASE}
+                - Cihaz Modeli: ${android.os.Build.MODEL}
+                
+                Teşekkürler,
+                
+            """.trimIndent())
+        }
+        
+        try {
+            context.startActivity(Intent.createChooser(emailIntent, "E-posta gönder"))
+        } catch (e: Exception) {
+            // If no email app is available, show a toast
+            android.widget.Toast.makeText(
+                context,
+                "E-posta uygulaması bulunamadı. Lütfen info@harmonyhavenapp.com adresine manuel olarak e-posta gönderin.",
+                android.widget.Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -330,7 +378,7 @@ fun ProfileScreen(
             SettingsItem(
                 icon = Icons.Default.Help,
                 title = "Yardım",
-                onClick = { /* Navigate to help */ }
+                onClick = { sendHelpEmail(context) }
             )
             
             Spacer(modifier = Modifier.height(24.dp))
@@ -343,7 +391,7 @@ fun ProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Versiyon 3.6.4 995",
+                    text = "Versiyon ${getAppVersion(context)}",
                     fontFamily = ptSansFont,
                     fontSize = 14.sp,
                     color = Color.Gray
