@@ -24,13 +24,17 @@ class ProfileViewModel @Inject constructor(
 
     fun gatherCounts(){
         viewModelScope.launch {
+            _profileState.value =_profileState.value.copy(
+                isLoading = true
+            )
             val activeDays = userUseCases.getUserInformation.executeRequest().activeDays
             val likedQuoteCount =quoteUseCases.getLikedQuotes.executeRequest().size
             val messageCount = notificationUseCases.getNotificationCount.executeRequest()
             _profileState.value =_profileState.value.copy(
                 likedCount = likedQuoteCount,
                 messageCount = messageCount,
-                activeDays = activeDays
+                activeDays = activeDays,
+                isLoading = false
             )
 
         }
