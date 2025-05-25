@@ -53,6 +53,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.player.Medi
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.player.MusicPlayerScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.journal.JournalScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.journal.JournalEditorScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.LikedQuotesScreen
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -199,6 +200,16 @@ fun SetupNavGraph(
             SettingsScreen(navController = navController)
 
         }
+        
+        composable(route = Screen.LikedQuotesScreen.route,
+            enterTransition = { fadeIn(animationSpec = tween(100)) },
+            exitTransition = { fadeOut(animationSpec = tween(100)) },
+            popEnterTransition = { fadeIn(animationSpec = tween(100)) },
+            popExitTransition = { fadeOut(animationSpec = tween(100)) }
+        ) {
+            LikedQuotesScreen(navController = navController)
+        }
+
         composable(route = Screen.Quotes.route,
             enterTransition = { fadeIn(animationSpec = tween(100)) },
             exitTransition = { fadeOut(animationSpec = tween(100)) },

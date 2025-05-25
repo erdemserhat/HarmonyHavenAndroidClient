@@ -191,7 +191,7 @@ fun ProfileScreen(navController: NavController, userViewModel : UserProfileScree
                 .verticalScroll(scrollState)
         ) {
             // Profile Header with Image
-            ProfileHeader(userName = userViewModel.state.value.username?:"")
+            ProfileHeader(userName = userViewModel.state.value.username?:"",navController)
             
             // User stats card
 
@@ -219,8 +219,10 @@ fun ProfileScreen(navController: NavController, userViewModel : UserProfileScree
             
             SettingsItem(
                 icon = Icons.Default.Favorite,
-                title = "Favoriler",
-                onClick = { /* Navigate to favorites */ }
+                title = "Beğendiğim Sözler",
+                onClick = { 
+                    navController.navigate(Screen.LikedQuotesScreen.route)
+                }
             )
             
             SettingsItem(
@@ -439,7 +441,7 @@ fun ProfileScreen(navController: NavController, userViewModel : UserProfileScree
 }
 
 @Composable
-fun ProfileHeader(userName: String) {
+fun ProfileHeader(userName: String,navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -494,14 +496,16 @@ fun ProfileHeader(userName: String) {
             )
         }
 
+
+
         UserStatsCard(modifier = Modifier.align(Alignment.BottomCenter).onSizeChanged {
 
-        }.offset(y = 55.dp))
+        }.offset(y = 55.dp), navController = navController)
     }
 }
 
 @Composable
-fun UserStatsCard(modifier: Modifier) {
+fun UserStatsCard(modifier: Modifier, navController: NavController) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -510,6 +514,9 @@ fun UserStatsCard(modifier: Modifier) {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
+
+
+
         // User stats with equal width columns
         Row(
             modifier = Modifier
@@ -520,7 +527,7 @@ fun UserStatsCard(modifier: Modifier) {
             StatColumn(
                 value = "247",
                 label = "Aktif Gün",
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f).clickable {  }
             )
             
             // Vertical divider
@@ -533,8 +540,10 @@ fun UserStatsCard(modifier: Modifier) {
             
             StatColumn(
                 value = "2",
-                label = "Favori Mesajların",
-                modifier = Modifier.weight(1f)
+                label = "Beğendiğim Sözler",
+                modifier = Modifier.weight(1f).clickable { 
+                    navController.navigate(Screen.LikedQuotesScreen.route)
+                }
             )
             
             // Vertical divider
