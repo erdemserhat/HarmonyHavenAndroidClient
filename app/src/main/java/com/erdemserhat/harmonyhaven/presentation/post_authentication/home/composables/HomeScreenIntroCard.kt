@@ -82,7 +82,9 @@ fun HomeScreenIntroCard(
     modifier: Modifier = Modifier,
 ) {
     var showMoodSelector by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     val scope = rememberCoroutineScope()
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -383,7 +385,7 @@ fun MoodItemNew(
             // Image covering entire card
             AsyncImage(
                 model = mood.imageUrl,
-                contentDescription = mood.name,
+                contentDescription = mood.displayName,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
@@ -406,7 +408,7 @@ fun MoodItemNew(
             
             // Mood name at the bottom
             Text(
-                text = mood.name,
+                text = mood.displayName,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color.White,
