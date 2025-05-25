@@ -33,7 +33,6 @@ fun QuoteCard(
 
         Box(modifier = Modifier.fillMaxSize().background(
             brush = Brush.radialGradient(
-                tileMode = TileMode.Mirror,
                 colors = listOf(
                     Color.Black.copy(alpha = 1f),
                     Color.Black.copy(alpha = 0.5f),
