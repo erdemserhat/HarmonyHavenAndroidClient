@@ -3,7 +3,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.mood
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.domain.model.rest.Mood
-import com.erdemserhat.harmonyhaven.domain.repository.MoodRepository
+import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MoodViewModel @Inject constructor(
-    private val moodRepository: MoodRepository
+    private val userUseCases: UserUseCases
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MoodUiState())
@@ -28,7 +28,7 @@ class MoodViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {
-                val moods = moodRepository.getAllMoods()
+                val moods = userUseCases.getAllMoods.executeRequest()
                 _uiState.value = _uiState.value.copy(
                     moods = moods,
                     isLoading = false,
@@ -46,7 +46,8 @@ class MoodViewModel @Inject constructor(
     fun loadCurrentUserMood() {
         viewModelScope.launch {
             try {
-                val currentMoodId = moodRepository.getUserCurrentMood()
+                val moodResponse = userUseCases.getUserMood.executeRequest()
+                val currentMoodId = moodResponse?.get("moodId")
                 _uiState.value = _uiState.value.copy(
                     currentMoodId = currentMoodId
                 )
@@ -60,7 +61,7 @@ class MoodViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isUpdating = true)
             try {
-                val success = moodRepository.updateUserMood(moodId)
+                val success = userUseCases.updateUserMood.executeRequest(moodId)
                 if (success) {
                     _uiState.value = _uiState.value.copy(
                         currentMoodId = moodId,
