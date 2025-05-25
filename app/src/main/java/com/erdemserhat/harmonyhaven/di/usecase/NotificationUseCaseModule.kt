@@ -3,6 +3,7 @@ package com.erdemserhat.harmonyhaven.di.usecase
 import com.erdemserhat.harmonyhaven.data.api.notification.NotificationApiService
 import com.erdemserhat.harmonyhaven.domain.usecase.notification.DeleteScheduler
 import com.erdemserhat.harmonyhaven.domain.usecase.notification.GetNotification
+import com.erdemserhat.harmonyhaven.domain.usecase.notification.GetNotificationCount
 import com.erdemserhat.harmonyhaven.domain.usecase.notification.GetSchedulers
 import com.erdemserhat.harmonyhaven.domain.usecase.notification.NotificationUseCases
 import com.erdemserhat.harmonyhaven.domain.usecase.notification.ScheduleNotification
@@ -43,7 +44,8 @@ object NotificationUseCaseModule {
             getSchedulers = GetSchedulers(notificationApiService),
             deleteScheduler = DeleteScheduler(notificationApiService),
             scheduleNotification = ScheduleNotification(notificationApiService),
-            updateScheduler = UpdateScheduler(notificationApiService)
+            updateScheduler = UpdateScheduler(notificationApiService),
+            getNotificationCount = GetNotificationCount(notificationApiService)
         )
     }
 }

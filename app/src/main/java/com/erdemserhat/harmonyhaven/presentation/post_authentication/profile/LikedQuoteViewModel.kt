@@ -21,6 +21,7 @@ class LikedQuoteViewModel @Inject constructor(
     val likedQuotesState: StateFlow<LikedQuotesState> = _likedQuotesState
 
 
+
     fun getLikedQuotes() {
         viewModelScope.launch {
             _likedQuotesState.value = _likedQuotesState.value.copy(isLoading = true)

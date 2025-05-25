@@ -39,6 +39,9 @@ interface NotificationApiService {
         @Query("size") size: Int   // The number of notifications per page.
     ): Response<List<NotificationDto>>
 
+    @GET("v1/get-notifications-count")
+    suspend fun getNotificationCount(): Response<Map<String,Int>>
+
 
     //schedulers
     @GET("v1/notification/schedulers")

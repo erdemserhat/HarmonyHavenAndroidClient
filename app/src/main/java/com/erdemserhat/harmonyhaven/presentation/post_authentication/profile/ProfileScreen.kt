@@ -86,7 +86,10 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource.Companion.SideEffect
 import androidx.compose.ui.layout.onSizeChanged
@@ -95,6 +98,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreenViewModel
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 
@@ -132,12 +136,21 @@ private fun openPlayStoreForRating(context: Context) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController, userViewModel : UserProfileScreenViewModel = hiltViewModel()) {
+fun ProfileScreen(
+    navController: NavController,
+    userViewModel : UserProfileScreenViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel()
+
+
+
+) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 
     val density = LocalDensity.current
     val systemUiController = rememberSystemUiController()
+
+    val profileState = profileViewModel.profileState.collectAsState()
 
     val thresholdPx = with(density) { 320.dp.toPx() }
 
@@ -180,7 +193,27 @@ fun ProfileScreen(navController: NavController, userViewModel : UserProfileScree
             context.startActivity(browserIntent)
         }
     }
-    
+
+
+
+    var messageCount by rememberSaveable{
+        mutableIntStateOf(0)
+    }
+
+    var likedCount by rememberSaveable {
+        mutableIntStateOf(0)
+    }
+    var activeDays by rememberSaveable {
+        mutableIntStateOf(0)
+    }
+    LaunchedEffect(Unit) {
+       profileViewModel.gatherCounts()
+    }
+    likedCount = profileState.value.likedCount
+    messageCount =  profileState.value.messageCount
+    activeDays = profileState.value.activeDays
+
+
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
@@ -191,7 +224,8 @@ fun ProfileScreen(navController: NavController, userViewModel : UserProfileScree
                 .verticalScroll(scrollState)
         ) {
             // Profile Header with Image
-            ProfileHeader(userName = userViewModel.state.value.username?:"",navController)
+            ProfileHeader(userName = userViewModel.state.value.username?:"",navController = navController,
+                likedCount = likedCount, messageCount = messageCount, activeDays = activeDays)
             
             // User stats card
 
@@ -441,7 +475,7 @@ fun ProfileScreen(navController: NavController, userViewModel : UserProfileScree
 }
 
 @Composable
-fun ProfileHeader(userName: String,navController: NavController) {
+fun ProfileHeader(userName: String,navController: NavController,likedCount:Int,messageCount:Int,activeDays: Int) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -500,12 +534,20 @@ fun ProfileHeader(userName: String,navController: NavController) {
 
         UserStatsCard(modifier = Modifier.align(Alignment.BottomCenter).onSizeChanged {
 
-        }.offset(y = 55.dp), navController = navController)
+        }.offset(y = 55.dp), navController = navController, likedCount = likedCount, messageCount = messageCount, activeDays = activeDays)
     }
 }
 
 @Composable
-fun UserStatsCard(modifier: Modifier, navController: NavController) {
+fun UserStatsCard(
+    modifier: Modifier,
+    navController: NavController,
+    likedCount:Int,
+    messageCount: Int,
+    activeDays:Int
+
+
+) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -525,7 +567,7 @@ fun UserStatsCard(modifier: Modifier, navController: NavController) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             StatColumn(
-                value = "247",
+                value = activeDays.toString(),
                 label = "Aktif Gün",
                 modifier = Modifier.weight(1f).clickable {  }
             )
@@ -539,7 +581,7 @@ fun UserStatsCard(modifier: Modifier, navController: NavController) {
             )
             
             StatColumn(
-                value = "2",
+                value = likedCount.toString(),
                 label = "Beğendiğim Sözler",
                 modifier = Modifier.weight(1f).clickable { 
                     navController.navigate(Screen.LikedQuotesScreen.route)
@@ -555,9 +597,11 @@ fun UserStatsCard(modifier: Modifier, navController: NavController) {
             )
             
             StatColumn(
-                value = "0",
+                value = messageCount.toString(),
                 label = "Özel Mesajların",
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f).clickable {
+                    navController.navigate(Screen.Notification.route)
+                }
             )
         }
     }
