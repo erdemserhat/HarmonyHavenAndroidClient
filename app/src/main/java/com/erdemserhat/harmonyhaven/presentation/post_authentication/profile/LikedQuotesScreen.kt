@@ -12,12 +12,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,8 +49,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.memory.MemoryCache
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.LikedQuoteViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VolumeControlViewModel
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
@@ -57,89 +62,34 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.compose.foundation.Image
 import android.graphics.Bitmap
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+
+// Global cache for video thumbnails
+private val videoThumbnailCache = mutableMapOf<String, Bitmap>()
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LikedQuotesScreen(
     navController: NavController,
-    viewModel: QuoteMainViewModel? = hiltViewModel(),
-    volumeControlViewModel: VolumeControlViewModel? = null
+    likedQuoteViewModel: LikedQuoteViewModel = hiltViewModel(),
 ) {
-    // Mock data for liked quotes
-    val mockLikedQuotes = listOf(
-        Quote(
-            id = 1,
-            quote = "Hayatta en büyük zafer, her düştüğünde tekrar ayağa kalkabilmektir.",
-            writer = "Nelson Mandela",
-            imageUrl = "https://www.harmonyhavenapp.com/sources/quote_assets/1soru.1cevap/1soru.1cevap-20240915-0001.mp4",
-            quoteCategory = 1,
-            isLiked = true
-        ),
-        Quote(
-            id = 2,
-            quote = "Başarı, son değil; başarısızlık, ölümcül değil: önemli olan devam etme cesaretindir.",
-            writer = "Winston Churchill",
-            imageUrl = "https://www.harmonyhavenapp.com/sources/quote_assets/30112024/avahapky/avahapky-20241130-0001.mp4",
-            quoteCategory = 2,
-            isLiked = true
-        ),
-        Quote(
-            id = 3,
-            quote = "Geleceği tahmin etmenin en iyi yolu onu yaratmaktır.",
-            writer = "Peter Drucker",
-            imageUrl = "https://www.harmonyhavenapp.com/sources/article_images/bariyerler_olmadan_dusun.png",
-            quoteCategory = 1,
-            isLiked = true
-        ),
-        Quote(
-            id = 4,
-            quote = "Değişim acı verebilir, ama değişmemek daha da acı vericidir.",
-            writer = "Tony Robbins",
-            imageUrl = "https://harmonyhavenapp.com/sources/quotes/4.jpg",
-            quoteCategory = 3,
-            isLiked = true
-        ),
-        Quote(
-            id = 5,
-            quote = "Hayallerinizi gerçekleştirmek için önce uyanmanız gerekir.",
-            writer = "Josiah Gilbert Holland",
-            imageUrl = "https://harmonyhavenapp.com/sources/quotes/5.jpg",
-            quoteCategory = 2,
-            isLiked = true
-        ),
-        Quote(
-            id = 6,
-            quote = "Başarı, hazırlık ile fırsatın buluştuğu andır.",
-            writer = "Bobby Unser",
-            imageUrl = "https://harmonyhavenapp.com/sources/quotes/6.jpg",
-            quoteCategory = 1,
-            isLiked = true
-        ),
-        Quote(
-            id = 7,
-            quote = "Kendinize inanın ve ne istediğinizi biliyorsanız, başaracaksınız.",
-            writer = "Johann Wolfgang von Goethe",
-            imageUrl = "https://harmonyhavenapp.com/sources/quotes/7.jpg",
-            quoteCategory = 2,
-            isLiked = true
-        ),
-        Quote(
-            id = 8,
-            quote = "Büyük işler yapmak için büyük riskler almak gerekir.",
-            writer = "Heraclitus",
-            imageUrl = "https://harmonyhavenapp.com/sources/quotes/8.jpg",
-            quoteCategory = 3,
-            isLiked = true
-        ),
-        Quote(
-            id = 9,
-            quote = "Mükemmellik bir hedefe değil, bir yolculuğa dairdir.",
-            writer = "Arthur Ashe",
-            imageUrl = "https://harmonyhavenapp.com/sources/quotes/9.jpg",
-            quoteCategory = 1,
-            isLiked = true
+    val likedQuoteState = likedQuoteViewModel.likedQuotesState.collectAsState()
+
+    val systemUiController = rememberSystemUiController()
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            darkIcons = true,
+            color = Color.Transparent
         )
-    )
+    }
+    // Fetch liked quotes when screen loads
+    LaunchedEffect(Unit) {
+
+        likedQuoteViewModel.getLikedQuotes()
+    }
 
     Scaffold(
         modifier = Modifier
@@ -178,38 +128,61 @@ fun LikedQuotesScreen(
                 .background(Color(0xFFF8F8F8))
                 .padding(paddingValues)
         ) {
-            // Quote count info
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "${mockLikedQuotes.size} beğenilen söz",
-                    fontSize = 16.sp,
-                    color = Color.DarkGray,
-                    fontFamily = ptSansFont
-                )
-            }
-
-            // Grid of liked quotes
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(2.dp),
-                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                itemsIndexed(mockLikedQuotes) { index, quote ->
-                    SimplifiedQuoteCard(
-                        quote = quote,
-                        onClick = {
-                            // Navigate to full Quote screen
-                            navController.navigate(Screen.QuoteMain.route)
-                        }
+            // Show loading indicator when loading
+            if (likedQuoteState.value.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(48.dp),
+                            color = harmonyHavenDarkGreenColor
+                        )
+                        Text(
+                            text = "Beğenilen sözler yükleniyor...",
+                            fontSize = 16.sp,
+                            color = Color.DarkGray,
+                            fontFamily = ptSansFont
+                        )
+                    }
+                }
+            } else {
+                // Quote count info
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "${likedQuoteState.value.likedQuotes.size} beğenilen söz",
+                        fontSize = 16.sp,
+                        color = Color.DarkGray,
+                        fontFamily = ptSansFont
                     )
+                }
+
+                // Grid of liked quotes
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(3),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(2.dp),
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    itemsIndexed(likedQuoteState.value.likedQuotes) { index, quote ->
+                        SimplifiedQuoteCard(
+                            quote = quote,
+                            onClick = {
+                                // Navigate to full Quote screen
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -222,27 +195,37 @@ fun SimplifiedQuoteCard(
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
-    var videoThumbnail by remember { mutableStateOf<Bitmap?>(null) }
+    var videoThumbnail by remember(quote.imageUrl) { mutableStateOf<Bitmap?>(null) }
     val isVideo = quote.imageUrl.endsWith(".mp4", ignoreCase = true)
     
-    // Extract video thumbnail for mp4 files
+    // Extract video thumbnail for mp4 files with caching
     LaunchedEffect(quote.imageUrl) {
         if (isVideo) {
-            try {
-                withContext(Dispatchers.IO) {
-                    val retriever = MediaMetadataRetriever()
-                    try {
-                        retriever.setDataSource(quote.imageUrl, HashMap<String, String>())
-                        val bitmap = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                        videoThumbnail = bitmap
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    } finally {
-                        retriever.release()
+            // Check cache first
+            val cachedThumbnail = videoThumbnailCache[quote.imageUrl]
+            if (cachedThumbnail != null) {
+                videoThumbnail = cachedThumbnail
+            } else {
+                // Extract thumbnail if not cached
+                try {
+                    withContext(Dispatchers.IO) {
+                        val retriever = MediaMetadataRetriever()
+                        try {
+                            retriever.setDataSource(quote.imageUrl, HashMap<String, String>())
+                            val bitmap = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                            bitmap?.let {
+                                videoThumbnailCache[quote.imageUrl] = it
+                                videoThumbnail = it
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        } finally {
+                            retriever.release()
+                        }
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
         }
     }
@@ -255,7 +238,7 @@ fun SimplifiedQuoteCard(
     ) {
         // Show video thumbnail or image
         if (isVideo && videoThumbnail != null) {
-            // Show video thumbnail
+            // Show cached video thumbnail
             Image(
                 bitmap = videoThumbnail!!.asImageBitmap(),
                 contentDescription = null,
@@ -263,9 +246,14 @@ fun SimplifiedQuoteCard(
                 modifier = Modifier.fillMaxSize()
             )
         } else if (!isVideo) {
-            // Show image directly
+            // Show image with enhanced caching
             AsyncImage(
-                model = quote.imageUrl,
+                model = ImageRequest.Builder(context)
+                    .data(quote.imageUrl)
+                    .memoryCacheKey(quote.imageUrl)
+                    .diskCacheKey(quote.imageUrl)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
