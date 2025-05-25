@@ -178,7 +178,7 @@ fun TestInstructionsScreen(onStartTest: () -> Unit) {
         
         Spacer(modifier = Modifier.height(32.dp))
         
-        InstructionItem(text = "Bu test ortalama 10-15 dakika sürecektir.")
+        InstructionItem(text = "Bu test ortalama 5-10 dakika sürecektir.")
         InstructionItem(text = "Testteki soruları olmasını istediğiniz gibi değil, olduğunuz gibi cevaplamanız gerekmektedir.")
         InstructionItem(text = "Test boyunca istediğiniz cevabı geri dönüp değiştirebilirsiniz.")
         InstructionItem(text = "Mizaç tesbitinizin isabetli olabilmesi vereceğiniz cevapların doğruluğuna bağlıdır.")

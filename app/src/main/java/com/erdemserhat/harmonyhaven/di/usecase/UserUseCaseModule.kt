@@ -14,9 +14,12 @@ import com.erdemserhat.harmonyhaven.domain.usecase.user.AuthenticateUser
 import com.erdemserhat.harmonyhaven.domain.usecase.user.AuthenticateUserViaGoogle
 import com.erdemserhat.harmonyhaven.domain.usecase.user.CheckUserAuthenticationStatus
 import com.erdemserhat.harmonyhaven.domain.usecase.user.FcmEnrolment
+import com.erdemserhat.harmonyhaven.domain.usecase.user.GetAllMoods
 import com.erdemserhat.harmonyhaven.domain.usecase.user.GetUserInformation
+import com.erdemserhat.harmonyhaven.domain.usecase.user.GetUserMood
 import com.erdemserhat.harmonyhaven.domain.usecase.user.RegisterUser
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UpdateUserInformation
+import com.erdemserhat.harmonyhaven.domain.usecase.user.UpdateUserMood
 import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
 import dagger.Module
 import dagger.Provides
@@ -71,7 +74,10 @@ object UserUseCaseModule {
             checkUserAuthenticationStatus = CheckUserAuthenticationStatus(authenticationStatusCheckerApiService),
             getUserInformation = GetUserInformation(getUserInformationApiService),
             updateUserInformation = UpdateUserInformation(updateApiService),
-            authenticateUserViaGoogle = AuthenticateUserViaGoogle(userAuthApiService)
+            authenticateUserViaGoogle = AuthenticateUserViaGoogle(userAuthApiService),
+            getUserMood = GetUserMood(getUserInformationApiService),
+            updateUserMood = UpdateUserMood(getUserInformationApiService),
+            getAllMoods = GetAllMoods(getUserInformationApiService)
         )
     }
 }

@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,11 +38,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,6 +57,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.erdemserhat.harmonyhaven.domain.model.rest.Mood
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.mood.MoodViewModel
 import com.erdemserhat.harmonyhaven.ui.theme.DefaultAppFont
 import com.erdemserhat.harmonyhaven.ui.theme.customFontInter
 import com.erdemserhat.harmonyhaven.ui.theme.customFontKumbhSans
@@ -197,19 +202,10 @@ fun HomeScreenIntroCard(
 fun MoodSelectorContent(
     selectedMoodId: Int? = null,
     onMoodSelected: (Int) -> Unit,
-    name:String
+    name: String,
+    moodViewModel: MoodViewModel = hiltViewModel()
 ) {
-    val moods = remember {
-        listOf(
-            MoodOption(1, "Mutlu", "https://harmonyhavenapp.com/sources/moods/happy.png"),
-            MoodOption(3, "Sakin", "https://harmonyhavenapp.com/sources/moods/calm.png"),
-            MoodOption(4, "Öfkeli", "https://harmonyhavenapp.com/sources/moods/angry.png"),
-            MoodOption(5, "Tükenmiş", "https://harmonyhavenapp.com/sources/moods/exhausted.png"),
-            MoodOption(7, "Üzgün", "https://harmonyhavenapp.com/sources/moods/unhappy.png"),
-            MoodOption(8, "Yorgun", "https://harmonyhavenapp.com/sources/moods/tired.png"),
-            MoodOption(9, "Heyecanlı", "https://harmonyhavenapp.com/sources/moods/pleasant.png")
-        )
-    }
+    val uiState by moodViewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -234,19 +230,46 @@ fun MoodSelectorContent(
             modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            contentPadding = PaddingValues(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(bottom = 32.dp)
-        ) {
-            items(moods) { mood ->
-                MoodItem(
-                    mood = mood, 
-                    isSelected = mood.id == selectedMoodId,
-                    onMoodSelected = { onMoodSelected(mood.id) }
+        when {
+            uiState.isLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = harmonyHavenGreen)
+                }
+            }
+            uiState.error != null -> {
+                Text(
+                    text = "Ruh halleri yüklenirken bir hata oluştu",
+                    fontSize = 16.sp,
+                    color = Color.Red,
+                    textAlign = TextAlign.Center,
+                    fontFamily = ptSansFont,
+                    modifier = Modifier.fillMaxWidth().padding(24.dp)
                 )
+            }
+            else -> {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(3),
+                    contentPadding = PaddingValues(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.padding(bottom = 32.dp)
+                ) {
+                    items(uiState.moods) { mood ->
+                        MoodItemNew(
+                            mood = mood,
+                            isSelected = mood.id == uiState.currentMoodId,
+                            onMoodSelected = { 
+                                moodViewModel.updateUserMood(mood.id)
+                                onMoodSelected(mood.id.toIntOrNull() ?: 0)
+                            }
+                        )
+                    }
+                }
             }
         }
     }
@@ -256,6 +279,88 @@ fun MoodSelectorContent(
 @Composable
 fun MoodItem(
     mood: MoodOption, 
+    isSelected: Boolean,
+    onMoodSelected: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .aspectRatio(1f)
+            .fillMaxWidth()
+            .padding(2.dp),
+        onClick = { onMoodSelected() },
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        ),
+        border = if (isSelected) BorderStroke(2.dp, harmonyHavenGreen) else null,
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Image covering entire card
+            AsyncImage(
+                model = mood.imageUrl,
+                contentDescription = mood.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            
+            // Dark gradient overlay for better text visibility
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.6f)
+                            ),
+                            startY = 0f,
+                            endY = 500f
+                        )
+                    )
+            )
+            
+            // Mood name at the bottom
+            Text(
+                text = mood.name,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                fontFamily = ptSansFont,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 12.dp)
+            )
+            
+            // Checkmark for selected mood
+            if (isSelected) {
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .size(24.dp),
+                    shape = CircleShape,
+                    color = harmonyHavenGreen
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Selected",
+                        tint = Color.White,
+                        modifier = Modifier.padding(4.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MoodItemNew(
+    mood: Mood, 
     isSelected: Boolean,
     onMoodSelected: () -> Unit
 ) {

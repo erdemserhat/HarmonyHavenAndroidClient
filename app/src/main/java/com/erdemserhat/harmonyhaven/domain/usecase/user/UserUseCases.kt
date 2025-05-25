@@ -15,5 +15,8 @@ data class UserUseCases(
     val getUserInformation: GetUserInformation,
     val updateUserInformation: UpdateUserInformation,
     val authenticateUserViaGoogle: AuthenticateUserViaGoogle,
+    val getUserMood: GetUserMood,
+    val updateUserMood: UpdateUserMood,
+    val getAllMoods: GetAllMoods,
 
 )
