@@ -1,6 +1,10 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.settings
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.content.pm.PackageManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -129,6 +133,92 @@ fun SettingsScreen(
     val nameChangeState by viewModel.nameChangeState
     val context = LocalContext.current
     
+    // Function to get app version
+    fun getAppVersion(context: Context): String {
+        return try {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            "${packageInfo.versionName} (${packageInfo.longVersionCode})"
+        } catch (e: PackageManager.NameNotFoundException) {
+            "Bilinmiyor"
+        }
+    }
+    
+    // Function to send help and support email
+    fun sendHelpSupportEmail(context: Context) {
+        val appVersion = getAppVersion(context)
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf("info@harmonyhavenapp.com"))
+            putExtra(Intent.EXTRA_SUBJECT, "Harmony Haven - Yardım ve Destek Talebi")
+            putExtra(Intent.EXTRA_TEXT, """
+                Merhaba Harmony Haven Ekibi,
+                
+                Uygulama ile ilgili yardıma ihtiyacım var.
+                
+                Sorunum/Talebim:
+                [Lütfen buraya sorunuzu veya talebinizi detaylı bir şekilde yazın]
+                
+                Cihaz Bilgileri:
+                - Uygulama Versiyonu: $appVersion
+                - İşletim Sistemi: Android ${android.os.Build.VERSION.RELEASE}
+                - Cihaz Modeli: ${android.os.Build.MODEL}
+                - Kullanıcı E-posta: ${viewModel.userInfo.value.email}
+                
+                Teşekkürler,
+                
+            """.trimIndent())
+        }
+        
+        try {
+            context.startActivity(Intent.createChooser(emailIntent, "E-posta gönder"))
+        } catch (e: Exception) {
+            android.widget.Toast.makeText(
+                context,
+                "E-posta uygulaması bulunamadı. Lütfen info@harmonyhavenapp.com adresine manuel olarak e-posta gönderin.",
+                android.widget.Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+    
+    // Function to send feedback email
+    fun sendFeedbackEmail(context: Context) {
+        val appVersion = getAppVersion(context)
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf("info@harmonyhavenapp.com"))
+            putExtra(Intent.EXTRA_SUBJECT, "Harmony Haven - Geri Bildirim")
+            putExtra(Intent.EXTRA_TEXT, """
+                Merhaba Harmony Haven Ekibi,
+                
+                Uygulama hakkında geri bildirimde bulunmak istiyorum.
+                
+                Geri Bildirimim:
+                [Lütfen buraya önerilerinizi, beğendiklerinizi veya iyileştirme fikirlerinizi yazın]
+                
+                Değerlendirme (1-5 yıldız): ⭐⭐⭐⭐⭐
+                
+                Cihaz Bilgileri:
+                - Uygulama Versiyonu: $appVersion
+                - İşletim Sistemi: Android ${android.os.Build.VERSION.RELEASE}
+                - Cihaz Modeli: ${android.os.Build.MODEL}
+                - Kullanıcı E-posta: ${viewModel.userInfo.value.email}
+                
+                Teşekkürler,
+                
+            """.trimIndent())
+        }
+        
+        try {
+            context.startActivity(Intent.createChooser(emailIntent, "E-posta gönder"))
+        } catch (e: Exception) {
+            android.widget.Toast.makeText(
+                context,
+                "E-posta uygulaması bulunamadı. Lütfen info@harmonyhavenapp.com adresine manuel olarak e-posta gönderin.",
+                android.widget.Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+    
     // Handle success states
     if (passwordChangeResponse.isSuccessfullyChangedPassword) {
         shouldShowUpdatePasswordPopUp = false
@@ -231,13 +321,13 @@ fun SettingsScreen(
             SettingsItem(
                 icon = Icons.Default.Help,
                 title = "Yardım ve Destek",
-                onClick = { /* Navigate to help */ }
+                onClick = { sendHelpSupportEmail(context) }
             )
             
             SettingsItem(
                 icon = Icons.Default.Share,
                 title = "Geri Bildirim Gönder",
-                onClick = { /* Navigate to feedback */ }
+                onClick = { sendFeedbackEmail(context) }
             )
             
             Spacer(modifier = Modifier.height(24.dp))
