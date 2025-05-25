@@ -210,6 +210,28 @@ fun SetupNavGraph(
             LikedQuotesScreen(navController = navController)
         }
 
+        composable(route = Screen.QuoteDetailScreen.route,
+            enterTransition = { fadeIn(animationSpec = tween(100)) },
+            exitTransition = { fadeOut(animationSpec = tween(100)) },
+            popEnterTransition = { fadeIn(animationSpec = tween(100)) },
+            popExitTransition = { fadeOut(animationSpec = tween(100)) }
+        ) { backStackEntry ->
+            val bundle = backStackEntry.arguments
+            val quote = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                bundle?.getParcelable("quote", com.erdemserhat.harmonyhaven.dto.responses.Quote::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                bundle?.getParcelable<com.erdemserhat.harmonyhaven.dto.responses.Quote>("quote")
+            }
+            
+            quote?.let {
+                com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.QuoteDetailScreen(
+                    quote = it,
+                    navController = navController
+                )
+            }
+        }
+
         composable(route = Screen.Quotes.route,
             enterTransition = { fadeIn(animationSpec = tween(100)) },
             exitTransition = { fadeOut(animationSpec = tween(100)) },

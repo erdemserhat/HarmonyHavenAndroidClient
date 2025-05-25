@@ -39,5 +39,6 @@ sealed class Screen(val route: String) {
     data object FamousPeopleScreen : Screen("famous_people_screen")
     data object ChatExperienceCustomizationScreen : Screen("chat_experience_customization_screen")
     data object LikedQuotesScreen : Screen("liked_quotes_screen")
+    data object QuoteDetailScreen : Screen("quote_detail_screen")
 
 }

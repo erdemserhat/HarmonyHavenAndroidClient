@@ -65,6 +65,8 @@ import android.graphics.Bitmap
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import android.os.Bundle
+import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 
 // Global cache for video thumbnails
 private val videoThumbnailCache = mutableMapOf<String, Bitmap>()
@@ -179,7 +181,14 @@ fun LikedQuotesScreen(
                         SimplifiedQuoteCard(
                             quote = quote,
                             onClick = {
-                                // Navigate to full Quote screen
+                                // Navigate to QuoteDetailScreen with quote data
+                                val bundle = Bundle().apply {
+                                    putParcelable("quote", quote)
+                                }
+                                navController.navigate(
+                                    route = Screen.QuoteDetailScreen.route,
+                                    args = bundle
+                                )
                             }
                         )
                     }
