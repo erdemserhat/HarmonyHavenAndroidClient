@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.material.icons.filled.Web
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -225,7 +226,7 @@ fun ProfileScreen(
         ) {
             // Profile Header with Image
             ProfileHeader(userName = userViewModel.state.value.username?:"",navController = navController,
-                likedCount = likedCount, messageCount = messageCount, activeDays = activeDays)
+                likedCount = likedCount, messageCount = messageCount, activeDays = activeDays, isLoading = profileState.value.isLoading)
             
             // User stats card
 
@@ -475,7 +476,7 @@ fun ProfileScreen(
 }
 
 @Composable
-fun ProfileHeader(userName: String,navController: NavController,likedCount:Int,messageCount:Int,activeDays: Int) {
+fun ProfileHeader(userName: String,navController: NavController,likedCount:Int,messageCount:Int,activeDays: Int, isLoading: Boolean) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -534,7 +535,7 @@ fun ProfileHeader(userName: String,navController: NavController,likedCount:Int,m
 
         UserStatsCard(modifier = Modifier.align(Alignment.BottomCenter).onSizeChanged {
 
-        }.offset(y = 55.dp), navController = navController, likedCount = likedCount, messageCount = messageCount, activeDays = activeDays)
+        }.offset(y = 55.dp), navController = navController, likedCount = likedCount, messageCount = messageCount, activeDays = activeDays, isLoading = isLoading)
     }
 }
 
@@ -544,8 +545,8 @@ fun UserStatsCard(
     navController: NavController,
     likedCount:Int,
     messageCount: Int,
-    activeDays:Int
-
+    activeDays:Int,
+    isLoading: Boolean
 
 ) {
     Card(
@@ -557,8 +558,6 @@ fun UserStatsCard(
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
 
-
-
         // User stats with equal width columns
         Row(
             modifier = Modifier
@@ -569,6 +568,7 @@ fun UserStatsCard(
             StatColumn(
                 value = activeDays.toString(),
                 label = "Aktif Gün",
+                isLoading = isLoading,
                 modifier = Modifier.weight(1f).clickable {  }
             )
             
@@ -583,6 +583,7 @@ fun UserStatsCard(
             StatColumn(
                 value = likedCount.toString(),
                 label = "Beğendiğim Sözler",
+                isLoading = isLoading,
                 modifier = Modifier.weight(1f).clickable { 
                     navController.navigate(Screen.LikedQuotesScreen.route)
                 }
@@ -599,6 +600,7 @@ fun UserStatsCard(
             StatColumn(
                 value = messageCount.toString(),
                 label = "Özel Mesajların",
+                isLoading = isLoading,
                 modifier = Modifier.weight(1f).clickable {
                     navController.navigate(Screen.Notification.route)
                 }
@@ -608,18 +610,29 @@ fun UserStatsCard(
 }
 
 @Composable
-fun StatColumn(value: String, label: String, modifier: Modifier = Modifier) {
+fun StatColumn(value: String, label: String, isLoading: Boolean = false, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = value,
-            fontFamily = ptSansFont,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
+        // Only show loading if isLoading is true AND value is "0" (initial state)
+        if (isLoading && value == "0") {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                color = harmonyHavenGreen,
+                strokeWidth = 2.dp
+            )
+        } else {
+            Text(
+                text = value,
+                fontFamily = ptSansFont,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+        }
+        
+        Spacer(modifier = Modifier.height(4.dp))
         
         Text(
             text = label,
