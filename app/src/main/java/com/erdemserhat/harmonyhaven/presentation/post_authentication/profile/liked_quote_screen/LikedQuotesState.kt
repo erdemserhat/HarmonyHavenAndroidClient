@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.liked_quote_screen
 
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
 

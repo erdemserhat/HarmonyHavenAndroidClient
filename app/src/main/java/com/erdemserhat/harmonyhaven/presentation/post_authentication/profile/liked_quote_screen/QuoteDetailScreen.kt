@@ -1,11 +1,8 @@
-package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.liked_quote_screen
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +12,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -25,6 +23,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -38,7 +38,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -55,6 +57,8 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VolumeControlViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLike
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLikeBottomControlButton
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentModalBottomSheet
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteCard
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.Dispatchers
@@ -68,9 +72,15 @@ fun QuoteDetailScreen(
     quote: Quote,
     navController: NavController,
     viewModel: QuoteMainViewModel = hiltViewModel(),
-    volumeControlViewModel: VolumeControlViewModel = hiltViewModel()
+    volumeControlViewModel: VolumeControlViewModel = hiltViewModel(),
+    commentViewModel: CommentViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
     val systemUiController = rememberSystemUiController()
+    var shouldShowCommentBottomModal by remember { mutableStateOf(false) }
+    val commentSheetState = SheetState(skipPartiallyExpanded = true, density = Density(context))
+
     val coroutineScope = rememberCoroutineScope()
 
     SideEffect {
@@ -80,8 +90,17 @@ fun QuoteDetailScreen(
         )
     }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    keyboardController?.show()
+
+
+
+
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding(),
         containerColor = Color.Black
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize()) {
@@ -90,7 +109,11 @@ fun QuoteDetailScreen(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = viewModel,
                 navController = navController,
-                volumeControlViewModel = volumeControlViewModel
+                volumeControlViewModel = volumeControlViewModel,
+                onCommentClicked = {
+                    shouldShowCommentBottomModal = true
+                    commentViewModel.loadComments(quote.id)
+                }
             )
 
             // Back button positioned at top-left
@@ -109,6 +132,21 @@ fun QuoteDetailScreen(
                     modifier = Modifier.size(24.dp)
                 )
             }
+
+            // Comment Modal Bottom Sheet
+            if (shouldShowCommentBottomModal) {
+
+                CommentModalBottomSheet(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+
+                    onDismissRequest = {
+                        shouldShowCommentBottomModal = false 
+                    },
+                    sheetState = commentSheetState,
+                    postId = quote.id,
+                    viewModel = commentViewModel
+                )
+            }
         }
     }
 }
@@ -120,7 +158,8 @@ private fun QuoteContent(
     modifier: Modifier,
     viewModel: QuoteMainViewModel,
     navController: NavController,
-    volumeControlViewModel: VolumeControlViewModel
+    volumeControlViewModel: VolumeControlViewModel,
+    onCommentClicked: () -> Unit
 ) {
     var isQuoteLiked by remember { mutableStateOf(quote.isLiked) }
     var isVisibleLikeAnimation by remember { mutableStateOf(false) }
@@ -160,7 +199,7 @@ private fun QuoteContent(
         // Bottom controls: Like, Category, Share
         BottomControls(
             modifier = Modifier
-                .padding(bottom = 50.dp, end = 7.dp)
+                .padding(bottom = 125.dp, end = 10.dp)
                 .align(Alignment.BottomEnd),
             isQuoteLiked = isQuoteLiked,
             shouldAnimateLikeButton = shouldAnimateLikeButton,
@@ -183,7 +222,8 @@ private fun QuoteContent(
                         navController = navController
                     )
                 }
-            }
+            },
+            onCommentClicked = onCommentClicked
         )
 
         // Display quote as an image or video
@@ -211,7 +251,8 @@ private fun BottomControls(
     isQuoteLiked: Boolean,
     shouldAnimateLikeButton: Boolean,
     onLikeClicked: (Boolean) -> Unit,
-    onShareQuoteClicked: () -> Unit
+    onShareQuoteClicked: () -> Unit,
+    onCommentClicked: () -> Unit
 ) {
     Column(
         modifier = modifier.zIndex(4f),
@@ -222,6 +263,12 @@ private fun BottomControls(
             shouldAnimate = shouldAnimateLikeButton,
             onLikeClicked = onLikeClicked,
             onAnimationEnd = { }
+        )
+
+        IconTextButton(
+            iconRes = R.drawable.commenss_,
+            label = "Yorum",
+            onClick = onCommentClicked
         )
 
         IconTextButton(

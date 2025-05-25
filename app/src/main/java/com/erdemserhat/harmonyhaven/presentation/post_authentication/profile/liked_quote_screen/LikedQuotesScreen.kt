@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.liked_quote_screen
 
 import android.media.MediaMetadataRetriever
 import androidx.compose.foundation.background
@@ -50,12 +50,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import coil.memory.MemoryCache
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.LikedQuoteViewModel
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VolumeControlViewModel
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
 import kotlinx.coroutines.Dispatchers

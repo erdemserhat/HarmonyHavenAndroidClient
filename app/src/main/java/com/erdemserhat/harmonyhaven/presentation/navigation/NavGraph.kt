@@ -53,7 +53,8 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.player.Medi
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.player.MusicPlayerScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.journal.JournalScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.journal.JournalEditorScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.LikedQuotesScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.liked_quote_screen.LikedQuotesScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.liked_quote_screen.QuoteDetailScreen
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -225,7 +226,7 @@ fun SetupNavGraph(
             }
             
             quote?.let {
-                com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.QuoteDetailScreen(
+                QuoteDetailScreen(
                     quote = it,
                     navController = navController
                 )

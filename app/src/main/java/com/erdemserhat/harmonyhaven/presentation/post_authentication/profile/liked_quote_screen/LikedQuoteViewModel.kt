@@ -1,9 +1,7 @@
-package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.liked_quote_screen
 
-import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.erdemserhat.harmonyhaven.domain.usecase.quote.QuoteUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
