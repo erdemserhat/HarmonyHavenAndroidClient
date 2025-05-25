@@ -25,9 +25,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -58,10 +55,7 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VolumeControlViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLike
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLikeBottomControlButton
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentModalBottomSheet
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment.CommentViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteCard
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -74,12 +68,9 @@ fun QuoteDetailScreen(
     quote: Quote,
     navController: NavController,
     viewModel: QuoteMainViewModel = hiltViewModel(),
-    volumeControlViewModel: VolumeControlViewModel = hiltViewModel(),
-    commentViewModel: CommentViewModel = hiltViewModel()
+    volumeControlViewModel: VolumeControlViewModel = hiltViewModel()
 ) {
     val systemUiController = rememberSystemUiController()
-    var shouldShowCommentBottomModal by remember { mutableStateOf(false) }
-    val commentSheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
 
     SideEffect {
@@ -91,50 +82,31 @@ fun QuoteDetailScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Geri",
-                            tint = Color.White
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
-                modifier = Modifier.statusBarsPadding()
-            )
-        },
         containerColor = Color.Black
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize()) {
             QuoteContent(
                 quote = quote,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+                modifier = Modifier.fillMaxSize(),
                 viewModel = viewModel,
                 navController = navController,
-                volumeControlViewModel = volumeControlViewModel,
-                onCommentClicked = {
-                    shouldShowCommentBottomModal = true
-                    commentViewModel.loadComments(quote.id)
-                }
+                volumeControlViewModel = volumeControlViewModel
             )
 
-            // Comment Modal Bottom Sheet
-            if (shouldShowCommentBottomModal) {
-                CommentModalBottomSheet(
-                    onDismissRequest = { 
-                        shouldShowCommentBottomModal = false 
-                    },
-                    sheetState = commentSheetState,
-                    postId = quote.id,
-                    viewModel = commentViewModel
+            // Back button positioned at top-left
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .statusBarsPadding()
+                    .padding(16.dp)
+                    .zIndex(10f)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Geri",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
@@ -148,8 +120,7 @@ private fun QuoteContent(
     modifier: Modifier,
     viewModel: QuoteMainViewModel,
     navController: NavController,
-    volumeControlViewModel: VolumeControlViewModel,
-    onCommentClicked: () -> Unit
+    volumeControlViewModel: VolumeControlViewModel
 ) {
     var isQuoteLiked by remember { mutableStateOf(quote.isLiked) }
     var isVisibleLikeAnimation by remember { mutableStateOf(false) }
@@ -212,8 +183,7 @@ private fun QuoteContent(
                         navController = navController
                     )
                 }
-            },
-            onCommentClicked = onCommentClicked
+            }
         )
 
         // Display quote as an image or video
@@ -241,8 +211,7 @@ private fun BottomControls(
     isQuoteLiked: Boolean,
     shouldAnimateLikeButton: Boolean,
     onLikeClicked: (Boolean) -> Unit,
-    onShareQuoteClicked: () -> Unit,
-    onCommentClicked: () -> Unit
+    onShareQuoteClicked: () -> Unit
 ) {
     Column(
         modifier = modifier.zIndex(4f),
@@ -253,12 +222,6 @@ private fun BottomControls(
             shouldAnimate = shouldAnimateLikeButton,
             onLikeClicked = onLikeClicked,
             onAnimationEnd = { }
-        )
-
-        IconTextButton(
-            iconRes = R.drawable.commenss_,
-            label = "Yorum",
-            onClick = onCommentClicked
         )
 
         IconTextButton(
