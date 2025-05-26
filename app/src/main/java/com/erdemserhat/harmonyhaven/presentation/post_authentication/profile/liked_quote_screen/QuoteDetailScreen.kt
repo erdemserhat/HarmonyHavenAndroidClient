@@ -90,9 +90,6 @@ fun QuoteDetailScreen(
         )
     }
 
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    keyboardController?.show()
 
 
 
