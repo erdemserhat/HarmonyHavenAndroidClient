@@ -1,0 +1,3 @@
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.saved_articles
+
+class SavedArticlesViewModel

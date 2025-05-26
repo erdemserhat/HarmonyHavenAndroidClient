@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erdemserhat.harmonyhaven.domain.model.rest.toArticleResponseType
 import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
-import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.saved_articles.MockSavedArticles
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -38,13 +39,21 @@ import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
 
 @Composable
 fun TestIntroScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White,
+                        Color(0xFFF5F7F9)
+                    )
+                )
+            )
             .verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center
     ) {
@@ -61,7 +70,7 @@ fun TestIntroScreen(navController: NavController) {
                 painter = painterResource(id = R.drawable.enneagram),
                 contentDescription = "Enneagram Logo",
                 modifier = Modifier
-                    .size(200.dp)
+                    .size(180.dp)
                     .padding(bottom = 16.dp),
                 contentScale = ContentScale.Fit
             )
@@ -71,7 +80,8 @@ fun TestIntroScreen(navController: NavController) {
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = harmonyHavenDarkGreenColor,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontFamily = ptSansFont
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -81,10 +91,11 @@ fun TestIntroScreen(navController: NavController) {
                 fontSize = 16.sp,
                 color = Color.DarkGray,
                 textAlign = TextAlign.Center,
-                style = TextStyle(lineHeight = 24.sp)
+                style = TextStyle(lineHeight = 24.sp),
+                fontFamily = ptSansFont
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             // Basit Test Modu - Aktif
             TestModeCard(
@@ -139,16 +150,16 @@ fun TestModeCard(
             .clickable(enabled = isEnabled, onClick = onClick),
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isEnabled) Color.White else Color.White
+            containerColor = if (isEnabled) Color.White else Color(0xFFF8F8F8)
         ),
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, if (isEnabled) harmonyHavenGreen.copy(alpha = 0.3f) else Color.Gray.copy(alpha = 0.3f))
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, if (isEnabled) harmonyHavenGreen.copy(alpha = 0.3f) else Color.Gray.copy(alpha = 0.2f))
     ) {
         Box {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
@@ -160,28 +171,40 @@ fun TestModeCard(
                         text = title,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = if (isEnabled) harmonyHavenDarkGreenColor else Color.Gray
+                        color = if (isEnabled) harmonyHavenDarkGreenColor else Color.Gray,
+                        fontFamily = ptSansFont
                     )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
                         text = description,
                         fontSize = 14.sp,
                         color = if (isEnabled) Color.DarkGray else Color.Gray,
-                        style = TextStyle(lineHeight = 20.sp)
+                        style = TextStyle(lineHeight = 20.sp),
+                        fontFamily = ptSansFont
                     )
                 }
 
                 if (isEnabled) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow_back),
-                        contentDescription = "Başla",
-                        tint = harmonyHavenGreen,
+                    Box(
                         modifier = Modifier
-                            .size(24.dp)
-                            .rotate(180f)
-                    )
+                            .size(40.dp)
+                            .background(
+                                color = harmonyHavenGreen.copy(alpha = 0.1f),
+                                shape = RoundedCornerShape(12.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_back),
+                            contentDescription = "Başla",
+                            tint = harmonyHavenGreen,
+                            modifier = Modifier
+                                .size(20.dp)
+                                .rotate(180f)
+                        )
+                    }
                 }
             }
 
@@ -190,18 +213,19 @@ fun TestModeCard(
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(8.dp)
+                        .padding(12.dp)
                         .background(
-                            color = harmonyHavenGreen.copy(alpha = 0.2f),
-                            shape = RoundedCornerShape(4.dp)
+                            color = harmonyHavenGreen.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(8.dp)
                         )
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .padding(horizontal = 10.dp, vertical = 5.dp)
                 ) {
                     Text(
                         text = it,
                         fontSize = 12.sp,
                         color = harmonyHavenDarkGreenColor,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = ptSansFont
                     )
                 }
             }

@@ -14,17 +14,18 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -68,11 +69,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatIntroScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.EnneagramScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreenViewModel
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.test.EnneagramTestScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.composables.HomeScreenNew
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VolumeControlViewModel
@@ -84,11 +83,10 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Text
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import androidx.compose.ui.unit.LayoutDirection
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.ProfileScreen
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
@@ -104,7 +102,7 @@ fun AppMainScreen(
 
 ) {
     val pagerState = rememberPagerState(
-        initialPage = 1
+        initialPage = 0
 
     )
     val coroutineScope = rememberCoroutineScope()
@@ -148,7 +146,7 @@ fun AppMainScreen(
 
     LaunchedEffect(pagerState.currentPage) {
         Log.d("dsdfsdfsdf", pagerState.currentPage.toString())
-        if (pagerState.currentPage != 1) {
+        if (pagerState.currentPage != 2) {
             volumeControlViewModel.saveLastCondition()
             volumeControlViewModel.mute()
         } else {
@@ -178,18 +176,21 @@ fun AppMainScreen(
                     viewmodel = quoteViewModel
                 )
             },
-            2 to { NotificationScreen(navController) },
-            3 to { ChatIntroScreen(navController = navController) },
-            4 to {
-                UserProfileScreen(
+            2 to { ChatIntroScreen(navController = navController) },
+            3 to {
+                EnneagramScreen(
                     navController,
                     profileScreenViewModel = userProfileSharedViewModel
                 )
+            },
+
+            4 to {
+                ProfileScreen(
+                    navController)
             }
 
         )
     }
-
 
     //set status bar and system navbar color
     if (pagerState.currentPage == 1) {
@@ -207,7 +208,7 @@ fun AppMainScreen(
 
 
         }
-    } else {
+    } else if (listOf(2,3).contains(pagerState.currentPage)) {
         window.let {
             WindowCompat.setDecorFitsSystemWindows(
                 it, false
@@ -225,13 +226,37 @@ fun AppMainScreen(
 
         }
 
+    }else if (listOf(0,4).contains(pagerState.currentPage)){
+        window.let {
+            WindowCompat.setDecorFitsSystemWindows(
+                it, false
+            ) // content fill the system navbar- status bar
+            val insetsController = WindowCompat.getInsetsController(it, it.decorView)
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                it.statusBarColor = Color.Transparent.toArgb()
+            }
+
+
+            insetsController.isAppearanceLightStatusBars = false
+            insetsController.isAppearanceLightNavigationBars = true
+
+
+        }
+        val systemUiController = rememberSystemUiController()
+
+        systemUiController.setStatusBarColor(
+            color = Color.Transparent,
+            darkIcons = false
+        )
+
+
     }
 
 
 
     Scaffold(
         bottomBar = {
-
             Column(
                 modifier = Modifier
                     .background(
@@ -340,7 +365,10 @@ fun AppMainScreen(
                 Spacer(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding().value.dp)
+                        .height(
+                            WindowInsets.navigationBars.asPaddingValues()
+                                .calculateBottomPadding().value.dp
+                        )
                         .background(Color.Transparent),
                 )
             }
@@ -349,7 +377,7 @@ fun AppMainScreen(
         },
         topBar = {
 
-            if (pagerState.currentPage !in listOf(1, 2)) {
+            if (pagerState.currentPage !in listOf(0,1, 2,4,3)) {
                 MyAppBar(
                     onExitClicked = {
                         viewModel.logout()
@@ -358,7 +386,6 @@ fun AppMainScreen(
                     navController = navController,
                     title = when (pagerState.currentPage) {
                         0 -> "Harmony Haven"
-                        2 -> "Bildirimler"
                         1 -> "Söz Akışı"
                         3 -> "Harmonia"
                         4 -> "Enneagram"
@@ -371,7 +398,6 @@ fun AppMainScreen(
                         else -> Color.White // do not laugh it will be a future :)
                     },
                     isMainScreen = pagerState.currentPage == 0,
-                    isNotificationScreen = pagerState.currentPage == 2
                 )
 
             }
@@ -452,7 +478,13 @@ fun AppMainScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(if (pagerState.currentPage == 1) Color.Black else Color.White.copy(alpha = 0.95f))
-                .padding(padding)
+                .padding(if (pagerState.currentPage in listOf(0,4)) PaddingValues(
+                    top =0.dp,
+                    bottom = padding.calculateBottomPadding(),
+                )
+
+                else padding
+                )
                 .onGloballyPositioned {
                     Log.d("debugDelayRender", "ready")
                 }) { page ->
@@ -538,7 +570,10 @@ private val items = listOf(
         unSelectedIconDarkIcon = R.drawable.homewhiteunfilled,
         unSelectedIconWhiteIcon = R.drawable.homeblackunfilled
 
-    ), NavigationBarItem(
+    ),
+
+
+    NavigationBarItem(
         title = "Sözler",
         hasNews = false,
         badgeCount = null,
@@ -547,16 +582,8 @@ private val items = listOf(
         selectedIconWhiteIcon = R.drawable.quoteblackfilled,
         unSelectedIconDarkIcon = R.drawable.quotewhiteunfilled,
         unSelectedIconWhiteIcon = R.drawable.quoteblackunfilled
-    ), NavigationBarItem(
-        title = "Bildirimler",
-        hasNews = false,
-        badgeCount = null,
-        route = Screen.Notification.route,
-        selectedIconDarkIcon = R.drawable.notificationwhitefilled,
-        selectedIconWhiteIcon = R.drawable.notificationblackfilled,
-        unSelectedIconDarkIcon = R.drawable.notificationwhiteunfilled,
-        unSelectedIconWhiteIcon = R.drawable.notificationblackunfilled
     ),
+
 
     NavigationBarItem(
         title = "Harmonia",
@@ -574,12 +601,25 @@ private val items = listOf(
         title = "Enneagram",
         hasNews = false,
         badgeCount = null,
-        route = Screen.Profile.route,
-        selectedIconDarkIcon = R.drawable.profile_filled_white,
+        route = Screen.AccountInformationScreen.route,
+        selectedIconDarkIcon = R.drawable.enneagram_unfilled_black,
+        selectedIconWhiteIcon = R.drawable.enneagran_filled_black,
+        unSelectedIconDarkIcon = R.drawable.enneagram_white,
+        unSelectedIconWhiteIcon = R.drawable.enneagram_unfilled_black
+    ),
+
+    NavigationBarItem(
+        title = "Profile",
+        hasNews = false,
+        badgeCount = null,
+        route = Screen.AccountInformationScreen.route,
+        selectedIconDarkIcon = R.drawable.profile_unfilled_black,
         selectedIconWhiteIcon = R.drawable.profile_filled_black,
         unSelectedIconDarkIcon = R.drawable.profile_unfilled_white,
         unSelectedIconWhiteIcon = R.drawable.profile_unfilled_black
     )
+
+
 )
 
 

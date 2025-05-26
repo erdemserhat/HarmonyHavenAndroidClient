@@ -36,7 +36,7 @@ class NotificationViewModel @Inject constructor(
 
     // Offset variables
     private var currentPage = 1
-    private val pageSize = 5
+    private val pageSize = 10
 
     var hasMoreData = true
     val isLoading = MutableStateFlow(false)

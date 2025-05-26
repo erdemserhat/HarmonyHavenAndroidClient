@@ -20,6 +20,11 @@ class EnneagramViewModel @Inject constructor(
     private var _enneagramState = mutableStateOf(EnneagramState())
     val enneagramState: State<EnneagramState> = _enneagramState
 
+
+    init {
+
+    }
+
     fun getQuestions() {
         viewModelScope.launch(Dispatchers.IO) {
             try {

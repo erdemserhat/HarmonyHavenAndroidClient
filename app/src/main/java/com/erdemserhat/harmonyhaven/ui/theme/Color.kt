@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Color
 
 //My App Colors
 
-val harmonyHavenGreen = Color(0xff436850)
+    val harmonyHavenGreen = Color(0xff436850)
 val harmonyHavenWhite =Color(0xffD9D9D9)
 val harmonyHavenBottomAppBarContainerColor = Color(0xffD4E8E7)
 val harmonyHavenSelectedNavigationBarItemColor=Color(0xff12372A)

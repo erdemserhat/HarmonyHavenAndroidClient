@@ -1,9 +1,12 @@
 package com.erdemserhat.harmonyhaven.dto.responses
+import android.os.Parcelable
 import com.erdemserhat.harmonyhaven.data.local.entities.QuoteEntity
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
 
 @Serializable
+@Parcelize
 data class Quote(
     val id:Int=-1,
     val quote:String="",
@@ -11,7 +14,7 @@ data class Quote(
     val imageUrl:String="",
     val quoteCategory:Int=-1,
     var isLiked: Boolean=false
-){
+): Parcelable {
     fun convertToEntity(): QuoteEntity {
         return QuoteEntity(
             quoteId = id,
@@ -26,6 +29,7 @@ data class Quote(
     }
 }
 
+@Parcelize
 data class QuoteForOrderModel(
     val id:Int=-1,
     val quote:String="",
@@ -34,7 +38,7 @@ data class QuoteForOrderModel(
     val quoteCategory:Int=-1,
     var isLiked: Boolean=false,
     val currentPage:Int=0
-){}
+): Parcelable
 
 fun QuoteForOrderModel.toQuote():Quote{
     return Quote(id,quote,writer,imageUrl,quoteCategory,isLiked)

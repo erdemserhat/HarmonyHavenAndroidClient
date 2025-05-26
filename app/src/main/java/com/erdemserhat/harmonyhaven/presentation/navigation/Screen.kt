@@ -11,7 +11,7 @@ sealed class Screen(val route: String) {
     data object Notification : Screen("notification_screen")
     data object NotificationScheduler : Screen("notification_scheduler_screen")
     data object Settings : Screen("settings_screen")
-    data object Profile : Screen("profile_screen")
+    data object AccountInformationScreen : Screen("account_information_screen")
     data object Home : Screen("home_screen")
     data object Welcome : Screen("welcome_screen")
     data object Dashboard : Screen("dashboard_screen")
@@ -28,9 +28,17 @@ sealed class Screen(val route: String) {
     data object Test : Screen("test_screen")
     data object QuoteShareScreen : Screen("quote_share_screen")
     data object ChatScreen : Screen("chat_screen")
+    data object ChatHistoryScreen : Screen("chat_history_screen")
     data object ChatIntroScreen : Screen("chat_intro_screen")
     data object EnneagramTestScreen : Screen("enneagram_test_screen")
     data object EnneagramIntroScreen : Screen("enneagram_intro_screen")
-
+    data object ChatWithHarmonia : Screen("chatWithHarmonia")
+    data object Journal : Screen("journal")
+    data object JournalEditor : Screen("journalEditor")
+    data object JournalDetail : Screen("journalDetail/{journalId}")
+    data object FamousPeopleScreen : Screen("famous_people_screen")
+    data object ChatExperienceCustomizationScreen : Screen("chat_experience_customization_screen")
+    data object LikedQuotesScreen : Screen("liked_quotes_screen")
+    data object QuoteDetailScreen : Screen("quote_detail_screen")
 
 }

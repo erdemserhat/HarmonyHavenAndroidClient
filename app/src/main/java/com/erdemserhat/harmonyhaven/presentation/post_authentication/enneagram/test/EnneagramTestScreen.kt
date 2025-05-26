@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -43,32 +44,44 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.data.api.enneagram.EnneagramQuestionDto
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.enneagram.profil.UserProfileScreenViewModel
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
+import com.erdemserhat.harmonyhaven.ui.theme.ptSansFont
 
 @Composable
 fun EnneagramTestScreen(
     navController: NavController,
     enneagramViewModel: EnneagramViewModel = hiltViewModel(),
     sharedViewModel: UserProfileScreenViewModel
-
-
 ) {
     val enneagramState by enneagramViewModel.enneagramState
     val context = LocalContext.current
 
     Box(modifier = Modifier
-        .background(Color.White)
+        .background(
+            brush = Brush.verticalGradient(
+                colors = listOf(
+                    Color.White,
+                    Color(0xFFF5F7F9)
+                )
+            )
+        )
         .fillMaxSize()
         .padding(16.dp)
     ) {
@@ -103,8 +116,6 @@ fun EnneagramTestScreen(
                                 sharedViewModel.checkTestResult(onCompleted = {
                                     sharedViewModel.resetScrollState()
                                 })
-
-
                             }
                         )
                     }
@@ -138,25 +149,36 @@ fun TestInstructionsScreen(onStartTest: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            imageVector = Icons.Default.Info,
-            contentDescription = "Information",
-            tint = harmonyHavenGreen,
-            modifier = Modifier.size(56.dp)
-        )
+        Box(
+            modifier = Modifier
+                .size(80.dp)
+                .background(
+                    color = harmonyHavenGreen.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(16.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "Information",
+                tint = harmonyHavenGreen,
+                modifier = Modifier.size(40.dp)
+            )
+        }
         
         Spacer(modifier = Modifier.height(24.dp))
         
         Text(
             text = "Enneagram Kişilik Testi",
-            style = MaterialTheme.typography.headlineMedium,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = harmonyHavenDarkGreenColor
+            color = harmonyHavenDarkGreenColor,
+            fontFamily = ptSansFont
         )
         
         Spacer(modifier = Modifier.height(32.dp))
         
-        InstructionItem(text = "Bu test ortalama 10-15 dakika sürecektir.")
+        InstructionItem(text = "Bu test ortalama 5-10 dakika sürecektir.")
         InstructionItem(text = "Testteki soruları olmasını istediğiniz gibi değil, olduğunuz gibi cevaplamanız gerekmektedir.")
         InstructionItem(text = "Test boyunca istediğiniz cevabı geri dönüp değiştirebilirsiniz.")
         InstructionItem(text = "Mizaç tesbitinizin isabetli olabilmesi vereceğiniz cevapların doğruluğuna bağlıdır.")
@@ -168,14 +190,19 @@ fun TestInstructionsScreen(onStartTest: () -> Unit) {
             onClick = onStartTest,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(8.dp),
+                .height(56.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = harmonyHavenGreen,
                 contentColor = Color.White
             )
         ) {
-            Text("Teste Başla")
+            Text(
+                "Teste Başla", 
+                fontSize = 16.sp,
+                fontFamily = ptSansFont,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }
@@ -189,7 +216,8 @@ fun InstructionItem(text: String) {
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation(2.dp),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Row(
             modifier = Modifier
@@ -197,19 +225,30 @@ fun InstructionItem(text: String) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Default.Check,
-                contentDescription = "Check",
-                tint = harmonyHavenGreen,
-                modifier = Modifier.size(24.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .background(
+                        color = harmonyHavenGreen.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(10.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Check",
+                    tint = harmonyHavenGreen,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
             
             Spacer(modifier = Modifier.width(16.dp))
             
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.DarkGray
+                fontSize = 15.sp,
+                color = Color.DarkGray,
+                fontFamily = ptSansFont
             )
         }
     }
@@ -242,7 +281,7 @@ fun TestQuestionsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(Color.Transparent)
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween
@@ -277,66 +316,104 @@ fun TestQuestionsScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFF8F8F8)
+                    containerColor = Color.White
                 ),
-                elevation = CardDefaults.cardElevation(2.dp)
+                elevation = CardDefaults.cardElevation(2.dp),
+                shape = RoundedCornerShape(16.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(20.dp)
                 ) {
+                    // Soru metnini "Örneğin" kelimesinden sonrası için farklı stil uygula
+                    val styledQuestionText = remember(question.content) {
+                        buildAnnotatedString {
+                            val content = question.content
+                            val orneginIndex = content.indexOf("Örneğin", ignoreCase = true)
+                            
+                            if (orneginIndex != -1) {
+                                // "Örneğin" kelimesinden önceki kısım
+                                append(content.substring(0, orneginIndex))
+                                
+                                // "Örneğin" kelimesinden sonraki kısım - daha küçük ve şeffaf
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontSize = 14.sp,
+                                        color = Color.Black.copy(alpha = 0.6f),
+                                        fontWeight = FontWeight.Normal
+                                    )
+                                ) {
+                                    append(content.substring(orneginIndex))
+                                }
+                            } else {
+                                // "Örneğin" kelimesi yoksa normal stil
+                                append(content)
+                            }
+                        }
+                    }
+                    
                     Text(
-                        text = question.content,
-                        style = MaterialTheme.typography.bodyLarge,
+                        text = styledQuestionText,
+                        fontSize = 17.sp,
                         textAlign = TextAlign.Left,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        fontFamily = ptSansFont,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black,
+                        lineHeight = 24.sp
                     )
                     
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     
                     // Açıklayıcı metin
                     Text(
                         text = "Yukarıdaki ifade sizi ne kadar yansıtıyor?",
-                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 14.sp,
                         fontStyle = FontStyle.Italic,
                         color = Color.Gray,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        fontFamily = ptSansFont
                     )
                     
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                     
                     // Answer options
                     val selectedAnswer = answers.find { it.questionId == question.id }?.score
                     
-                    AnswerOption(
-                        text = "Hiç yansıtmıyor",
-                        score = 0,
-                        isSelected = selectedAnswer == 0,
-                        onSelected = { onAnswerSelected(question.id, 0) }
-                    )
-                    
-                    AnswerOption(
-                        text = "Biraz yansıtıyor",
-                        score = 1,
-                        isSelected = selectedAnswer == 1,
-                        onSelected = { onAnswerSelected(question.id, 1) }
-                    )
-                    
-                    AnswerOption(
-                        text = "Kısmen yansıtıyor",
-                        score = 2,
-                        isSelected = selectedAnswer == 2,
-                        onSelected = { onAnswerSelected(question.id, 2) }
-                    )
-                    
-                    AnswerOption(
-                        text = "Tam olarak yansıtıyor ",
-                        score = 3,
-                        isSelected = selectedAnswer == 3,
-                        onSelected = { onAnswerSelected(question.id, 3) }
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        AnswerOption(
+                            text = "Hiç yansıtmıyor",
+                            score = 0,
+                            isSelected = selectedAnswer == 0,
+                            onSelected = { onAnswerSelected(question.id, 0) }
+                        )
+                        
+                        AnswerOption(
+                            text = "Biraz yansıtıyor",
+                            score = 1,
+                            isSelected = selectedAnswer == 1,
+                            onSelected = { onAnswerSelected(question.id, 1) }
+                        )
+                        
+                        AnswerOption(
+                            text = "Kısmen yansıtıyor",
+                            score = 2,
+                            isSelected = selectedAnswer == 2,
+                            onSelected = { onAnswerSelected(question.id, 2) }
+                        )
+                        
+                        AnswerOption(
+                            text = "Tam olarak yansıtıyor ",
+                            score = 3,
+                            isSelected = selectedAnswer == 3,
+                            onSelected = { onAnswerSelected(question.id, 3) }
+                        )
+                    }
                 }
             }
         }
@@ -349,7 +426,8 @@ fun TestQuestionsScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 24.dp),
+                .padding(top = 8.dp)
+                .navigationBarsPadding(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             // Back button
@@ -360,17 +438,25 @@ fun TestQuestionsScreen(
                     }
                 },
                 enabled = localCurrentIndex > 0,
-                modifier = Modifier.weight(1f).padding(end = 8.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp)
+                    .height(52.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = harmonyHavenGreen
-                )
+                ),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back"
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "Önceki")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Önceki",
+                    fontFamily = ptSansFont,
+                    fontWeight = FontWeight.Medium
+                )
             }
             
             // Next/Submit button
@@ -384,21 +470,34 @@ fun TestQuestionsScreen(
                     }
                 },
                 enabled = isCurrentQuestionAnswered,
-                modifier = Modifier.weight(1f).padding(start = 8.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)
+                    .height(52.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = harmonyHavenGreen,
-                    contentColor = Color.White
-                )
+                    contentColor = Color.White,
+                    disabledContainerColor = harmonyHavenGreen.copy(alpha = 0.5f)
+                ),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 if (localCurrentIndex < questions.size - 1) {
-                    Text(text = "Sonraki")
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Sonraki",
+                        fontFamily = ptSansFont,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
                         contentDescription = "Next"
                     )
                 } else {
-                    Text(text = "Tamamla")
+                    Text(
+                        text = "Tamamla",
+                        fontFamily = ptSansFont,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
         }
@@ -409,9 +508,10 @@ fun TestQuestionsScreen(
             Text(
                 text = "Tüm soruları cevaplamanız gerekmektedir!",
                 color = Color.Red,
-                style = MaterialTheme.typography.bodySmall,
+                fontSize = 14.sp,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                fontFamily = ptSansFont
             )
         }
     }
@@ -434,14 +534,15 @@ fun ProgressBarWithSegments(
         // Soru numarası gösterimi
         Text(
             text = "Soru ${currentIndex + 1}/$totalQuestions",
-            style = MaterialTheme.typography.bodyMedium,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             color = harmonyHavenDarkGreenColor,
             modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontFamily = ptSansFont
         )
         
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
         
         // Daha büyük ve görünür bir ilerleme çubuğu
         LinearProgressIndicator(
@@ -450,10 +551,10 @@ fun ProgressBarWithSegments(
             else 0f,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(20.dp)
-                .clip(RoundedCornerShape(10.dp)),
+                .height(16.dp)
+                .clip(RoundedCornerShape(8.dp)),
             color = harmonyHavenGreen,
-            trackColor = Color.LightGray.copy(alpha = 0.5f)
+            trackColor = Color.LightGray.copy(alpha = 0.3f)
         )
         
         Spacer(modifier = Modifier.height(8.dp))
@@ -465,10 +566,11 @@ fun ProgressBarWithSegments(
         
         Text(
             text = "%$completionPercentage tamamlandı",
-            style = MaterialTheme.typography.bodySmall,
+            fontSize = 14.sp,
             color = Color.DarkGray,
             modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontFamily = ptSansFont
         )
     }
 }
@@ -483,16 +585,16 @@ fun AnswerOption(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = 3.dp)
             .selectable(
                 selected = isSelected,
                 onClick = onSelected
             )
             .background(
                 color = if (isSelected) harmonyHavenGreen.copy(alpha = 0.1f) else Color.White,
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(10.dp)
             )
-            .padding(8.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
@@ -501,16 +603,19 @@ fun AnswerOption(
             colors = RadioButtonDefaults.colors(
                 selectedColor = harmonyHavenGreen,
                 unselectedColor = Color.Gray
-            )
+            ),
+            modifier = Modifier.size(20.dp)
         )
         
         Spacer(modifier = Modifier.width(8.dp))
         
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyMedium,
+            fontSize = 14.sp,
             color = if (isSelected) harmonyHavenDarkGreenColor else Color.DarkGray,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            fontFamily = ptSansFont,
+            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
         )
         
         if (isSelected) {
@@ -519,7 +624,7 @@ fun AnswerOption(
                 imageVector = Icons.Default.Check,
                 contentDescription = "Seçildi",
                 tint = harmonyHavenGreen,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(16.dp)
             )
         }
     }
@@ -534,14 +639,17 @@ fun LoadingScreen() {
     ) {
         CircularProgressIndicator(
             color = harmonyHavenGreen,
-            modifier = Modifier.size(56.dp)
+            modifier = Modifier.size(56.dp),
+            strokeWidth = 4.dp
         )
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         
         Text(
             text = "Lütfen bekleyin...",
-            style = MaterialTheme.typography.bodyLarge
+            fontSize = 18.sp,
+            fontFamily = ptSansFont,
+            color = harmonyHavenDarkGreenColor
         )
     }
 }
@@ -555,22 +663,39 @@ fun ErrorScreen(errorMessage: String, onRetry: () -> Unit) {
     ) {
         Text(
             text = "Hata Oluştu",
-            style = MaterialTheme.typography.titleLarge,
-            color = Color.Red
+            fontSize = 22.sp,
+            color = Color.Red,
+            fontWeight = FontWeight.Bold,
+            fontFamily = ptSansFont
         )
         
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         
         Text(
             text = errorMessage,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center,
+            fontFamily = ptSansFont,
+            color = Color.DarkGray
         )
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
         
-        Button(onClick = onRetry) {
-            Text("Tekrar Dene")
+        Button(
+            onClick = onRetry,
+            modifier = Modifier
+                .fillMaxWidth(0.6f)
+                .height(48.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = harmonyHavenGreen
+            )
+        ) {
+            Text(
+                "Tekrar Dene",
+                fontFamily = ptSansFont,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }
@@ -578,42 +703,51 @@ fun ErrorScreen(errorMessage: String, onRetry: () -> Unit) {
 @Composable
 fun InitialScreen(onStartTest: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Enneagram Kişilik Testi",
-            style = MaterialTheme.typography.headlineMedium,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = harmonyHavenDarkGreenColor,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontFamily = ptSansFont
         )
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         
         Text(
             text = "Kişiliğinizi daha iyi anlamak için bu testi tamamlayın",
-            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 16.sp,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 32.dp)
+            modifier = Modifier.padding(horizontal = 16.dp),
+            fontFamily = ptSansFont,
+            color = Color.DarkGray
         )
         
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         
         Button(
             onClick = onStartTest,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 32.dp)
-                .height(50.dp),
-            shape = RoundedCornerShape(8.dp),
+                .height(56.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = harmonyHavenGreen,
                 contentColor = Color.White
             )
         ) {
-            Text("Teste Başla")
+            Text(
+                "Teste Başla",
+                fontSize = 16.sp,
+                fontFamily = ptSansFont,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }
@@ -623,51 +757,68 @@ fun TestCompletedScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            imageVector = Icons.Default.Check,
-            contentDescription = "Completed",
-            tint = harmonyHavenGreen,
-            modifier = Modifier.size(80.dp)
-        )
+        Box(
+            modifier = Modifier
+                .size(100.dp)
+                .background(
+                    color = harmonyHavenGreen.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(20.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Completed",
+                tint = harmonyHavenGreen,
+                modifier = Modifier.size(60.dp)
+            )
+        }
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
         
         Text(
             text = "Test Tamamlandı!",
-            style = MaterialTheme.typography.headlineMedium,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = harmonyHavenDarkGreenColor
+            color = harmonyHavenDarkGreenColor,
+            fontFamily = ptSansFont
         )
         
         Spacer(modifier = Modifier.height(16.dp))
         
         Text(
             text = "Yanıtlarınız başarıyla kaydedildi. Artık Harmonia sizi daha iyi tanıyor!",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center,
+            fontFamily = ptSansFont,
+            color = Color.DarkGray
         )
         
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         
         Button(
             onClick = {
                 navController.popBackStack()
-
-                      },
+            },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(8.dp),
+                .height(56.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = harmonyHavenGreen,
                 contentColor = Color.White
             )
         ) {
-            Text("Ana Sayfaya Dön")
+            Text(
+                "Ana Sayfaya Dön",
+                fontSize = 16.sp,
+                fontFamily = ptSansFont,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }

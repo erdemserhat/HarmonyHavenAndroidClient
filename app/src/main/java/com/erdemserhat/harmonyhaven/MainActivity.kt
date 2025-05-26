@@ -15,6 +15,7 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composable
@@ -26,6 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -111,6 +114,15 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var useCase: ChatUseCase
 
+    // Android 14+ için bildirim izni isteme
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        Log.d("MainActivity", "Notification permission granted: $isGranted")
+        if (!isGranted) {
+            Log.w("MainActivity", "Notification permission denied - media notifications may not work properly")
+        }
+    }
 
     @SuppressLint("NewApi", "CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -122,6 +134,19 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val internetAvailability = isInternetAvailable(this)
 
+        // Android 14+ için bildirim izni kontrolü ve isteme
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) != android.content.pm.PackageManager.PERMISSION_GRANTED
+            ) {
+                Log.d("MainActivity", "Requesting notification permission for Android 14+")
+                notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                Log.d("MainActivity", "Notification permission already granted")
+            }
+        }
 
         val extraData = intent.getStringExtra("data")
         val isFirstLaunch = firstInstallingExperiencePreferences.getBoolean("isFirstLaunch", true)

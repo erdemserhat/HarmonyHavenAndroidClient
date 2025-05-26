@@ -1,7 +1,9 @@
 package com.erdemserhat.harmonyhaven.data.api.enneagram
 
+import android.os.Parcelable
 import com.erdemserhat.harmonyhaven.domain.model.rest.Comment
 import com.erdemserhat.harmonyhaven.dto.requests.FcmSetupRequest
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import retrofit2.Response
 import retrofit2.http.Body
@@ -63,18 +65,26 @@ data class EnneagramScore(
 )
 
 @Serializable
+data class EnneagramWingTypes(
+    val pointBasedWingType:Int,
+    val enneagramBasedWingType:Int,
+)
+
+
+@Serializable
 data class EnneagramTestResult(
     val typeScores: List<EnneagramScore>,
     val dominantType: EnneagramScore,
-    val wingType: EnneagramScore,
+    val wingType: EnneagramWingTypes,
 )
 
 @Serializable
+@Parcelize
 data class EnneagramFamousPeople(
     val name: String,
     val imageUrl: String,
     val desc: String
-)
+) : Parcelable
 
 @Serializable
 data class CheckingTestResultDto(

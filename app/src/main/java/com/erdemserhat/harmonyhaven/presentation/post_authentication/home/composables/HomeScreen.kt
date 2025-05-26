@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -15,6 +16,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.domain.model.rest.toArticleResponseType
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeViewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.delay
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
@@ -23,6 +26,10 @@ fun HomeScreenNew(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val homeState by homeViewModel.homeState.collectAsState()
+
+
+    val systemUiController = rememberSystemUiController()
+
 
 
     HomeScreenContentNew(

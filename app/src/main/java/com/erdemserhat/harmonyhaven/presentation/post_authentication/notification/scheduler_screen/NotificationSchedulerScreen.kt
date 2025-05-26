@@ -65,6 +65,7 @@ import com.erdemserhat.harmonyhaven.data.api.notification.PredefinedMessageSubje
 import com.erdemserhat.harmonyhaven.data.api.notification.PredefinedReminderSubject
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenDarkGreenColor
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 import java.time.DayOfWeek
 import java.time.LocalTime
@@ -76,15 +77,51 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationSchedulerScreen(
-    viewModel: NotificationSchedulerViewModel = hiltViewModel()
+    viewModel: NotificationSchedulerViewModel = hiltViewModel(),
+    navController: NavController? = null
 ) {
     val state by viewModel.state.collectAsState()
     val deletionStates by viewModel.deletionStates.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
     var schedulerToEdit by remember { mutableStateOf<NotificationSchedulerDto?>(null) }
 
+    val systemUiController = rememberSystemUiController()
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = Color.Transparent,
+            darkIcons = true
+        )
+    }
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { 
+                    Text(
+                        text = "Hatırlatıcılar",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 20.sp,
+                        fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
+                        color = Color.Black
+                    )
+                },
+                navigationIcon = {
+                    if (navController != null) {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Geri",
+                                tint = Color(0xFF2E3C59)
+                            )
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White
+                )
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showAddDialog = true },
@@ -102,7 +139,8 @@ fun NotificationSchedulerScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding()
+                //give padding values
+                .padding(paddingValues)
                 .background(Color.White)
         ) {
             if (state.isLoadingSchedulers) {

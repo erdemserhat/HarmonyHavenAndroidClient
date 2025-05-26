@@ -3,7 +3,6 @@ package com.erdemserhat.harmonyhaven.presentation.navigation
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.AlertDialogBase
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.settings.AlertDialogBase
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenComponentWhite
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenSelectedNavigationBarItemColor
 
@@ -39,7 +38,6 @@ fun MyAppBar(
     isMainScreen: Boolean,
     modifier: Modifier = Modifier,
     onExitClicked: () -> Unit = {},
-    isNotificationScreen:Boolean
 
 
     ) {
@@ -122,7 +120,7 @@ fun MyAppBar(
                 onDismissRequest = { expanded = false }
             ) {
                 DropdownMenuItem(onClick = {
-                    navController.navigate(Screen.Profile.route)
+                    navController.navigate(Screen.AccountInformationScreen.route)
                     expanded = false
 
 

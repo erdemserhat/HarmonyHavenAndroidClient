@@ -63,7 +63,6 @@ class UserProfileScreenViewModel @Inject constructor(
 
 
     fun checkTestResult(onCompleted: () -> Unit = {}) {
-        Log.d("fdsfsdfsd","checked")
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 userProfile.isLoading = true
