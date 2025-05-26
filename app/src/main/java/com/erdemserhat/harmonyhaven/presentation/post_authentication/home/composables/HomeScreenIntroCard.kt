@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.erdemserhat.harmonyhaven.domain.model.rest.Mood
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.home.HomeScreenViewModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.mood.MoodViewModel
 import com.erdemserhat.harmonyhaven.ui.theme.DefaultAppFont
 import com.erdemserhat.harmonyhaven.ui.theme.customFontInter
@@ -77,9 +78,9 @@ data class MoodOption(
 @Composable
 fun HomeScreenIntroCard(
     userName: String = "",
-    quoteText: String = "Tekrar iyi hissetmekten bir düşünce uzaktayız.",
     onNotificationClick: () -> Unit = {},
     modifier: Modifier = Modifier,
+    viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
     var showMoodSelector by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
@@ -93,6 +94,9 @@ fun HomeScreenIntroCard(
     // Remember selected mood to pass back to the selector
     var selectedMoodId by remember { mutableStateOf<Int?>(null) }
 
+    // Collect daily quote from ViewModel
+    val dailyQuote by viewModel.dailyQuote.collectAsState()
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -102,8 +106,6 @@ fun HomeScreenIntroCard(
         AsyncImage(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
-
-            /// do not change this
             model = "https://www.harmonyhavenapp.com/sources/bg.png",
             contentDescription = null
         )
@@ -168,7 +170,7 @@ fun HomeScreenIntroCard(
 
         // Center quote
         Text(
-            text = quoteText,
+            text = dailyQuote ?: "",
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(horizontal = 32.dp),
