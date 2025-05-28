@@ -63,7 +63,6 @@ fun Quote(
     modifier: Modifier,
     viewmodel: QuoteMainViewModel,
     onCategoryClicked: () -> Unit,
-    onShareQuoteClicked: () -> Unit,
     navController: NavController? = null,
     onCommentClicked: () -> Unit,
     volumeControllerViewModel:VolumeControlViewModel? = null
@@ -267,22 +266,5 @@ private suspend fun handleQuoteShare(
 }
 
 
-
-fun toggleAppSound(context: Context) {
-    val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-    val isMuted = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) == 0
-
-    if (isMuted) {
-        // Ses Aç
-        audioManager.setStreamVolume(
-            AudioManager.STREAM_MUSIC,
-            audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC),
-            0
-        )
-    } else {
-        // Ses Kapat
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0)
-    }
-}
 
 
