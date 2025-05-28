@@ -73,10 +73,6 @@ fun AppMainScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
 
 
-    var postID by rememberSaveable {
-        mutableIntStateOf(3044)
-    }
-
     var shouldShowExitDialog by rememberSaveable {
         mutableStateOf(false)
     }
@@ -84,19 +80,7 @@ fun AppMainScreen(
     val context = LocalContext.current
     val activity = context as? Activity // Context'i Activity'ye dönüştürüyoruz
 
-    var shouldShowCommentBottomModal by remember {
-        mutableStateOf(false)
-    }
     val volumeControlViewModel = hiltViewModel<VolumeControlViewModel>()
-
-    val commentSheetState = SheetState(skipPartiallyExpanded = true, density = Density(context))
-
-    var shouldShowCategoryBottomModal by remember {
-        mutableStateOf(false)
-    }
-    val categorySheetState = SheetState(skipPartiallyExpanded = false, density = Density(context))
-
-    val commentViewModel: CommentViewModel = hiltViewModel()
 
     var lastClickTime by remember { mutableLongStateOf(0L) }
     val doubleClickThreshold = 300L

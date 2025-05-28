@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.presentation.navigation.CommentBottomModalSheetActions
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.CommentBottomModalSheetActions
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.CategorySelectionModel
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.categorySelectionSaver
 import com.erdemserhat.harmonyhaven.ui.theme.harmonyHavenGreen

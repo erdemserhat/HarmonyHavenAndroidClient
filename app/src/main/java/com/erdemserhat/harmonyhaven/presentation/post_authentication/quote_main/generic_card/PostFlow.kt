@@ -1,6 +1,5 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card
 
-import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -12,16 +11,12 @@ import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetDefaults
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -73,10 +68,6 @@ fun PostFlow(
     // Controllers
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState { quoteList.value.size }
-    val shareQuoteSheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true,
-    )
 
     // Handle scroll to start
     LaunchedEffect(viewmodel.shouldScrollToStart.value) {
@@ -190,7 +181,7 @@ private fun QuoteFeed(
             }
 
             Crossfade(targetState = quoteList[page], label = "") { quote ->
-                Quote(
+                QuoteGenericCard(
                     volumeControllerViewModel = volumeControllerViewModel,
                     quote = quote,
                     currentScreen = pagerState.currentPage,

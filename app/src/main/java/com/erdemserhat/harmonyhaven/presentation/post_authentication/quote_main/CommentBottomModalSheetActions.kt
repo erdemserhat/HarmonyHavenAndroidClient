@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.presentation.navigation
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
 
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.CategorySelectionModel
 
