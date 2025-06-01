@@ -2,21 +2,17 @@ package com.erdemserhat.harmonyhaven.presentation.navigation
 
 import AccountInformationScreen
 import QuoteShareScreen
-import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
 import android.view.Window
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -29,7 +25,6 @@ import androidx.navigation.Navigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
-import com.erdemserhat.harmonyhaven.presentation.navigation.navbar.AppMainScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.article.composables.ArticleScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatExperienceCustomizationScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatHistoryScreen
@@ -48,13 +43,13 @@ import com.erdemserhat.harmonyhaven.presentation.prev_authentication.login.Login
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.passwordreset.mail.ForgotPasswordMailScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.register.RegisterScreen
 import com.erdemserhat.harmonyhaven.presentation.prev_authentication.welcome.WelcomeScreen
-import kotlinx.parcelize.Parcelize
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.player.MeditationMusic
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.player.MusicPlayerScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.journal.JournalScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.journal.JournalEditorScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.liked_quote_screen.LikedQuotesScreen
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.profile.liked_quote_screen.QuoteDetailScreen
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.QuoteShareScreenParams
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -236,8 +231,11 @@ fun SetupNavGraph(
 
             quote?.let {
                 QuoteDetailScreen(
+                    viewModel = hiltViewModel(),
                     quote = it,
-                    navController = navController
+                    navController = navController,
+                    volumeControlViewModel = hiltViewModel(),
+                    commentViewModel = hiltViewModel()
                 )
             }
         }

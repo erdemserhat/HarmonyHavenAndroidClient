@@ -1,12 +1,14 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.bottom_sheets.comment
 
 import android.util.Log
+import androidx.collection.emptyLongList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.erdemserhat.harmonyhaven.data.api.user.UserInformationApiService
 import com.erdemserhat.harmonyhaven.domain.model.rest.Comment
 import com.erdemserhat.harmonyhaven.domain.usecase.CommentUseCase
+import com.erdemserhat.harmonyhaven.util.NetworkUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -20,6 +22,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import javax.inject.Inject
 import kotlin.properties.Delegates
+import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class CommentViewModel @Inject constructor(
@@ -45,15 +48,32 @@ class CommentViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val result = userInformationApiService.getUserInformation().body()!!
-                profilePhotoPath =
-                    if (result.profilePhotoPath == "-") defaultPPLink else result.profilePhotoPath
-                userId = result.id
-                userName = result.name
+                try {
+                    delay(500)
+                    val response = NetworkUtils.retryWithBackoff {
+                        userInformationApiService.getUserInformation()
+                    }
 
+                    if (response.isSuccessful) {
+                        val result = response.body()
+                        if (result != null) {
+                            profilePhotoPath = if (result.profilePhotoPath == "-") defaultPPLink else result.profilePhotoPath
+                            userId = result.id
+                            userName = result.name
+                        } else {
+                            Log.e("CommentViewModel", "Body is null despite successful response")
+                        }
+                    } else {
+                        Log.e("CommentViewModel", "Unsuccessful response: ${response.code()} ${response.errorBody()?.string()}")
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("CommentViewModel", "Error fetching user info after retries", e)
+                }
             }
 
         }
+
     }
 
     fun setLastPostId(postId: Int) {
@@ -79,21 +99,32 @@ class CommentViewModel @Inject constructor(
 
     fun loadComments(postId: Int) {
         _isLoading.value = true
+
         viewModelScope.launch {
-            val comments = commentUseCase.getCommentsByPostId(postId).getOrNull()
-            comments?.map {
-                if (it.authorProfilePictureUrl == "-")
-                    it.authorProfilePictureUrl = defaultPPLink
+            val elapsedTime = measureTimeMillis {
+                val comments = commentUseCase.getCommentsByPostId(postId).getOrNull()
+                comments?.map {
+                    if (it.authorProfilePictureUrl == "-")
+                        it.authorProfilePictureUrl = defaultPPLink
+                }
+
+                _comments.value = comments ?: listOf()
             }
 
-            _comments.value = comments ?: listOf()
-            _isLoading.value = false
+            if (elapsedTime<750){
+                delay(750- elapsedTime)
+                _isLoading.value = false
+            }else{
+                _isLoading.value = false
+
+            }
         }
     }
 
     private fun refreshList(postId: Int) {
         viewModelScope.launch {
             Log.d("dasddsadas", "job started with $postId")
+
 
             val commentsDeferred = async {
                 val comments = commentUseCase.getCommentsByPostId(postId).getOrNull()
@@ -105,6 +136,8 @@ class CommentViewModel @Inject constructor(
                 comments
             }
             _comments.value = commentsDeferred.await() ?: listOf()
+
+            setLastPostId(postId)
         }
 
     }
@@ -117,7 +150,10 @@ class CommentViewModel @Inject constructor(
     }
 
     fun loadFromCache() {
+
         _comments.value = cachedCommentList
+        Log.d("dasddsadas", cachedCommentList.toString())
+
         _isLoading.value = false
 
     }
@@ -281,3 +317,4 @@ class CommentViewModel @Inject constructor(
 
 
 }
+

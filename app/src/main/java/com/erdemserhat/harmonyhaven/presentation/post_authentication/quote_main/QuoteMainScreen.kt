@@ -2,6 +2,7 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
 
 import android.Manifest
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -48,13 +49,15 @@ fun QuoteMainScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: QuoteMainViewModel,
-    volumeControllerViewModel: VolumeControlViewModel? = null
+    volumeControllerViewModel: VolumeControlViewModel? = null,
+    commentViewModel:CommentViewModel
 ) {
     QuoteMainContent(
         volumeControllerViewModel = volumeControllerViewModel,
         modifier = modifier,
         viewmodel = viewModel,
         navController = navController,
+        commentViewModel = commentViewModel
     )
 }
 
@@ -70,7 +73,7 @@ private fun QuoteMainContent(
     viewmodel: QuoteMainViewModel,
     navController: NavController? = null,
     volumeControllerViewModel: VolumeControlViewModel? = null,
-    commentViewModel: CommentViewModel = hiltViewModel()
+    commentViewModel: CommentViewModel
 ) {
     // State management
     val shouldShowUxDialog1 = viewmodel.shouldShowUxDialog1.collectAsState()
@@ -115,7 +118,6 @@ private fun QuoteMainContent(
             if (postID != -1) {
                 commentViewModel.setLastPostId(postID)
             }
-            commentViewModel.resetList()
             commentViewModel.commitApiCallsWithoutDelay()
         }
     }
@@ -182,6 +184,7 @@ private fun QuoteMainContent(
             viewmodel = viewmodel,
             navController = navController,
             onCommentsClicked = { postId ->
+                Log.d("fdsdfsd",postId.toString())
                 postID = postId
                 shouldShowCommentBottomModal = true
             },

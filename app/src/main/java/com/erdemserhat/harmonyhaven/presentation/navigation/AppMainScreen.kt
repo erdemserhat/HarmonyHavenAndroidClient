@@ -1,6 +1,8 @@
-package com.erdemserhat.harmonyhaven.presentation.navigation.navbar
+package com.erdemserhat.harmonyhaven.presentation.navigation
 
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.view.Window
@@ -13,11 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,12 +30,11 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.erdemserhat.harmonyhaven.presentation.navigation.MainScreenParams
+import com.erdemserhat.harmonyhaven.presentation.navigation.navbar.ExitAlertDialog
 import com.erdemserhat.harmonyhaven.presentation.navigation.navbar.navbar.BottomNavigationBar
 import com.erdemserhat.harmonyhaven.presentation.navigation.navbar.navbar.NavigationBarItems
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatIntroScreen
@@ -72,6 +71,8 @@ fun AppMainScreen(
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    val commentViewModel: CommentViewModel = hiltViewModel()
+
 
     var shouldShowExitDialog by rememberSaveable {
         mutableStateOf(false)
@@ -87,7 +88,36 @@ fun AppMainScreen(
 
     LaunchedEffect(params.screenNo) {
         if (params.screenNo != -1) {
-            pagerState.scrollToPage(params.screenNo)
+            if (params.screenNo == 5) {
+                navController.navigate(Screen.Notification.route)
+            } else if (params.screenNo == 6) {
+                val playStoreIntent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}")
+                )
+                playStoreIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(playStoreIntent)
+            }else if ( params.screenNo ==7){
+                val instagramUsername = "harmonyinhaven" // burada kendi kullanıcı adını yaz
+                val uri = Uri.parse("https://instagram.com/$instagramUsername")
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                intent.setPackage("com.instagram.android")
+
+                // Eğer Instagram yüklü değilse, tarayıcıdan aç
+                if (intent.resolveActivity(context.packageManager) != null) {
+                    context.startActivity(intent)
+                } else {
+                    val fallbackIntent = Intent(Intent.ACTION_VIEW, uri)
+                    context.startActivity(fallbackIntent)
+                }
+
+
+
+            } else {
+                pagerState.scrollToPage(params.screenNo)
+
+            }
+
         }
 
     }
@@ -110,6 +140,7 @@ fun AppMainScreen(
                     viewModel = quoteViewModel,
                     volumeControllerViewModel = volumeControlViewModel,
                     navController = navController,
+                    commentViewModel = commentViewModel
                 )
             },
             2 to { ChatIntroScreen(navController = navController) },

@@ -1,4 +1,4 @@
-package com.erdemserhat.harmonyhaven.presentation.navigation
+package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share
 
 import android.graphics.Bitmap
 import android.os.Parcelable

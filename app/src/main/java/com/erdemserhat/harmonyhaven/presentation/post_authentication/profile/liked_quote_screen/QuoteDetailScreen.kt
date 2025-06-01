@@ -24,7 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -38,18 +37,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import com.erdemserhat.harmonyhaven.dto.responses.QuoteForOrderModel
-import com.erdemserhat.harmonyhaven.presentation.navigation.QuoteShareScreenParams
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.QuoteShareScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
@@ -71,9 +68,9 @@ import kotlinx.coroutines.withContext
 fun QuoteDetailScreen(
     quote: Quote,
     navController: NavController,
-    viewModel: QuoteMainViewModel = hiltViewModel(),
-    volumeControlViewModel: VolumeControlViewModel = hiltViewModel(),
-    commentViewModel: CommentViewModel = hiltViewModel()
+    viewModel: QuoteMainViewModel,
+    volumeControlViewModel:VolumeControlViewModel,
+    commentViewModel: CommentViewModel,
 ) {
     val context = LocalContext.current
 
@@ -81,7 +78,6 @@ fun QuoteDetailScreen(
     var shouldShowCommentBottomModal by remember { mutableStateOf(false) }
     val commentSheetState = SheetState(skipPartiallyExpanded = true, density = Density(context))
 
-    val coroutineScope = rememberCoroutineScope()
 
     SideEffect {
         systemUiController.setStatusBarColor(
@@ -162,7 +158,6 @@ private fun QuoteContent(
     var isVisibleLikeAnimation by remember { mutableStateOf(false) }
     var shouldAnimateLikeButton by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
 
     // Syncs the liked state with the quote data
     LaunchedEffect(quote.isLiked) {

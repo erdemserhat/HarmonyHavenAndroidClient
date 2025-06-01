@@ -135,7 +135,12 @@ fun NotificationScreen(
                 )
             },
             navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
+                IconButton(onClick = {
+
+                    navController.navigate(Screen.Main.route)
+
+
+                }) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Geri",
@@ -323,7 +328,7 @@ fun NotificationCard(notification: NotificationDto, navController: NavController
                         )
 
                         // do nothing when screen code is 1 and 2
-                    } else if (notification.screenCode.toInt() !in listOf(1,2)) {
+                    } else if (notification.screenCode.toInt() !in listOf(0,5)) {
                         val screenCode = notification.screenCode.toIntOrNull()
                         if (screenCode != null) {
                             val bundleMain = Bundle().apply {

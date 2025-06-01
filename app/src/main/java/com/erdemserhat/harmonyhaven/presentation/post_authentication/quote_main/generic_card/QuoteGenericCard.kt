@@ -2,7 +2,6 @@ package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,7 +27,7 @@ import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import com.erdemserhat.harmonyhaven.dto.responses.QuoteForOrderModel
-import com.erdemserhat.harmonyhaven.presentation.navigation.QuoteShareScreenParams
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.QuoteShareScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
@@ -38,7 +36,6 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLike
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLikeBottomControlButton
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteCard
-import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

@@ -387,6 +387,7 @@ fun CommentModalBottomSheet(
                             onClick = {
                                 if (commentText.isNotEmpty()) {
                                     viewModel.postComment(postId = postId, comment = commentText)
+                                    viewModel.setLastPostId(postId)
                                     vibrator.vibrate(
                                         VibrationEffect.createOneShot(
                                             25,
