@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <queries>
+        <package android:name="com.instagram.android" />
+        <package android:name="com.whatsapp" />
+        <package android:name="com.facebook.katana" />
+    </queries>
+
     <uses-permission android:name="android.permission.CREDENTIAL_MANAGER_SET_ORIGIN" />
 
     <uses-permission android:name="android.permission.INTERNET" />

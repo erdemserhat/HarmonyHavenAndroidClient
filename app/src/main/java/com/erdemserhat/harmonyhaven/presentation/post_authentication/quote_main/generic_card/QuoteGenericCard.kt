@@ -1,10 +1,7 @@
 package com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.media.AudioManager
 import android.os.Bundle
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,19 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,7 +27,7 @@ import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
 import com.erdemserhat.harmonyhaven.dto.responses.Quote
 import com.erdemserhat.harmonyhaven.dto.responses.QuoteForOrderModel
-import com.erdemserhat.harmonyhaven.presentation.navigation.QuoteShareScreenParams
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.QuoteShareScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
@@ -46,16 +36,28 @@ import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLike
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.generic_card.animated_items.AnimatedLikeBottomControlButton
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteCard
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteText
-import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * A generic card component that displays quotes with interactive features.
+ * Supports both image and video content, like animations, and various user interactions.
+ *
+ * @param quote The quote data to display
+ * @param currentScreen Current screen index for video playback control
+ * @param isVisible Whether the card is currently visible
+ * @param isCurrentPage Whether this is the current page in the pager
+ * @param modifier Modifier for customizing the layout
+ * @param viewmodel ViewModel for managing quote data and operations
+ * @param onCategoryClicked Callback for category button click
+ * @param navController Navigation controller for handling navigation
+ * @param onCommentClicked Callback for comment button click
+ * @param volumeControllerViewModel Optional ViewModel for controlling audio volume
+ */
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun Quote(
+fun QuoteGenericCard(
     quote: Quote,
     currentScreen: Int,
     isVisible: Boolean,
@@ -63,21 +65,19 @@ fun Quote(
     modifier: Modifier,
     viewmodel: QuoteMainViewModel,
     onCategoryClicked: () -> Unit,
-    onShareQuoteClicked: () -> Unit,
     navController: NavController? = null,
     onCommentClicked: () -> Unit,
-    volumeControllerViewModel:VolumeControlViewModel? = null
+    volumeControllerViewModel: VolumeControlViewModel? = null
 ) {
+    // State management
     var isQuoteLiked by remember { mutableStateOf(quote.isLiked) }
     var isVisibleLikeAnimation by remember { mutableStateOf(false) }
     var shouldAnimateLikeButton by remember { mutableStateOf(false) }
     var shouldScreenBeClear by rememberSaveable { mutableStateOf(false) }
+
     val coroutineScope = rememberCoroutineScope()
-    val capturableController = rememberCaptureController()
-    val context = LocalContext.current
 
-
-    // Syncs the liked state with the quote data
+    // Sync liked state with quote data
     LaunchedEffect(quote.isLiked) {
         isQuoteLiked = quote.isLiked
     }
@@ -96,11 +96,7 @@ fun Quote(
                         shouldAnimateLikeButton = true
                     },
                     onTap = {
-                        Log.d("dasdasdas","dasdas")
                         volumeControllerViewModel?.toggleMute()
-
-
-
                     }
                 )
             },
@@ -111,7 +107,7 @@ fun Quote(
             AnimatedLike { isVisibleLikeAnimation = false }
         }
 
-        // Bottom controls: Like, Category, Share
+        // Bottom controls
         if (!shouldScreenBeClear) {
             BottomControls(
                 modifier = Modifier
@@ -119,10 +115,10 @@ fun Quote(
                     .align(Alignment.BottomEnd),
                 isQuoteLiked = isQuoteLiked,
                 shouldAnimateLikeButton = shouldAnimateLikeButton,
-                onLikeClicked = {
-                    isQuoteLiked = it
+                onLikeClicked = { isLiked ->
+                    isQuoteLiked = isLiked
                     shouldAnimateLikeButton = true
-                    if (it) {
+                    if (isLiked) {
                         viewmodel.likeQuote(quote.id)
                         quote.isLiked = true
                     } else {
@@ -145,13 +141,13 @@ fun Quote(
             )
         }
 
-        // Display quote as an image or video
+        // Content display
         if (!quote.imageUrl.endsWith(".mp4")) {
             QuoteCard(
                 modifier = Modifier.align(Alignment.Center),
                 quoteWriter = quote.writer,
                 quoteSentence = quote.quote,
-                 quoteURL = quote.imageUrl
+                quoteURL = quote.imageUrl
             )
         } else {
             VideoCard(
@@ -160,11 +156,13 @@ fun Quote(
                 prepareOnly = isVisible,
                 viewModel = volumeControllerViewModel
             )
-
         }
     }
 }
 
+/**
+ * Displays the bottom control buttons for quote interactions.
+ */
 @Composable
 private fun BottomControls(
     modifier: Modifier,
@@ -173,7 +171,7 @@ private fun BottomControls(
     onLikeClicked: (Boolean) -> Unit,
     onCategoryClicked: () -> Unit,
     onShareQuoteClicked: () -> Unit,
-    onCommentClicked:()->Unit
+    onCommentClicked: () -> Unit
 ) {
     Column(
         modifier = modifier.zIndex(4f),
@@ -203,13 +201,12 @@ private fun BottomControls(
             label = "Kategori",
             onClick = onCategoryClicked
         )
-
-
-
-
     }
 }
 
+/**
+ * A button with an icon and text label.
+ */
 @SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
 private fun IconTextButton(
@@ -230,12 +227,19 @@ private fun IconTextButton(
         Image(
             modifier = Modifier.size(30.dp),
             painter = painterResource(iconRes),
-            contentDescription = null
+            contentDescription = label
         )
-        Text(label, color = Color.White, fontSize = 10.sp)
+        Text(
+            text = label,
+            color = Color.White,
+            fontSize = 10.sp
+        )
     }
 }
 
+/**
+ * Handles the quote sharing process.
+ */
 private suspend fun handleQuoteShare(
     quote: Quote,
     currentScreen: Int,
@@ -267,22 +271,5 @@ private suspend fun handleQuoteShare(
 }
 
 
-
-fun toggleAppSound(context: Context) {
-    val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-    val isMuted = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) == 0
-
-    if (isMuted) {
-        // Ses Aç
-        audioManager.setStreamVolume(
-            AudioManager.STREAM_MUSIC,
-            audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC),
-            0
-        )
-    } else {
-        // Ses Kapat
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0)
-    }
-}
 
 

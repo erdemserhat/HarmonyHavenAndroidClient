@@ -35,8 +35,7 @@ import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import com.erdemserhat.harmonyhaven.R
-import com.erdemserhat.harmonyhaven.presentation.navigation.QuoteShareScreenParams
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.static_card.QuoteText
+import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.QuoteShareScreenParams
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.dynamic_card.VideoCard
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.downloadVideo
 import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.quote_share.saveBitmapToFile

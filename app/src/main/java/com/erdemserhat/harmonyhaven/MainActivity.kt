@@ -1,7 +1,6 @@
 package com.erdemserhat.harmonyhaven
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -10,82 +9,46 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.erdemserhat.harmonyhaven.data.local.entities.QuoteEntity
 import com.erdemserhat.harmonyhaven.data.local.repository.JwtTokenRepository
 import com.erdemserhat.harmonyhaven.data.local.repository.QuoteRepository
 import com.erdemserhat.harmonyhaven.domain.model.rest.ArticlePresentableUIModel
-import com.erdemserhat.harmonyhaven.domain.usecase.article.ArticleUseCases
-import com.erdemserhat.harmonyhaven.domain.usecase.user.UserUseCases
 import com.erdemserhat.harmonyhaven.presentation.common.HarmonyHavenTheme
 import com.erdemserhat.harmonyhaven.presentation.navigation.MainScreenParams
 import com.erdemserhat.harmonyhaven.presentation.navigation.Screen
 import com.erdemserhat.harmonyhaven.presentation.navigation.SetupNavGraph
 import com.erdemserhat.harmonyhaven.presentation.navigation.navigate
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.quote_main.QuoteMainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import java.io.File
 import javax.inject.Inject
 import javax.inject.Named
 
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
 
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.platform.LocalView
 import androidx.core.splashscreen.SplashScreen
-import androidx.core.view.WindowInsetsControllerCompat
 import com.erdemserhat.harmonyhaven.data.api.SSEClient
 import com.erdemserhat.harmonyhaven.domain.usecase.ChatUseCase
 import com.erdemserhat.harmonyhaven.domain.usecase.VersionControlUseCase
-import com.erdemserhat.harmonyhaven.presentation.common.NetworkErrorScreen
-import com.erdemserhat.harmonyhaven.presentation.common.UpdateAvailableScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.chat.ChatScreen
-import com.erdemserhat.harmonyhaven.presentation.post_authentication.notification.NotificationScreen
-import com.google.android.material.bottomsheet.BottomSheetBehavior.StableState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlin.coroutines.CoroutineContext
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.NetworkErrorScreen
+import com.erdemserhat.harmonyhaven.presentation.prev_authentication.UpdateAvailableScreen
+import com.erdemserhat.harmonyhaven.util.NetworkUtils
 
 
 @AndroidEntryPoint
@@ -120,7 +83,10 @@ class MainActivity : ComponentActivity() {
     ) { isGranted: Boolean ->
         Log.d("MainActivity", "Notification permission granted: $isGranted")
         if (!isGranted) {
-            Log.w("MainActivity", "Notification permission denied - media notifications may not work properly")
+            Log.w(
+                "MainActivity",
+                "Notification permission denied - media notifications may not work properly"
+            )
         }
     }
 
@@ -132,7 +98,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge() // Add this line.
         window.isNavigationBarContrastEnforced = false
         super.onCreate(savedInstanceState)
-        val internetAvailability = isInternetAvailable(this)
+        val internetAvailability = NetworkUtils.isInternetAvailable(this)
 
         // Android 14+ için bildirim izni kontrolü ve isteme
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -183,9 +149,10 @@ class MainActivity : ComponentActivity() {
                     onRetry = {
                         scope.launch {
                             versionStatus = -1
-                            versionStatus = versionControlUseCase.executeRequest(currentVersion = currentVersionCode.toInt())
+                            versionStatus =
+                                versionControlUseCase.executeRequest(currentVersion = currentVersionCode.toInt())
                         }
-                     }
+                    }
                 )
             } else {
                 // Add this block:
@@ -210,7 +177,8 @@ class MainActivity : ComponentActivity() {
                         NetworkErrorScreen(
                             onRetry = {
                                 scope.launch {
-                                    isInternetAvailable = isInternetAvailable(context)
+                                    isInternetAvailable =
+                                        NetworkUtils.isInternetAvailable(context)
                                 }
                             })
 
@@ -271,9 +239,6 @@ class MainActivity : ComponentActivity() {
         }
 
 
-
-
-
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -330,12 +295,7 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@SuppressLint("ServiceCast")
-fun isInternetAvailable(context: Context): Boolean {
-    val connectivityManager =
-        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    return connectivityManager.activeNetworkInfo?.isConnected == true
-}
+
 
 
 

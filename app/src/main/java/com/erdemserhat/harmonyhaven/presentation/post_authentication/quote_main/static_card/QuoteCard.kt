@@ -11,6 +11,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 
+/**
+ * A composable that displays a quote card with background image, gradient overlay, and quote text.
+ * The card can be animated and optionally show a firm logo.
+ *
+ * @param modifier Modifier for customizing the layout
+ * @param quoteSentence The main quote text to display
+ * @param quoteURL URL of the background image
+ * @param quoteWriter Name of the quote's author
+ * @param shouldAnimate Whether to animate the card's appearance
+ * @param isFirmLogoVisible Whether to show the firm logo
+ */
 @Composable
 fun QuoteCard(
     modifier: Modifier = Modifier,
@@ -21,29 +32,17 @@ fun QuoteCard(
     isFirmLogoVisible: Boolean = false
 ) {
     Box(modifier = modifier) {
-        // Display the full-screen image
-
-
-
+        // Background image with optional animation
         QuoteTextCardBackground(
             imageUrl = quoteURL,
             modifier = Modifier.align(Alignment.Center),
             shouldAnimate = shouldAnimate
         )
 
-        Box(modifier = Modifier.fillMaxSize().background(
-            brush = Brush.radialGradient(
-                colors = listOf(
-                    Color.Black.copy(alpha = 1f),
-                    Color.Black.copy(alpha = 0.38f),
-                )
-            )
-        ))
+        // Gradient overlay for better text readability
+        GradientOverlay()
 
-
-
-        // Show the quote sentence and writer if the sentence is not empty
-
+        // Quote text and writer name
         if (quoteSentence.isNotBlank()) {
             QuoteText(
                 quote = quoteSentence,
@@ -52,7 +51,24 @@ fun QuoteCard(
                 isFirmLogoVisible = isFirmLogoVisible
             )
         }
-
-
     }
+}
+
+/**
+ * Displays a radial gradient overlay to improve text readability.
+ */
+@Composable
+private fun GradientOverlay() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.radialGradient(
+                    colors = listOf(
+                        Color.Black.copy(alpha = 1f),
+                        Color.Black.copy(alpha = 0.38f),
+                    )
+                )
+            )
+    )
 }
